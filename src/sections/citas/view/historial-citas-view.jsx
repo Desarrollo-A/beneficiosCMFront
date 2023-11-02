@@ -104,7 +104,7 @@ export default function HistorialCitasView() {
   const [tableData, setTableData] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost/back2/")
+    fetch("http://localhost/beneficiosCMBack/welcome/citas")
       .then((res) => res.json())
       .then((data) => {
         const ct = data.data.map((cita) => ({
@@ -123,8 +123,10 @@ export default function HistorialCitasView() {
       });
   }, []);
 
+  console.log(tableData)
+
   useEffect(() => {
-    fetch("http://localhost/back2/welcome/especialistas")
+    fetch("http://localhost/beneficiosCMBack/welcome/especialistas")
       .then((res) => res.json())
       .then((data) => {
         setEs(data.data);
@@ -387,11 +389,11 @@ function applyFilter({ inputData, comparator, filters }) {
   if (name) {
     inputData = inputData.filter(
       (cita) =>
-        cita.idCita.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        cita.idCita.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
         cita.estatus.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        cita.area.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        cita.idEspecialista.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        cita.idPaciente.toLowerCase().indexOf(name.toLowerCase()) !== -1
+        cita.area.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        cita.idEspecialista.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        cita.idPaciente.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1
     );
   }
 
