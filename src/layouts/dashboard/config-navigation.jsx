@@ -52,6 +52,21 @@ export function useNavData() {
 
   const data = useMemo(
     () => [
+       // AGENDA
+      // ----------------------------------------------------------------------
+      {
+        subheader: t('agenda'),
+        items: [
+          {
+            title: t('citas'),
+            path: paths.dashboard.citas.root,
+            icon: ICONS.calendar,
+            children: [
+              { title: t('historial'), path: paths.dashboard.citas.historial },
+            ],
+          }
+        ],
+      },
       // OVERVIEW
       // ----------------------------------------------------------------------
       {
