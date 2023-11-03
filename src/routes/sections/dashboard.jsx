@@ -50,6 +50,8 @@ const TourDetailsPage = lazy(() => import('src/pages/dashboard/tour/details'));
 const TourListPage = lazy(() => import('src/pages/dashboard/tour/list'));
 const TourCreatePage = lazy(() => import('src/pages/dashboard/tour/new'));
 const TourEditPage = lazy(() => import('src/pages/dashboard/tour/edit'));
+// Test
+const TestInsertBatch = lazy(() => import('src/pages/dashboard/test/new'));
 // FILE MANAGER
 const FileManagerPage = lazy(() => import('src/pages/dashboard/file-manager'));
 // APP
@@ -60,7 +62,8 @@ const KanbanPage = lazy(() => import('src/pages/dashboard/kanban'));
 // TEST RENDER PAGE BY ROLE
 const PermissionDeniedPage = lazy(() => import('src/pages/dashboard/permission'));
 // BLANK PAGE
-const BlankPage = lazy(() => import('src/pages/dashboard/blank'));
+// const BlankPage = lazy(() => import('src/pages/dashboard/blank'));
+const BlankPage = lazy(() => import('src/sections/_examples/extra/upload-view'));
 
 // ----------------------------------------------------------------------
 
@@ -151,6 +154,13 @@ export const dashboardRoutes = [
           { path: ':id', element: <TourDetailsPage /> },
           { path: 'new', element: <TourCreatePage /> },
           { path: ':id/edit', element: <TourEditPage /> },
+        ],
+      },
+      {
+        path: 'test',
+        children: [
+          { element: <TestInsertBatch />, index: true },
+          { path: 'new', element: <TestInsertBatch /> },
         ],
       },
       { path: 'file-manager', element: <FileManagerPage /> },
