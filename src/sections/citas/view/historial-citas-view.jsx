@@ -99,7 +99,7 @@ function handleDownloadPDF(tableData) { autoTable(doc, {
 // ----------------------------------------------------------------------
 export default function HistorialCitasView() {
 
-  const [espe, setEs] = useState([]);
+  const [espe, setEspe] = useState([]);
 
   const [tableData, setTableData] = useState([]);
 
