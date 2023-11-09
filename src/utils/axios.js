@@ -26,6 +26,7 @@ export const fetcher = async (args) => {
 // ----------------------------------------------------------------------
 
 export const endpoints = {
+  extra: 'http://localhost/backend/welcome/get_occupied',
   chat: '/api/chat',
   kanban: '/api/kanban',
   calendar: '/api/calendar',

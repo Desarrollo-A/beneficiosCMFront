@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { useMemo } from 'react';
 import useSWR, { mutate } from 'swr';
 
@@ -6,6 +7,7 @@ import { fetcher, endpoints } from 'src/utils/axios';
 // ----------------------------------------------------------------------
 
 const URL = endpoints.calendar;
+const URLC = endpoints.extra;
 
 const options = {
   revalidateIfStale: false,
@@ -35,6 +37,64 @@ export function useGetEvents() {
 }
 
 // ----------------------------------------------------------------------
+export function GetCustomEvents() {
+  // const CUSTOM = 'http://localhost/backend/welcome/get_occupied';
+
+  const { data, isLoading, error, isValidating } = useSWR(URLC, fetcher, options);
+
+  const memoizedValue = useMemo(() => {
+      const events = data?.events?.map((event) => ({
+        ...event,
+        // title: event.titulo,
+        date: `${event.fechaOcupado}T${event.horaInicio}`,
+        textColor: 'red',
+      }));
+    
+
+    return {
+      events: events || [],
+      eventsLoading: isLoading,
+      eventsError: error,
+      eventsValidating: isValidating,
+      eventsEmpty: !isLoading && !data?.events?.length,
+    };
+  }, [data, error, isLoading, isValidating]);
+
+  return memoizedValue;
+}
+
+// ----------------------------------------------------------------------
+
+export async function createCustom(fecha, eventData) {
+
+    return axios.post('http://localhost/backend/welcome/save_occupied', {
+        fecha,
+        titulo: eventData.title,
+        hora_inicio: eventData.hora_inicio,
+        hora_final:  eventData.hora_final,
+    }, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    }, false)
+    .then((response) => response.data)
+    .then(
+      // lo que se trae de la url se guarda en current data y se junta con eventData
+      // es necesario tener la url en el axios para el renderizado
+      mutate(
+      URLC,
+      (currentData) => {
+        const events = [...currentData.events, eventData];
+        return {
+          ...currentData,
+          events,
+        };
+      },
+      false
+    ))
+}
+
+// ----------------------------------------------------------------------
 
 export async function createEvent(eventData) {
   /**
@@ -46,14 +106,14 @@ export async function createEvent(eventData) {
   /**
    * Work in local
    */
+  
   mutate(
     URL,
     (currentData) => {
       const events = [...currentData.events, eventData];
-
       return {
         ...currentData,
-        events,
+        events, // este evento causa que el evento agregado haga render
       };
     },
     false
