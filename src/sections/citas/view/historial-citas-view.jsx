@@ -3,6 +3,7 @@ import { useRef, useState, useEffect, useCallback } from 'react';
 import Xlsx from 'json-as-xlsx';
 import JsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import uuidv4 from "src/utils/uuidv4";
 
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
@@ -122,8 +123,6 @@ export default function HistorialCitasView() {
         alert("Error en la conexión");
       });
   }, []);
-
-  console.log(tableData)
 
   useEffect(() => {
     fetch("http://localhost/beneficiosCMBack/welcome/especialistas")
@@ -315,7 +314,7 @@ export default function HistorialCitasView() {
                     )
                     .map((cita) => (
                       <UserTableRow
-                        key={`route_${cita.idCita}_${cita.estatus}`}
+                        key={`route_${uuidv4()}`}
                         row={cita}
                         selected={table.selected.includes(cita.idCita)}
                         onSelectRow={() => table.onSelectRow(cita.idCita)}

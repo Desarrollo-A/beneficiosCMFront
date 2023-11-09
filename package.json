@@ -43,7 +43,7 @@
     "@react-pdf/renderer": "^3.1.12",
     "apexcharts": "^3.43.0",
     "autosuggest-highlight": "^3.3.4",
-    "axios": "^1.5.1",
+    "axios": "^1.6.0",
     "date-fns": "^2.30.0",
     "firebase": "^10.4.0",
     "framer-motion": "^10.16.4",
