@@ -2,9 +2,10 @@ import PropTypes from 'prop-types';
 import { useMemo, useEffect, useReducer, useCallback } from 'react';
 
 import axios, { endpoints } from 'src/utils/axios';
-import instance from 'src/utils/axiosBack';
+
 import { AuthContext } from './auth-context';
 import { setSession, isValidToken } from './utils';
+
 // ----------------------------------------------------------------------
 
 // NOTE:
@@ -12,14 +13,13 @@ import { setSession, isValidToken } from './utils';
 // Customer will need to do some extra handling yourself if you want to extend the logic and other features...
 
 // ----------------------------------------------------------------------
- 
+
 const initialState = {
   user: null,
   loading: true,
 };
 
 const reducer = (state, action) => {
-  
   if (action.type === 'INITIAL') {
     return {
       loading: false,
@@ -97,41 +97,46 @@ export function AuthProvider({ children }) {
     initialize();
   }, [initialize]);
 
-  // LOGIN 
-  const login = useCallback(async (numEmpleado, password) => {
+  // LOGIN
+  const login = useCallback(async (email, password) => {
+    const data = {
+      email,
+      password,
+    };
 
-    const data = JSON.stringify({numempleado : numEmpleado,password:password});
+    const response = await axios.post(endpoints.auth.login2, data);
 
+    const { accessToken, user } = response.data;
 
-    const response = await instance.post(endpoints.auth.login, data);
+    setSession(accessToken);
 
-    if(response.data.result == 1){
-      const { accessToken, user } = response.data;
-
-      setSession(accessToken);
-  
-      dispatch({
-        type: 'LOGIN',
-        payload: {
-          user: {
-            ...user,
-            accessToken,
-          },
+    dispatch({
+      type: 'LOGIN',
+      payload: {
+        user: {
+          ...user,
+          accessToken,
         },
-      });
-    }else{
-    }
+      },
+    });
   }, []);
 
   // REGISTER
-  const register = useCallback(async (numEmpleado) => {
+  const register = useCallback(async (email, password, firstName, lastName) => {
     const data = {
-      numEmpleado
+      email,
+      password,
+      firstName,
+      lastName,
     };
 
-    const response = await axios.post('https://prueba.gphsis.com/RHCV/index.php/WS/info_empleado', data);
+    const response = await axios.post(endpoints.auth.register, data);
 
     const { accessToken, user } = response.data;
+    console.log(accessToken)
+
+    console.log(user)
+    console.log(response.data)
 
     sessionStorage.setItem(STORAGE_KEY, accessToken);
 

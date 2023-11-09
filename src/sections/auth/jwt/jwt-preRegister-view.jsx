@@ -26,6 +26,7 @@ import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFSelect, RHFTextField, RHFAutocomplete } from 'src/components/hook-form';
 import Servicios from 'src/utils/servicios';
+import { useState } from 'react';
 // ----------------------------------------------------------------------
 
 export default function preRegisterUser({ currentUser, open, onClose }) {
@@ -34,8 +35,9 @@ export default function preRegisterUser({ currentUser, open, onClose }) {
   const password = useBoolean();
   const router = useRouter();
   const  location  = useLocation();
-  const datosEmpleado = location.state.data[0];
-  console.log(datosEmpleado);
+  const [datosEmpleado,setDatosEmpleado] = useState( location.state.data[0]);
+  //const [datosEmpleado,setDatosEmpleado] = useState({usuario:"juan penas", otro:"caca"});
+
 const servicios = Servicios();
   const NewUserSchema = Yup.object().shape({
     numEmpleado: Yup.string(),
@@ -80,13 +82,15 @@ const servicios = Servicios();
   const onSubmit = handleSubmit(async (data) => {
     console.log('datos formulario')
     console.log(data);
-    datosEmpleado.password = data.password;
+    //datos.password = data.password;
+    //const formData = new FormData();
+setDatosEmpleado({password:data.password});
+    //formData.append("datos",datosEmpleado);
     console.log(datosEmpleado);
-    JSON.stringify(datosEmpleado);
-    await servicios.addRegistroEmpleado(data => {
+    servicios.addRegistroEmpleado(data => {
       console.log(data);
     },{
-      params : datosEmpleado
+      params:datosEmpleado,password:data.password
     }
     );
     return false;
