@@ -74,6 +74,7 @@ export const AuthProvider = ({ children }) => {
   const redirectUri = AUTH0_API.callbackUrl ?? '';
 
   const onRedirectCallback = useCallback((appState) => {
+
     window.location.replace(appState?.returnTo || window.location.pathname);
   }, []);
 

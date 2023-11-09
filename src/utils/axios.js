@@ -22,7 +22,7 @@ export const fetcher = async (args) => {
 
   return res.data;
 };
-
+  
 // ----------------------------------------------------------------------
 
 export const endpoints = {
@@ -31,7 +31,7 @@ export const endpoints = {
   calendar: '/api/calendar',
   auth: {
     me: '/api/auth/me',
-    login: '/api/auth/login',
+    login: 'loginController/login',
     register: '/api/auth/register',
   },
   mail: {
