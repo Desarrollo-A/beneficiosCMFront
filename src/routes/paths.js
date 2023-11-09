@@ -101,12 +101,17 @@ export const paths = {
     fileManager: `${ROOTS.DASHBOARD}/file-manager`,
     permission: `${ROOTS.DASHBOARD}/permission`,
     general: {
+      dash: `${ROOTS.DASHBOARD}/dash`,
       app: `${ROOTS.DASHBOARD}/app`,
       ecommerce: `${ROOTS.DASHBOARD}/ecommerce`,
       analytics: `${ROOTS.DASHBOARD}/analytics`,
       banking: `${ROOTS.DASHBOARD}/banking`,
       booking: `${ROOTS.DASHBOARD}/booking`,
       file: `${ROOTS.DASHBOARD}/file`,
+    },
+    citas: {
+      root: `${ROOTS.DASHBOARD}/citas`,
+      historial: `${ROOTS.DASHBOARD}/citas/historial`,
     },
     user: {
       root: `${ROOTS.DASHBOARD}/user`,

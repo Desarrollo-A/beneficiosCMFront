@@ -52,11 +52,31 @@ export function useNavData() {
 
   const data = useMemo(
     () => [
+       // AGENDA
+      // ----------------------------------------------------------------------
+      {
+        subheader: t('agenda'),
+        items: [
+          {
+            title: t('citas'),
+            path: paths.dashboard.citas.root,
+            icon: ICONS.calendar,
+            children: [
+              { title: t('historial'), path: paths.dashboard.citas.historial },
+            ],
+          }
+        ],
+      },
       // OVERVIEW
       // ----------------------------------------------------------------------
       {
         subheader: t('overview'),
         items: [
+          {
+            title: t('dash'),
+            path: paths.dashboard.general.dash,
+            icon: ICONS.analytics,
+          },
           {
             title: t('app'),
             path: paths.dashboard.root,
