@@ -9,7 +9,7 @@ import { HomePage, mainRoutes } from './main';
 import { dashboardRoutes } from './dashboard';
 import { componentsRoutes } from './components';
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------- 
 
 export default function Router() {
   return useRoutes([

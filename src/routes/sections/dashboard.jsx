@@ -7,9 +7,11 @@ import DashboardLayout from 'src/layouts/dashboard';
 import { LoadingScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
-
+// CITAS
+const HistorialCitasPage = lazy(() => import('src/pages/dashboard/citas/historial-citas'));
 // OVERVIEW
 const IndexPage = lazy(() => import('src/pages/dashboard/app'));
+const DashPage = lazy(() => import('src/pages/dashboard/dash'));
 const OverviewEcommercePage = lazy(() => import('src/pages/dashboard/ecommerce'));
 const OverviewAnalyticsPage = lazy(() => import('src/pages/dashboard/analytics'));
 const OverviewBankingPage = lazy(() => import('src/pages/dashboard/banking'));
@@ -79,6 +81,13 @@ export const dashboardRoutes = [
     ),
     children: [
       { element: <IndexPage />, index: true },
+      {
+        path: 'citas',
+        children: [
+          { path: 'historial', element: <HistorialCitasPage /> },
+        ],
+      },
+      { path: 'dash', element: <DashPage /> },
       { path: 'ecommerce', element: <OverviewEcommercePage /> },
       { path: 'analytics', element: <OverviewAnalyticsPage /> },
       { path: 'banking', element: <OverviewBankingPage /> },

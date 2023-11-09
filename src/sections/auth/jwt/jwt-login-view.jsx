@@ -2,7 +2,7 @@ import * as Yup from 'yup';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-
+import instance from 'src/utils/axiosBack';
 import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
@@ -22,7 +22,7 @@ import { PATH_AFTER_LOGIN } from 'src/config-global';
 
 import Iconify from 'src/components/iconify';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
-
+import { contextGeneral } from 'src/utils/contextGeneralProvider';
 // ----------------------------------------------------------------------
 
 export default function JwtLoginView() {
@@ -31,7 +31,8 @@ export default function JwtLoginView() {
   const router = useRouter();
 
   const [errorMsg, setErrorMsg] = useState('');
-
+  const [numEmpleado,setnumEmpleado] = useState('');
+  const [passwd,setPasswd] = useState('');
   const searchParams = useSearchParams();
 
   const returnTo = searchParams.get('returnTo');
@@ -39,13 +40,13 @@ export default function JwtLoginView() {
   const password = useBoolean();
 
   const LoginSchema = Yup.object().shape({
-    email: Yup.string().required('Email is required').email('Email must be a valid email address'),
-    password: Yup.string().required('Password is required'),
+    numEmpleado: Yup.string().required('Número de empleado requerido'),
+    password: Yup.string().required('Contraseña requerida'),
   });
 
   const defaultValues = {
-    email: 'demo@minimals.cc',
-    password: 'demo1234',
+    numEmpleado: numEmpleado,
+    password: passwd,
   };
 
   const methods = useForm({
@@ -59,27 +60,56 @@ export default function JwtLoginView() {
     formState: { isSubmitting },
   } = methods;
 
-  const onSubmit = handleSubmit(async (data) => {
-    try {
-      await login?.(data.email, data.password);
 
+
+const onSubmit = (e) => {
+  e.preventDefault();
+  const datos = JSON.stringify({numempleado : numEmpleado,password:passwd});
+  login?.(numEmpleado, passwd);
+  router.push(returnTo || PATH_AFTER_LOGIN);
+}
+
+  /*const onSubmit = handleSubmit( (data) => {
+    console.log(methods)
+    console.log(data)
+    try {
+
+      instance.post('', data , {
+        headers:{
+        "accept": 'application/json',
+        "Access-Control-Allow-Methods": "POST, PUT, PATCH, GET, DELETE, OPTIONS",
+        }
+      })
+      .then(response=>{
+      console.log('OK')
+      console.log(response);
+      login?.(data.numEmpleado, data.password);
       router.push(returnTo || PATH_AFTER_LOGIN);
+        return false;
+      })
+      .catch(error=>{
+        console.log('NEGATIVO')
+        console.error(error);
+        reset();
+      setErrorMsg(typeof error === 'string' ? error : error.message);
+        return false;
+
+        
+      });
     } catch (error) {
       console.error(error);
-      reset();
-      setErrorMsg(typeof error === 'string' ? error : error.message);
     }
-  });
+  });*/
 
   const renderHead = (
     <Stack spacing={2} sx={{ mb: 5 }}>
-      <Typography variant="h4">Sign in to Minimal</Typography>
+      <Typography variant="h4">Iniciar sesión</Typography>
 
       <Stack direction="row" spacing={0.5}>
-        <Typography variant="body2">New user?</Typography>
+        <Typography variant="body2">Nuevo usuario?</Typography>
 
         <Link component={RouterLink} href={paths.auth.jwt.register} variant="subtitle2">
-          Create an account
+          Crear cuenta
         </Link>
       </Stack>
     </Stack>
@@ -89,12 +119,13 @@ export default function JwtLoginView() {
     <Stack spacing={2.5}>
       {!!errorMsg && <Alert severity="error">{errorMsg}</Alert>}
 
-      <RHFTextField name="email" label="Email address" />
+      <RHFTextField name="numEmpleado" value={numEmpleado} onChange={(e) => setnumEmpleado(e.target.value)}  label="Número de empleado" />
 
       <RHFTextField
         name="password"
-        label="Password"
+        label="Contraseña"
         type={password.value ? 'text' : 'password'}
+        value={passwd} onChange={(e) => setPasswd(e.target.value)}
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
@@ -107,7 +138,7 @@ export default function JwtLoginView() {
       />
 
       <Link variant="body2" color="inherit" underline="always" sx={{ alignSelf: 'flex-end' }}>
-        Forgot password?
+       ¿Olvidaste tu contraseña?
       </Link>
 
       <LoadingButton
@@ -118,7 +149,7 @@ export default function JwtLoginView() {
         variant="contained"
         loading={isSubmitting}
       >
-        Login
+        Iniciar
       </LoadingButton>
     </Stack>
   );
