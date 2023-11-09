@@ -41,20 +41,18 @@ export default function Lista({ currentEvent, onClose, currentDay }){
     const { handleSubmit } = methods;
 
     const onSubmit = handleSubmit(async (data) => {
-        // se da el formato fTimestamp juntando la fecha actual y la hora que se elige con los minutos
-        // este procedimiento para start, hora_inicio y hora_final
-        const eventData = {
-            id: currentEvent?.id ? currentEvent?.id : uuidv4(),
-            title: data?.title,
-            start: fTimestamp(`${fecha}' '${horaInicio.getHours()}:${horaInicio.getMinutes()}`),
-            end: fTimestamp(`${fecha}' '${horaFinal.getHours()}:${horaFinal.getMinutes()}`),
-            hora_inicio: `${horaInicio.getHours()}:${horaInicio.getMinutes()}`,
-            hora_final: `${horaFinal.getHours()}:${horaFinal.getMinutes()}`
-        };
-        if(horaInicio === null){
 
-        }
-        else{
+            // se da el formato fTimestamp juntando la fecha actual y la hora que se elige con los minutos
+            // este procedimiento para start, hora_inicio y hora_final
+            const eventData = {
+                id: currentEvent?.id ? currentEvent?.id : uuidv4(),
+                title: data?.title,
+                start: fTimestamp(`${fecha}' '${horaInicio.getHours()}:${horaInicio.getMinutes()}`),
+                end: fTimestamp(`${fecha}' '${horaFinal.getHours()}:${horaFinal.getMinutes()}`),
+                hora_inicio: `${horaInicio.getHours()}:${horaInicio.getMinutes()}`,
+                hora_final: `${horaFinal.getHours()}:${horaFinal.getMinutes()}`
+            };
+
             try{
                 const save = await createCustom(fecha, eventData);
                 if(save.status)
@@ -65,8 +63,7 @@ export default function Lista({ currentEvent, onClose, currentDay }){
             catch(error){
                 enqueueSnackbar(error);
             }
-        }
-        
+               
         onClose();
     });
     
@@ -88,7 +85,7 @@ export default function Lista({ currentEvent, onClose, currentDay }){
                     <Typography variant="subtitle1">{fechaTitulo}</Typography>
                 </Stack>
                 <Stack direction= "row" spacing={ 2 } sx={{ p: { xs: 1, md: 2 } }}>
-                    <TimePicker disableFuture name="start" mode= "time" label="Hora de inicio" onChange={(value) => setHoraInicio(value) } />
+                    <TimePicker disableFuture name="start" mode= "time" label="Hora de inicio" format='hh:mm a' onChange={(value) => setHoraInicio(value) } />
                     <TimePicker disableFuture name="end" mode= "time" label="Hora finalización" onChange={(value) => setHoraFinal(value) } />
                 </Stack>
             </DialogContent>
