@@ -6,7 +6,6 @@ import CompactLayout from 'src/layouts/compact';
 import AuthClassicLayout from 'src/layouts/auth/classic';
 
 import { SplashScreen } from 'src/components/loading-screen';
-
 // ----------------------------------------------------------------------
 
 // AMPLIFY
@@ -19,7 +18,7 @@ const AmplifyForgotPasswordPage = lazy(() => import('src/pages/auth/amplify/forg
 // JWT
 const JwtLoginPage = lazy(() => import('src/pages/auth/jwt/login'));
 const JwtRegisterPage = lazy(() => import('src/pages/auth/jwt/register'));
-
+const JwtpreRegisterPage = lazy(() => import('src/pages/auth/jwt/preRegister'));
 // FIREBASE
 const FirebaseLoginPage = lazy(() => import('src/pages/auth/firebase/login'));
 const FirebaseRegisterPage = lazy(() => import('src/pages/auth/firebase/register'));
@@ -29,6 +28,7 @@ const FirebaseForgotPasswordPage = lazy(() => import('src/pages/auth/firebase/fo
 // AUTH0
 const Auth0LoginPage = lazy(() => import('src/pages/auth/auth0/login'));
 const Auth0Callback = lazy(() => import('src/pages/auth/auth0/callback'));
+
 
 // ----------------------------------------------------------------------
 
@@ -97,6 +97,13 @@ const authJwt = {
         <AuthClassicLayout title="Manage the job more effectively with Minimal">
           <JwtRegisterPage />
         </AuthClassicLayout>
+      ),
+    },
+    {
+      path: 'preRegister',
+      element: (
+          <JwtpreRegisterPage />
+       
       ),
     },
   ],

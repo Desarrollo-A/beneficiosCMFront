@@ -2,7 +2,8 @@ import * as Yup from 'yup';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-
+import instance from 'src/utils/axiosCH';
+import axios from 'axios';
 import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
@@ -10,25 +11,31 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
-
+import { Base64,encode } from 'js-base64';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
-import { useRouter, useSearchParams } from 'src/routes/hooks';
-
+import { useRouter, useSearchParams,useParams } from 'src/routes/hooks';
+import { useNavigate } from 'react-router';
 import { useBoolean } from 'src/hooks/use-boolean';
+import { useLocation } from 'react-router';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { PATH_AFTER_LOGIN } from 'src/config-global';
+import { PATH_AFTER_REGISTRO } from 'src/config-global';
 
 import Iconify from 'src/components/iconify';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
-
 // ----------------------------------------------------------------------
 
 export default function JwtRegisterView() {
+  const [numEmpleado,setnumEmpleado] = useState('');
+
   const { register } = useAuthContext();
 
+
   const router = useRouter();
+  let navigate = useNavigate();
+  let location = useLocation();
 
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -36,20 +43,19 @@ export default function JwtRegisterView() {
 
   const returnTo = searchParams.get('returnTo');
 
-  const password = useBoolean();
 
   const RegisterSchema = Yup.object().shape({
     firstName: Yup.string().required('First name required'),
     lastName: Yup.string().required('Last name required'),
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
-    password: Yup.string().required('Password is required'),
   });
+
+
 
   const defaultValues = {
     firstName: '',
     lastName: '',
     email: '',
-    password: '',
   };
 
   const methods = useForm({
@@ -65,9 +71,9 @@ export default function JwtRegisterView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await register?.(data.email, data.password, data.firstName, data.lastName);
+      await register?.(data.email, data.firstName, data.lastName);
 
-      router.push(returnTo || PATH_AFTER_LOGIN);
+      router.push(returnTo || PATH_AFTER_LOGIN,{ state: {userdata: datosResponse}} );
     } catch (error) {
       console.error(error);
       reset();
@@ -75,15 +81,49 @@ export default function JwtRegisterView() {
     }
   });
 
+  const validarNumEmpleado = () => {
+    if(numEmpleado.trim() === ''){
+        console.log('Ingrasar numero de empleado valido');
+    }else{
+      //Conectar axios con CH
+      const datos = Base64.encode(JSON.stringify({numempleado : numEmpleado}));
+
+      instance.post('info_empleado', datos)
+      .then(response=>{
+        let datosResponse = Base64.decode(JSON.stringify(response.data.response));
+        datosResponse = JSON.parse(datosResponse);
+
+        if(datosResponse.resultado == 0){
+          setErrorMsg(typeof error === 'string' ? error : 'Número de empleado no encontrado');
+        }else{
+
+
+navigate(PATH_AFTER_REGISTRO, {state: datosResponse,options:datosResponse});
+
+          datos2 = datosResponse;
+          location(PATH_AFTER_REGISTRO,{state:datosResponse});
+          router.ab(datosResponse);
+          router.data({datosResponse});
+          router.push(returnTo || PATH_AFTER_REGISTRO);
+        }
+      })
+      .catch(error=>{
+        console.error(error);
+      });
+      console.log('OK');
+        
+    }
+}
+
   const renderHead = (
     <Stack spacing={2} sx={{ mb: 5, position: 'relative' }}>
-      <Typography variant="h4">Get started absolutely free</Typography>
+      <Typography variant="h4">Registro de usuarios</Typography>
 
       <Stack direction="row" spacing={0.5}>
-        <Typography variant="body2"> Already have an account? </Typography>
+        <Typography variant="body2"> ¿Ya tienes una cuenta? </Typography>
 
         <Link href={paths.auth.jwt.login} component={RouterLink} variant="subtitle2">
-          Sign in
+          Iniciar sesión
         </Link>
       </Stack>
     </Stack>
@@ -101,11 +141,11 @@ export default function JwtRegisterView() {
     >
       {'By signing up, I agree to '}
       <Link underline="always" color="text.primary">
-        Terms of Service
+        Nuestros servicios
       </Link>
       {' and '}
       <Link underline="always" color="text.primary">
-        Privacy Policy
+        Politicas de privacidad
       </Link>
       .
     </Typography>
@@ -116,27 +156,7 @@ export default function JwtRegisterView() {
       <Stack spacing={2.5}>
         {!!errorMsg && <Alert severity="error">{errorMsg}</Alert>}
 
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-          <RHFTextField name="firstName" label="First name" />
-          <RHFTextField name="lastName" label="Last name" />
-        </Stack>
-
-        <RHFTextField name="email" label="Email address" />
-
-        <RHFTextField
-          name="password"
-          label="Password"
-          type={password.value ? 'text' : 'password'}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton onClick={password.onToggle} edge="end">
-                  <Iconify icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
+        <RHFTextField name="numEmpleado" value={numEmpleado} onChange={(e) => setnumEmpleado(e.target.value)} label="Número de empleado" />
 
         <LoadingButton
           fullWidth
@@ -145,8 +165,9 @@ export default function JwtRegisterView() {
           type="submit"
           variant="contained"
           loading={isSubmitting}
+          onClick={() => validarNumEmpleado()}
         >
-          Create account
+          Consultar
         </LoadingButton>
       </Stack>
     </FormProvider>

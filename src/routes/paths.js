@@ -14,7 +14,7 @@ const ROOTS = {
   DASHBOARD: '/dashboard',
 };
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------- 
 
 export const paths = {
   comingSoon: '/coming-soon',
@@ -62,6 +62,7 @@ export const paths = {
     jwt: {
       login: `${ROOTS.AUTH}/jwt/login`,
       register: `${ROOTS.AUTH}/jwt/register`,
+      preRegister: `${ROOTS.AUTH}/jwt/preRegister`,
     },
     firebase: {
       login: `${ROOTS.AUTH}/firebase/login`,
@@ -100,6 +101,7 @@ export const paths = {
     fileManager: `${ROOTS.DASHBOARD}/file-manager`,
     permission: `${ROOTS.DASHBOARD}/permission`,
     general: {
+      dash: `${ROOTS.DASHBOARD}/dash`,
       app: `${ROOTS.DASHBOARD}/app`,
       ecommerce: `${ROOTS.DASHBOARD}/ecommerce`,
       analytics: `${ROOTS.DASHBOARD}/analytics`,
