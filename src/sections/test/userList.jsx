@@ -1,27 +1,27 @@
 import JsPDF from 'jspdf';
 import Xlsx from 'json-as-xlsx';
+import PropTypes from 'prop-types';
 import isEqual from 'lodash/isEqual';
 import autoTable from 'jspdf-autotable';
-import { useState, useCallback } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 
 import Card from '@mui/material/Card';
+import { Button } from '@mui/material';
 import Table from '@mui/material/Table';
-// import { Button } from '@mui/material';
 import Stack from '@mui/material/Stack';
-import MenuItem from '@mui/material/MenuItem';
-// import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import CardHeader from '@mui/material/CardHeader';
-// import Typography from '@mui/material/Typography';
 import CardContent from '@mui/material/CardContent';
 import TableContainer from '@mui/material/TableContainer';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
+import { useBoolean } from 'src/hooks/use-boolean';
+
 import Iconify from 'src/components/iconify';
-// import { useSnackbar } from 'src/components/snackbar';
 import Scrollbar from 'src/components/scrollbar';
+import { ConfirmDialog } from 'src/components/custom-dialog';
 import {
   useTable,
   emptyRows,
@@ -30,54 +30,118 @@ import {
   TableEmptyRows,
   TableHeadCustom,
   TablePaginationCustom,
-} from 'src/components/table';
+} from 'src/components/table'; 
 
-// import { useSettingsContext } from 'src/components/settings';
-import UserTableRow from './filas-tabla-citas';
-import UserTableToolbar from './barratareas-tabla-citas';
-import UserTableFiltersResult from './filtros-tabla-citas';
+import UserTableRow from './user-table-row';
+import UserTableToolbar from './user-table-toolbar';
+import UserTableFiltersResult from './user-table-filters';
 
 const doc = new JsPDF();
 
+const BACK = 'http://localhost/beneficiosCMBack/'
+
 const TABLE_HEAD = [
-  { id: '', label: 'ID Cita' },
-  { id: '', label: 'ID Especialista' },
-  { id: '', label: 'ID Paciente' },
-  { id: '', label: 'Area' },
-  { id: '', label: 'Estatus' },
-  { id: '', label: 'Fecha Inicio'},
-  { id: '', label: 'Fecha Final'},
-  { id: '', width: 88 },
+  { id: '', label: 'ID' },
+  { id: '', label: 'USUARIO' },
+  { id: '', label: 'TELÉFONO' },
+  { id: '', label: 'AREA' },
+  { id: '', label: 'OFICINA' },
+  { id: '', label: 'SEDE'},
+  { id: '', label: 'CORREO'},
+  { id: '', width: 'ACCIONES' },
 ];
 
-const HEADER = ["ID Cita", "ID Especialista", "ID Paciente", "Area", "Estatus", "Fecha Inicio", "Fecha Final"];
+const HEADER = ["ID", "USUARIO", "TELÉFONO", "ÁREA", "OFICINA", "SEDE", "CORREO"];
 
-const DEFAULT_FILTERS = {
+const defaultFilters = {
   name: '',
   area: [],
   estatus: 'all',
 };
 
-export default function UserList() {
+const handleDownloadExcel = (dataFiltered) => { 
+  const data = [
+    {
+      sheet: "USUARIOS",
+      columns: [
+        { label: "ID", value: "id" },
+        { label: "USUARIO", value: "nombre" },
+        { label: "TELÉFONO", value: "telefono" },
+        { label: "ÁREA", value: "area" },
+        { label: "OFICINA", value: "oficina" },
+        { label: "SEDE", value: "sede" },
+        { label: "CORREO", value: "correo" },
+      ],
+      content: dataFiltered,
+    },
+  ]
+
+  const settings = {
+    fileName: "Usuarios", 
+    extraLength: 3, 
+    writeMode: "writeFile", 
+    writeOptions: {}, 
+    RTL: false, 
+  }
+  Xlsx(data, settings)
+}
+
+const handleDownloadPDF = (dataFiltered) => { 
+  autoTable(doc, {
+    head: [HEADER],
+    body: dataFiltered.map( item => ([item.id, item.nombre, item.telefono,
+    item.area, item.oficina, item.sede, item.correo])) ,
+    })
+  doc.save('Usuarios.pdf')
+}
+
+export default function UserList({users, loadUsers}) {
   const table = useTable();
+  // const settings = useSettingsContext();
   const router = useRouter();
+  const confirm = useBoolean();
+  const targetRef = useRef();
 
-  const [filters, setFilters] = useState(DEFAULT_FILTERS);
-  const [espe, setEspe] = useState([]); // Especialista
-  const [tableData, setTableData] = useState([]);
+  const [filters, setFilters] = useState(defaultFilters);
+  const [areas, setAreas] = useState([]); // areas
+  const [userData, setUserData] = useState(users || []);
 
-  const canReset = !isEqual(DEFAULT_FILTERS, filters);
-  const _rp = espe.flatMap((es) => (es.nombre));
+  // Utiliza useEffect con dependencia en las props 'usuarios'
+  useEffect(() => {
+    setUserData(users || []);
+  }, [users]);
+
+  useEffect(() => {
+    fetch(`${BACK}/Usuario/getAreas`)
+      .then((res) => res.json())
+      .then((data) => {
+        setAreas(data.data);
+      })
+      .catch((error) => {
+        alert(error);
+      });
+  }, []);
+  
+  const canReset = !isEqual(defaultFilters, filters);
+  const _rp = areas.flatMap((es) => (es.area));
+  const denseHeight = table.dense ? 52 : 72;
 
   const handleResetFilters = useCallback(() => {
-    setFilters(DEFAULT_FILTERS);
+    setFilters(defaultFilters);
   }, []);
 
   const dataFiltered = applyFilter({
-    inputData: tableData,
+    inputData: userData,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
+
+  const dataInPage = dataFiltered.slice(
+    table.page * table.rowsPerPage,
+    table.page * table.rowsPerPage + table.rowsPerPage
+  );
+
+  const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
   const handleFilters = useCallback(
     (name, value) => {
@@ -90,6 +154,24 @@ export default function UserList() {
     [table]
   );
 
+  const handleDeleteRow = useCallback((id) => {
+       const deleteRow = userData.filter((row) => row.id !== id);
+       setUserData(deleteRow);
+       table.onUpdatePageDeleteRow(dataInPage.length);
+     }, [dataInPage.length, table, userData]
+  );
+
+  const handleDeleteRows = useCallback(() => {
+    const deleteRows = userData.filter((row) => !table.selected.includes(row.id));
+    setUserData(deleteRows);
+
+    table.onUpdatePageDeleteRows({
+      totalRows: userData.length,
+      totalRowsInPage: dataInPage.length,
+      totalRowsFiltered: dataFiltered.length,
+    });
+  }, [dataFiltered.length, dataInPage.length, table, userData]);
+
   const handleEditRow = useCallback(
     (id) => {
       router.push(paths.dashboard.user.edit(id));
@@ -99,24 +181,25 @@ export default function UserList() {
 
   const handleExcel = async e =>{
     e.preventDefault();
-        handleDownloadExcel(
-            tableData
-        );
+    handleDownloadExcel(
+      dataFiltered
+    );
+    setAreas([]);
   } 
 
   const handlePdf = async e =>{
     e.preventDefault();
-        handleDownloadPDF(
-          tableData
-        );
+    handleDownloadPDF(
+      dataFiltered
+    );
   }
 
   return (
-    <div>
+    <>
         <Card>
-            <CardHeader title="Upload Single File" />
+            <CardHeader />
             <CardContent>
-              <UserTableToolbar
+               <UserTableToolbar
                 filters={filters}
                 onFilters={handleFilters}
                 //
@@ -131,38 +214,30 @@ export default function UserList() {
                   onResetFilters={handleResetFilters}
                   //
                   results={dataFiltered.length}
-                  sx={{ p: 2.5, pt: 0 }}
+                  sx={{ pb: 1, pt: 0 }}
                 />
               )}
 
               { /* Iconos */ }
               <Stack
                  spacing={1}
-                 alignItems={{ xs: 'flex-end', md: 'center' }}
+                 alignItems={{ xs: 'flex-start', md: 'flex-start' }}
                  direction={{
-                   xs: 'column',
+                   xs: 'row',
                    md: 'row',
                  }}
                  sx={{
-                   p: 1,
+                   pt: { xs: 1, md: 1 },
+                   pb: { xs: 1, md: 1 },
                    pr: { xs: 1, md: 1 },
                  }}
               >
-              
-                  <MenuItem
-                    sx={{ width: 50, p: 1 }}
-                    onClick={handleExcel}
-                  >
-                    <Iconify icon="teenyicons:xls-outline" />
-                  </MenuItem>
-               
-                  <MenuItem
-                    sx={{ width: 50, p: 1 }}
-                    onClick={handlePdf}
-                  >
-                    <Iconify icon="teenyicons:pdf-outline" />
-                  </MenuItem>
-               
+                <Button variant="text" onClick={handleExcel} sx={{padding: 1}}>
+                  <Iconify icon="teenyicons:xls-outline" />
+                </Button>
+                <Button variant="text" onClick={handlePdf} sx={{padding: 1}}>
+                  <Iconify icon="teenyicons:pdf-outline" />
+                </Button>
               </Stack>
                
               <TableContainer sx={{ position: 'relative', overflow: 'unset' }} >
@@ -172,7 +247,7 @@ export default function UserList() {
                       order={table.order}
                       orderBy={table.orderBy}
                       headLabel={TABLE_HEAD}
-                      rowCount={tableData.length}
+                      rowCount={userData.length}
                       numSelected={table.selected.length}
                       onSort={table.onSort}
                     />
@@ -183,22 +258,21 @@ export default function UserList() {
                           table.page * table.rowsPerPage,
                           table.page * table.rowsPerPage + table.rowsPerPage
                         )
-                        .map((cita) => (
+                        .map((usuario) => (
                           <UserTableRow
-                            key={`route_${cita.idCita}_${cita.estatus}`}
-                            row={cita}
-                            selected={table.selected.includes(cita.idCita)}
-                            onSelectRow={() => table.onSelectRow(cita.idCita)}
-                            onDeleteRow={() => handleDeleteRow(cita.idCita)}
-                            onEditRow={() => handleEditRow(cita.idCita)}
+                            key={`route_${usuario.id}`}
+                            row={usuario}
+                            selected={table.selected.includes(usuario.id)}
+                            onSelectRow={() => table.onSelectRow(usuario.id)}
+                            onDeleteRow={() => handleDeleteRow(usuario.id)}
+                            onEditRow={() => handleEditRow(usuario.id)}
                           />
                         ))}
 
                       <TableEmptyRows
                         height={denseHeight}
-                        emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
+                        emptyRows={emptyRows(table.page, table.rowsPerPage, userData.length)}
                       />
-
                       <TableNoData notFound={notFound} />
                     </TableBody>
                   </Table>
@@ -214,50 +288,40 @@ export default function UserList() {
               />
             </CardContent>
         </Card>
-    </div>
+        <ConfirmDialog
+          open={confirm.value}
+          onClose={confirm.onFalse}
+          title="Eliminar"
+          content={
+            <>
+              Estas seguro de eliminar <strong> {table.selected.length} </strong> items?
+            </>
+          }
+          action={
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => {
+                handleDeleteRows();
+                confirm.onFalse();
+              }}
+            >
+            Eliminar
+            </Button>
+          }
+        />
+        </>
   );
 }
 
-const handleDownloadExcel = tableData => { 
-  console.log(tableData.idCita)
-  const data = [
-    {
-      sheet: "Historial Citas",
-      columns: [
-        { label: "ID Cita", value: "idCita" },
-        { label: "ID Especialista", value: "idEspecialista" },
-        { label: "ID Paciente", value: "idPaciente" },
-        { label: "Area", value: "area" },
-        { label: "Estatus", value: "estatus" },
-        { label: "Fecha Inicio", value: "fechaInicio" },
-        { label: "Fecha Final", value: "fechaFinal" },
-      ],
-      content:tableData,
-    },
-  ]
-
-  const settings = {
-    fileName: "Historial Citas", 
-    extraLength: 3, 
-    writeMode: "writeFile", 
-    writeOptions: {}, 
-    RTL: false, 
-  }
-  Xlsx(data, settings)
-}
-
-const handleDownloadPDF = (tableData) => { 
-  autoTable(doc, {
-    head: [HEADER],
-    body: tableData.map( item => ([item.idCita, item.idEspecialista, item.idPaciente,
-    item.area, item.estatus, item.fechaInicio, item.fechaFinal])) ,
-    })
-  doc.save('Historial Citas.pdf')
+UserList.propTypes = {
+  users: PropTypes.array,
+  loadUsers: PropTypes.func
 }
 
 const applyFilter = ({ inputData, comparator, filters }) => {
   const { name, area } = filters;
-
+  
   const stabilizedThis = inputData.map((el, index) => [el, index]);
 
   stabilizedThis.sort((a, b) => {
@@ -269,19 +333,24 @@ const applyFilter = ({ inputData, comparator, filters }) => {
   inputData = stabilizedThis.map((el) => el[0]);
 
   if (name) {
-    inputData = inputData.filter(
-      (cita) =>
-        cita.idCita.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        cita.estatus.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        cita.area.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        cita.idEspecialista.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        cita.idPaciente.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1
-    );
+    inputData = inputData.filter((usuario) => {
+      const nameLower = name.toLowerCase();
+      return (
+        usuario.id.toString().toLowerCase().includes(nameLower) ||
+        usuario.nombre.toLowerCase().includes(nameLower) ||
+        usuario.area.toString().toLowerCase().includes(nameLower) ||
+        usuario.oficina.toLowerCase().includes(nameLower) ||
+        usuario.sede.toString().toLowerCase().includes(nameLower) ||
+        usuario.correo.toString().toLowerCase().includes(nameLower) ||
+        (typeof usuario.telefono === 'string' && usuario.telefono.toLowerCase().includes(nameLower)) ||
+        (typeof usuario.telefono === 'number' && usuario.telefono.toString().includes(nameLower))
+      );
+    });
   }
 
   if (area.length) {
-    inputData = inputData.filter((cita) => area.includes(cita.area));
+    inputData = inputData.filter((usuario) => area.includes(usuario.area));
   }
 
-   return inputData;
+  return inputData;
 }

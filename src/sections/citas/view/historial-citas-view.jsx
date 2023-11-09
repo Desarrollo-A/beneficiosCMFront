@@ -99,14 +99,15 @@ function handleDownloadPDF(tableData) { autoTable(doc, {
 // ----------------------------------------------------------------------
 export default function HistorialCitasView() {
 
-  const [espe, setEspe] = useState([]);
+  const [espe, setEs] = useState([]);
 
   const [tableData, setTableData] = useState([]);
 
-  /* useEffect(() => {
+  useEffect(() => {
     fetch("http://localhost/beneficiosCMBack/welcome/citas")
       .then((res) => res.json())
       .then((data) => {
+        // console.log(data)
         const ct = data.data.map((cita) => ({
           idCita: cita.idCita,
           idEspecialista: cita.idEspecialista,
@@ -119,20 +120,23 @@ export default function HistorialCitasView() {
         setTableData(ct);
       })
       .catch((error) => {
-        alert("Error en la conexión");
+        alert(error);
       });
   }, []);
+
+  // console.log(tableData)
 
   useEffect(() => {
     fetch("http://localhost/beneficiosCMBack/welcome/especialistas")
       .then((res) => res.json())
       .then((data) => {
+        // console.log(data)
         setEs(data.data);
       })
       .catch((error) => {
-        alert("Error en la conexión");
+        alert(error);
       });
-  }, []); */
+  }, []);
 
   const _rp = espe.flatMap((es) => (es.nombre));
 
@@ -264,7 +268,6 @@ export default function HistorialCitasView() {
             />
           )}
 
-          { /* Iconos */ }
           <Stack
              spacing={1}
              alignItems={{ xs: 'flex-end', md: 'center' }}

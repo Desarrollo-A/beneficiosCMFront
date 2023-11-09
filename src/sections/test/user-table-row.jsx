@@ -9,17 +9,16 @@ import IconButton from '@mui/material/IconButton';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
-import UserQuickEditForm from './modal-editar-citas';
+import UserQuickEditForm from './edit-user-dialog';
 
 // ----------------------------------------------------------------------
 
 export default function UserTableRow({ row, selected, onEditRow, onDeleteRow }) {
-  const { idCita, idEspecialista, idPaciente, estatus, fechaInicio, fechaFinal, area } = row;
+  const { id, nombre, telefono, area, oficina, sede, correo } = row;
 
   const confirm = useBoolean();
 
@@ -27,44 +26,24 @@ export default function UserTableRow({ row, selected, onEditRow, onDeleteRow }) 
 
   const popover = usePopover();
 
-  let roles = Boolean(false);
-
-  if (idEspecialista === '2') {
-    roles = true;
-  }
-
   return (
     <>
 
       <TableRow hover selected={selected}>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{idCita}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{id}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{idEspecialista}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{nombre}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{idPaciente}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{telefono}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{area}</TableCell>
 
-        <TableCell>
-          <Label
-            variant="soft"
-            color={
-              (estatus === 'Asistencia' && 'success') ||
-              (estatus === 'Penalización' && 'warning') ||
-              (estatus === 'Cancelada' && 'error') ||
-              'default'
-            }
-          >
-            {estatus}
-          </Label>
-        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{oficina}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fechaInicio}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{sede}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fechaFinal}</TableCell>
-
-        {roles ? (
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{correo}</TableCell>
 
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap'}}>
           <Tooltip title="Editar" placement="top" arrow>
@@ -77,14 +56,6 @@ export default function UserTableRow({ row, selected, onEditRow, onDeleteRow }) 
             <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
         </TableCell>
-
-        ) : (
-
-        <TableCell>
-              ㅤ
-        </TableCell>
-
-        )}
       </TableRow>
 
       <UserQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} />

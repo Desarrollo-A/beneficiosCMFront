@@ -51,7 +51,8 @@ export default function UserTableToolbar({
           md: 'row',
         }}
         sx={{
-          p: 2.5,
+          pt: { xs: 1, md: 1 },
+          pb: { xs: 1, md: 1 },
           pr: { xs: 2.5, md: 1 },
         }}
       >
