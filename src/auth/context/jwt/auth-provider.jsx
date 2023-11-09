@@ -2,10 +2,9 @@ import PropTypes from 'prop-types';
 import { useMemo, useEffect, useReducer, useCallback } from 'react';
 
 import axios, { endpoints } from 'src/utils/axios';
-
+import instance from 'src/utils/axiosBack';
 import { AuthContext } from './auth-context';
 import { setSession, isValidToken } from './utils';
-
 // ----------------------------------------------------------------------
 
 // NOTE:
@@ -13,13 +12,14 @@ import { setSession, isValidToken } from './utils';
 // Customer will need to do some extra handling yourself if you want to extend the logic and other features...
 
 // ----------------------------------------------------------------------
-
+ 
 const initialState = {
   user: null,
   loading: true,
 };
 
 const reducer = (state, action) => {
+  
   if (action.type === 'INITIAL') {
     return {
       loading: false,
@@ -52,13 +52,17 @@ const reducer = (state, action) => {
 const STORAGE_KEY = 'accessToken';
 
 export function AuthProvider({ children }) {
+  console.log(children);
   const [state, dispatch] = useReducer(reducer, initialState);
-
+  console.log('state');
+  console.log(state);
   const initialize = useCallback(async () => {
+    
     try {
       const accessToken = sessionStorage.getItem(STORAGE_KEY);
 
       if (accessToken && isValidToken(accessToken)) {
+        alert(1);
         setSession(accessToken);
 
         const response = await axios.get(endpoints.auth.me);
@@ -97,46 +101,46 @@ export function AuthProvider({ children }) {
     initialize();
   }, [initialize]);
 
-  // LOGIN
-  const login = useCallback(async (email, password) => {
-    const data = {
-      email,
-      password,
-    };
+  // LOGIN 
+  const login = useCallback(async (numEmpleado, password) => {
 
-    const response = await axios.post(endpoints.auth.login2, data);
+    const data = JSON.stringify({numempleado : numEmpleado,password:password});
 
-    const { accessToken, user } = response.data;
 
-    setSession(accessToken);
+    const response = await instance.post(endpoints.auth.login, data);
 
-    dispatch({
-      type: 'LOGIN',
-      payload: {
-        user: {
-          ...user,
-          accessToken,
+    if(response.data.result == 1){
+      console.log('DATOS LOGIN')
+      console.log(response.data.response[0]);
+      const { accessToken, user } = response.data.response[0];
+
+      console.log(accessToken);
+
+      setSession(accessToken);
+  
+      dispatch({
+        type: 'LOGIN',
+        payload: {
+          user: {
+            ...user,
+            accessToken,
+          },
         },
-      },
-    });
+      });
+    }else{
+      console.log('ELSE');
+    }
   }, []);
 
   // REGISTER
-  const register = useCallback(async (email, password, firstName, lastName) => {
+  const register = useCallback(async (numEmpleado) => {
     const data = {
-      email,
-      password,
-      firstName,
-      lastName,
+      numEmpleado
     };
 
-    const response = await axios.post(endpoints.auth.register, data);
+    const response = await axios.post('https://prueba.gphsis.com/RHCV/index.php/WS/info_empleado', data);
 
     const { accessToken, user } = response.data;
-    console.log(accessToken)
-
-    console.log(user)
-    console.log(response.data)
 
     sessionStorage.setItem(STORAGE_KEY, accessToken);
 
