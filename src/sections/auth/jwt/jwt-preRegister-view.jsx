@@ -82,10 +82,11 @@ const servicios = Servicios();
     console.log(data);
     datosEmpleado.password = data.password;
     console.log(datosEmpleado);
-    servicios.getInfoCliente(data => {
+    JSON.stringify(datosEmpleado);
+    await servicios.addRegistroEmpleado(data => {
       console.log(data);
     },{
-      optionCliente : "1234"
+      params : datosEmpleado
     }
     );
     return false;
