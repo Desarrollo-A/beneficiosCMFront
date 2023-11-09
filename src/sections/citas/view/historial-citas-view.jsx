@@ -2,11 +2,7 @@ import JsPDF from 'jspdf';
 import Xlsx from 'json-as-xlsx';
 import isEqual from 'lodash/isEqual';
 import autoTable from 'jspdf-autotable';
-<<<<<<< HEAD
 import { useRef, useState, useEffect, useCallback } from 'react';
-=======
-import uuidv4 from "src/utils/uuidv4";
->>>>>>> 308cb2dd5ef48a091f30f3a47c6f998f753c8db5
 
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
@@ -21,6 +17,8 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
+
+import uuidv4 from "src/utils/uuidv4";
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
