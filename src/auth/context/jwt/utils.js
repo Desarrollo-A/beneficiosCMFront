@@ -55,7 +55,7 @@ export const tokenExpired = (exp) => {
   }, timeLeft);
 };
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------- 
 
 export const setSession = (accessToken) => {
   if (accessToken) {
