@@ -12,7 +12,7 @@ import { setSession, isValidToken } from './utils';
 // Customer will need to do some extra handling yourself if you want to extend the logic and other features...
 
 // ----------------------------------------------------------------------
- 
+
 const initialState = {
   user: null,
   loading: true,
@@ -52,22 +52,17 @@ const reducer = (state, action) => {
 const STORAGE_KEY = 'accessToken';
 
 export function AuthProvider({ children }) {
-  console.log(children);
   const [state, dispatch] = useReducer(reducer, initialState);
-  console.log('state');
-  console.log(state);
   const initialize = useCallback(async () => {
     
     try {
       const accessToken = sessionStorage.getItem(STORAGE_KEY);
-
       if (accessToken && isValidToken(accessToken)) {
-        alert(1);
         setSession(accessToken);
-
-        const response = await axios.get(endpoints.auth.me);
-
-        const { user } = response.data;
+        
+        const dataPost = JSON.stringify({token : accessToken});
+        const response = await instance.post(endpoints.auth.me2,dataPost);
+        const { user } = response.data
 
         dispatch({
           type: 'INITIAL',
@@ -87,7 +82,6 @@ export function AuthProvider({ children }) {
         });
       }
     } catch (error) {
-      console.error(error);
       dispatch({
         type: 'INITIAL',
         payload: {
@@ -105,17 +99,10 @@ export function AuthProvider({ children }) {
   const login = useCallback(async (numEmpleado, password) => {
 
     const data = JSON.stringify({numempleado : numEmpleado,password:password});
-
-
     const response = await instance.post(endpoints.auth.login, data);
 
-    if(response.data.result == 1){
-      console.log('DATOS LOGIN')
-      console.log(response.data.response[0]);
-      const { accessToken, user } = response.data.response[0];
-
-      console.log(accessToken);
-
+    if(response.data.result === 1){
+      const { accessToken, user } = response.data;
       setSession(accessToken);
   
       dispatch({
@@ -128,7 +115,7 @@ export function AuthProvider({ children }) {
         },
       });
     }else{
-      console.log('ELSE');
+        return {result : 0, message:'El usuario y/o contraseña no son correctos'};
     }
   }, []);
 
@@ -158,6 +145,7 @@ export function AuthProvider({ children }) {
   // LOGOUT
   const logout = useCallback(async () => {
     setSession(null);
+    const response = await instance.post(endpoints.auth.logout);
     dispatch({
       type: 'LOGOUT',
     });
