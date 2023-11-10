@@ -26,5 +26,5 @@ export const fetcher = async (args) => {
 // ----------------------------------------------------------------------
 
 export const endpointsSRV = {
-  benefiniciosDisponibles: '/Calendario/getBeneficiosDisponibles'
+  benefiniciosDisponibles: '/calendarioController/getBeneficiosDisponibles'
 };
