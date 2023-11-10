@@ -1,6 +1,6 @@
 import React, { createContext, useState } from 'react';
 import {Backdrop, Snackbar, IconButton} from '@material-ui/core';
-import gota from 'src/images/logos/spinner.gif';
+import gota from 'src/images/logo/spinner.gif';
 import { Alert } from '@mui/lab';
 import instance from './axiosBack';
 

@@ -37,8 +37,10 @@ export function useGetEvents() {
 }
 
 // ----------------------------------------------------------------------
-export function GetCustomEvents() {
-  // const CUSTOM = 'http://localhost/backend/welcome/get_occupied';
+export function GetCustomEvents(current) {
+  const year = current.getFullYear();
+  const month = (current.getMonth() + 1);
+  console.log(month);
 
   const { data, isLoading, error, isValidating } = useSWR(URLC, fetcher, options);
 
@@ -67,11 +69,12 @@ export function GetCustomEvents() {
 
 export async function createCustom(fecha, eventData) {
 
-    return axios.post('http://localhost/backend/welcome/save_occupied', {
+    return axios.post('http://localhost/beneficiosCMBack/calendarioController/save_occupied', {
         fecha,
         titulo: eventData.title,
         hora_inicio: eventData.hora_inicio,
         hora_final:  eventData.hora_final,
+        id_unico: eventData.id
     }, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'

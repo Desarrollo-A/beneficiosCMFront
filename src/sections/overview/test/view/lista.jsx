@@ -2,7 +2,7 @@
 import * as yup from 'yup';
 import { useState } from "react";
 import PropTypes from 'prop-types';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import Stack from "@mui/system/Stack";
@@ -29,8 +29,8 @@ export default function Lista({ currentEvent, onClose, currentDay }){
 
     const formSchema = yup.object().shape({
         title: yup.string().max(100).required('Se necesita el titulo'),
-        start: yup.mixed(),
-        end: yup.mixed()
+        start: yup.date().required(),
+        end: yup.date().required()
     });
 
     const methods = useForm({
@@ -74,19 +74,40 @@ export default function Lista({ currentEvent, onClose, currentDay }){
 
     return(
         <FormProvider methods={methods} onSubmit={onSubmit}>
-            <DialogContent sx={{
-                p: { xs: 1, md: 2 }
-             }}>
-                <Stack spacing = {3} sx={{ 
-                p: { xs: 1, md: 2 }
-             }}>
-                    <RHFTextField name="title" label="Titulo" />                   
+            <DialogContent sx={{ p: { xs: 1, md: 2 } }}>
+                <Stack spacing = {3} sx={{ p: { xs: 1, md: 2 } }}>
+                    <RHFTextField name="title" label="Titulo" />
                     <Typography variant="h5">Agregar horario </Typography>
                     <Typography variant="subtitle1">{fechaTitulo}</Typography>
                 </Stack>
                 <Stack direction= "row" spacing={ 2 } sx={{ p: { xs: 1, md: 2 } }}>
-                    <TimePicker disableFuture name="start" mode= "time" label="Hora de inicio" format='hh:mm a' onChange={(value) => setHoraInicio(value) } />
-                    <TimePicker disableFuture name="end" mode= "time" label="Hora finalización" onChange={(value) => setHoraFinal(value) } />
+                    
+                    <Controller
+                        name = "start"
+                        render = {({field})=>
+                            <TimePicker 
+                                disableFuture 
+                                label="Hora de inicio" 
+                                format='hh:mm a' 
+                                onChange={
+                                    (value) => {field.onChange(value), setHoraInicio(value)} 
+                                } 
+                            />
+                        }
+                    />
+                    
+                    <Controller
+                        name = "end"
+                        render = {({field})=>
+                            <TimePicker
+                                disableFuture 
+                                label="Hora finalización" 
+                                onChange={
+                                    (value) => {field.onChange(value), setHoraFinal(value)} 
+                                } 
+                            />
+                        }
+                    />
                 </Stack>
             </DialogContent>
 

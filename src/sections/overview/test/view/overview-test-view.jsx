@@ -26,6 +26,7 @@ import { useSettingsContext } from 'src/components/settings';
 import Lista from "./lista";
 import { StyledCalendar } from '../styles';
 import { useEvent, useCalendar } from '../hooks';
+import CalendarToolbar from '../calendar-tool';
 
 
 // ----------------------------------------------------------------------
@@ -43,14 +44,23 @@ export default function OverviewTestView(){
     const settings = useSettingsContext();
     const [ day, setDay] = useState();
     const [filters] = useState(defaultFilters);
-    const { events } = GetCustomEvents();
+    const { events, eventsLoading } = GetCustomEvents(new Date());
     const dateError =
     filters.startDate && filters.endDate
       ? filters.startDate.getTime() > filters.endDate.getTime()
       : false;
 
     const {
+        calendarRef,
+        //
+        view,
+        date,
+        //
+        onDatePrev,
+        onDateNext,
         onSelectRange,
+        onDateToday,
+        onChangeView,
         onClickEvent, 
         openForm,
         onCloseForm,
@@ -88,31 +98,43 @@ export default function OverviewTestView(){
 
             <Card>
                 <StyledCalendar>
+                    <CalendarToolbar
+                     date={date}
+                     view={view}
+                     loading={eventsLoading}
+                     onNextDate={onDateNext}
+                     onPrevDate={onDatePrev}
+                     onToday={onDateToday}
+                     onChangeView={onChangeView}
+                     // onOpenFilters={openFilters.onTrue}
+                    />
+
                     <Calendar
-                    weekends
-                    editable
-                    droppable
-                    selectable
-                    locales={allLocales} 
-                    locale='es'
-                    rerenderDelay={10}
-                    allDayMaintainDuration
-                    eventResizableFromStart
-                    dayMaxEventRows={3}
-                    eventDisplay="block"
-                    dateClick={(date) => setDay(date.date)}
-                    events={dataFiltered}
-                    headerToolbar = { false }
-                    select={onSelectRange}
-                    eventClick={onClickEvent}
-                    height={ smUp ? 720 : 'auto' }
-                    plugins={[
-                        listPlugin,
-                        dayGridPlugin,
-                        timelinePlugin,
-                        timeGridPlugin,
-                        interactionPlugin,
-                      ]}
+                     weekends
+                     editable
+                     droppable
+                     selectable
+                     locales={allLocales} 
+                     locale='es'
+                     rerenderDelay={10}
+                     allDayMaintainDuration
+                     eventResizableFromStart
+                     ref={calendarRef}
+                     dayMaxEventRows={3}
+                     eventDisplay="block"
+                     dateClick={(date) => setDay(date.date)}
+                     events={dataFiltered}
+                     headerToolbar = { false }
+                     select={onSelectRange}
+                     eventClick={onClickEvent}
+                     height={ smUp ? 720 : 'auto' }
+                     plugins={[
+                         listPlugin,
+                         dayGridPlugin,
+                         timelinePlugin,
+                         timeGridPlugin,
+                         interactionPlugin,
+                       ]}
                     />
                 </StyledCalendar>
             </Card>
