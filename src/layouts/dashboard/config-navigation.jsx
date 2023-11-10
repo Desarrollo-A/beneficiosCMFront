@@ -43,6 +43,7 @@ const ICONS = {
   ecommerce: icon('ic_ecommerce'),
   analytics: icon('ic_analytics'),
   dashboard: icon('ic_dashboard'),
+  donut: icon('donut'),
 };
 
 // ----------------------------------------------------------------------
@@ -52,11 +53,31 @@ export function useNavData() {
 
   const data = useMemo(
     () => [
+       // AGENDA
+      // ----------------------------------------------------------------------
+      {
+        subheader: t('agenda'),
+        items: [
+          {
+            title: t('citas'),
+            path: paths.dashboard.citas.root,
+            icon: ICONS.calendar,
+            children: [
+              { title: t('historial'), path: paths.dashboard.citas.historial },
+            ],
+          }
+        ],
+      },
       // OVERVIEW
       // ----------------------------------------------------------------------
       {
         subheader: t('overview'),
         items: [
+          {
+            title: t('dash'),
+            path: paths.dashboard.general.dash,
+            icon: ICONS.analytics,
+          },
           {
             title: t('app'),
             path: paths.dashboard.root,
@@ -87,6 +108,11 @@ export function useNavData() {
             path: paths.dashboard.general.file,
             icon: ICONS.file,
           },
+          {
+            title: t('test'),
+            path: paths.dashboard.general.test,
+            icon: ICONS.donut,
+          }
         ],
       },
 

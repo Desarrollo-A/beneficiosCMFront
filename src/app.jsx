@@ -22,6 +22,7 @@ import { SettingsDrawer, SettingsProvider } from 'src/components/settings';
 import { CheckoutProvider } from 'src/sections/checkout/context';
 
 import { AuthProvider } from 'src/auth/context/jwt';
+import ContextGeneralProvider from './utils/contextGeneralProvider';
 // import { AuthProvider } from 'src/auth/context/auth0';
 // import { AuthProvider } from 'src/auth/context/amplify';
 // import { AuthProvider } from 'src/auth/context/firebase';
@@ -62,7 +63,9 @@ export default function App() {
                 <CheckoutProvider>
                   <SettingsDrawer />
                   <ProgressBar />
+                  <ContextGeneralProvider>
                   <Router />
+                  </ContextGeneralProvider>
                 </CheckoutProvider>
               </SnackbarProvider>
             </MotionLazy>
