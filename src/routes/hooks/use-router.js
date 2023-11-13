@@ -4,12 +4,6 @@ import { useLocation,useSearchParams,useParams, useNavigate } from 'react-router
 // ----------------------------------------------------------------------
 
 export function useRouter() {
-
-  const r = useSearchParams();
-let datos = useParams();
-
-  const localtion = useLocation();
-  //const {state} = useNavigate();
   const navigate = useNavigate();
   const router = useMemo(
     () => ({

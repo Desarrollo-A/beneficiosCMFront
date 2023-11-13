@@ -63,7 +63,7 @@ export default function CalendarForm({ currentEvent, colorOptions, onClose }) {
       allDay: data?.allDay,
       description: data?.description,
       end: data?.end,
-      start: data?.start,
+      date: data?.start,
     };
 
     try {

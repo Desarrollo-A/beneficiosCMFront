@@ -2,7 +2,6 @@ import * as Yup from 'yup';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import instance from 'src/utils/axiosBack';
 import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
@@ -22,7 +21,6 @@ import { PATH_AFTER_LOGIN } from 'src/config-global';
 
 import Iconify from 'src/components/iconify';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
-import { contextGeneral } from 'src/utils/contextGeneralProvider';
 // ----------------------------------------------------------------------
 
 export default function JwtLoginView() {
@@ -85,21 +83,9 @@ const onSubmit = (e) => {
       console.log(response);
       login?.(data.numEmpleado, data.password);
       router.push(returnTo || PATH_AFTER_LOGIN);
-        return false;
-      })
-      .catch(error=>{
-        console.log('NEGATIVO')
-        console.error(error);
-        reset();
-      setErrorMsg(typeof error === 'string' ? error : error.message);
-        return false;
-
-        
-      });
-    } catch (error) {
-      console.error(error);
     }
-  });*/
+})
+}
 
   const renderHead = (
     <Stack spacing={2} sx={{ mb: 5 }}>
@@ -157,10 +143,6 @@ const onSubmit = (e) => {
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       {renderHead}
-
-      <Alert severity="info" sx={{ mb: 3 }}>
-        Use email : <strong>demo@minimals.cc</strong> / password :<strong> demo1234</strong>
-      </Alert>
 
       {renderForm}
     </FormProvider>
