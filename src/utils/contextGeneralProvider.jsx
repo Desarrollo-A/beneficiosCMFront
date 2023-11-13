@@ -1,5 +1,5 @@
-import React, { createContext, useState } from 'react';
-import {Backdrop, Snackbar, IconButton} from '@material-ui/core';
+import { createContext, useState } from 'react';
+import {Backdrop, Snackbar} from '@material-ui/core';
 import gota from 'src/images/logos/spinner.gif';
 import { Alert } from '@mui/lab';
 import instance from './axiosBack';
@@ -8,8 +8,8 @@ import instance from './axiosBack';
 export const contextGeneral = createContext();
 
 const ContextGeneralProvider = (props) => {
-    const [cargando, setCargando] = React.useState(false);
-    const [mensaje, setMensaje] = React.useState({});
+    const [cargando, setCargando] = useState(false);
+    const [mensaje, setMensaje] = useState({});
     const cerrarMensaje = () => setMensaje({});
 
     const llamarServidor=(ruta)=>(setCtl,body)=>{
@@ -29,7 +29,7 @@ const ContextGeneralProvider = (props) => {
     
     const llamarServidorRespuesta=(ruta)=>(respuesta,body)=>{
         setCargando(true);
-        instance.post(ruta,body)
+        instance.post(ruta,body, { headers: {'Content-Type' : 'application/x-www-form-urlencoded'}})
         .then(response=>{
             setCargando(false);
             if(response.status===200){

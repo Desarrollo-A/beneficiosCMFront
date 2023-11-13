@@ -1,17 +1,18 @@
-import axios from 'axios';
+import { useContext } from "react";
+import { contextGeneral } from "src/utils/contextGeneralProvider";
 
-const base_url = "http://localhost/beneficiosCMBack/welcome/";
-
-export function GetDash(name){
-    return axios.get(base_url + name).then((response) => response.data.data);
-}
-
-export function PostDash(name, dt){
-    return axios.post(base_url + name, {
-        dt
-    },
-    {
-        headers: {'Content-Type' : 'application/x-www-form-urlencoded'}
+const Dashbord = () => {
+    const context = useContext(contextGeneral);
+    return {
+        getUsersCount: context.llamarServidor('generalController/usr_count'),
+        getCitasCount: context.llamarServidor('generalController/citas_count'),
+        getCitasEstatus: context.llamarServidor('dashboardController/citas_count_status'),
+        getEstatusTotal: context.llamarServidor('dashboardController/total_status_citas'),
+        getFechaMinima: context.llamarServidor('dashboardController/fecha_minima'),
+        getFechaAsistencia: context.llamarServidorRespuesta('dashboardController/estatus_fecha_asistencia'),
+        getFechaCancelada: context.llamarServidorRespuesta('dashboardController/estatus_fecha_cancelada'),
+        getFechaPenalizada: context.llamarServidorRespuesta('dashboardController/estatus_fecha_penalizada'),
+        getCitasAnual: context.llamarServidor('dashboardController/citas_anual'),
     }
-    ).then((response) => response.data.data);
 }
+export default Dashbord

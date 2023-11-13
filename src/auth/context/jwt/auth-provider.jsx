@@ -100,7 +100,7 @@ export function AuthProvider({ children }) {
   // LOGIN 
   const login = useCallback(async (numEmpleado, password) => {
 
-    const data = JSON.stringify({numempleado : numEmpleado,password:password});
+    const data = JSON.stringify({numempleado : numEmpleado, password : password});
 
 
     const response = await instance.post(endpoints.auth.login, data);

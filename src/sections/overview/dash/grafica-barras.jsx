@@ -12,12 +12,11 @@ import Iconify from 'src/components/iconify';
 import Chart, { useChart } from 'src/components/chart';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
-import { PostDash } from "src/api/dash";
-import { padding } from '@mui/system';
+import Dashboard from 'src/api/dash';
 
 // ----------------------------------------------------------------------
 
-function CitasDownloadExcel(datos, seriesData, title) {
+function CitasDownloadExcel(Grafic, seriesData, title) {
     const year = seriesData.toString();
     const data = [
       {
@@ -27,7 +26,7 @@ function CitasDownloadExcel(datos, seriesData, title) {
           { label: "Total", value: "cantidad" },
           { label: "Estatus", value: "nombre" },
         ],
-        content: datos,
+        content: Grafic,
       },
     ]
   
@@ -44,13 +43,16 @@ function CitasDownloadExcel(datos, seriesData, title) {
 // ----------------------------------------------------------------------
 
 export default function GraficaBarras({ title, subheader, chart, year, handleChangeYear, ...other }) {
+
+  const dashborad = Dashboard();
+
   const { categories, colors, series, options } = chart;
 
   const popover = usePopover();
 
   const [seriesData, setSeriesData] = useState(year);
 
-  const [datos, setDatos] = useState([]);
+  const [Grafic, setGrafic] = useState([]);
 
   const chartOptions = useChart({
     colors,
@@ -79,19 +81,20 @@ export default function GraficaBarras({ title, subheader, chart, year, handleCha
     [popover, handleChangeYear]
   );
 
-  async function DatosGrafic(dta) {
-    const data = await PostDash("citas_anual", dta);
-    setDatos(data);
+  async function handleGrafic() {
+    dashborad.getCitasAnual(data => {
+      setGrafic(data.data);
+    });
   }
 
   useEffect(() => {
-    DatosGrafic(seriesData);
-  }, [seriesData]);
+    handleGrafic();
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleExcel = async e => {
     e.preventDefault();
     CitasDownloadExcel(
-      datos,
+      Grafic,
       seriesData,
       title
     );

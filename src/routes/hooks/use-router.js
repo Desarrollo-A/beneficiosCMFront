@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useLocation,useSearchParams,useParams } from 'react-router-dom';
+import { useLocation,useSearchParams,useParams, useNavigate } from 'react-router-dom';
 
 // ----------------------------------------------------------------------
 

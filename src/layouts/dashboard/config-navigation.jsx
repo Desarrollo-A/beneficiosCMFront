@@ -60,7 +60,7 @@ export function useNavData() {
           {
             title: t('citas'),
             path: paths.dashboard.citas.root,
-            icon: ICONS.calendar,
+            icon: ICONS.file,
             children: [
               { title: t('historial'), path: paths.dashboard.citas.historial },
             ],

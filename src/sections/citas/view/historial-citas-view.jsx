@@ -1,9 +1,8 @@
-import isEqual from 'lodash/isEqual';
-import { useRef, useState, useEffect, useCallback } from 'react';
-import Xlsx from 'json-as-xlsx';
 import JsPDF from 'jspdf';
+import Xlsx from 'json-as-xlsx';
+import isEqual from 'lodash/isEqual';
 import autoTable from 'jspdf-autotable';
-import uuidv4 from "src/utils/uuidv4";
+import { useRef, useState, useEffect, useCallback } from 'react';
 
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
@@ -18,6 +17,10 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
+
+import uuidv4 from "src/utils/uuidv4";
+
+import Reportes from 'src/api/reportes';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -46,8 +49,8 @@ const TABLE_HEAD = [
   { id: '', label: 'ID Paciente' },
   { id: '', label: 'Area' },
   { id: '', label: 'Estatus' },
-  { id: '', label: 'Fecha Inicio'},
-  { id: '', label: 'Fecha Final'},
+  { id: '', label: 'Fecha Inicio' },
+  { id: '', label: 'Fecha Final' },
   { id: '', width: 88 },
 ];
 
@@ -62,7 +65,7 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 const doc = new JsPDF();
 
-function handleDownloadExcel(tableData) { 
+function handleDownloadExcel(tableData) {
   console.log(tableData.idCita)
   const data = [
     {
@@ -76,73 +79,67 @@ function handleDownloadExcel(tableData) {
         { label: "Fecha Inicio", value: "fechaInicio" },
         { label: "Fecha Final", value: "fechaFinal" },
       ],
-      content:tableData,
+      content: tableData,
     },
   ]
 
   const settings = {
-    fileName: "Historial Citas", 
-    extraLength: 3, 
-    writeMode: "writeFile", 
-    writeOptions: {}, 
-    RTL: false, 
+    fileName: "Historial Citas",
+    extraLength: 3,
+    writeMode: "writeFile",
+    writeOptions: {},
+    RTL: false,
   }
   Xlsx(data, settings)
 }
 
-function handleDownloadPDF(tableData) { autoTable(doc, {
-  head: [header],
-  body: tableData.map( item => ([item.idCita, item.idEspecialista, item.idPaciente,
-  item.area, item.estatus, item.fechaInicio, item.fechaFinal])) ,
+function handleDownloadPDF(tableData) {
+  autoTable(doc, {
+    head: [header],
+    body: tableData.map(item => ([item.idCita, item.idEspecialista, item.idPaciente,
+    item.area, item.estatus, item.fechaInicio, item.fechaFinal])),
   })
   doc.save('Historial Citas.pdf')
 }
 // ----------------------------------------------------------------------
 export default function HistorialCitasView() {
 
+  const reportes = Reportes();
+
   const [espe, setEs] = useState([]);
 
   const [tableData, setTableData] = useState([]);
 
-  useEffect(() => {
-    fetch("http://localhost/beneficiosCMBack/welcome/citas")
-      .then((res) => res.json())
-      .then((data) => {
-        const ct = data.data.map((cita) => ({
-          idCita: cita.idCita,
-          idEspecialista: cita.idEspecialista,
-          idPaciente: cita.idPaciente,
-          area: cita.area,
-          estatus: cita.estatus,
-          fechaInicio: cita.fechaInicio,
-          fechaFinal: cita.fechaFinal,
-        }));
-        setTableData(ct);
-      })
-      .catch((error) => {
-        alert("Error en la conexión");
-      });
-  }, []);
+  async function handleReportes() {
+    reportes.getReportes(data => {
+      const ct = data.data.map((cita) => ({
+        idCita: cita.idCita,
+        idEspecialista: cita.idEspecialista,
+        idPaciente: cita.idPaciente,
+        area: cita.area,
+        estatus: cita.estatus,
+        fechaInicio: cita.fechaInicio,
+        fechaFinal: cita.fechaFinal,
+      }));
+      setTableData(ct);
+    });
+  }
 
   useEffect(() => {
-    fetch("http://localhost/beneficiosCMBack/welcome/especialistas")
-      .then((res) => res.json())
-      .then((data) => {
-        setEs(data.data);
-      })
-      .catch((error) => {
-        alert("Error en la conexión");
-      });
-  }, []);
+    handleReportes();
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  async function handleEspe() {
+    reportes.getEspecialistas(data => {
+      setEs(data.data);
+    });
+  }
+
+  useEffect(() => {
+    handleEspe();
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const _rp = espe.flatMap((es) => (es.nombre));
-
-  /* useEffect(() => {
-    const ct2 = citas.map((cita) => ({
-      id: cita.area
-    }));
-    setTableD(ct2);
-  }, [citas]); */
 
   const table = useTable();
 
@@ -215,18 +212,18 @@ export default function HistorialCitasView() {
   }, []);
 
   const targetRef = useRef();
-  
-  const handleExcel = async e =>{
+
+  const handleExcel = async e => {
     e.preventDefault();
-        handleDownloadExcel(
-            tableData
-        );
-  } 
-  const handlePdf = async e =>{
+    handleDownloadExcel(
+      tableData
+    );
+  }
+  const handlePdf = async e => {
     e.preventDefault();
-        handleDownloadPDF(
-          tableData
-        );
+    handleDownloadPDF(
+      tableData
+    );
   }
 
   return (
@@ -266,31 +263,31 @@ export default function HistorialCitasView() {
           )}
 
           <Stack
-             spacing={1}
-             alignItems={{ xs: 'flex-end', md: 'center' }}
-             direction={{
-               xs: 'column',
-               md: 'row',
-             }}
-             sx={{
-               p: 1,
-               pr: { xs: 1, md: 1 },
-             }}
+            spacing={1}
+            alignItems={{ xs: 'flex-start', md: 'flex-start' }}
+            direction={{
+              xs: 'column',
+              md: 'row',
+            }}
+            sx={{
+              p: 1,
+              pr: { xs: 1, md: 1 },
+            }}
           >
 
-              <MenuItem
-                sx={{ width: 50, p: 1 }}
-                onClick={handleExcel}
-              >
-                <Iconify icon="teenyicons:xls-outline" />
-              </MenuItem>
+            <MenuItem
+              sx={{ width: 50, p: 1 }}
+              onClick={handleExcel}
+            >
+              <Iconify icon="teenyicons:xls-outline" />
+            </MenuItem>
 
-              <MenuItem
-                sx={{ width: 50, p: 1 }}
-                onClick={handlePdf}
-              >
-                <Iconify icon="teenyicons:pdf-outline" />
-              </MenuItem>
+            <MenuItem
+              sx={{ width: 50, p: 1 }}
+              onClick={handlePdf}
+            >
+              <Iconify icon="teenyicons:pdf-outline" />
+            </MenuItem>
 
           </Stack>
 

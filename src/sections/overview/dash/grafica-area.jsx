@@ -17,7 +17,6 @@ import Chart, { useChart } from 'src/components/chart';
 // ----------------------------------------------------------------------
 
 function CitasDownloadExcel(registros) {
-console.log(registros)
   const data = [
     {
       sheet: "Estados de Citas",

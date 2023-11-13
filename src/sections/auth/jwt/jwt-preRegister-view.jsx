@@ -96,7 +96,7 @@ const servicios = Servicios();
       enqueueSnackbar('Update success!');
       console.info('DATA', data);
     } catch (error) {
-      console.error(error);1
+      console.error(error);
     }
   });
 
