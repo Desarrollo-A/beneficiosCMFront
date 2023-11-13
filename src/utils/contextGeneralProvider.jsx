@@ -1,10 +1,7 @@
-import React, { createContext } from 'react';
-import {Backdrop, Snackbar} from '@material-ui/core';
-
+import React, { createContext, useState } from 'react';
+import {Backdrop, Snackbar, IconButton} from '@material-ui/core';
+import spinner from 'src/images/logo/spinner.gif';
 import { Alert } from '@mui/lab';
-
-import gota from 'src/images/logo/spinner.gif';
-
 import instance from './axiosBack';
 
 // create a context, with createContext api
@@ -23,7 +20,6 @@ const ContextGeneralProvider = (props) => {
             setCargando(false);
         })
         .catch(error=>{
-            // console.log(error);
             setCtl([]);
             setCargando(false);
         });
@@ -44,7 +40,6 @@ const ContextGeneralProvider = (props) => {
             }
         })
         .catch(error=>{
-            // console.log(error);
             setMensaje({ open: true, status: -1, value: "ERROR DE SERVIDOR" });
             respuesta(-1,'Error de servidor');
             setCargando(false);
@@ -92,7 +87,7 @@ const ContextGeneralProvider = (props) => {
             </Snackbar>
             <Backdrop id="cargando" open={cargando}>
                 {/* <CircularProgress color="inherit" /> */}
-                <img src={gota} alt={'OOAM'} width="450" height="250" />
+                <img src={spinner} alt={'OOAM'} width="450" height="250" />
             </Backdrop>
             {props.children}
         </contextGeneral.Provider>

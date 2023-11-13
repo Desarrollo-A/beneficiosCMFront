@@ -1,6 +1,5 @@
 import * as Yup from 'yup';
 import { useMemo } from 'react';
-import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import IconButton from '@mui/material/IconButton';
@@ -8,8 +7,6 @@ import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import MenuItem from '@mui/material/MenuItem';
 import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
@@ -18,14 +15,13 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { useRouter } from 'src/routes/hooks';
 import { useLocation } from 'react-router-dom';
 
-import { countries } from 'src/assets/data';
-import { USER_STATUS_OPTIONS } from 'src/_mock';
 import InputAdornment from '@mui/material/InputAdornment';
 
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFSelect, RHFTextField, RHFAutocomplete } from 'src/components/hook-form';
 import Servicios from 'src/utils/servicios';
+import { useState } from 'react';
 // ----------------------------------------------------------------------
 
 export default function preRegisterUser({ currentUser, open, onClose }) {
@@ -34,8 +30,8 @@ export default function preRegisterUser({ currentUser, open, onClose }) {
   const password = useBoolean();
   const router = useRouter();
   const  location  = useLocation();
-  const datosEmpleado = location.state.data[0];
-  console.log(datosEmpleado);
+  const [datosEmpleado,setDatosEmpleado] = useState( location.state.data[0]);
+
 const servicios = Servicios();
   const NewUserSchema = Yup.object().shape({
     numEmpleado: Yup.string(),
@@ -78,14 +74,10 @@ const servicios = Servicios();
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
-    console.log('datos formulario')
-    console.log(data);
-    datosEmpleado.password = data.password;
-    console.log(datosEmpleado);
-    servicios.getInfoCliente(data => {
-      console.log(data);
+    setDatosEmpleado({password:data.password});
+    servicios.addRegistroEmpleado(data => {
     },{
-      optionCliente : "1234"
+      params:datosEmpleado,password:data.password
     }
     );
     return false;
@@ -120,7 +112,6 @@ const servicios = Servicios();
             }}
           >
 
-           
             <RHFTextField name="numEmpleado" value={datosEmpleado.num_empleado} disabled label="Número de empleado" />
             <RHFTextField name="name"  value={datosEmpleado.nombre_completo}  label="Nombre completo" />
             <RHFTextField name="email" value={datosEmpleado.email_empresarial} disabled label="Correo empresarial" />
