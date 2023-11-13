@@ -1,7 +1,7 @@
 import { paths } from 'src/routes/paths';
 
 // API
-// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------  
 
 export const HOST_API = import.meta.env.VITE_HOST_API;
 export const HOST_API_SERVICIOS = import.meta.env.VITE_HOST_SERVICIOS;

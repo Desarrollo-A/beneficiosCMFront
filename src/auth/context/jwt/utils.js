@@ -17,7 +17,10 @@ function jwtDecode(token) {
 
   return JSON.parse(jsonPayload);
 }
-
+/**
+ * 
+ * eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4ODY0YzcxNy01ODdkLTQ3MmEtOTI5YS04ZTVmMjk4MDI0ZGEtMCIsImlhdCI6MTY5OTU2NTQ4OSwiZXhwIjoxNjk5ODI0Njg5fQ.LyVELSRSArL5iMh9EoeOv0y5cdZ__OVL9sxYZoWxjfw 
+ */
 // ----------------------------------------------------------------------
 
 export const isValidToken = (accessToken) => {
@@ -55,7 +58,7 @@ export const tokenExpired = (exp) => {
   }, timeLeft);
 };
 
-// ---------------------------------------------------------------------- 
+// ----------------------------------------------------------------------    
 
 export const setSession = (accessToken) => {
   if (accessToken) {

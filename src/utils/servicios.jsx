@@ -7,6 +7,8 @@ const Servicios = () => {
     return {
         getInfoCliente: context.llamarServidor('loginController/usuarios'),
         getServiciosDisponibles: context.llamarServidorRespuesta('calendarioController/getBeneficiosDisponibles'),
+        addRegistroEmpleado: context.llamarServidor('loginController/addRegistroEmpleado'),
+
 /*
         getInitialData: context.llamarServidor('Clientes/getInitialData'),
         addBlacklist: context.llamarServidorRespuesta('Clientes/addBlacklist'),
