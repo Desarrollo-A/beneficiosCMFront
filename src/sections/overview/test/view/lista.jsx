@@ -14,15 +14,15 @@ import DialogContent from '@mui/material/DialogContent';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 
 import uuidv4 from 'src/utils/uuidv4';
-import { fTimestamp } from 'src/utils/format-time';
-
-import { createCustom } from 'src/api/calendar';
+import { fDateTime, fTimestamp } from 'src/utils/format-time';
 
 import { useSnackbar } from 'src/components/snackbar';
 import { RHFTextField } from 'src/components/hook-form';
 import FormProvider from 'src/components/hook-form/form-provider';
 
-export default function Lista({ currentEvent, onClose, currentDay }){
+import { createCustom, updateCustom } from '../calendar';
+
+export default function Lista({ currentEvent, onClose, currentDay, current }){
     const { enqueueSnackbar } = useSnackbar();
     const [horaInicio, setHoraInicio] = useState();
     const [horaFinal, setHoraFinal] = useState();
@@ -37,6 +37,7 @@ export default function Lista({ currentEvent, onClose, currentDay }){
         resolver: yupResolver(formSchema),
         defaultValues: currentEvent
     });
+     console.log(currentEvent);
 
     const { handleSubmit } = methods;
 
@@ -47,18 +48,30 @@ export default function Lista({ currentEvent, onClose, currentDay }){
             const eventData = {
                 id: currentEvent?.id ? currentEvent?.id : uuidv4(),
                 title: data?.title,
-                start: fTimestamp(`${fecha}' '${horaInicio.getHours()}:${horaInicio.getMinutes()}`),
-                end: fTimestamp(`${fecha}' '${horaFinal.getHours()}:${horaFinal.getMinutes()}`),
+                start: currentEvent?.id ? fTimestamp(currentEvent?.date) : fTimestamp(`${fecha}' '${horaInicio.getHours()}:${horaInicio.getMinutes()}`),
+                end: currentEvent?.id ? fTimestamp(currentEvent?.date) : fTimestamp(`${fecha}' '${horaFinal.getHours()}:${horaFinal.getMinutes()}`),
                 hora_inicio: `${horaInicio.getHours()}:${horaInicio.getMinutes()}`,
-                hora_final: `${horaFinal.getHours()}:${horaFinal.getMinutes()}`
+                hora_final: `${horaFinal.getHours()}:${horaFinal.getMinutes()}`,
+                date: currentEvent?.id ? currentEvent?.date : fecha,
             };
 
+            console.log(eventData);
+
+            let save ='';
+
             try{
-                const save = await createCustom(fecha, eventData);
+                if(currentEvent?.id){
+                    save = await updateCustom(eventData);
+                }
+                else{
+                    save = await createCustom(fecha, eventData); 
+                }
+
                 if(save.status)
                     enqueueSnackbar(save.message);
                 else
                     enqueueSnackbar(save.message);
+                 
             }
             catch(error){
                 enqueueSnackbar(error);
@@ -69,7 +82,6 @@ export default function Lista({ currentEvent, onClose, currentDay }){
     
     // el formato de la fecha para enviar a la base de datos se envia en formato frances, ya que es el mismo formato en que se almacena en sql
     const fecha = new Intl.DateTimeFormat('fr-ca', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(currentDay);
-
     const fechaTitulo = new Intl.DateTimeFormat('es-MX', {weekday: 'long', year: 'numeric', month: '2-digit',day: '2-digit'}).format(currentDay);
 
     return(
@@ -78,7 +90,7 @@ export default function Lista({ currentEvent, onClose, currentDay }){
                 <Stack spacing = {3} sx={{ p: { xs: 1, md: 2 } }}>
                     <RHFTextField name="title" label="Titulo" />
                     <Typography variant="h5">Agregar horario </Typography>
-                    <Typography variant="subtitle1">{fechaTitulo}</Typography>
+                    <Typography variant="subtitle1">{currentEvent?.id ? fDateTime(currentEvent.date) : fechaTitulo}</Typography>
                 </Stack>
                 <Stack direction= "row" spacing={ 2 } sx={{ p: { xs: 1, md: 2 } }}>
                     
@@ -90,7 +102,7 @@ export default function Lista({ currentEvent, onClose, currentDay }){
                                 label="Hora de inicio" 
                                 format='hh:mm a' 
                                 onChange={
-                                    (value) => {field.onChange(value), setHoraInicio(value)} 
+                                    (value) => {field.onChange(value); setHoraInicio(value)}
                                 } 
                             />
                         }
@@ -103,7 +115,7 @@ export default function Lista({ currentEvent, onClose, currentDay }){
                                 disableFuture 
                                 label="Hora finalización" 
                                 onChange={
-                                    (value) => {field.onChange(value), setHoraFinal(value)} 
+                                    (value) => {field.onChange(value); setHoraFinal(value)}
                                 } 
                             />
                         }
@@ -122,5 +134,6 @@ export default function Lista({ currentEvent, onClose, currentDay }){
 Lista.propTypes = {
     currentEvent: PropTypes.object,
     onClose: PropTypes.func,
-    currentDay: PropTypes.instanceOf(Date)
+    currentDay: PropTypes.instanceOf(Date),
+    current: PropTypes.instanceOf(Date)
   };

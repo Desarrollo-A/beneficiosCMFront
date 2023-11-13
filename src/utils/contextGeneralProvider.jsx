@@ -7,7 +7,7 @@ import gota from 'src/images/logo/spinner.gif';
 
 import instance from './axiosBack';
 
-// Create a context, with createContext api
+// create a context, with createContext api
 export const contextGeneral = createContext();
 
 const ContextGeneralProvider = (props) => {
@@ -80,9 +80,6 @@ const ContextGeneralProvider = (props) => {
             setCargando(false);
         });
     }
-
-    
-
 
     return (
         <contextGeneral.Provider value={{llamarServidor,llamarServidorRespuesta,llamarServidorRespuestaPDF,setCargando,setMensaje}}>

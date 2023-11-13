@@ -19,15 +19,13 @@ import { useResponsive } from 'src/hooks/use-responsive';
 
 import { fTimestamp } from 'src/utils/format-time';
 
-import { GetCustomEvents } from 'src/api/calendar';
-
 import { useSettingsContext } from 'src/components/settings';
 
 import Lista from "./lista";
 import { StyledCalendar } from '../styles';
-import { useEvent, useCalendar } from '../hooks';
+import { GetCustomEvents } from '../calendar';
 import CalendarToolbar from '../calendar-tool';
-
+import { useEvent, useCalendar } from '../hooks';
 
 // ----------------------------------------------------------------------
 
@@ -44,7 +42,8 @@ export default function OverviewTestView(){
     const settings = useSettingsContext();
     const [ day, setDay] = useState();
     const [filters] = useState(defaultFilters);
-    const { events, eventsLoading } = GetCustomEvents(new Date());
+    
+
     const dateError =
     filters.startDate && filters.endDate
       ? filters.startDate.getTime() > filters.endDate.getTime()
@@ -64,9 +63,13 @@ export default function OverviewTestView(){
         onClickEvent, 
         openForm,
         onCloseForm,
+        //
+        selectEventId
     } = useCalendar();
 
-    const currentEvent = useEvent(events, openForm);
+    const { events, eventsLoading} = GetCustomEvents();
+
+    const currentEvent = useEvent(events, selectEventId, openForm);
 
     const dataFiltered = applyFilter({
         inputData: events,
@@ -122,7 +125,7 @@ export default function OverviewTestView(){
                      ref={calendarRef}
                      dayMaxEventRows={3}
                      eventDisplay="block"
-                     dateClick={(date) => setDay(date.date)}
+                     dateClick={(currentDate) => setDay(currentDate.date)}
                      events={dataFiltered}
                      headerToolbar = { false }
                      select={onSelectRange}
@@ -147,13 +150,14 @@ export default function OverviewTestView(){
             onClose={onCloseForm}
         >
             <DialogTitle sx= {{ minHeight: 76 }}>
-                Cancelar horarios
+                { openForm && <> { currentEvent?.id ? 'Editar horario' : 'Cancelar horario' } </> }
             </DialogTitle>  
 
             <Lista 
                 currentEvent={currentEvent}
                 onClose={onCloseForm}
                 currentDay= {day}
+                current={date}
             />
                 
         </Dialog>
