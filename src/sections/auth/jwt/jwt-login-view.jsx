@@ -2,7 +2,6 @@ import * as Yup from 'yup';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import instance from 'src/utils/axiosBack';
 import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
@@ -22,7 +21,6 @@ import { PATH_AFTER_LOGIN } from 'src/config-global';
 
 import Iconify from 'src/components/iconify';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
-import { contextGeneral } from 'src/utils/contextGeneralProvider';
 // ----------------------------------------------------------------------
 
 export default function JwtLoginView() {
@@ -65,41 +63,15 @@ export default function JwtLoginView() {
 const onSubmit = (e) => {
   e.preventDefault();
   const datos = JSON.stringify({numempleado : numEmpleado,password:passwd});
-  login?.(numEmpleado, passwd);
-  router.push(returnTo || PATH_AFTER_LOGIN);
-}
-
-  /* const onSubmit = handleSubmit( (data) => {
-    console.log(methods)
-    console.log(data)
-    try {
-
-      instance.post('', data , {
-        headers:{
-        "accept": 'application/json',
-        "Access-Control-Allow-Methods": "POST, PUT, PATCH, GET, DELETE, OPTIONS",
-        }
-      })
-      .then(response=>{
-      console.log('OK')
-      console.log(response);
-      login?.(data.numEmpleado, data.password);
+  login?.(numEmpleado, passwd)
+  .then(response=>{
+    if(response.result === 0){
+      setErrorMsg(typeof error === 'string' ? error : response.message);
+    }else{
       router.push(returnTo || PATH_AFTER_LOGIN);
-        return false;
-      })
-      .catch(error=>{
-        console.log('NEGATIVO')
-        console.error(error);
-        reset();
-      setErrorMsg(typeof error === 'string' ? error : error.message);
-        return false;
-
-        
-      });
-    } catch (error) {
-      console.error(error);
     }
-  }); */
+})
+}
 
   const renderHead = (
     <Stack spacing={2} sx={{ mb: 5 }}>
@@ -157,10 +129,6 @@ const onSubmit = (e) => {
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       {renderHead}
-
-      <Alert severity="info" sx={{ mb: 3 }}>
-        Use email : <strong>demo@minimals.cc</strong> / password :<strong> demo1234</strong>
-      </Alert>
 
       {renderForm}
     </FormProvider>

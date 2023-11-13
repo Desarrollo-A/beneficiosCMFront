@@ -43,7 +43,6 @@ const ContextGeneralProvider = (props) => {
             }
         })
         .catch(error=>{
-            // console.log(error);
             setMensaje({ open: true, status: -1, value: "ERROR DE SERVIDOR" });
             respuesta(-1,'Error de servidor');
             setCargando(false);
@@ -94,7 +93,7 @@ const ContextGeneralProvider = (props) => {
             </Snackbar>
             <Backdrop id="cargando" open={cargando}>
                 {/* <CircularProgress color="inherit" /> */}
-                <img src={gota} alt='OOAM' width="450" height="250" />
+                <img src={spinner} alt={'OOAM'} width="450" height="250" />
             </Backdrop>
             {props.children}
         </contextGeneral.Provider>
