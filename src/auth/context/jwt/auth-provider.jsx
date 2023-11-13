@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
 import { useMemo, useEffect, useReducer, useCallback } from 'react';
 
-import axios, { endpoints } from 'src/utils/axios';
 import instance from 'src/utils/axiosBack';
+import axios, { endpoints } from 'src/utils/axios';
+
 import { AuthContext } from './auth-context';
 import { setSession, isValidToken } from './utils';
 // ----------------------------------------------------------------------
@@ -100,12 +101,12 @@ export function AuthProvider({ children }) {
   // LOGIN 
   const login = useCallback(async (numEmpleado, password) => {
 
-    const data = JSON.stringify({numempleado : numEmpleado,password:password});
+    const data = JSON.stringify({numempleado : numEmpleado, password});
 
 
     const response = await instance.post(endpoints.auth.login, data);
 
-    if(response.data.result == 1){
+    if(response.data.result === 1){
       const { accessToken, user } = response.data;
 
       setSession(accessToken);
@@ -119,7 +120,6 @@ export function AuthProvider({ children }) {
           },
         },
       });
-    }else{
     }
   }, []);
 

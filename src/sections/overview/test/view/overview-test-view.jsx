@@ -19,15 +19,13 @@ import { useResponsive } from 'src/hooks/use-responsive';
 
 import { fTimestamp } from 'src/utils/format-time';
 
-import { GetCustomEvents } from 'src/api/calendar';
-
 import { useSettingsContext } from 'src/components/settings';
 
 import Lista from "./lista";
 import { StyledCalendar } from '../styles';
-import { useEvent, useCalendar } from '../hooks';
+import { GetCustomEvents } from '../calendar';
 import CalendarToolbar from '../calendar-tool';
-
+import { useEvent, useCalendar } from '../hooks';
 
 // ----------------------------------------------------------------------
 
@@ -44,7 +42,8 @@ export default function OverviewTestView(){
     const settings = useSettingsContext();
     const [ day, setDay] = useState();
     const [filters] = useState(defaultFilters);
-    const { events, eventsLoading } = GetCustomEvents(new Date());
+    
+
     const dateError =
     filters.startDate && filters.endDate
       ? filters.startDate.getTime() > filters.endDate.getTime()
@@ -65,6 +64,7 @@ export default function OverviewTestView(){
         openForm,
         onCloseForm,
     } = useCalendar();
+    const { events, eventsLoading} = GetCustomEvents(date);
 
     const currentEvent = useEvent(events, openForm);
 
@@ -122,7 +122,7 @@ export default function OverviewTestView(){
                      ref={calendarRef}
                      dayMaxEventRows={3}
                      eventDisplay="block"
-                     dateClick={(date) => setDay(date.date)}
+                     dateClick={(currentDate) => setDay(currentDate.date)}
                      events={dataFiltered}
                      headerToolbar = { false }
                      select={onSelectRange}
@@ -154,6 +154,7 @@ export default function OverviewTestView(){
                 currentEvent={currentEvent}
                 onClose={onCloseForm}
                 currentDay= {day}
+                current={date}
             />
                 
         </Dialog>

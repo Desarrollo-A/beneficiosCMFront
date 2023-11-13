@@ -1,10 +1,13 @@
-import React, { createContext, useState } from 'react';
-import {Backdrop, Snackbar, IconButton} from '@material-ui/core';
-import gota from 'src/images/logo/spinner.gif';
+import React, { createContext } from 'react';
+import {Backdrop, Snackbar} from '@material-ui/core';
+
 import { Alert } from '@mui/lab';
+
+import gota from 'src/images/logo/spinner.gif';
+
 import instance from './axiosBack';
 
-//create a context, with createContext api
+// create a context, with createContext api
 export const contextGeneral = createContext();
 
 const ContextGeneralProvider = (props) => {
@@ -20,7 +23,7 @@ const ContextGeneralProvider = (props) => {
             setCargando(false);
         })
         .catch(error=>{
-            //console.log(error);
+            // console.log(error);
             setCtl([]);
             setCargando(false);
         });
@@ -41,7 +44,7 @@ const ContextGeneralProvider = (props) => {
             }
         })
         .catch(error=>{
-            //console.log(error);
+            // console.log(error);
             setMensaje({ open: true, status: -1, value: "ERROR DE SERVIDOR" });
             respuesta(-1,'Error de servidor');
             setCargando(false);
@@ -79,9 +82,6 @@ const ContextGeneralProvider = (props) => {
             setCargando(false);
         });
     }
-
-    
-
 
     return (
         <contextGeneral.Provider value={{llamarServidor,llamarServidorRespuesta,llamarServidorRespuestaPDF,setCargando,setMensaje}}>

@@ -16,13 +16,13 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import uuidv4 from 'src/utils/uuidv4';
 import { fTimestamp } from 'src/utils/format-time';
 
-import { createCustom } from 'src/api/calendar';
-
 import { useSnackbar } from 'src/components/snackbar';
 import { RHFTextField } from 'src/components/hook-form';
 import FormProvider from 'src/components/hook-form/form-provider';
 
-export default function Lista({ currentEvent, onClose, currentDay }){
+import { createCustom } from '../calendar';
+
+export default function Lista({ currentEvent, onClose, currentDay, current }){
     const { enqueueSnackbar } = useSnackbar();
     const [horaInicio, setHoraInicio] = useState();
     const [horaFinal, setHoraFinal] = useState();
@@ -54,7 +54,7 @@ export default function Lista({ currentEvent, onClose, currentDay }){
             };
 
             try{
-                const save = await createCustom(fecha, eventData);
+                const save = await createCustom(fecha, eventData, current);
                 if(save.status)
                     enqueueSnackbar(save.message);
                 else
@@ -90,7 +90,7 @@ export default function Lista({ currentEvent, onClose, currentDay }){
                                 label="Hora de inicio" 
                                 format='hh:mm a' 
                                 onChange={
-                                    (value) => {field.onChange(value), setHoraInicio(value)} 
+                                    (value) => {field.onChange(value); setHoraInicio(value)}
                                 } 
                             />
                         }
@@ -103,7 +103,7 @@ export default function Lista({ currentEvent, onClose, currentDay }){
                                 disableFuture 
                                 label="Hora finalización" 
                                 onChange={
-                                    (value) => {field.onChange(value), setHoraFinal(value)} 
+                                    (value) => {field.onChange(value); setHoraFinal(value)}
                                 } 
                             />
                         }
@@ -122,5 +122,6 @@ export default function Lista({ currentEvent, onClose, currentDay }){
 Lista.propTypes = {
     currentEvent: PropTypes.object,
     onClose: PropTypes.func,
-    currentDay: PropTypes.instanceOf(Date)
+    currentDay: PropTypes.instanceOf(Date),
+    current: PropTypes.instanceOf(Date)
   };
