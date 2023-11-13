@@ -23,9 +23,9 @@ import FormControl from '@mui/material/FormControl';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 
+import Servicios from 'src/utils/servicios';
 import { fTimestamp } from 'src/utils/format-time';
 
-import { GetCitasDisponibles } from 'src/api/servicios';
 import { CALENDAR_COLOR_OPTIONS } from 'src/_mock/_calendar';
 import { updateEvent, useGetEvents } from 'src/api/calendar';
 
@@ -38,6 +38,7 @@ import { useEvent, useCalendar } from '../hooks';
 import CalendarToolbar from '../calendar-toolbar';
 import CalendarFilters from '../calendar-filters';
 import CalendarFiltersResult from '../calendar-filters-result';
+
 // ----------------------------------------------------------------------
 
 const defaultFilters = {
@@ -56,15 +57,16 @@ export default function CalendarView() {
   const smUp = useResponsive('up', 'sm');
 
   const openFilters = useBoolean();
-
+  const servicios = Servicios();
   const [filters, setFilters] = useState(defaultFilters);
 
   const { events, eventsLoading } = useGetEvents();
-  const [age, setAge] = useState();
+ 
 
-  const [citas] = useState(GetCitasDisponibles().citas);
+  // const [citas] = useState(GetCitasDisponibles().citas);
+  const [ citas, setCitas ] = useState([]);
   const handleChange = (event) => {
-    setAge(event.target.value);
+    setCitas(event.target.value);
   };
   const dateError =
     filters.startDate && filters.endDate
@@ -103,11 +105,28 @@ export default function CalendarView() {
     onInitialView();
   }, [onInitialView]);
 
+
+let arrayManejo = [];
+async function getCitasDisponibles() {
+  
+  servicios.getServiciosDisponibles(data => {
+    arrayManejo.append(data);
+    setCitas(data);
+});
+}
+
+useEffect(() => {
+  getCitasDisponibles();
+}, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+
+
   const handleFilters = useCallback((name, value) => {
     setFilters((prevState) => ({
       ...prevState,
       [name]: value,
     }));
+  
   }, []);
 
   const handleResetFilters = useCallback(() => {
@@ -159,15 +178,20 @@ export default function CalendarView() {
               <InputLabel id="demo-simple-select-label">Consultas</InputLabel>
               <Select
                 labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={age}
-                label="Age"
+                id="demo-simple-select-001"
+                label="Consultas"
                 onChange={handleChange}
               >
+                <MenuItem value=''>Selecciona</MenuItem>
                 {
-                citas.map((element, index)=>(
-                    <MenuItem value={element}>{element}</MenuItem>
-                ))}
+                  citas.map((element, index)=>{
+                    console.log('elementos:', element);
+                    return (
+                      
+                      <MenuItem key={element.idUsuario} value={element.idUsuario}>{element.nombre}</MenuItem>
+                    )
+                  })
+                }
               </Select>
             </FormControl>
           </Box>
