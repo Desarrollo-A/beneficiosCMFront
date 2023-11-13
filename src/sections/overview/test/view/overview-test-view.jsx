@@ -63,10 +63,13 @@ export default function OverviewTestView(){
         onClickEvent, 
         openForm,
         onCloseForm,
+        //
+        selectEventId
     } = useCalendar();
-    const { events, eventsLoading} = GetCustomEvents(date);
 
-    const currentEvent = useEvent(events, openForm);
+    const { events, eventsLoading} = GetCustomEvents();
+
+    const currentEvent = useEvent(events, selectEventId, openForm);
 
     const dataFiltered = applyFilter({
         inputData: events,
@@ -147,7 +150,7 @@ export default function OverviewTestView(){
             onClose={onCloseForm}
         >
             <DialogTitle sx= {{ minHeight: 76 }}>
-                Cancelar horarios
+                { openForm && <> { currentEvent?.id ? 'Editar horario' : 'Cancelar horario' } </> }
             </DialogTitle>  
 
             <Lista 

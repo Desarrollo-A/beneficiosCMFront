@@ -17,28 +17,6 @@ const options = {
   revalidateOnReconnect: false,
 };
 
-export function useGetEvents() {
-  const { data, isLoading, error, isValidating } = useSWR(URL, fetcher, options);
-
-  const memoizedValue = useMemo(() => {
-    const events = data?.events.map((event) => ({
-      ...event,
-      textColor: event.color,
-    }));
-
-    return {
-      events: events || [],
-      eventsLoading: isLoading,
-      eventsError: error,
-      eventsValidating: isValidating,
-      eventsEmpty: !isLoading && !data?.events.length,
-    };
-  }, [data?.events, error, isLoading, isValidating]);
-
-  return memoizedValue;
-}
-// ----------------------------------------------------------------------
-
 export function GetCustomEvents(current) {
   
   const { data, isLoading, error, isValidating } = useSWR(URLC, fetcher, options);
@@ -128,7 +106,6 @@ export async function createCustom(fecha, eventData, current) {
       mutate(
         URLC,
       (currentData) => {
-        console.log(currentData);
         const events = [...currentData.events, eventData];
         return {
           ...currentData,
@@ -138,59 +115,38 @@ export async function createCustom(fecha, eventData, current) {
       false
     ))
 }
-
 // ----------------------------------------------------------------------
 
-export async function createEvent(eventData) {
-  /**
-   * Work on server
-   */
-  // const data = { eventData };
-  // await axios.post(URL, data);
+export async function updateCustom(eventData) {
+  console.log(eventData);
+  return axios.post('http://localhost/beneficiosCMBack/calendarioController/update_occupied', {
+        hora_inicio: eventData.hora_inicio,
+        hora_final:  eventData.hora_final,
+        titulo: eventData.title,
+        id_unico: eventData.id
+    }, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    }, false)
+    .then((response) => response.data)
+    .then(
+      // lo que se trae de la url se guarda en current data y se junta con eventData
+      // es necesario tener la url en el axios para el renderizado
+      mutate(
+        URLC,
+        (currentData) => {
+          const events = currentData.events.map((event) =>
+            event.id === eventData.id ? { ...event, ...eventData } : event
+          );
 
-  /**
-   * Work in local
-   */
-  
-  mutate(
-    URL,
-    (currentData) => {
-      const events = [...currentData.events, eventData];
-      return {
-        ...currentData,
-        events, // este evento causa que el evento agregado haga render
-      };
-    },
-    false
-  );
-}
-
-// ----------------------------------------------------------------------
-
-export async function updateEvent(eventData) {
-  /**
-   * Work on server
-   */
-  // const data = { eventData };
-  // await axios.put(endpoints.calendar, data);
-
-  /**
-   * Work in local
-   */
-  mutate(
-    URL,
-    (currentData) => {
-      const events = currentData.events.map((event) =>
-        event.id === eventData.id ? { ...event, ...eventData } : event
-      );
-
-      return {
-        ...currentData,
-        events,
-      };
-    },
-    false
-  );
+          return {
+            ...currentData,
+            events,
+          };
+        },
+        false
+      ))
 }
 
 // ----------------------------------------------------------------------

@@ -1,8 +1,10 @@
 import { useMemo } from 'react';
+import merge from 'lodash/merge';
 
 // ----------------------------------------------------------------------
 
-export default function useEvent() {
+export default function useEvent(events, selectEventId, openForm) {
+  const currentEvent = events.find((event) => event.id === selectEventId);
 
   const defaultValues = useMemo(
     () => ({
@@ -10,11 +12,19 @@ export default function useEvent() {
       title: '',
       start : '',
       end: '',
+      fecha: '',
       textColor: 'red'
     }),
     []
   );
 
+  if(!openForm){
+    return undefined;
+  }
+
+  if(currentEvent){
+    return merge({}, defaultValues, currentEvent);
+  }
   
 
   return defaultValues;
