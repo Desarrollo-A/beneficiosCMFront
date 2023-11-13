@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 
 import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
+// import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
@@ -46,11 +46,6 @@ export default function UserTableRow({ row, selected, onEditRow, onDeleteRow }) 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{correo}</TableCell>
 
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap'}}>
-          <Tooltip title="Editar" placement="top" arrow>
-            <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>
-              <Iconify icon="solar:pen-bold" />
-            </IconButton>
-          </Tooltip>
 
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon="eva:more-vertical-fill" />
@@ -60,6 +55,7 @@ export default function UserTableRow({ row, selected, onEditRow, onDeleteRow }) 
 
       <UserQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} />
       
+        { /* SELECTS AL BORRAR */ } 
         <CustomPopover
           open={popover.open}
           onClose={popover.onClose}
@@ -78,10 +74,7 @@ export default function UserTableRow({ row, selected, onEditRow, onDeleteRow }) 
           </MenuItem>
 
           <MenuItem
-            onClick={() => {
-              onEditRow();
-              popover.onClose();
-            }}
+            onClick={quickEdit.onTrue}
           >
             <Iconify icon="solar:pen-bold" />
             Editar
@@ -92,9 +85,12 @@ export default function UserTableRow({ row, selected, onEditRow, onDeleteRow }) 
         open={confirm.value}
         onClose={confirm.onFalse}
         title="Borrar"
-        content="Estas seguro de borrar?"
-        action={
-          <Button variant="contained" color="error" onClick={onDeleteRow}>
+        content="¿Estas seguro de borrar este usuario?"
+        action={ 
+          <Button variant="contained" color="error" onClick={() => {
+            onDeleteRow();
+            confirm.onFalse();
+          }}>
             Borrar
           </Button>
         }

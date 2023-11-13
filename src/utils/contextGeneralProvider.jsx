@@ -1,15 +1,18 @@
-import React, { createContext, useState } from 'react';
-import {Backdrop, Snackbar, IconButton} from '@material-ui/core';
-import gota from 'src/images/logos/spinner.gif';
+import { useState, createContext } from 'react';
+import {Backdrop, Snackbar} from '@material-ui/core';
+
 import { Alert } from '@mui/lab';
+
+import gota from 'src/images/logo/spinner.gif';
+
 import instance from './axiosBack';
 
-//create a context, with createContext api
+// Create a context, with createContext api
 export const contextGeneral = createContext();
 
 const ContextGeneralProvider = (props) => {
-    const [cargando, setCargando] = React.useState(false);
-    const [mensaje, setMensaje] = React.useState({});
+    const [cargando, setCargando] = useState(false);
+    const [mensaje, setMensaje] = useState({});
     const cerrarMensaje = () => setMensaje({});
 
     const llamarServidor=(ruta)=>(setCtl,body)=>{
@@ -19,8 +22,7 @@ const ContextGeneralProvider = (props) => {
             setCtl(response.data);
             setCargando(false);
         })
-        .catch(error=>{
-            //console.log(error);
+        .catch(error=> {
             setCtl([]);
             setCargando(false);
         });
@@ -41,7 +43,7 @@ const ContextGeneralProvider = (props) => {
             }
         })
         .catch(error=>{
-            //console.log(error);
+            // console.log(error);
             setMensaje({ open: true, status: -1, value: "ERROR DE SERVIDOR" });
             respuesta(-1,'Error de servidor');
             setCargando(false);
@@ -73,7 +75,7 @@ const ContextGeneralProvider = (props) => {
             }
         })
         .catch(error=>{
-            //console.log(error);
+            // console.log(error);
             setMensaje({ open: true, status: -1, value: "ERROR DE SERVIDOR" });
             respuesta(-1,'Error de servidor');
             setCargando(false);
@@ -92,7 +94,7 @@ const ContextGeneralProvider = (props) => {
             </Snackbar>
             <Backdrop id="cargando" open={cargando}>
                 {/* <CircularProgress color="inherit" /> */}
-                <img src={gota} alt={'OOAM'} width="450" height="250" />
+                <img src={gota} alt='OOAM' width="450" height="250" />
             </Backdrop>
             {props.children}
         </contextGeneral.Provider>

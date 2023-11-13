@@ -5,7 +5,6 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import Box from '@mui/material/Box';
-import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import MenuItem from '@mui/material/MenuItem';
@@ -14,12 +13,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
-import { countries } from 'src/assets/data';
-import { USER_STATUS_OPTIONS } from 'src/_mock';
-
-import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, { RHFSelect, RHFTextField, RHFAutocomplete } from 'src/components/hook-form';
+import FormProvider, { RHFSelect, RHFTextField } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 
@@ -27,30 +22,32 @@ export default function UserQuickEditForm({ currentUser, open, onClose }) {
   const { enqueueSnackbar } = useSnackbar();
 
   const NewUserSchema = Yup.object().shape({
-    name: Yup.string().required('Name is required'),
-    email: Yup.string().required('Email is required').email('Email must be a valid email address'),
-    phoneNumber: Yup.string().required('Phone number is required'),
-    address: Yup.string().required('Address is required'),
-    country: Yup.string().required('Country is required'),
-    company: Yup.string().required('Company is required'),
-    state: Yup.string().required('State is required'),
-    city: Yup.string().required('City is required'),
-    role: Yup.string().required('Role is required'),
+    id: Yup.string().required('N. Contrato es requerido'),
+    contrato: Yup.string().required('N. Contrato es requerido'),
+    empleado: Yup.string().required('N. Empleado es requerido'),
+    nombre: Yup.string().required('Nombre es requerido'),
+    telefono: Yup.string().required('El N. Teléfonico es requerido'),
+    area: Yup.string().required('Área es requerido'),
+    puesto: Yup.string().required('El puesto es requerido'),
+    oficina: Yup.string().required('El campo de oficina es requerido'),
+    sede: Yup.string().required('La sede es requerida'),
+    correo: Yup.string().required('El correo es requerido').email('El correo debe ser una dirección de correo valida'),
+    estatus: Yup.string().required('El estatus es necesario'),
   });
 
   const defaultValues = useMemo(
     () => ({
-      name: currentUser?.name || '',
-      email: currentUser?.email || '',
-      phoneNumber: currentUser?.phoneNumber || '',
-      address: currentUser?.address || '',
-      country: currentUser?.country || '',
-      state: currentUser?.state || '',
-      city: currentUser?.city || '',
-      zipCode: currentUser?.zipCode || '',
-      status: currentUser?.status,
-      company: currentUser?.company || '',
-      role: currentUser?.role || '',
+      id: currentUser?.id || '',
+      contrato: currentUser?.contrato || '',
+      empleado: currentUser?.empleado || '',
+      nombre: currentUser?.nombre || '',
+      telefono: currentUser?.telefono || '',
+      area: currentUser?.area || '',
+      puesto: currentUser?.puesto || '',
+      oficina: currentUser?.oficina || '',
+      sede: currentUser?.sede || '',
+      correo: currentUser?.correo || '',
+      estatus: currentUser?.estatus || '',
     }),
     [currentUser]
   );
@@ -68,13 +65,40 @@ export default function UserQuickEditForm({ currentUser, open, onClose }) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      const response = await fetch('http://localhost/beneficiosCMBack/Usuario/updateUser', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          'idUsuario': data.id,
+          'numContrato': data.contrato,
+          'numEmpleado': data.empleado,
+          'nombre': data.nombre,
+          'telPersonal': data.telefono,
+          'area': data.area,
+          'puesto': data.puesto,
+          'oficina': data.oficina,
+          'sede': data.sede,
+          'correo': data.correo,
+          'estatus': data.estatus,
+        }),
+      });
+  
+      const res = await response.json();
+      if (res.result) {
+        reset();
+        onClose();
+        enqueueSnackbar(`¡Se ha actualizado los datos del usuario exitosamente!`, { variant: 'success' });
+      } else {
+        reset();
+        onClose();
+        enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'warning' });
+      }
+    } catch (error) {
       reset();
       onClose();
-      enqueueSnackbar('Update success!');
-      console.info('DATA', data);
-    } catch (error) {
-      console.error(error);
+      enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'danger' });
     }
   });
 
@@ -92,9 +116,6 @@ export default function UserQuickEditForm({ currentUser, open, onClose }) {
         <DialogTitle>Edicion de registro</DialogTitle>
 
         <DialogContent>
-          <Alert variant="outlined" severity="info" sx={{ mb: 3 }}>
-            Account is waiting for confirmation
-          </Alert>
 
           <Box
             rowGap={3}
@@ -104,56 +125,31 @@ export default function UserQuickEditForm({ currentUser, open, onClose }) {
               xs: 'repeat(1, 1fr)',
               sm: 'repeat(2, 1fr)',
             }}
+            sx={{mt:2}}
           >
-            <RHFSelect name="status" label="Status">
-              {USER_STATUS_OPTIONS.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
+            <RHFSelect name="estatus" label="Estatus" defaultValue={currentUser ? 1 : 0} >
+              <MenuItem key={1} value={1}>
+                ACTIVO
+              </MenuItem>
+              <MenuItem key={0} value={0}>
+                INACTIVO
+              </MenuItem>
             </RHFSelect>
 
             <Box sx={{ display: { xs: 'none', sm: 'block' } }} />
 
-            <RHFTextField name="name" label="Full Name" />
-            <RHFTextField name="email" label="Email Address" />
-            <RHFTextField name="phoneNumber" label="Phone Number" />
-
-            <RHFAutocomplete
-              name="country"
-              label="Country"
-              options={countries.map((country) => country.label)}
-              getOptionLabel={(option) => option}
-              renderOption={(props, option) => {
-                const { code, label, phone } = countries.filter(
-                  (country) => country.label === option
-                )[0];
-
-                if (!label) {
-                  return null;
-                }
-
-                return (
-                  <li {...props} key={label}>
-                    <Iconify
-                      key={label}
-                      icon={`circle-flags:${code.toLowerCase()}`}
-                      width={28}
-                      sx={{ mr: 1 }}
-                    />
-                    {label} ({code}) +{phone}
-                  </li>
-                );
-              }}
-            />
-
-            <RHFTextField name="state" label="State/Region" />
-            <RHFTextField name="city" label="City" />
-            <RHFTextField name="address" label="Address" />
-            <RHFTextField name="zipCode" label="Zip/Code" />
-            <RHFTextField name="company" label="Company" />
-            <RHFTextField name="role" label="Role" />
+            <RHFTextField name="id" label="ID" defaultValue={currentUser.id} />
+            <RHFTextField name="nombre" label='Nombre' defaultValue={currentUser.nombre}/>
+            <RHFTextField name="contrato" label="Contrato" defaultValue={currentUser.contrato}/>
+            <RHFTextField name="empleado" label="Empleado" defaultValue={currentUser.empleado}/>
+            <RHFTextField name="Telefono" label="Telefono" defaultValue={currentUser.telefono}/>
+            <RHFTextField name="area" label="Area" defaultValue={currentUser.area}/>
+            <RHFTextField name="puesto" label="Puesto" defaultValue={currentUser.puesto}/>
+            <RHFTextField name="oficina" label="Oficina" defaultValue={currentUser.oficina}/>
+            <RHFTextField name="sede" label="Sede" defaultValue={currentUser.sede}/>
+            <RHFTextField name="correo" type="email" label="Correo" defaultValue={currentUser.correo}/>
           </Box>
+
         </DialogContent>
 
         <DialogActions>
@@ -162,7 +158,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose }) {
           </Button>
 
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-            Update
+            Actualizar
           </LoadingButton>
         </DialogActions>
       </FormProvider>

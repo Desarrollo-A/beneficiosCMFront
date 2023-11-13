@@ -43,15 +43,18 @@ export default function UserListView() {
       .then((data) => {
         const obj = data.data.map((i) => ({
           id: i.idUsuario,
+          contrato: i.numContrato,
+          empleado: i.numEmpleado,
           nombre: i.nombre,
           telefono: i.telPersonal,
           area: i.area,
+          puesto: i.puesto,
           oficina: i.oficina,
           sede: i.sede,
           correo: i.correo,
+          estatus: i.estatus,
         }));
         setUserData(obj);
-        console.log(obj);
       })
       .catch((error) => {
         alert(error);
@@ -98,12 +101,14 @@ export default function UserListView() {
           }
           
           const requiredData = [
-            { cell: worksheet.A1, keyword: 'NOMBRE' },
-            { cell: worksheet.B1, keyword: 'TELEFONO' },
-            { cell: worksheet.C1, keyword: 'AREA' },
-            { cell: worksheet.D1, keyword: 'OFICINA' },
-            { cell: worksheet.E1, keyword: 'SEDE' },
-            { cell: worksheet.F1, keyword: 'CORREO' },
+            { cell: worksheet.A1, keyword: 'CONTRATO' },
+            { cell: worksheet.B1, keyword: 'EMPLEADO' },
+            { cell: worksheet.C1, keyword: 'NOMBRE' },
+            { cell: worksheet.D1, keyword: 'TELEFONO' },
+            { cell: worksheet.E1, keyword: 'AREA' },
+            { cell: worksheet.F1, keyword: 'OFICINA' },
+            { cell: worksheet.G1, keyword: 'SEDE' },
+            { cell: worksheet.H1, keyword: 'CORREO' },
           ];
           
           let showError = false;
@@ -121,7 +126,7 @@ export default function UserListView() {
           
           showError = false;
           jsonData.forEach((row, index) => {
-            const labels = ['A', 'B', 'C', 'D', 'E', 'F'];
+            const labels = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
           
             labels.forEach(label => {
               const cellLabel = label + (index + 2);
@@ -142,6 +147,8 @@ export default function UserListView() {
 
           // Transformar las claves en el objeto JSON
           const transformedData = jsonData.map((row) => ({
+            contrato: row.CONTRATO,
+            empleado: row.EMPLEADO,
             nombre: row.NOMBRE, // Cambiar "nombre" a "nombre_usuario"
             telPersonal: row.TELEFONO,
             area: row.AREA,
@@ -162,12 +169,14 @@ export default function UserListView() {
     };
 
     const handleCreateUser = async (users) => {
+      console.log(users);
       await fetch('http://localhost/beneficiosCMBack/general/insertBatch', {
         method: 'POST',
         body: JSON.stringify(users),
       })
       .then((res) => res.json())
       .then((data) => {
+        console.log(data);
           if (data.result) {
             enqueueSnackbar(`¡Los usuarios han sido registrados exitosamente!`, { variant: 'success' });
             loadUsers();
@@ -176,11 +185,12 @@ export default function UserListView() {
             enqueueSnackbar(`¡Ha surgido un error al intentar registrar los usuarios!`, { variant: 'warning' });
           }
         })
-        .catch((error) => {
+      .catch((error) => {
           enqueueSnackbar(`¡Ha surgido un error al intentar registrar los usuarios!`, { variant: 'danger' });
           console.error(error);
-        });
-        handleCloseDialog();
+        }
+      );
+      handleCloseDialog();
     };
 
     const handleCloseDialog = () =>{

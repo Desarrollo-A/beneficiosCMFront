@@ -17,11 +17,9 @@ import TableContainer from '@mui/material/TableContainer';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-import { useBoolean } from 'src/hooks/use-boolean';
-
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
-import { ConfirmDialog } from 'src/components/custom-dialog';
+import { useSnackbar } from 'src/components/snackbar';
 import {
   useTable,
   emptyRows,
@@ -97,9 +95,9 @@ const handleDownloadPDF = (dataFiltered) => {
 
 export default function UserList({users, loadUsers}) {
   const table = useTable();
-  // const settings = useSettingsContext();
   const router = useRouter();
-  const confirm = useBoolean();
+  const { enqueueSnackbar } = useSnackbar();
+  // const settings = useSettingsContext();
   const targetRef = useRef();
 
   const [filters, setFilters] = useState(defaultFilters);
@@ -136,11 +134,6 @@ export default function UserList({users, loadUsers}) {
     filters,
   });
 
-  const dataInPage = dataFiltered.slice(
-    table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage
-  );
-
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
   const handleFilters = useCallback(
@@ -154,29 +147,37 @@ export default function UserList({users, loadUsers}) {
     [table]
   );
 
-  const handleDeleteRow = useCallback((id) => {
-       const deleteRow = userData.filter((row) => row.id !== id);
-       setUserData(deleteRow);
-       table.onUpdatePageDeleteRow(dataInPage.length);
-     }, [dataInPage.length, table, userData]
-  );
+  const handleDeleteRow = async (id) => {
+    console.log("Deleteando a", id);
+  
+    try {
+      const response = await fetch(`${BACK}Usuario/updateUser`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          'idUsuario': id,
+          'estatus': 0,
+        }),
+      });
+      const data = await response.json();
+      if (data.result) {
+        enqueueSnackbar(`¡Se ha actualizado el usuario exitosamente!`, { variant: 'success' });
+        
+      } else {
+        enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'warning' });
+      }
+    } catch (error) {
+      console.error(error);
+      enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'danger' });
+    }
+  };
 
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = userData.filter((row) => !table.selected.includes(row.id));
-    setUserData(deleteRows);
-
-    table.onUpdatePageDeleteRows({
-      totalRows: userData.length,
-      totalRowsInPage: dataInPage.length,
-      totalRowsFiltered: dataFiltered.length,
-    });
-  }, [dataFiltered.length, dataInPage.length, table, userData]);
-
-  const handleEditRow = useCallback(
-    (id) => {
-      router.push(paths.dashboard.user.edit(id));
-    },
-    [router]
+  const handleEditRow = useCallback((id) => {
+    router.push(paths.dashboard.user.edit(id));
+    console.log("Editando id", id);
+    }, [ router ]
   );
 
   const handleExcel = async e =>{
@@ -185,7 +186,7 @@ export default function UserList({users, loadUsers}) {
       dataFiltered
     );
     setAreas([]);
-  } 
+  }
 
   const handlePdf = async e =>{
     e.preventDefault();
@@ -195,7 +196,7 @@ export default function UserList({users, loadUsers}) {
   }
 
   return (
-    <>
+    
         <Card>
             <CardHeader />
             <CardContent>
@@ -288,29 +289,7 @@ export default function UserList({users, loadUsers}) {
               />
             </CardContent>
         </Card>
-        <ConfirmDialog
-          open={confirm.value}
-          onClose={confirm.onFalse}
-          title="Eliminar"
-          content={
-            <>
-              Estas seguro de eliminar <strong> {table.selected.length} </strong> items?
-            </>
-          }
-          action={
-            <Button
-              variant="contained"
-              color="error"
-              onClick={() => {
-                handleDeleteRows();
-                confirm.onFalse();
-              }}
-            >
-            Eliminar
-            </Button>
-          }
-        />
-        </>
+        
   );
 }
 
@@ -333,23 +312,23 @@ const applyFilter = ({ inputData, comparator, filters }) => {
   inputData = stabilizedThis.map((el) => el[0]);
 
   if (name) {
-    inputData = inputData.filter((usuario) => {
+    inputData = inputData.filter((user) => {
       const nameLower = name.toLowerCase();
       return (
-        usuario.id.toString().toLowerCase().includes(nameLower) ||
-        usuario.nombre.toLowerCase().includes(nameLower) ||
-        usuario.area.toString().toLowerCase().includes(nameLower) ||
-        usuario.oficina.toLowerCase().includes(nameLower) ||
-        usuario.sede.toString().toLowerCase().includes(nameLower) ||
-        usuario.correo.toString().toLowerCase().includes(nameLower) ||
-        (typeof usuario.telefono === 'string' && usuario.telefono.toLowerCase().includes(nameLower)) ||
-        (typeof usuario.telefono === 'number' && usuario.telefono.toString().includes(nameLower))
+        user.id.toString().toLowerCase().includes(nameLower) ||
+        user.nombre.toLowerCase().includes(nameLower) ||
+        user.area.toString().toLowerCase().includes(nameLower) ||
+        user.oficina.toLowerCase().includes(nameLower) ||
+        user.sede.toString().toLowerCase().includes(nameLower) ||
+        user.correo.toString().toLowerCase().includes(nameLower) ||
+        (typeof user.telefono === 'string' && user.telefono.toLowerCase().includes(nameLower)) ||
+        (typeof user.telefono === 'number' && user.telefono.toString().includes(nameLower))
       );
     });
   }
 
   if (area.length) {
-    inputData = inputData.filter((usuario) => area.includes(usuario.area));
+    inputData = inputData.filter((user) => area.includes(user.area));
   }
 
   return inputData;
