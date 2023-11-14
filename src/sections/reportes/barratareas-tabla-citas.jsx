@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useCallback } from 'react';
+import { useState, useCallback } from 'react';
 
 import Stack from '@mui/material/Stack';
 import Select from '@mui/material/Select';
@@ -21,6 +21,7 @@ export default function UserTableToolbar({
   onFilters,
   //
   roleOptions,
+  handleChangeReport
 }) {
   const popover = usePopover();
 
@@ -40,6 +41,18 @@ export default function UserTableToolbar({
     },
     [onFilters]
   );
+
+  const report = [ 
+    { value: 'Reporte General', label: 'Reporte General' },
+    { value: 'Reporte de faltas', label: 'Reporte de faltas' },
+  ];
+
+  const [currentStatus, setCurrentStatus] = useState(report[0].label);
+
+  const handleChangeStatus = useCallback((event) => {
+    setCurrentStatus(event.target.value);
+    handleChangeReport(event.target.value);
+  }, [handleChangeReport]); 
 
   return (
     <>
@@ -61,13 +74,38 @@ export default function UserTableToolbar({
             width: { xs: 1, md: 200 },
           }}
         >
-          <InputLabel>Area</InputLabel>
+          <TextField
+          fullWidth
+          select
+          label="Tipo de Reporte"
+          value={currentStatus}
+          onChange={handleChangeStatus}
+        >
+          
+          {report.map((option) => (
+            <MenuItem 
+              key={option.value} 
+              value={option.value}
+            >
+              {option.label}
+            </MenuItem>
+          ))}
+        </TextField>
+        </FormControl>
+
+        <FormControl
+          sx={{
+            flexShrink: 0,
+            width: { xs: 1, md: 200 },
+          }}
+        >
+          <InputLabel>Departamento</InputLabel>
 
           <Select
             multiple
             value={filters.area}
             onChange={handleFilterRole}
-            input={<OutlinedInput label="Area" />}
+            input={<OutlinedInput label="Departamento" />}
             renderValue={(selected) => selected.map((value) => value).join(', ')}
             MenuProps={{
               PaperProps: {
@@ -143,4 +181,5 @@ UserTableToolbar.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   roleOptions: PropTypes.array,
+  handleChangeReport: PropTypes.func
 };

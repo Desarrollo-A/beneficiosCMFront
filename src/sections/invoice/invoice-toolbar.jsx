@@ -33,6 +33,8 @@ export default function InvoiceToolbar({ invoice, currentStatus, statusOptions, 
     router.push(paths.dashboard.invoice.edit(invoice.id));
   }, [invoice.id, router]);
 
+  console.log(onChangeStatus);
+
   return (
     <>
       <Stack

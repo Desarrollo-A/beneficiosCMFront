@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
-import uuidv4 from "src/utils/uuidv4";
 
 import Grid from '@mui/material/Unstable_Grid2';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 
-import { useSettingsContext } from 'src/components/settings';
+import uuidv4 from "src/utils/uuidv4";
 
 import Dashboard from 'src/api/dash';
+
+import { useSettingsContext } from 'src/components/settings';
 
 import WidgetSumas from '../widget-sumas';
 import GraficaArea from '../grafica-area';

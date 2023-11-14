@@ -63,25 +63,11 @@ export default function JwtLoginView() {
 const onSubmit = (e) => {
   e.preventDefault();
   const datos = JSON.stringify({numempleado : numEmpleado,password:passwd});
-  login?.(numEmpleado, passwd);
-  router.push(returnTo || PATH_AFTER_LOGIN);
-}
-
-  /* const onSubmit = handleSubmit( (data) => {
-    console.log(methods)
-    console.log(data)
-    try {
-
-      instance.post('', data , {
-        headers:{
-        "accept": 'application/json',
-        "Access-Control-Allow-Methods": "POST, PUT, PATCH, GET, DELETE, OPTIONS",
-        }
-      })
-      .then(response=>{
-      console.log('OK')
-      console.log(response);
-      login?.(data.numEmpleado, data.password);
+  login?.(numEmpleado, passwd)
+  .then(response=>{
+    if(response.result === 0){
+      setErrorMsg(typeof error === 'string' ? error : response.message);
+    }else{
       router.push(returnTo || PATH_AFTER_LOGIN);
     }
 })

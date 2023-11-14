@@ -59,11 +59,11 @@ export function useNavData() {
         subheader: t('agenda'),
         items: [
           {
-            title: t('citas'),
-            path: paths.dashboard.citas.root,
+            title: t('reportes'),
+            path: paths.dashboard.reportes.root,
             icon: ICONS.file,
             children: [
-              { title: t('historial'), path: paths.dashboard.citas.historial },
+              { title: t('historial'), path: paths.dashboard.reportes.historial },
             ],
           }
         ],

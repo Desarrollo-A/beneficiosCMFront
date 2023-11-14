@@ -43,19 +43,6 @@ import UserTableFiltersResult from '../filtros-tabla-citas';
 
 // ----------------------------------------------------------------------
 
-const TABLE_HEAD = [
-  { id: '', label: 'ID Cita' },
-  { id: '', label: 'ID Especialista' },
-  { id: '', label: 'ID Paciente' },
-  { id: '', label: 'Area' },
-  { id: '', label: 'Estatus' },
-  { id: '', label: 'Fecha Inicio' },
-  { id: '', label: 'Fecha Final' },
-  { id: '', width: 88 },
-];
-
-const header = ["ID Cita", "ID Especialista", "ID Paciente", "Area", "Estatus", "Fecha Inicio", "Fecha Final"];
-
 const defaultFilters = {
   name: '',
   area: [],
@@ -65,26 +52,60 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 const doc = new JsPDF();
 
-function handleDownloadExcel(tableData) {
-  console.log(tableData.idCita)
-  const data = [
+function handleDownloadExcel(tableData, rol) {
+
+  let data = [];
+
+  const baseArray = [
     {
-      sheet: "Historial Citas",
+      sheet: "Historial Reportes",
       columns: [
         { label: "ID Cita", value: "idCita" },
-        { label: "ID Especialista", value: "idEspecialista" },
-        { label: "ID Paciente", value: "idPaciente" },
-        { label: "Area", value: "area" },
+        { label: "Especialista", value: "idEspecialista" },
+        { label: "Paciente", value: "idPaciente" },
+        { label: "Oficina", value: "oficina" },
+        { label: "Departamento", value: "departamento" },
+        { label: "Sede", value: "sede" },
+        { label: "Sexo", value: "sexo" },
+        { label: "Motivo Consulta", value: "motivo" },
         { label: "Estatus", value: "estatus" },
         { label: "Fecha Inicio", value: "fechaInicio" },
         { label: "Fecha Final", value: "fechaFinal" },
       ],
       content: tableData,
     },
-  ]
+  ];
+
+  if(rol === 1){
+    const arr = baseArray[0].columns;
+    arr.splice(1, 1);
+
+    data = [
+      {
+        sheet: "Historial Reportes",
+        columns: arr,
+        content: tableData,
+      },
+    ];
+
+  }else if(rol === 2){
+    const arr = baseArray[0].columns;
+    arr.splice(2, 1);
+
+    data = [
+      {
+        sheet: "Historial Reportes",
+        columns: arr,
+        content: tableData,
+      },
+    ];
+
+  }else{
+    data = baseArray;
+  }
 
   const settings = {
-    fileName: "Historial Citas",
+    fileName: "Historial Reportes",
     extraLength: 3,
     writeMode: "writeFile",
     writeOptions: {},
@@ -93,22 +114,83 @@ function handleDownloadExcel(tableData) {
   Xlsx(data, settings)
 }
 
-function handleDownloadPDF(tableData) {
+function handleDownloadPDF(tableData, header, rol) {
+
+  let data = [];
+  
+  if(rol === 1){
+    data = tableData.map(item => ([item.idCita, item.idPaciente,
+      item.area, item.estatus, item.fechaInicio, item.fechaFinal]))
+  }
+  else if(rol === 2){
+    data = tableData.map(item => ([item.idCita, item.idEspecialista,
+      item.area, item.estatus, item.fechaInicio, item.fechaFinal]))
+  }else{
+    data = tableData.map(item => ([item.idCita, item.idEspecialista, item.idPaciente,
+      item.area, item.estatus, item.fechaInicio, item.fechaFinal]))
+  }
+
   autoTable(doc, {
     head: [header],
-    body: tableData.map(item => ([item.idCita, item.idEspecialista, item.idPaciente,
-    item.area, item.estatus, item.fechaInicio, item.fechaFinal])),
+    body: data,
   })
-  doc.save('Historial Citas.pdf')
+  doc.save('Historial Reportes.pdf')
 }
 // ----------------------------------------------------------------------
-export default function HistorialCitasView() {
+export default function HistorialReportesView() {
+
+  const rol =3;
+
+  let TABLE_HEAD = [];
+
+  let header = [];
+
+  const TABLE_BASE = [
+    { id: '', label: 'ID Cita' },
+    { id: '', label: 'Especialista' },
+    { id: '', label: 'Paciente' },
+    { id: '', label: 'Oficina' },
+    { id: '', label: 'Departamento' },
+    { id: '', label: 'Sede' },
+    { id: '', label: 'Sexo' },
+    { id: '', label: 'Motivo Consulta' },
+    { id: '', label: 'Estatus' },
+    { id: '', label: 'Fecha Inicio' },
+    { id: '', label: 'Fecha Final' },
+    { id: '', width: 88 },
+  ];
+
+  const headerBase = ["ID Cita", "Especialista", "Paciente", "Oficina", "Departamento", "Sede", "Sexo", "Motivo Consulta", "Estatus", 
+  "Fecha Inicio", "Fecha Final"];
+
+  if(rol === 1){
+
+    TABLE_BASE.splice(1, 1);
+    headerBase.splice(1, 1);
+
+    TABLE_HEAD = TABLE_BASE;
+    header = headerBase;
+
+  }else if(rol === 2){
+
+    TABLE_BASE.splice(2, 1);
+    headerBase.splice(2, 1);
+
+    TABLE_HEAD = TABLE_BASE;
+    header = headerBase;
+
+  }else{
+    TABLE_HEAD = TABLE_BASE;
+    header = headerBase;
+  }
 
   const reportes = Reportes();
 
   const [espe, setEs] = useState([]);
 
   const [tableData, setTableData] = useState([]);
+
+  const [ReportData, setReportData] = useState('Reporte General');
 
   async function handleReportes() {
     reportes.getReportes(data => {
@@ -122,12 +204,14 @@ export default function HistorialCitasView() {
         fechaFinal: cita.fechaFinal,
       }));
       setTableData(ct);
+    },{
+      ReportData
     });
   }
 
   useEffect(() => {
     handleReportes();
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [ReportData]) // eslint-disable-line react-hooks/exhaustive-deps
 
   async function handleEspe() {
     reportes.getEspecialistas(data => {
@@ -216,24 +300,31 @@ export default function HistorialCitasView() {
   const handleExcel = async e => {
     e.preventDefault();
     handleDownloadExcel(
-      tableData
+      tableData,
+      rol
     );
   }
   const handlePdf = async e => {
     e.preventDefault();
     handleDownloadPDF(
-      tableData
+      tableData,
+      header,
+      rol
     );
+  }
+
+  const handleChangeReport = (newData) => {
+    setReportData(newData);
   }
 
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Historial Citas"
+          heading="Historial Reportes"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Citas'/* , href: paths.dashboard.user.root */ },
+            { name: 'Reportes'/* , href: paths.dashboard.user.root */ },
             { name: 'Historial' },
           ]}
           sx={{
@@ -248,6 +339,7 @@ export default function HistorialCitasView() {
             onFilters={handleFilters}
             //
             roleOptions={_rp}
+            handleChangeReport={handleChangeReport}
           />
 
           {canReset && (
@@ -317,6 +409,7 @@ export default function HistorialCitasView() {
                         onSelectRow={() => table.onSelectRow(cita.idCita)}
                         onDeleteRow={() => handleDeleteRow(cita.idCita)}
                         onEditRow={() => handleEditRow(cita.idCita)}
+                        rol= {rol}
                       />
                     ))}
 

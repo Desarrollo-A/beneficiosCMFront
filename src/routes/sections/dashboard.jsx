@@ -8,7 +8,7 @@ import { LoadingScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
 // CITAS
-const HistorialCitasPage = lazy(() => import('src/pages/dashboard/citas/historial-citas'));
+const HistorialReportesPage = lazy(() => import('src/pages/dashboard/reportes/historial-reportes'));
 // OVERVIEW
 const IndexPage = lazy(() => import('src/pages/dashboard/app'));
 const DashPage = lazy(() => import('src/pages/dashboard/dash'));
@@ -17,7 +17,6 @@ const OverviewAnalyticsPage = lazy(() => import('src/pages/dashboard/analytics')
 const OverviewBankingPage = lazy(() => import('src/pages/dashboard/banking'));
 const OverviewBookingPage = lazy(() => import('src/pages/dashboard/booking'));
 const OverviewFilePage = lazy(() => import('src/pages/dashboard/file'));
-const OverviewTestPage = lazy(() => import('src/pages/dashboard/test'));
 // PRODUCT
 const ProductDetailsPage = lazy(() => import('src/pages/dashboard/product/details'));
 const ProductListPage = lazy(() => import('src/pages/dashboard/product/list'));
@@ -82,9 +81,9 @@ export const dashboardRoutes = [
     children: [
       { element: <IndexPage />, index: true },
       {
-        path: 'citas',
+        path: 'reportes',
         children: [
-          { path: 'historial', element: <HistorialCitasPage /> },
+          { path: 'historial', element: <HistorialReportesPage /> },
         ],
       },
       { path: 'dash', element: <DashPage /> },
@@ -93,7 +92,6 @@ export const dashboardRoutes = [
       { path: 'banking', element: <OverviewBankingPage /> },
       { path: 'booking', element: <OverviewBookingPage /> },
       { path: 'file', element: <OverviewFilePage /> },
-      { path: 'test', element: <OverviewTestPage /> },
       {
         path: 'user',
         children: [

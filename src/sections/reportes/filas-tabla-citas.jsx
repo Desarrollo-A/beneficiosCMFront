@@ -18,7 +18,7 @@ import UserQuickEditForm from './modal-editar-citas';
 
 // ----------------------------------------------------------------------
 
-export default function UserTableRow({ row, selected, onEditRow, onDeleteRow }) {
+export default function UserTableRow({ row, selected, onEditRow, onDeleteRow, rol }) {
   const { idCita, idEspecialista, idPaciente, estatus, fechaInicio, fechaFinal, area } = row;
 
   const confirm = useBoolean();
@@ -27,10 +27,30 @@ export default function UserTableRow({ row, selected, onEditRow, onDeleteRow }) 
 
   const popover = usePopover();
 
-  let roles = Boolean(false);
+  const oficina = 1;
 
-  if (idEspecialista === '2') {
-    roles = true;
+  const sede = 'Querétaro';
+
+  const sexo = 'Masculino';
+
+  const motivo = 'Alimentación';
+
+  let espe = Boolean(true);
+
+  let paci = Boolean(true);
+
+  let admin = Boolean(false);
+
+  if(rol === 1 ){
+    espe = false
+  }
+
+  if(rol === 2 ){
+    paci = false
+  }
+
+  if(rol === 3 ){
+    admin = true
   }
 
   return (
@@ -40,11 +60,19 @@ export default function UserTableRow({ row, selected, onEditRow, onDeleteRow }) 
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{idCita}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{idEspecialista}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }} style={{display: espe ? '' : 'none' }}>{idEspecialista}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{idPaciente}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }} style={{display: paci ? '' : 'none' }}>{idPaciente}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{oficina}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{area}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{sede}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{sexo}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{motivo}</TableCell>
 
         <TableCell>
           <Label
@@ -64,9 +92,7 @@ export default function UserTableRow({ row, selected, onEditRow, onDeleteRow }) 
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fechaFinal}</TableCell>
 
-        {roles ? (
-
-        <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap'}}>
+        <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap'}} style={{display: admin ? '' : 'none' }} >
           <Tooltip title="Editar" placement="top" arrow>
             <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>
               <Iconify icon="solar:pen-bold" />
@@ -78,13 +104,6 @@ export default function UserTableRow({ row, selected, onEditRow, onDeleteRow }) 
           </IconButton>
         </TableCell>
 
-        ) : (
-
-        <TableCell>
-              ㅤ
-        </TableCell>
-
-        )}
       </TableRow>
 
       <UserQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} />
@@ -137,4 +156,5 @@ UserTableRow.propTypes = {
   onEditRow: PropTypes.func,
   row: PropTypes.object,
   selected: PropTypes.bool,
+  rol: PropTypes.number
 };
