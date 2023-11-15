@@ -21,6 +21,15 @@ export const fetcher = async (args) => {
 
   return res.data;
 };
+
+export const fetcher_custom = async (args) => {
+  // console.log(args);
+  const [url, config] = Array.isArray(args) ? args : [args];
+
+  const res = await axiosInstance.get(url, { ...config });
+
+  return res.data;
+};
   
 // ----------------------------------------------------------------------
 

@@ -37,10 +37,7 @@ export function useGetEvents() {
 }
 
 // ----------------------------------------------------------------------
-export function GetCustomEvents(current) {
-  const year = current.getFullYear();
-  const month = (current.getMonth() + 1);
-  console.log(month);
+export function GetCustomEvents() {
 
   const { data, isLoading, error, isValidating } = useSWR(URLC, fetcher, options);
 
