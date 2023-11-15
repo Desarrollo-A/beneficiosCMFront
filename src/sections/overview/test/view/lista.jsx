@@ -2,7 +2,6 @@
 import 'dayjs/locale/es';
 import * as yup from 'yup';
 import dayjs  from 'dayjs';
-import { useState } from "react";
 import PropTypes from 'prop-types';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -26,8 +25,6 @@ import { createCustom, updateCustom } from '../calendar';
 
 export default function Lista({ currentEvent, onClose, currentDay }){
     const { enqueueSnackbar } = useSnackbar();
-    const [horaInicio, setHoraInicio] = useState();
-    const [horaFinal, setHoraFinal] = useState();
 
     const formSchema = yup.object().shape({
         title: yup.string().max(100).required('Se necesita el titulo'),
@@ -43,7 +40,6 @@ export default function Lista({ currentEvent, onClose, currentDay }){
     dayjs.locale('es') // variable para cambiar el idioma del dayjs
 
     const { handleSubmit } = methods;
-    console.log(currentEvent);
 
     const onSubmit = handleSubmit(async (data) => {
 
@@ -53,7 +49,7 @@ export default function Lista({ currentEvent, onClose, currentDay }){
                 id: currentEvent?.id ? currentEvent?.id : uuidv4(),
                 title: data?.title,
                 start: currentEvent?.id ? fTimestamp(`${currentEvent.occupied} ${data.start.getHours()}:${data.start.getMinutes()}`) : dayjs(`${fecha} ${data.start.getHours()}:${data.start.getMinutes()}`).format("YYYY-MM-DD HH:mm"),
-                end: currentEvent?.id ? currentEvent?.end : fTimestamp(`${fecha}' '${data.end.getHours()}:${data.end.getMinutes()}`),
+                end: currentEvent?.id ? fTimestamp(`${currentEvent.occupied} ${data.end.getHours()}:${data.end.getMinutes()}`) : dayjs(`${fecha} ${data.end  .getHours()}:${data.end.getMinutes()}`).format("YYYY-MM-DD HH:mm"),
                 hora_inicio: `${data.start.getHours()}:${data.start.getMinutes()}`,
                 hora_final: `${data.end.getHours()}:${data.end.getMinutes()}`,
                 occupied: currentEvent?.id ? currentEvent.occupied : fecha
@@ -95,7 +91,6 @@ export default function Lista({ currentEvent, onClose, currentDay }){
                     <Typography variant="subtitle1">{currentEvent?.id ? dayjs(currentEvent.start).format("dddd, DD/MM/YYYY") : fechaTitulo}</Typography>
                 </Stack>
                 <Stack direction= "row" spacing={ 2 } sx={{ p: { xs: 1, md: 2 } }}>
-                    
                     <Controller
                         name = "start"
                         render = {({field})=>
@@ -103,7 +98,7 @@ export default function Lista({ currentEvent, onClose, currentDay }){
                                 label="Hora de inicio" 
                                 defaultValue={currentEvent?.id ? dayjs(currentEvent.start).$d : new Date()}
                                 onChange={
-                                    (value) => {field.onChange(value); setHoraInicio(value)}
+                                    (value) => field.onChange(value)
                                 } 
                             />
                         }
@@ -116,7 +111,7 @@ export default function Lista({ currentEvent, onClose, currentDay }){
                                 label="Hora finalización"
                                 defaultValue={currentEvent?.id ? dayjs(currentEvent.end).$d : new Date()}
                                 onChange={
-                                    (value) => {field.onChange(value); setHoraFinal(value)}
+                                    (value) => field.onChange(value)
                                 } 
                             />
                         }

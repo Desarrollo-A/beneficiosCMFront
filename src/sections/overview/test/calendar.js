@@ -116,7 +116,6 @@ export async function createCustom(fecha, eventData) {
 // ----------------------------------------------------------------------
 
 export async function updateCustom(eventData) {
-  console.log(eventData);
   return axios.post('http://localhost/beneficiosCMBack/calendarioController/update_occupied', {
         hora_inicio: eventData.hora_inicio,
         hora_final:  eventData.hora_final,
@@ -150,17 +149,14 @@ export async function updateCustom(eventData) {
 // ----------------------------------------------------------------------
 
 export async function deleteEvent(eventId) {
-  /**
-   * Work on server
-   */
-  // const data = { eventId };
-  // await axios.patch(endpoints.calendar, data);
+  
+  await axios.patch('http://localhost/beneficiosCMBack/calendarioController/delete_occupied', {id_unico: eventId});
 
   /**
    * Work in local
    */
   mutate(
-    URL,
+    URLC,
     (currentData) => {
       const events = currentData.events.filter((event) => event.id !== eventId);
 

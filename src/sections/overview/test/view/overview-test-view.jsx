@@ -1,6 +1,6 @@
 import Calendar from '@fullcalendar/react'; // => request placed at the top
-import { useState } from 'react';
 import listPlugin from '@fullcalendar/list';
+import { useState, useCallback } from 'react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import timelinePlugin from '@fullcalendar/timeline';
@@ -11,7 +11,9 @@ import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
+import Tooltip from '@mui/material/Tooltip';
 import Container from '@mui/material/Container';
+import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import DialogTitle from '@mui/material/DialogTitle';
 
@@ -19,13 +21,15 @@ import { useResponsive } from 'src/hooks/use-responsive';
 
 import { fTimestamp } from 'src/utils/format-time';
 
+import Iconify from 'src/components/iconify';
+import { useSnackbar } from 'src/components/snackbar';
 import { useSettingsContext } from 'src/components/settings';
 
 import Lista from "./lista";
 import { StyledCalendar } from '../styles';
-import { GetCustomEvents } from '../calendar';
 import CalendarToolbar from '../calendar-tool';
 import { useEvent, useCalendar } from '../hooks';
+import { deleteEvent, GetCustomEvents } from '../calendar';
 
 // ----------------------------------------------------------------------
 
@@ -38,6 +42,7 @@ const defaultFilters = {
   // ----------------------------------------------------------------------
 
 export default function OverviewTestView(){
+    const { enqueueSnackbar } = useSnackbar();
     const smUp = useResponsive('up', 'sm');
     const settings = useSettingsContext();
     const [ day, setDay] = useState();
@@ -76,6 +81,16 @@ export default function OverviewTestView(){
         filters,
         dateError,
       });
+
+      const onDelete = useCallback(async () => {
+        try {
+          await deleteEvent(`${currentEvent?.id}`);
+          enqueueSnackbar('Delete success!');
+          onCloseForm();
+        } catch (error) {
+          console.error(error);
+        }
+      }, [currentEvent?.id, enqueueSnackbar, onCloseForm]);
 
     return(
         <>
@@ -150,8 +165,17 @@ export default function OverviewTestView(){
             onClose={onCloseForm}
         >
             <DialogTitle sx= {{ minHeight: 76 }}>
-                { openForm && <> { currentEvent?.id ? 'Editar horario' : 'Cancelar horario' } </> }
-            </DialogTitle>  
+                <Stack direction="row" justifyContent='space-between' useFlexGap flexWrap="wrap">
+                    { openForm && <> { currentEvent?.id ? 'Editar horario' : 'Cancelar horario' } </> }
+                    {!!currentEvent?.id && (
+                      <Tooltip title="Borrar horario">
+                        <IconButton onClick={onDelete}>
+                            <Iconify icon="solar:trash-bin-trash-bold" />
+                        </IconButton>
+                      </Tooltip>
+                    )}
+                </Stack>
+            </DialogTitle>
 
             <Lista 
                 currentEvent={currentEvent}
