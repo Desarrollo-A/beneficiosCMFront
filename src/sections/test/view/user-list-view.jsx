@@ -101,32 +101,30 @@ export default function UserListView() {
           }
           
           const requiredData = [
-            { cell: worksheet.A1, keyword: 'CONTRATO' },
-            { cell: worksheet.B1, keyword: 'EMPLEADO' },
-            { cell: worksheet.C1, keyword: 'NOMBRE' },
-            { cell: worksheet.D1, keyword: 'TELEFONO' },
-            { cell: worksheet.E1, keyword: 'AREA' },
-            { cell: worksheet.F1, keyword: 'OFICINA' },
-            { cell: worksheet.G1, keyword: 'SEDE' },
-            { cell: worksheet.H1, keyword: 'CORREO' },
+            { cell: worksheet.A1, keyword: 'NOMBRE' },
+            { cell: worksheet.B1, keyword: 'TELÉFONO' },
+            { cell: worksheet.C1, keyword: 'ÁREA' },
+            { cell: worksheet.D1, keyword: 'PUESTO' },
+            { cell: worksheet.E1, keyword: 'OFICINA' },
+            { cell: worksheet.F1, keyword: 'SEDE' },
+            { cell: worksheet.G1, keyword: 'CORREO' },
           ];
           
-          let showError = false;
-          
-          requiredData.forEach(item => {
-            if (!item.cell || (!item.cell.v.includes(item.keyword))) {
-              enqueueSnackbar(`El titulo ${item.cell.v} no coincide con ${item.keyword}`, { variant: 'warning' });
-              showError = true;
+          let showError = requiredData.some(item => {
+            if (!item.cell || !(item.cell.v === (item.keyword))) {
+              enqueueSnackbar(`El título ${item.cell.v} no coincide con ${item.keyword}`, { variant: 'warning' });
+              return true; // Devolvemos true para indicar que se ha encontrado un error
             }
+            return false; // Devolvemos false para indicar que no hay error en este elemento
           });
-     
+          
           if (showError) {
             return;
           }
           
           showError = false;
           jsonData.forEach((row, index) => {
-            const labels = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+            const labels = ['A', 'B', 'C', 'D', 'E', 'F', 'E'];
           
             labels.forEach(label => {
               const cellLabel = label + (index + 2);
@@ -140,21 +138,17 @@ export default function UserListView() {
           if (showError) {
             return;
           }
-          if ( !worksheet.A2 || !worksheet.B2 || !worksheet.C2 || !worksheet.D2 || !worksheet.E2 || !worksheet.F2) {
-            enqueueSnackbar(`Asegurese de que los registros contengan información`, { variant: 'warning' });
-            return;
-          }
 
           // Transformar las claves en el objeto JSON
           const transformedData = jsonData.map((row) => ({
-            contrato: row.CONTRATO,
-            empleado: row.EMPLEADO,
-            nombre: row.NOMBRE, // Cambiar "nombre" a "nombre_usuario"
-            telPersonal: row.TELEFONO,
-            area: row.AREA,
+            nombre: row.NOMBRE,
+            telPersonal: row.TELÉFONO,
+            area: row.ÁREA,
+            puesto: row.PUESTO,
             oficina: row.OFICINA,
             sede: row.SEDE,
             correo: row.CORREO,
+            creadoPor: 1,
           }));
         
           const users = {
@@ -162,15 +156,15 @@ export default function UserListView() {
             "data": transformedData,
           };
           
-          handleCreateUser(users);
+          handleCreateUsers(users);
         };
 
         reader.readAsArrayBuffer(file);
     };
 
-    const handleCreateUser = async (users) => {
+    const handleCreateUsers = async (users) => {
       console.log(users);
-      await fetch('http://localhost/beneficiosCMBack/general/insertBatch', {
+      await fetch('http://localhost/beneficiosCMBack/Usuario/insertBatchUsers', {
         method: 'POST',
         body: JSON.stringify(users),
       })
@@ -180,7 +174,6 @@ export default function UserListView() {
           if (data.result) {
             enqueueSnackbar(`¡Los usuarios han sido registrados exitosamente!`, { variant: 'success' });
             loadUsers();
-            // Aqui quiero volver a ejecutar el fetch para actualizar userData
           } else {
             enqueueSnackbar(`¡Ha surgido un error al intentar registrar los usuarios!`, { variant: 'warning' });
           }
@@ -209,7 +202,7 @@ export default function UserListView() {
               href: paths.dashboard.root,
             },
             {
-              name: 'Test',
+              name: 'User',
               href: paths.dashboard.test.root,
             },
             { name: 'Listado de usuarios' },
@@ -228,7 +221,7 @@ export default function UserListView() {
           }
         />
 
-        <UserList users={userData} updateData={loadUsers}/>
+        <UserList users={userData} loadUsers={loadUsers}/>
       </Container>
       <Dialog fullWidth maxWidth="sm" open={upload.value} onClose={handleCloseDialog}>
         <DialogTitle sx={{ p: (theme) => theme.spacing(3, 3, 2, 3) }}> Agregar usuarios </DialogTitle>

@@ -3,7 +3,7 @@ import {Backdrop, Snackbar} from '@material-ui/core';
 
 import { Alert } from '@mui/lab';
 
-import gota from 'src/images/logo/spinner.gif';
+import spinner from 'src/images/logo/spinner.gif';
 
 import instance from './axiosBack';
 

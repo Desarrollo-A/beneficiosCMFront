@@ -62,13 +62,13 @@ export default function UserTableToolbar({
             width: { xs: 1, md: 200 },
           }}
         >
-          <InputLabel>Area</InputLabel>
+          <InputLabel>Área</InputLabel>
 
           <Select
             multiple
             value={filters.area}
             onChange={handleFilterRole}
-            input={<OutlinedInput label="Area" />}
+            input={<OutlinedInput label="Área" />}
             renderValue={(selected) => selected.map((value) => value).join(', ')}
             MenuProps={{
               PaperProps: {

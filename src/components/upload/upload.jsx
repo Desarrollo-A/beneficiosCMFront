@@ -8,6 +8,7 @@ import { alpha } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 
+import xlsFile  from 'src/images/file/users-file.png'
 import { UploadIllustration } from 'src/assets/illustrations';
 
 import Iconify from '../iconify';
@@ -50,9 +51,9 @@ export default function Upload({
     <Stack spacing={3} alignItems="center" justifyContent="center" flexWrap="wrap">
       <UploadIllustration sx={{ width: 1, maxWidth: 200 }} />
       <Stack spacing={1} sx={{ textAlign: 'center' }}>
-        <Typography variant="h6">Drop or Select file</Typography>
+        <Typography variant="h6">Suelte o Seleccione un archivo</Typography>
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          Drop files here or click
+          Suelte el archivo o haga clic en
           <Box
             component="span"
             sx={{
@@ -61,16 +62,16 @@ export default function Upload({
               textDecoration: 'underline',
             }}
           >
-            browse
+            explorar
           </Box>
-          thorough your machine
+          en su maquina
         </Typography>
       </Stack>
     </Stack>
   );
 
   const renderSinglePreview = (
-    <SingleFilePreview imgUrl={typeof file === 'string' ? file : file?.preview} />
+    <SingleFilePreview imgUrl={xlsFile} />
   );
 
   const removeSinglePreview = hasFile && onDelete && (
@@ -83,7 +84,7 @@ export default function Upload({
         zIndex: 9,
         position: 'absolute',
         color: (theme) => alpha(theme.palette.common.white, 0.8),
-        bgcolor: (theme) => alpha(theme.palette.grey[900], 0.72),
+        bgcolor: (theme) => alpha(theme.palette.grey[900],  0.72),
         '&:hover': {
           bgcolor: (theme) => alpha(theme.palette.grey[900], 0.48),
         },

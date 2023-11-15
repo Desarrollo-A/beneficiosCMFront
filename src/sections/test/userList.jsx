@@ -14,9 +14,6 @@ import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import TableContainer from '@mui/material/TableContainer';
 
-import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
-
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
@@ -40,16 +37,17 @@ const BACK = 'http://localhost/beneficiosCMBack/'
 
 const TABLE_HEAD = [
   { id: '', label: 'ID' },
-  { id: '', label: 'USUARIO' },
+  { id: '', label: 'NOMBRE COMPLETO' },
   { id: '', label: 'TELÉFONO' },
-  { id: '', label: 'AREA' },
+  { id: '', label: 'ÁREA' },
   { id: '', label: 'OFICINA' },
   { id: '', label: 'SEDE'},
   { id: '', label: 'CORREO'},
-  { id: '', width: 'ACCIONES' },
+  { id: '', label: 'ESTATUS' },
+  { id: '', label: '' },
 ];
 
-const HEADER = ["ID", "USUARIO", "TELÉFONO", "ÁREA", "OFICINA", "SEDE", "CORREO"];
+const HEADER = ["ID", "USUARIO", "TELÉFONO", "ÁREA", "OFICINA", "SEDE", "CORREO", "ESTATUS"];
 
 const defaultFilters = {
   name: '',
@@ -69,6 +67,7 @@ const handleDownloadExcel = (dataFiltered) => {
         { label: "OFICINA", value: "oficina" },
         { label: "SEDE", value: "sede" },
         { label: "CORREO", value: "correo" },
+        { label: "ESTATUS", value: "estatus" },
       ],
       content: dataFiltered,
     },
@@ -88,14 +87,13 @@ const handleDownloadPDF = (dataFiltered) => {
   autoTable(doc, {
     head: [HEADER],
     body: dataFiltered.map( item => ([item.id, item.nombre, item.telefono,
-    item.area, item.oficina, item.sede, item.correo])) ,
+    item.area, item.oficina, item.sede, item.correo, item.estatus])) ,
     })
   doc.save('Usuarios.pdf')
 }
 
 export default function UserList({users, loadUsers}) {
   const table = useTable();
-  const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   // const settings = useSettingsContext();
   const targetRef = useRef();
@@ -110,14 +108,7 @@ export default function UserList({users, loadUsers}) {
   }, [users]);
 
   useEffect(() => {
-    fetch(`${BACK}/Usuario/getAreas`)
-      .then((res) => res.json())
-      .then((data) => {
-        setAreas(data.data);
-      })
-      .catch((error) => {
-        alert(error);
-      });
+    getAreas();
   }, []);
   
   const canReset = !isEqual(defaultFilters, filters);
@@ -127,6 +118,17 @@ export default function UserList({users, loadUsers}) {
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
+
+  const getAreas = async () => {
+    await fetch(`${BACK}/Usuario/getAreas`)
+      .then((res) => res.json())
+      .then((data) => {
+        setAreas(data.data);
+      })
+      .catch((error) => {
+        alert(error);
+      });
+  }
 
   const dataFiltered = applyFilter({
     inputData: userData,
@@ -148,8 +150,6 @@ export default function UserList({users, loadUsers}) {
   );
 
   const handleDeleteRow = async (id) => {
-    console.log("Deleteando a", id);
-  
     try {
       const response = await fetch(`${BACK}Usuario/updateUser`, {
         method: 'POST',
@@ -164,7 +164,8 @@ export default function UserList({users, loadUsers}) {
       const data = await response.json();
       if (data.result) {
         enqueueSnackbar(`¡Se ha actualizado el usuario exitosamente!`, { variant: 'success' });
-        
+        loadUsers();
+        getAreas();
       } else {
         enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'warning' });
       }
@@ -172,20 +173,14 @@ export default function UserList({users, loadUsers}) {
       console.error(error);
       enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'danger' });
     }
+    
   };
-
-  const handleEditRow = useCallback((id) => {
-    router.push(paths.dashboard.user.edit(id));
-    console.log("Editando id", id);
-    }, [ router ]
-  );
 
   const handleExcel = async e =>{
     e.preventDefault();
     handleDownloadExcel(
       dataFiltered
     );
-    setAreas([]);
   }
 
   const handlePdf = async e =>{
@@ -196,7 +191,6 @@ export default function UserList({users, loadUsers}) {
   }
 
   return (
-    
         <Card>
             <CardHeader />
             <CardContent>
@@ -261,12 +255,13 @@ export default function UserList({users, loadUsers}) {
                         )
                         .map((usuario) => (
                           <UserTableRow
-                            key={`route_${usuario.id}`}
+                            key={`${usuario.id}`}
                             row={usuario}
                             selected={table.selected.includes(usuario.id)}
                             onSelectRow={() => table.onSelectRow(usuario.id)}
                             onDeleteRow={() => handleDeleteRow(usuario.id)}
-                            onEditRow={() => handleEditRow(usuario.id)}
+                            getAreas={getAreas}
+                            loadUsers={loadUsers}
                           />
                         ))}
 
@@ -314,6 +309,7 @@ const applyFilter = ({ inputData, comparator, filters }) => {
   if (name) {
     inputData = inputData.filter((user) => {
       const nameLower = name.toLowerCase();
+      const estatus = user.estatus === 1 ? 'ACTIVO' : 'INACTIVO';
       return (
         user.id.toString().toLowerCase().includes(nameLower) ||
         user.nombre.toLowerCase().includes(nameLower) ||
@@ -321,6 +317,7 @@ const applyFilter = ({ inputData, comparator, filters }) => {
         user.oficina.toLowerCase().includes(nameLower) ||
         user.sede.toString().toLowerCase().includes(nameLower) ||
         user.correo.toString().toLowerCase().includes(nameLower) ||
+        estatus.toString().toLowerCase().includes(nameLower) ||
         (typeof user.telefono === 'string' && user.telefono.toLowerCase().includes(nameLower)) ||
         (typeof user.telefono === 'number' && user.telefono.toString().includes(nameLower))
       );

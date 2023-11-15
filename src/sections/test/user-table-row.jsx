@@ -17,8 +17,8 @@ import UserQuickEditForm from './edit-user-dialog';
 
 // ----------------------------------------------------------------------
 
-export default function UserTableRow({ row, selected, onEditRow, onDeleteRow }) {
-  const { id, nombre, telefono, area, oficina, sede, correo } = row;
+export default function UserTableRow({ row, selected, onEditRow, onDeleteRow, getAreas, loadUsers }) {
+  const { id, nombre, telefono, area, oficina, sede, correo, estatus } = row;
 
   const confirm = useBoolean();
 
@@ -45,6 +45,8 @@ export default function UserTableRow({ row, selected, onEditRow, onDeleteRow }) 
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{correo}</TableCell>
 
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{estatus === 1? 'ACTIVO' : 'INACTIVO'}</TableCell>
+
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap'}}>
 
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
@@ -53,9 +55,8 @@ export default function UserTableRow({ row, selected, onEditRow, onDeleteRow }) 
         </TableCell>
       </TableRow>
 
-      <UserQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} />
+      <UserQuickEditForm key={row.id} currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} getAreas={getAreas} loadUsers={loadUsers} popoverOnClose={popover.onClose}/>
       
-        { /* SELECTS AL BORRAR */ } 
         <CustomPopover
           open={popover.open}
           onClose={popover.onClose}
@@ -70,7 +71,7 @@ export default function UserTableRow({ row, selected, onEditRow, onDeleteRow }) 
             sx={{ color: 'error.main' }}
           >
             <Iconify icon="solar:trash-bin-trash-bold" />
-            Borrar
+            Deshabilitar
           </MenuItem>
 
           <MenuItem
@@ -84,14 +85,15 @@ export default function UserTableRow({ row, selected, onEditRow, onDeleteRow }) 
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Borrar"
-        content="¿Estas seguro de borrar este usuario?"
+        title="Deshabilitar"
+        content="¿Estás seguro de deshabilitar este usuario?"
         action={ 
           <Button variant="contained" color="error" onClick={() => {
             onDeleteRow();
             confirm.onFalse();
+            popover.onClose();
           }}>
-            Borrar
+            Deshabilitar
           </Button>
         }
       />
@@ -104,4 +106,6 @@ UserTableRow.propTypes = {
   onEditRow: PropTypes.func,
   row: PropTypes.object,
   selected: PropTypes.bool,
+  getAreas: PropTypes.func,
+  loadUsers: PropTypes.func,
 };

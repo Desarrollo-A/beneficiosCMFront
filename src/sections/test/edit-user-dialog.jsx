@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
-import { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
+import { useMemo, useEffect } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import Box from '@mui/material/Box';
@@ -18,21 +18,21 @@ import FormProvider, { RHFSelect, RHFTextField } from 'src/components/hook-form'
 
 // ----------------------------------------------------------------------
 
-export default function UserQuickEditForm({ currentUser, open, onClose }) {
+export default function UserQuickEditForm({ currentUser, open, onClose, getAreas, loadUsers, popoverOnClose }) {
+
   const { enqueueSnackbar } = useSnackbar();
 
   const NewUserSchema = Yup.object().shape({
-    id: Yup.string().required('N. Contrato es requerido'),
-    contrato: Yup.string().required('N. Contrato es requerido'),
-    empleado: Yup.string().required('N. Empleado es requerido'),
-    nombre: Yup.string().required('Nombre es requerido'),
-    telefono: Yup.string().required('El N. Teléfonico es requerido'),
-    area: Yup.string().required('Área es requerido'),
-    puesto: Yup.string().required('El puesto es requerido'),
-    oficina: Yup.string().required('El campo de oficina es requerido'),
-    sede: Yup.string().required('La sede es requerida'),
-    correo: Yup.string().required('El correo es requerido').email('El correo debe ser una dirección de correo valida'),
-    estatus: Yup.string().required('El estatus es necesario'),
+    id: Yup.string().required('Este campo es requerido'),
+    contrato: Yup.string().required('Este campo es requerido'),
+    empleado: Yup.string().required('Este campo es requerido'),
+    nombre: Yup.string().required('Este campo es requerido'),
+    telefono: Yup.string().required('Este campo es requerido'),
+    area: Yup.string().required('Este campo es requerido'),
+    puesto: Yup.string().required('Este campo es requerido'),
+    oficina: Yup.string().required('Este campo es requerido'),
+    sede: Yup.string().required('Este campo es requerido'),
+    correo: Yup.string().required('Este campo es requerido').email('El correo debe ser una dirección de correo valida'),
   });
 
   const defaultValues = useMemo(
@@ -47,7 +47,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose }) {
       oficina: currentUser?.oficina || '',
       sede: currentUser?.sede || '',
       correo: currentUser?.correo || '',
-      estatus: currentUser?.estatus || '',
+      estatus: currentUser?.estatus || 0,
     }),
     [currentUser]
   );
@@ -62,6 +62,10 @@ export default function UserQuickEditForm({ currentUser, open, onClose }) {
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
+
+  useEffect(() => {
+    reset(defaultValues); // defaultValues debería ser actualizado cuando cambia el usuario
+  }, [currentUser, defaultValues, reset]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -81,7 +85,6 @@ export default function UserQuickEditForm({ currentUser, open, onClose }) {
           'oficina': data.oficina,
           'sede': data.sede,
           'correo': data.correo,
-          'estatus': data.estatus,
         }),
       });
   
@@ -89,15 +92,21 @@ export default function UserQuickEditForm({ currentUser, open, onClose }) {
       if (res.result) {
         reset();
         onClose();
+        loadUsers();
+        popoverOnClose();
         enqueueSnackbar(`¡Se ha actualizado los datos del usuario exitosamente!`, { variant: 'success' });
       } else {
         reset();
         onClose();
+        loadUsers();
+        popoverOnClose();
         enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'warning' });
       }
+      getAreas();
     } catch (error) {
       reset();
       onClose();
+      popoverOnClose();
       enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'danger' });
     }
   });
@@ -113,7 +122,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose }) {
       }}
     >
       <FormProvider methods={methods} onSubmit={onSubmit}>
-        <DialogTitle>Edicion de registro</DialogTitle>
+        <DialogTitle>Edición de registro</DialogTitle>
 
         <DialogContent>
 
@@ -127,23 +136,23 @@ export default function UserQuickEditForm({ currentUser, open, onClose }) {
             }}
             sx={{mt:2}}
           >
-            <RHFSelect name="estatus" label="Estatus" defaultValue={currentUser ? 1 : 0} >
-              <MenuItem key={1} value={1}>
-                ACTIVO
-              </MenuItem>
-              <MenuItem key={0} value={0}>
+            <RHFSelect name="estatus" label="Estatus" defaultValue={currentUser && currentUser.estatus === 1 ? 1 : 0} >
+              <MenuItem name="estatus" key={0} value={0}>
                 INACTIVO
+              </MenuItem>
+              <MenuItem name="estatus" key={1} value={1}>
+                ACTIVO
               </MenuItem>
             </RHFSelect>
 
             <Box sx={{ display: { xs: 'none', sm: 'block' } }} />
 
-            <RHFTextField name="id" label="ID" defaultValue={currentUser.id} />
+            <RHFTextField name="id" label="ID" defaultValue={currentUser.id} disabled/>
             <RHFTextField name="nombre" label='Nombre' defaultValue={currentUser.nombre}/>
             <RHFTextField name="contrato" label="Contrato" defaultValue={currentUser.contrato}/>
             <RHFTextField name="empleado" label="Empleado" defaultValue={currentUser.empleado}/>
-            <RHFTextField name="Telefono" label="Telefono" defaultValue={currentUser.telefono}/>
-            <RHFTextField name="area" label="Area" defaultValue={currentUser.area}/>
+            <RHFTextField name="telefono" label="Teléfono" defaultValue={currentUser.telefono}/>
+            <RHFTextField name="area" label="Área" defaultValue={currentUser.area}/>
             <RHFTextField name="puesto" label="Puesto" defaultValue={currentUser.puesto}/>
             <RHFTextField name="oficina" label="Oficina" defaultValue={currentUser.oficina}/>
             <RHFTextField name="sede" label="Sede" defaultValue={currentUser.sede}/>
@@ -170,4 +179,7 @@ UserQuickEditForm.propTypes = {
   currentUser: PropTypes.object,
   onClose: PropTypes.func,
   open: PropTypes.bool,
+  getAreas: PropTypes.func,
+  loadUsers: PropTypes.func,
+  popoverOnClose: PropTypes.func,
 };
