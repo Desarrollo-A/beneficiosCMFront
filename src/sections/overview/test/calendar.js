@@ -1,9 +1,8 @@
 import axios from 'axios';
-import { useMemo, useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import useSWR, { mutate } from 'swr';
 
 import { fetcher, endpoints } from 'src/utils/axios';
-import Calendario from 'src/api/calendario';
 
 
 // ----------------------------------------------------------------------
@@ -17,14 +16,13 @@ const options = {
   revalidateOnReconnect: false,
 };
 
-export function GetCustomEvents(current) {
+export function GetCustomEvents() {
   
   const { data, isLoading, error, isValidating } = useSWR(URLC, fetcher, options);
 
   const memoizedValue = useMemo(() => {
       const events = data?.events?.map((event) => ({
         ...event,
-        date: `${event.fechaOcupado}T${event.horaInicio}`,
         textColor: 'red',
       }));
     
@@ -86,7 +84,7 @@ export function GetCustomEvents(current) {
 
 // ----------------------------------------------------------------------
 
-export async function createCustom(fecha, eventData, current) {
+export async function createCustom(fecha, eventData) {
 
     return axios.post('http://localhost/beneficiosCMBack/calendarioController/save_occupied', {
         fecha,
