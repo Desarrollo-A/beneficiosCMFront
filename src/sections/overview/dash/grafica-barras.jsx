@@ -17,10 +17,9 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 // ----------------------------------------------------------------------
 
 function CitasDownloadExcel(Grafic, seriesData, title) {
-    const year = seriesData.toString();
     const data = [
       {
-        sheet: title+year,
+        sheet: `${title}${" "}${seriesData}`,
         columns: [
           { label: "Mes", value: "mes" },
           { label: "Total", value: "cantidad" },
@@ -38,7 +37,7 @@ function CitasDownloadExcel(Grafic, seriesData, title) {
       RTL: false,
     }
     Xlsx(data, settings)
-  }
+}
 
 // ----------------------------------------------------------------------
 
@@ -84,12 +83,14 @@ export default function GraficaBarras({ title, subheader, chart, year, handleCha
   async function handleGrafic() {
     dashborad.getCitasAnual(data => {
       setGrafic(data.data);
+    },{
+      dt:seriesData
     });
   }
 
   useEffect(() => {
     handleGrafic();
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [seriesData]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleExcel = async e => {
     e.preventDefault();

@@ -13,7 +13,7 @@ const Dashbord = () => {
         getFechaAsistencia: context.llamarServidorRespuesta('dashboardController/estatus_fecha_asistencia'),
         getFechaCancelada: context.llamarServidorRespuesta('dashboardController/estatus_fecha_cancelada'),
         getFechaPenalizada: context.llamarServidorRespuesta('dashboardController/estatus_fecha_penalizada'),
-        getCitasAnual: context.llamarServidor('dashboardController/citas_anual'),
+        getCitasAnual: context.llamarServidorRespuesta('dashboardController/citas_anual'),
     }
 }
 export default Dashbord
