@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useMemo } from 'react';
 import useSWR, { mutate } from 'swr';
 
-import { fetcher, endpoints } from 'src/utils/axios';
+import { fetcher_custom, endpoints } from 'src/utils/axios';
 
 
 // ----------------------------------------------------------------------
@@ -11,18 +11,15 @@ const URL = endpoints.calendar;
 const URLC = endpoints.extra;
 
 const options = {
-  revalidateIfStale: false,
-  revalidateOnFocus: false,
-  revalidateOnReconnect: false,
+  
 };
 
 export function GetCustomEvents(current) {
   const year = current.getFullYear();
   const month = (current.getMonth() + 1);
   console.log(year, month);
-
-  const { data, isLoading, error, isValidating } = useSWR(URLC, fetcher, options);
-
+  const { data, isLoading, error, isValidating } = useSWR(URLC, url => fetcher_custom(url, year, month), options);
+console.log(data);
   const memoizedValue = useMemo(() => {
       const events = data?.events?.map((event) => ({
         ...event,

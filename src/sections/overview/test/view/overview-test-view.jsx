@@ -73,7 +73,6 @@ export default function OverviewTestView(){
     } = useCalendar();
 
     const { events, eventsLoading} = GetCustomEvents(date);
-    // console.log(date);
 
     const currentEvent = useEvent(events, selectEventId, openForm);
 

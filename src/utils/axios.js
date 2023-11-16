@@ -22,11 +22,14 @@ export const fetcher = async (args) => {
   return res.data;
 };
 
-export const fetcher_custom = async (args) => {
-  // console.log(args);
+export const fetcher_custom = async (args, year, month) => {
   const [url, config] = Array.isArray(args) ? args : [args];
-
-  const res = await axiosInstance.get(url, { ...config });
+  
+  // const res = await axiosInstance.get(url, { ...config });
+  const res = await axiosInstance.post(url, {year, month}, { 
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }, }, {...config});
 
   return res.data;
 };
