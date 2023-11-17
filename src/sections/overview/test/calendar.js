@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { useMemo } from 'react';
-import useSWR, { mutate } from 'swr';
+import { useEffect, useMemo } from 'react';
+import useSWR, { mutate, useSWRConfig } from 'swr';
 
 import { fetcher_custom, endpoints } from 'src/utils/axios';
 
@@ -11,22 +11,28 @@ const URL = endpoints.calendar;
 const URLC = endpoints.extra;
 
 const options = {
-  
+  revalidateIfStale: false,
+  revalidateOnFocus: false,
+  revalidateOnReconnect: false,
+  refreshInterval: 0
 };
 
 export function GetCustomEvents(current) {
   const year = current.getFullYear();
   const month = (current.getMonth() + 1);
-  console.log(year, month);
-  const { data, isLoading, error, isValidating } = useSWR(URLC, url => fetcher_custom(url, year, month), options);
-console.log(data);
+  
+  const { data, isLoading, error, isValidating } = useSWR(URLC, url => fetcher_custom(url, year, month));
+
+  useEffect(()=> {
+    mutate(URLC);
+  },[month]);
+
   const memoizedValue = useMemo(() => {
       const events = data?.events?.map((event) => ({
         ...event,
         textColor: 'red',
       }));
     
-
     return {
       events: events || [],
       eventsLoading: isLoading,
@@ -35,6 +41,7 @@ console.log(data);
       eventsEmpty: !isLoading && !data?.events?.length,
     };
   }, [data?.events, error, isLoading, isValidating]);
+  
 
   return memoizedValue;
 }
@@ -155,7 +162,7 @@ export async function updateCustom(eventData) {
     }).then(response => response.data);
 
       // lo que se trae de la url se guarda en current data y se junta con eventData
-      // es necesario tener la url en el axios para el renderizado
+      // es necesario tener la url que el mismo al hacer get
       mutate(
         URLC,
         (currentData) => {

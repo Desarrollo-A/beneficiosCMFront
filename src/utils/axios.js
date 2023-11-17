@@ -25,7 +25,6 @@ export const fetcher = async (args) => {
 export const fetcher_custom = async (args, year, month) => {
   const [url, config] = Array.isArray(args) ? args : [args];
   
-  // const res = await axiosInstance.get(url, { ...config });
   const res = await axiosInstance.post(url, {year, month}, { 
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'

@@ -30,7 +30,6 @@ import { StyledCalendar } from '../styles';
 import CalendarToolbar from '../calendar-tool';
 import { useEvent, useCalendar } from '../hooks';
 import { deleteEvent, GetCustomEvents } from '../calendar';
-
 // ----------------------------------------------------------------------
 
 const defaultFilters = {
@@ -47,7 +46,8 @@ export default function OverviewTestView(){
     const settings = useSettingsContext();
     const [ day, setDay] = useState();
     const [filters] = useState(defaultFilters);
-    
+
+
 
     const dateError =
     filters.startDate && filters.endDate
