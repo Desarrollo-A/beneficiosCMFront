@@ -1,13 +1,12 @@
 import axios from 'axios';
-import { useEffect, useMemo } from 'react';
-import useSWR, { mutate, useSWRConfig } from 'swr';
+import useSWR, { mutate } from 'swr';
+import { useMemo, useEffect } from 'react';
 
-import { fetcher_custom, endpoints } from 'src/utils/axios';
+import { endpoints, fetcher_custom  } from 'src/utils/axios';
 
 
 // ----------------------------------------------------------------------
 
-const URL = endpoints.calendar;
 const URLC = endpoints.extra;
 
 const options = {
