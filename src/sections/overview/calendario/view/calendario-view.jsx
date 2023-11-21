@@ -40,7 +40,7 @@ const defaultFilters = {
   
   // ----------------------------------------------------------------------
 
-export default function OverviewTestView(){
+export default function CalendarioView(){
     const { enqueueSnackbar } = useSnackbar();
     const smUp = useResponsive('up', 'sm');
     const settings = useSettingsContext();

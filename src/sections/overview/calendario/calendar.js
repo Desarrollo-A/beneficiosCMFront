@@ -46,49 +46,6 @@ export function GetCustomEvents(current) {
 }
 
 // ----------------------------------------------------------------------
-// export function GetCustomEvents(current) {
-//   const year = current.getFullYear();
-//   const month = (current.getMonth() + 1);
- 
-//   const calendario = Calendario();
-//   const [FechaAsis, setFechaAsis] = useState([]);
-
-//   async function handleFechaAsis() {
-//     calendario.getOccupied(data => {
-//       setFechaAsis(data);
-//     },{
-//       year, month
-//     });
-//   }
-
-//   useEffect(() => {
-//     handleFechaAsis();
-//   }, [year, month]); // eslint-disable-line react-hooks/exhaustive-deps
-  
-//   // const { data, isLoading, error, isValidating } = useSWR(URLC, fetcher, options);
-
-//   const memoizedValue = useMemo(() => {
-//       const events = FechaAsis?.events?.map((event) => ({
-//         ...event,
-//         // title: event.titulo,
-//         date: `${event.fechaOcupado}T${event.horaInicio}`,
-//         textColor: 'red',
-//       }));
-    
-
-//     return {
-//       events: events || [],
-//       // eventsLoading: isLoading,
-//       // eventsError: error,
-//       // eventsValidating: isValidating,
-//       // eventsEmpty: !isLoading && !data?.events?.length,
-//     };
-//   }, [FechaAsis]);
-
-//   return memoizedValue;
-// }
-
-// ----------------------------------------------------------------------
 
 export async function createCustom(fecha, eventData) {
 
@@ -120,37 +77,6 @@ export async function createCustom(fecha, eventData) {
     ))
 }
 // ----------------------------------------------------------------------
-
-// export async function updateCustom(eventData) {
-//   return axios.post('http://localhost/beneficiosCMBack/calendarioController/update_occupied', {
-//         hora_inicio: eventData.hora_inicio,
-//         hora_final:  eventData.hora_final,
-//         titulo: eventData.title,
-//         id_unico: eventData.id
-//     }, {
-//         headers: {
-//           'Content-Type': 'application/x-www-form-urlencoded'
-//         }
-//     }, false)
-//     .then((response) => response.data)
-//     .then(
-//       // lo que se trae de la url se guarda en current data y se junta con eventData
-//       // es necesario tener la url en el axios para el renderizado
-//       mutate(
-//         URLC,
-//         (currentData) => {
-//           const events = currentData.events.map((event) =>
-//             event.id === eventData.id ? { ...event, ...eventData } : event
-//           );
-
-//           return {
-//             ...currentData,
-//             events,
-//           };
-//         },
-//         false
-//       ))
-// }
 
 export async function updateCustom(eventData) {
   const update = await axios.put('http://localhost/beneficiosCMBack/calendarioController/update_occupied', {

@@ -109,9 +109,9 @@ export function useNavData() {
             icon: ICONS.file,
           },
           {
-            title: t('test'),
-            path: paths.dashboard.general.test,
-            icon: ICONS.donut,
+            title: t('Calendario'),
+            path: paths.dashboard.general.calendario,
+            icon: ICONS.calendar,
           }
         ],
       },
