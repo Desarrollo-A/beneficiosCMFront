@@ -183,9 +183,9 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/tour/${MOCK_ID}/edit`,
       },
     },
-    test: {
-      root: `${ROOTS.DASHBOARD}/test`,
-      new: `${ROOTS.DASHBOARD}/test/new`,
+    usuarios: {
+      root: `${ROOTS.DASHBOARD}/usuarios`,
+      new: `${ROOTS.DASHBOARD}/usuarios/new`,
     },
   },
 };

@@ -92,7 +92,7 @@ const handleDownloadPDF = (dataFiltered) => {
   doc.save('Usuarios.pdf')
 }
 
-export default function UserList({users, loadUsers}) {
+export default function UserList({users, mutateUser}) {
   const table = useTable();
   const { enqueueSnackbar } = useSnackbar();
   // const settings = useSettingsContext();
@@ -159,12 +159,13 @@ export default function UserList({users, loadUsers}) {
         body: new URLSearchParams({
           'idUsuario': id,
           'estatus': 0,
+          'modificadoPor': 1
         }),
       });
       const data = await response.json();
       if (data.result) {
         enqueueSnackbar(`¡Se ha actualizado el usuario exitosamente!`, { variant: 'success' });
-        loadUsers();
+        mutateUser();
         getAreas();
       } else {
         enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'warning' });
@@ -261,7 +262,7 @@ export default function UserList({users, loadUsers}) {
                             onSelectRow={() => table.onSelectRow(usuario.id)}
                             onDeleteRow={() => handleDeleteRow(usuario.id)}
                             getAreas={getAreas}
-                            loadUsers={loadUsers}
+                            mutateUser={mutateUser}
                           />
                         ))}
 
@@ -290,7 +291,7 @@ export default function UserList({users, loadUsers}) {
 
 UserList.propTypes = {
   users: PropTypes.array,
-  loadUsers: PropTypes.func
+  mutateUser: PropTypes.func
 }
 
 const applyFilter = ({ inputData, comparator, filters }) => {

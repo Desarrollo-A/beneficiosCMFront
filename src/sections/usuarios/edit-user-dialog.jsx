@@ -12,13 +12,15 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
+// import { mutate } from 'swr';
+
+// import { useGetUser } from 'src/api/user';
 
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFSelect, RHFTextField } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
-
-export default function UserQuickEditForm({ currentUser, open, onClose, getAreas, loadUsers, popoverOnClose }) {
+export default function UserQuickEditForm({ currentUser, open, onClose, getAreas, usersMutate, popoverOnClose }) {
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -89,16 +91,18 @@ export default function UserQuickEditForm({ currentUser, open, onClose, getAreas
       });
   
       const res = await response.json();
+      console.log(res)
+      
       if (res.result) {
         reset();
         onClose();
-        loadUsers();
+        usersMutate();
         popoverOnClose();
         enqueueSnackbar(`¡Se ha actualizado los datos del usuario exitosamente!`, { variant: 'success' });
       } else {
         reset();
         onClose();
-        loadUsers();
+        usersMutate();
         popoverOnClose();
         enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'warning' });
       }
@@ -107,7 +111,9 @@ export default function UserQuickEditForm({ currentUser, open, onClose, getAreas
       reset();
       onClose();
       popoverOnClose();
-      enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'danger' });
+      enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'success' });
+      console.log("usersMutate type:", typeof usersMutate);
+      console.log("ERROR", error);
     }
   });
 
@@ -180,6 +186,6 @@ UserQuickEditForm.propTypes = {
   onClose: PropTypes.func,
   open: PropTypes.bool,
   getAreas: PropTypes.func,
-  loadUsers: PropTypes.func,
+  usersMutate: PropTypes.func,
   popoverOnClose: PropTypes.func,
 };

@@ -12,6 +12,9 @@ import { paths } from 'src/routes/paths';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
+// import UserContext from 'src/api/users'
+import { useGetUser } from 'src/api/user';
+
 import Iconify from 'src/components/iconify';
 import { Upload } from 'src/components/upload';
 import { useSnackbar } from 'src/components/snackbar';
@@ -24,8 +27,11 @@ const BACK = 'http://localhost/beneficiosCMBack/';
 // ----------------------------------------------------------------------
 
 export default function UserListView() {
+  // const userContext = UserContext();
   const settings = useSettingsContext();
-  const { enqueueSnackbar } = useSnackbar();
+  const { enqueueSnackbar } = useSnackbar();  
+  
+  const { data: usersData, error: usersError, usersMutate } = useGetUser();
     
     const reader = new FileReader();
     const upload = useBoolean();
@@ -34,14 +40,8 @@ export default function UserListView() {
     const [userData, setUserData] = useState([])
 
     useEffect(() => {
-      loadUsers();
-    }, []);
-
-    const loadUsers = async () => {
-      await fetch(`${BACK}/Usuario/getUsers`)
-      .then((res) => res.json())
-      .then((data) => {
-        const obj = data.data.map((i) => ({
+      if (!usersError && usersData) {
+        const obj = usersData.map((i) => ({
           id: i.idUsuario,
           contrato: i.numContrato,
           empleado: i.numEmpleado,
@@ -55,11 +55,33 @@ export default function UserListView() {
           estatus: i.estatus,
         }));
         setUserData(obj);
-      })
-      .catch((error) => {
-        alert(error);
-      });
-    }
+      }
+    }, [usersData, usersError])
+
+    // useEffect(() => {
+    //   loadUsers();
+    // }, [])
+    
+    // const loadUsers = async () => {
+    //   await fetch(`${BACK}/Usuario/getUsers`)
+    //   .then((res) => res.json()).then((data) => {
+    //     const obj = data.data.map((i) => ({
+    //       id: i.idUsuario,
+    //       contrato: i.numContrato,
+    //       empleado: i.numEmpleado,
+    //       nombre: i.nombre,
+    //       telefono: i.telPersonal,
+    //       area: i.area,
+    //       puesto: i.puesto,
+    //       oficina: i.oficina,
+    //       sede: i.sede,
+    //       correo: i.correo,
+    //       estatus: i.estatus,
+    //     }));
+    //     setUserData(obj);
+    //   })
+    //   .catch((error) =>alert(error));
+    // }
 
     const isExcelFile = (fileName) => {
       const boolean = /\.(xlsx|xls)$/.test(fileName);
@@ -164,7 +186,7 @@ export default function UserListView() {
 
     const handleCreateUsers = async (users) => {
       console.log(users);
-      await fetch('http://localhost/beneficiosCMBack/Usuario/insertBatchUsers', {
+      await fetch(`${BACK}Usuario/insertBatchUsers`, {
         method: 'POST',
         body: JSON.stringify(users),
       })
@@ -173,7 +195,7 @@ export default function UserListView() {
         console.log(data);
           if (data.result) {
             enqueueSnackbar(`¡Los usuarios han sido registrados exitosamente!`, { variant: 'success' });
-            loadUsers();
+            usersMutate();
           } else {
             enqueueSnackbar(`¡Ha surgido un error al intentar registrar los usuarios!`, { variant: 'warning' });
           }
@@ -189,6 +211,7 @@ export default function UserListView() {
     const handleCloseDialog = () =>{
       upload.onFalse();
       setFile(null);
+      console.log("usersMutate type:", typeof usersMutate);
     } 
 
   return (
@@ -203,7 +226,7 @@ export default function UserListView() {
             },
             {
               name: 'User',
-              href: paths.dashboard.test.root,
+              href: paths.dashboard.usuarios.root,
             },
             { name: 'Listado de usuarios' },
           ]}
@@ -221,7 +244,7 @@ export default function UserListView() {
           }
         />
 
-        <UserList users={userData} loadUsers={loadUsers}/>
+        <UserList users={userData} usersMutate={usersMutate} />
       </Container>
       <Dialog fullWidth maxWidth="sm" open={upload.value} onClose={handleCloseDialog}>
         <DialogTitle sx={{ p: (theme) => theme.spacing(3, 3, 2, 3) }}> Agregar usuarios </DialogTitle>

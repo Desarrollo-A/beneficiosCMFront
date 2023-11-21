@@ -221,10 +221,10 @@ export function useNavData() {
            // Usuarios batch
            {
             title: t('user'),
-            path: paths.dashboard.test.root,
+            path: paths.dashboard.usuarios.root,
             icon: ICONS.user,
             children: [
-              { title: t('list'), path: paths.dashboard.test.new },
+              { title: t('list'), path: paths.dashboard.usuarios.new },
             ],
           },
           
