@@ -110,11 +110,10 @@ export async function updateCustom(eventData) {
 
 export async function deleteEvent(eventId) {
   
-  await axios.patch('http://localhost/beneficiosCMBack/calendarioController/delete_occupied', {id_unico: eventId});
+  const delEvent = await axios.patch('http://localhost/beneficiosCMBack/calendarioController/delete_occupied', {
+    id_unico: eventId
+  }).then(response => response.data);
 
-  /**
-   * Work in local
-   */
   mutate(
     URLC,
     (currentData) => {
@@ -127,4 +126,6 @@ export async function deleteEvent(eventId) {
     },
     false
   );
+
+  return delEvent;
 }

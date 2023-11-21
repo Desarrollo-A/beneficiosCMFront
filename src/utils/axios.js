@@ -28,7 +28,7 @@ export const fetcher_custom = async (args, year, month) => {
   const res = await axiosInstance.post(url, {year, month}, { 
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
-    }, }, {...config});
+    }}, {...config});
 
   return res.data;
 };

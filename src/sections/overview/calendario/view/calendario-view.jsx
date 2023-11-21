@@ -47,8 +47,6 @@ export default function CalendarioView(){
     const [ day, setDay] = useState();
     const [filters] = useState(defaultFilters);
 
-
-
     const dateError =
     filters.startDate && filters.endDate
       ? filters.startDate.getTime() > filters.endDate.getTime()
@@ -84,11 +82,19 @@ export default function CalendarioView(){
 
       const onDelete = useCallback(async () => {
         try {
-          await deleteEvent(`${currentEvent?.id}`);
-          enqueueSnackbar('Delete success!');
+          const resp = await deleteEvent(`${currentEvent?.id}`);
+          
+          if(resp.status){
+            enqueueSnackbar(resp.message);
+          }
+          else{
+            enqueueSnackbar(resp.message, {variant: "error"});
+          }
+
           onCloseForm();
         } catch (error) {
-          console.error(error);
+          enqueueSnackbar("Error", {variant: "error"});
+          onCloseForm();
         }
       }, [currentEvent?.id, enqueueSnackbar, onCloseForm]);
 
@@ -168,7 +174,7 @@ export default function CalendarioView(){
                 <Stack direction="row" justifyContent='space-between' useFlexGap flexWrap="wrap">
                     { openForm && <> { currentEvent?.id ? 'Editar horario' : 'Cancelar horario' } </> }
                     {!!currentEvent?.id && (
-                      <Tooltip title="Borrar horario">
+                      <Tooltip title="Eliminar horario">
                         <IconButton onClick={onDelete}>
                             <Iconify icon="solar:trash-bin-trash-bold" />
                         </IconButton>
