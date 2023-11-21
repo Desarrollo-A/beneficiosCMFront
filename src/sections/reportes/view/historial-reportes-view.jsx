@@ -5,10 +5,10 @@ import autoTable from 'jspdf-autotable';
 import { useRef, useState, useEffect, useCallback } from 'react';
 
 import Card from '@mui/material/Card';
-import Tooltip from '@mui/material/Tooltip';
 import Table from '@mui/material/Table';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
@@ -20,6 +20,8 @@ import { useRouter } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import uuidv4 from "src/utils/uuidv4";
+
+import { useGetReportes, useGetEspecialistas } from 'src/api/reportes';
 
 import Reportes from 'src/api/reportes';
 
@@ -139,6 +141,30 @@ function handleDownloadPDF(tableData, header, rol) {
 }
 // ----------------------------------------------------------------------
 export default function HistorialReportesView() {
+
+  const { reportesData } = useGetReportes();
+
+  const { especialistasData } = useGetEspecialistas();
+
+  const [datosTabla, setDatosTabla] = useState([]);
+
+  const [especialistas, setEspecialistas] = useState([]);
+
+  console.log(especialistas);
+
+  console.log(datosTabla);
+
+  useEffect(() => {
+    if (reportesData.length) {
+      setDatosTabla(reportesData);
+    }
+  }, [reportesData]);
+
+  useEffect(() => {
+    if (especialistasData.length) {
+      setEspecialistas(especialistasData);
+    }
+  }, [reportesData]);
 
   const rol = 3;
 
@@ -406,14 +432,14 @@ export default function HistorialReportesView() {
                       table.page * table.rowsPerPage,
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
-                    .map((cita) => (
+                    .map((row) => (
                       <FilasTabla
                         key={`route_${uuidv4()}`}
-                        row={cita}
-                        selected={table.selected.includes(cita.idCita)}
-                        onSelectRow={() => table.onSelectRow(cita.idCita)}
-                        onDeleteRow={() => handleDeleteRow(cita.idCita)}
-                        onEditRow={() => handleEditRow(cita.idCita)}
+                        row={row}
+                        selected={table.selected.includes(row.idCita)}
+                        onSelectRow={() => table.onSelectRow(row.idCita)}
+                        onDeleteRow={() => handleDeleteRow(row.idCita)}
+                        onEditRow={() => handleEditRow(row.idCita)}
                         rol={rol}
                         rel={handleReportes}
                       />

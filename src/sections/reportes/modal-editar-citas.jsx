@@ -4,18 +4,18 @@ import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
+import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import Stack from '@mui/material/Stack';
 import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
+import Reportes from 'src/api/reportes';
+
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
-
-import Reportes from 'src/api/reportes';
 
 // ----------------------------------------------------------------------
 
@@ -54,8 +54,8 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
       reset();
       onClose();
         reportes.getObservacion(resp => {
-          if (resp.data === true) {
-            enqueueSnackbar('Observación Registrada!', /* {variant: 'warning'} */);
+          if (resp.estatus===200) {
+            enqueueSnackbar(resp.mensaje);
             rel();
           }
         },{

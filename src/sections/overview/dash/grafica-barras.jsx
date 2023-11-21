@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import ButtonBase from '@mui/material/ButtonBase';
 import CardHeader from '@mui/material/CardHeader';
@@ -104,15 +105,18 @@ export default function GraficaBarras({ title, subheader, chart, year, handleCha
   return (
     <>
       <Card {...other}>
+
+      <Tooltip title="Exportar XLS" placement="top" arrow>
           <MenuItem
             sx={{ width: 50, ml: 2, mt: 2 }}
-            title='Exportar Excel'
             onClick={handleExcel}
           >
             <Iconify 
             icon="teenyicons:xls-outline"
             width={24} />
           </MenuItem>
+      </Tooltip>
+
         <CardHeader
           title={title}
           subheader={subheader}

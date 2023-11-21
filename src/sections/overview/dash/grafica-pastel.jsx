@@ -2,6 +2,7 @@ import Xlsx from 'json-as-xlsx';
 import PropTypes from 'prop-types';
 
 import Card from '@mui/material/Card';
+import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import CardHeader from '@mui/material/CardHeader';
 import { styled, useTheme } from '@mui/material/styles';
@@ -28,7 +29,6 @@ const StyledChart = styled(Chart)(({ theme }) => ({
     top: `calc(${CHART_HEIGHT - LEGEND_HEIGHT}px) !important`,
   },
 }));
-
 
 function handleDownloadExcel(registros, count) {
 
@@ -120,6 +120,8 @@ export default function GraficaPastel({ title, subheader, chart, registros, coun
 
   return (
     <Card {...other}>
+
+    <Tooltip title="Exportar XLS" placement="top" arrow>
       <MenuItem
             sx={{ width: 50, ml: 2, mt: 2 }}
             title='Exportar Excel'
@@ -129,6 +131,8 @@ export default function GraficaPastel({ title, subheader, chart, registros, coun
             icon="teenyicons:xls-outline"
             width={24} />
       </MenuItem>
+    </Tooltip>
+
       <CardHeader title={title} subheader={subheader} sx={{ mb: 5 }} />
 
       <StyledChart

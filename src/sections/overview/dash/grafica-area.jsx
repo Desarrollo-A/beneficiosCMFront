@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
+import Tooltip from '@mui/material/Tooltip';
 import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
 import { useTheme } from '@mui/material/styles';
@@ -91,15 +92,16 @@ export default function GraficaArea({ title, subheader, chart, estatus, registro
   
   return (
     <Card {...other}>
+      <Tooltip title="Exportar XLS" placement="top" arrow>
       <MenuItem
             sx={{ width: 50, ml: 2, mt: 2 }}
-            title='Exportar Excel'
             onClick={handleExcel}
           >
             <Iconify 
             icon="teenyicons:xls-outline"
             width={24} />
       </MenuItem>
+      </Tooltip>
       <CardHeader title={title} subheader={subheader} />
       <Box
         sx={{

@@ -9,7 +9,7 @@ export function useGetProducts() {
   const URL = endpoints.product.list;
 
   const { data, isLoading, error, isValidating } = useSWR(URL, fetcher);
-
+  
   const memoizedValue = useMemo(
     () => ({
       products: data?.products || [],

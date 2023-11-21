@@ -21,7 +21,7 @@ export default function BarraTareasTabla({
   onFilters,
   //
   roleOptions,
-  handleChangeReport
+  handleChangeReport,
 }) {
   const popover = usePopover();
 
@@ -99,13 +99,13 @@ export default function BarraTareasTabla({
             width: { xs: 1, md: 200 },
           }}
         >
-          <InputLabel>Departamento</InputLabel>
+          <InputLabel>Area</InputLabel>
 
           <Select
             multiple
             value={filters.area}
             onChange={handleFilterRole}
-            input={<OutlinedInput label="Departamento" />}
+            input={<OutlinedInput label="Area" />}
             renderValue={(selected) => selected.map((value) => value).join(', ')}
             MenuProps={{
               PaperProps: {
@@ -181,5 +181,5 @@ BarraTareasTabla.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   roleOptions: PropTypes.array,
-  handleChangeReport: PropTypes.func
+  handleChangeReport: PropTypes.func,
 };
