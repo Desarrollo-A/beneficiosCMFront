@@ -1,4 +1,4 @@
-import useContext from "react";
+import { useContext } from "react";
 
 import { contextGeneral } from "src/utils/contextGeneralProvider";
 

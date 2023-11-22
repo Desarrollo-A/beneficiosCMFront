@@ -53,4 +53,8 @@ export const endpoints = {
     details: '/api/product/details',
     search: '/api/product/search',
   },
+  user: {
+    list: 'Usuario/getUsers',
+    update: 'Usuario/updateUser',
+  },
 };

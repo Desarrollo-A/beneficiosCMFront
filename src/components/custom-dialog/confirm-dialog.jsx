@@ -16,11 +16,10 @@ export default function ConfirmDialog({ title, content, action, open, onClose, .
       {content && <DialogContent sx={{ typography: 'body2' }}> {content} </DialogContent>}
 
       <DialogActions>
-        {action}
-
         <Button variant="outlined" color="inherit" onClick={onClose}>
           Cancel
         </Button>
+        {action}
       </DialogActions>
     </Dialog>
   );

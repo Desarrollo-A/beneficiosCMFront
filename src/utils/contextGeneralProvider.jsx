@@ -1,4 +1,9 @@
-import React, { useState, createContext } from 'react';
+import { useState, createContext } from 'react';
+import {Backdrop, Snackbar} from '@material-ui/core';
+
+import { Alert } from '@mui/lab';
+
+import spinner from 'src/images/logo/spinner.gif';
 
 import instance from './axiosBack';
 
@@ -17,7 +22,7 @@ const ContextGeneralProvider = (props) => {
             setCtl(response.data);
             setCargando(false);
         })
-        .catch(error=>{
+        .catch(error=> {
             setCtl([]);
             setCargando(false);
         });
@@ -37,6 +42,38 @@ const ContextGeneralProvider = (props) => {
             }
         })
         .catch(error=>{
+            setMensaje({ open: true, status: -1, value: "ERROR DE SERVIDOR" });
+            respuesta(-1,'Error de servidor');
+            setCargando(false);
+        });
+    }
+
+    const llamarServidorRespuestaPDF=(ruta)=>(respuesta,body)=>{
+        setCargando(true);
+        instance.post(ruta,body,{
+        responseType: 'arraybuffer',
+        headers: {'Content-Type': 'application/json', Accept: 'application/pdf'
+        }
+      })
+        .then(response=>{
+            setCargando(false);
+            if(response.status===200){
+                    const url = window.URL.createObjectURL(new Blob([response.data]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    const date = new Date();
+                    const newStringDate =('0' + date.getDate()).slice(-2) +('0' + (date.getMonth() + 1)).slice(-2) +date.getFullYear().toString();
+                    link.setAttribute('download',newStringDate + '.pdf' ); 
+                    document.body.appendChild(link);
+                    setMensaje({ open: true, status: response.data.estatus, value: response.data.mensaje });
+                    respuesta(link,response.data.estatus,response.data.mensaje); 
+                }else{
+                setMensaje({ open: true, status: -1, value: "ERROR DESCONOCIDO" });
+                respuesta(-5,"ERROR DESCONOCIDO");
+            }
+        })
+        .catch(error=>{
+            // console.log(error);
             setMensaje({ open: true, status: -1, value: "ERROR DE SERVIDOR" });
             respuesta(-1,'Error de servidor');
             setCargando(false);

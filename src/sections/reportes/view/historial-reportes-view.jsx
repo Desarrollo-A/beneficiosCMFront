@@ -20,8 +20,6 @@ import { useBoolean } from 'src/hooks/use-boolean';
 
 import uuidv4 from "src/utils/uuidv4";
 
-import Reportes from 'src/api/reportes';
-
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
@@ -190,38 +188,38 @@ export default function HistorialReportesView() {
 
   const [tableData, setTableData] = useState([]);
 
-  const [ReportData, setReportData] = useState('Reporte General');
-
-  async function handleReportes() {
-    reportes.getReportes(data => {
-      const ct = data.data.map((cita) => ({
-        idCita: cita.idCita,
-        idEspecialista: cita.idEspecialista,
-        idPaciente: cita.idPaciente,
-        area: cita.area,
-        estatus: cita.estatus,
-        fechaInicio: cita.fechaInicio,
-        fechaFinal: cita.fechaFinal,
-      }));
-      setTableData(ct);
-    },{
-      ReportData
-    });
-  }
+  useEffect(() => {
+    fetch("http://localhost/beneficiosCMBack/welcome/citas")
+      .then((res) => res.json())
+      .then((data) => {
+        // console.log(data)
+        const ct = data.data.map((cita) => ({
+          idCita: cita.idCita,
+          idEspecialista: cita.idEspecialista,
+          idPaciente: cita.idPaciente,
+          area: cita.area,
+          estatus: cita.estatus,
+          fechaInicio: cita.fechaInicio,
+          fechaFinal: cita.fechaFinal,
+        }));
+        setTableData(ct);
+      })
+      .catch((error) => {
+        alert(error);
+      });
+  }, []);
 
   useEffect(() => {
-    handleReportes();
-  }, [ReportData]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  async function handleEspe() {
-    reportes.getEspecialistas(data => {
-      setEs(data.data);
-    });
-  }
-
-  useEffect(() => {
-    handleEspe();
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    fetch("http://localhost/beneficiosCMBack/welcome/especialistas")
+      .then((res) => res.json())
+      .then((data) => {
+        // console.log(data)
+        setEs(data.data);
+      })
+      .catch((error) => {
+        alert(error);
+      });
+  }, []);
 
   const _rp = espe.flatMap((es) => (es.nombre));
 

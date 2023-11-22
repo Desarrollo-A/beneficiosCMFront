@@ -218,6 +218,16 @@ export function useNavData() {
             ],
           },
 
+           // Usuarios batch
+           {
+            title: t('user'),
+            path: paths.dashboard.usuarios.root,
+            icon: ICONS.user,
+            children: [
+              { title: t('list'), path: paths.dashboard.usuarios.new },
+            ],
+          },
+          
           // FILE MANAGER
           {
             title: t('file_manager'),
