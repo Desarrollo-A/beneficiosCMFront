@@ -12,8 +12,7 @@ export default function useEvent(events, selectEventId, openForm) {
       title: '',
       start : '',
       end: '',
-      fecha: '',
-      textColor: 'red'
+      occupied: ''
     }),
     []
   );

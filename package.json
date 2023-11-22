@@ -47,6 +47,7 @@
     "axios": "^1.6.0",
     "base-64": "^1.0.0",
     "date-fns": "^2.30.0",
+    "dayjs": "^1.11.10",
     "firebase": "^10.4.0",
     "framer-motion": "^10.16.4",
     "highlight.js": "^11.8.0",
