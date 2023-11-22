@@ -8,6 +8,7 @@ import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
@@ -19,6 +20,10 @@ import { useRouter } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import uuidv4 from "src/utils/uuidv4";
+
+import { useGetReportes, useGetEspecialistas } from 'src/api/reportes';
+
+import Reportes from 'src/api/reportes';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -35,9 +40,9 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-import UserTableRow from '../filas-tabla-citas';
-import UserTableToolbar from '../barratareas-tabla-citas';
-import UserTableFiltersResult from '../filtros-tabla-citas';
+import FilasTabla from '../filas-tabla-citas';
+import FiltrosTabla from '../filtros-tabla-citas';
+import BarraTareasTabla from '../barratareas-tabla-citas';
 
 // ----------------------------------------------------------------------
 
@@ -51,7 +56,7 @@ const defaultFilters = {
 const doc = new JsPDF();
 
 function handleDownloadExcel(tableData, rol) {
-
+  
   let data = [];
 
   const baseArray = [
@@ -74,7 +79,7 @@ function handleDownloadExcel(tableData, rol) {
     },
   ];
 
-  if(rol === 1){
+  if (rol === 1) {
     const arr = baseArray[0].columns;
     arr.splice(1, 1);
 
@@ -86,7 +91,7 @@ function handleDownloadExcel(tableData, rol) {
       },
     ];
 
-  }else if(rol === 2){
+  } else if (rol === 2) {
     const arr = baseArray[0].columns;
     arr.splice(2, 1);
 
@@ -98,7 +103,7 @@ function handleDownloadExcel(tableData, rol) {
       },
     ];
 
-  }else{
+  } else {
     data = baseArray;
   }
 
@@ -115,17 +120,17 @@ function handleDownloadExcel(tableData, rol) {
 function handleDownloadPDF(tableData, header, rol) {
 
   let data = [];
-  
-  if(rol === 1){
+
+  if (rol === 1) {
     data = tableData.map(item => ([item.idCita, item.idPaciente,
-      item.area, item.estatus, item.fechaInicio, item.fechaFinal]))
+    item.area, item.estatus, item.fechaInicio, item.fechaFinal]))
   }
-  else if(rol === 2){
+  else if (rol === 2) {
     data = tableData.map(item => ([item.idCita, item.idEspecialista,
-      item.area, item.estatus, item.fechaInicio, item.fechaFinal]))
-  }else{
+    item.area, item.estatus, item.fechaInicio, item.fechaFinal]))
+  } else {
     data = tableData.map(item => ([item.idCita, item.idEspecialista, item.idPaciente,
-      item.area, item.estatus, item.fechaInicio, item.fechaFinal]))
+    item.area, item.estatus, item.fechaInicio, item.fechaFinal]))
   }
 
   autoTable(doc, {
@@ -137,7 +142,31 @@ function handleDownloadPDF(tableData, header, rol) {
 // ----------------------------------------------------------------------
 export default function HistorialReportesView() {
 
-  const rol =3;
+  const { reportesData } = useGetReportes();
+
+  const { especialistasData } = useGetEspecialistas();
+
+  const [datosTabla, setDatosTabla] = useState([]);
+
+  const [especialistas, setEspecialistas] = useState([]);
+
+  console.log(especialistas);
+
+  console.log(datosTabla);
+
+  useEffect(() => {
+    if (reportesData.length) {
+      setDatosTabla(reportesData);
+    }
+  }, [reportesData]);
+
+  useEffect(() => {
+    if (especialistasData.length) {
+      setEspecialistas(especialistasData);
+    }
+  }, [reportesData]);
+
+  const rol = 3;
 
   let TABLE_HEAD = [];
 
@@ -158,10 +187,10 @@ export default function HistorialReportesView() {
     { id: '', width: 88 },
   ];
 
-  const headerBase = ["ID Cita", "Especialista", "Paciente", "Oficina", "Departamento", "Sede", "Sexo", "Motivo Consulta", "Estatus", 
-  "Fecha Inicio", "Fecha Final"];
+  const headerBase = ["ID Cita", "Especialista", "Paciente", "Oficina", "Departamento", "Sede", "Sexo", "Motivo Consulta", "Estatus",
+    "Fecha Inicio", "Fecha Final"];
 
-  if(rol === 1){
+  if (rol === 1) {
 
     TABLE_BASE.splice(1, 1);
     headerBase.splice(1, 1);
@@ -169,7 +198,7 @@ export default function HistorialReportesView() {
     TABLE_HEAD = TABLE_BASE;
     header = headerBase;
 
-  }else if(rol === 2){
+  } else if (rol === 2) {
 
     TABLE_BASE.splice(2, 1);
     headerBase.splice(2, 1);
@@ -177,7 +206,7 @@ export default function HistorialReportesView() {
     TABLE_HEAD = TABLE_BASE;
     header = headerBase;
 
-  }else{
+  } else {
     TABLE_HEAD = TABLE_BASE;
     header = headerBase;
   }
@@ -188,26 +217,25 @@ export default function HistorialReportesView() {
 
   const [tableData, setTableData] = useState([]);
 
-  useEffect(() => {
-    fetch("http://localhost/beneficiosCMBack/welcome/citas")
-      .then((res) => res.json())
-      .then((data) => {
-        // console.log(data)
-        const ct = data.data.map((cita) => ({
-          idCita: cita.idCita,
-          idEspecialista: cita.idEspecialista,
-          idPaciente: cita.idPaciente,
-          area: cita.area,
-          estatus: cita.estatus,
-          fechaInicio: cita.fechaInicio,
-          fechaFinal: cita.fechaFinal,
-        }));
-        setTableData(ct);
-      })
-      .catch((error) => {
-        alert(error);
-      });
-  }, []);
+  const [ReportData, setReportData] = useState('Reporte General');
+
+  const handleReportes = () => {
+    reportes.getReportes(data => {
+      const ct = data.data.map((cita) => ({
+        idCita: cita.idCita,
+        idEspecialista: cita.idEspecialista,
+        idPaciente: cita.idPaciente,
+        area: cita.area,
+        estatus: cita.estatus,
+        fechaInicio: cita.fechaInicio,
+        fechaFinal: cita.fechaFinal,
+        observaciones: cita.observaciones,
+      }));
+      setTableData(ct);
+    }, {
+      ReportData
+    });
+  }
 
   useEffect(() => {
     fetch("http://localhost/beneficiosCMBack/welcome/especialistas")
@@ -243,7 +271,7 @@ export default function HistorialReportesView() {
     table.page * table.rowsPerPage,
     table.page * table.rowsPerPage + table.rowsPerPage
   );
-
+  
   const denseHeight = table.dense ? 52 : 72;
 
   const canReset = !isEqual(defaultFilters, filters);
@@ -332,7 +360,7 @@ export default function HistorialReportesView() {
 
         <Card>
 
-          <UserTableToolbar
+          <BarraTareasTabla
             filters={filters}
             onFilters={handleFilters}
             //
@@ -341,7 +369,7 @@ export default function HistorialReportesView() {
           />
 
           {canReset && (
-            <UserTableFiltersResult
+            <FiltrosTabla
               filters={filters}
               onFilters={handleFilters}
               //
@@ -364,20 +392,23 @@ export default function HistorialReportesView() {
               pr: { xs: 1, md: 1 },
             }}
           >
+            <Tooltip title="Exportar a XLS" placement="top" arrow>
+              <MenuItem
+                sx={{ width: 50, p: 1 }}
+                onClick={handleExcel}
+              >
+                <Iconify icon="teenyicons:xls-outline" />
+              </MenuItem>
+            </Tooltip>
 
-            <MenuItem
-              sx={{ width: 50, p: 1 }}
-              onClick={handleExcel}
-            >
-              <Iconify icon="teenyicons:xls-outline" />
-            </MenuItem>
-
+            <Tooltip title="Exportar a PDF" placement="top" arrow>
             <MenuItem
               sx={{ width: 50, p: 1 }}
               onClick={handlePdf}
             >
               <Iconify icon="teenyicons:pdf-outline" />
             </MenuItem>
+            </Tooltip>
 
           </Stack>
 
@@ -399,15 +430,16 @@ export default function HistorialReportesView() {
                       table.page * table.rowsPerPage,
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
-                    .map((cita) => (
-                      <UserTableRow
+                    .map((row) => (
+                      <FilasTabla
                         key={`route_${uuidv4()}`}
-                        row={cita}
-                        selected={table.selected.includes(cita.idCita)}
-                        onSelectRow={() => table.onSelectRow(cita.idCita)}
-                        onDeleteRow={() => handleDeleteRow(cita.idCita)}
-                        onEditRow={() => handleEditRow(cita.idCita)}
-                        rol= {rol}
+                        row={row}
+                        selected={table.selected.includes(row.idCita)}
+                        onSelectRow={() => table.onSelectRow(row.idCita)}
+                        onDeleteRow={() => handleDeleteRow(row.idCita)}
+                        onEditRow={() => handleEditRow(row.idCita)}
+                        rol={rol}
+                        rel={handleReportes}
                       />
                     ))}
 

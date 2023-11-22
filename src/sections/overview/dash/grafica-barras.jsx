@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import ButtonBase from '@mui/material/ButtonBase';
 import CardHeader from '@mui/material/CardHeader';
@@ -17,10 +18,9 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 // ----------------------------------------------------------------------
 
 function CitasDownloadExcel(Grafic, seriesData, title) {
-    const year = seriesData.toString();
     const data = [
       {
-        sheet: title+year,
+        sheet: `${title}${" "}${seriesData}`,
         columns: [
           { label: "Mes", value: "mes" },
           { label: "Total", value: "cantidad" },
@@ -38,7 +38,7 @@ function CitasDownloadExcel(Grafic, seriesData, title) {
       RTL: false,
     }
     Xlsx(data, settings)
-  }
+}
 
 // ----------------------------------------------------------------------
 
@@ -84,12 +84,14 @@ export default function GraficaBarras({ title, subheader, chart, year, handleCha
   async function handleGrafic() {
     dashborad.getCitasAnual(data => {
       setGrafic(data.data);
+    },{
+      dt:seriesData
     });
   }
 
   useEffect(() => {
     handleGrafic();
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [seriesData]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleExcel = async e => {
     e.preventDefault();
@@ -103,15 +105,18 @@ export default function GraficaBarras({ title, subheader, chart, year, handleCha
   return (
     <>
       <Card {...other}>
+
+      <Tooltip title="Exportar XLS" placement="top" arrow>
           <MenuItem
             sx={{ width: 50, ml: 2, mt: 2 }}
-            title='Exportar Excel'
             onClick={handleExcel}
           >
             <Iconify 
             icon="teenyicons:xls-outline"
             width={24} />
           </MenuItem>
+      </Tooltip>
+
         <CardHeader
           title={title}
           subheader={subheader}

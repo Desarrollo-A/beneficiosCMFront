@@ -6,6 +6,8 @@ import { paths } from 'src/routes/paths';
 export const HOST_API =  import.meta.env.VITE_HOST_API;
 export const ASSETS_API = import.meta.env.VITE_ASSETS_API;
 
+export const BACK_API = import.meta.env.VITE_BACK_API;
+
 export const FIREBASE_API = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
