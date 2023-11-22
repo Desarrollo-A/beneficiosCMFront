@@ -6,7 +6,7 @@ const Servicios = () => {
     const context = useContext(contextGeneral);
     return {
         getInfoCliente: context.llamarServidor('loginController/usuarios'),
-        addRegistroEmpleado: context.llamarServidor('loginController/addRegistroEmpleado'),
+        addRegistroEmpleado: context.llamarServidorRespuesta('loginController/addRegistroEmpleado'),
 
 /*
         getInitialData: context.llamarServidor('Clientes/getInitialData'),

@@ -3,21 +3,22 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import instance from 'src/utils/axiosCH';
-
 import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-
 import { Base64 } from 'js-base64';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
-import { useRouter, useSearchParams } from 'src/routes/hooks';
-import { useNavigate, useLocation } from 'react-router';
+import { useRouter, useSearchParams,useParams } from 'src/routes/hooks';
+import { useNavigate } from 'react-router';
+import { useLocation } from 'react-router';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { PATH_AFTER_LOGIN, PATH_AFTER_REGISTRO } from 'src/config-global';
+import { PATH_AFTER_LOGIN } from 'src/config-global';
+import { PATH_AFTER_REGISTRO } from 'src/config-global';
+
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 // ----------------------------------------------------------------------
 
@@ -37,14 +38,11 @@ export default function JwtRegisterView() {
 
   const returnTo = searchParams.get('returnTo');
 
-
   const RegisterSchema = Yup.object().shape({
     firstName: Yup.string().required('First name required'),
     lastName: Yup.string().required('Last name required'),
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
   });
-
-
 
   const defaultValues = {
     firstName: '',
@@ -90,20 +88,14 @@ export default function JwtRegisterView() {
         if(datosResponse.resultado === 0){
           setErrorMsg(typeof error === 'string' ? error : 'Número de empleado no encontrado');
         }else{
-
-
-navigate(PATH_AFTER_REGISTRO, {state: datosResponse,options:datosResponse});
-
+          navigate(PATH_AFTER_REGISTRO,{state:datosResponse});
           location(PATH_AFTER_REGISTRO,{state:datosResponse});
-          router.ab(datosResponse);
-          router.data({datosResponse});
           router.push(returnTo || PATH_AFTER_REGISTRO);
         }
       })
       .catch(error=>{
         console.error(error);
       });
-      console.log('OK');
         
     }
 }
@@ -148,9 +140,7 @@ navigate(PATH_AFTER_REGISTRO, {state: datosResponse,options:datosResponse});
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Stack spacing={2.5}>
         {!!errorMsg && <Alert severity="error">{errorMsg}</Alert>}
-
         <RHFTextField name="numEmpleado" value={numEmpleado} onChange={(e) => setnumEmpleado(e.target.value)} label="Número de empleado" />
-
         <LoadingButton
           fullWidth
           color="inherit"
