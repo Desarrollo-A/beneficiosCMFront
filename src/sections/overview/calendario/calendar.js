@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Base64 } from 'js-base64';
 import useSWR, { mutate } from 'swr';
 import { useMemo, useEffect } from 'react';
 
@@ -16,11 +17,14 @@ const options = {
   refreshInterval: 0
 };
 
+const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+
+
 export function GetCustomEvents(current) {
   const year = current.getFullYear();
   const month = (current.getMonth() + 1);
   
-  const { data, isLoading, error, isValidating } = useSWR(URLC, url => fetcher_custom(url, year, month));
+  const { data, isLoading, error, isValidating } = useSWR(URLC, url => fetcher_custom(url, year, month, datosUser.idUsuario), options);
 
   useEffect(()=> {
     mutate(URLC);
@@ -54,7 +58,8 @@ export async function createCustom(fecha, eventData) {
         titulo: eventData.title,
         hora_inicio: eventData.hora_inicio,
         hora_final:  eventData.hora_final,
-        id_unico: eventData.id
+        id_unico: eventData.id,
+        id_usuario: datosUser.idUsuario
     }, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
@@ -89,18 +94,7 @@ export async function updateCustom(eventData) {
       // lo que se trae de la url se guarda en current data y se junta con eventData
       // es necesario tener la url que el mismo al hacer get
       mutate(
-        URLC,
-        (currentData) => {
-          const events = currentData.events.map((event) =>
-            event.id === eventData.id ? { ...event, ...eventData } : event
-          );
-
-          return {
-            ...currentData,
-            events,
-          };
-        },
-        false
+        URLC
       );
 
       return update;

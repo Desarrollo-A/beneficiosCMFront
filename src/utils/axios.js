@@ -22,10 +22,10 @@ export const fetcher = async (args) => {
   return res.data;
 };
 
-export const fetcher_custom = async (args, year, month) => {
+export const fetcher_custom = async (args, year, month, idUsuario) => {
   const [url, config] = Array.isArray(args) ? args : [args];
   
-  const res = await axiosInstance.post(url, {year, month}, { 
+  const res = await axiosInstance.post(url, {year, month, idUsuario}, { 
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
     }}, {...config});

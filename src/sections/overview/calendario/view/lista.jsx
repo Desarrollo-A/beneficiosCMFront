@@ -15,7 +15,7 @@ import DialogContent from '@mui/material/DialogContent';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 
 import uuidv4 from 'src/utils/uuidv4';
-import { fTimestamp } from 'src/utils/format-time';
+import {fTimestamp } from 'src/utils/format-time';
 
 import { useSnackbar } from 'src/components/snackbar';
 import { RHFTextField } from 'src/components/hook-form';
@@ -39,17 +39,23 @@ export default function Lista({ currentEvent, onClose, currentDay }){
 
     dayjs.locale('es') // variable para cambiar el idioma del dayjs
 
-    const { handleSubmit } = methods;
+    const {
+        reset,
+        watch,
+        handleSubmit,
+    } = methods;
+
+    const values = watch();
+    const dateError = values.start && values.end ? fTimestamp(values.start) >= fTimestamp(values.end) : false;
 
     const onSubmit = handleSubmit(async (data) => {
-
             // se da el formato fTimestamp juntando la fecha actual y la hora que se elige con los minutos
             // este procedimiento para start, hora_inicio y hora_final
             const eventData = {
                 id: currentEvent?.id ? currentEvent?.id : uuidv4(),
                 title: data?.title,
-                start: currentEvent?.id ? fTimestamp(`${currentEvent.occupied} ${data.start.getHours()}:${data.start.getMinutes()}`) : dayjs(`${fecha} ${data.start.getHours()}:${data.start.getMinutes()}`).format("YYYY-MM-DD HH:mm"),
-                end: currentEvent?.id ? fTimestamp(`${currentEvent.occupied} ${data.end.getHours()}:${data.end.getMinutes()}`) : dayjs(`${fecha} ${data.end  .getHours()}:${data.end.getMinutes()}`).format("YYYY-MM-DD HH:mm"),
+                start: currentEvent?.id ? `${currentEvent.occupied} ${data.start.getHours()}:${data.start.getMinutes()}` : dayjs(`${fecha} ${data.start.getHours()}:${data.start.getMinutes()}`).format("YYYY-MM-DD HH:mm"),
+                end: currentEvent?.id ? `${currentEvent.occupied} ${data.end.getHours()}:${data.end.getMinutes()}` : dayjs(`${fecha} ${data.end  .getHours()}:${data.end.getMinutes()}`).format("YYYY-MM-DD HH:mm"),
                 hora_inicio: `${data.start.getHours()}:${data.start.getMinutes()}`,
                 hora_final: `${data.end.getHours()}:${data.end.getMinutes()}`,
                 occupied: currentEvent?.id ? currentEvent.occupied : fecha
@@ -58,18 +64,21 @@ export default function Lista({ currentEvent, onClose, currentDay }){
             let save ='';
 
             try{
-                if(currentEvent?.id){
-                    save = await updateCustom(eventData);
-                }
-                else{
-                    save = await createCustom(fecha, eventData); 
-                }
+                if(!dateError){
+                    if(currentEvent?.id){
+                        save = await updateCustom(eventData);
+                    }
+                    else{
+                        save = await createCustom(fecha, eventData); 
+                    }
+    
+                    if(save.status)
+                        enqueueSnackbar(save.message);
+                    else
+                        enqueueSnackbar(save.message);
 
-                if(save.status)
-                    enqueueSnackbar(save.message);
-                else
-                    enqueueSnackbar(save.message);
-                 
+                    reset();
+                }
             }
             catch(error){
                 enqueueSnackbar(error);
@@ -94,34 +103,41 @@ export default function Lista({ currentEvent, onClose, currentDay }){
                     <Controller
                         name = "start"
                         render = {({field})=>
-                            <TimePicker 
-                                label="Hora de inicio" 
-                                defaultValue={currentEvent?.id ? dayjs(currentEvent.start).$d : new Date()}
+                            <TimePicker
+                                label="Hora de inicio"
+                                defaultValue={currentEvent?.id ? dayjs(currentEvent.start).$d : null}
                                 onChange={
                                     (value) => field.onChange(value)
-                                } 
+                                }
                             />
                         }
                     />
-                    
                     <Controller
                         name = "end"
                         render = {({field})=>
                             <TimePicker
                                 label="Hora finalización"
-                                defaultValue={currentEvent?.id ? dayjs(currentEvent.end).$d : new Date()}
+                                slotProps={{
+                                    textField: {
+                                      error: dateError,
+                                      helperText: dateError && 'La hora de fin no puede ser inferior o igual',
+                                    }
+                                }}
+                                defaultValue={currentEvent?.id ? dayjs(currentEvent.end).$d : null}
                                 onChange={
                                     (value) => field.onChange(value)
-                                } 
+                                }
                             />
                         }
                     />
+
+                    
                 </Stack>
             </DialogContent>
 
             <DialogActions>
                 <Button variant='contained' color='error' onClick={onClose}>Cancelar</Button>
-                <LoadingButton type="submit" variant='contained' color='success'>Guardar</LoadingButton>
+                <LoadingButton type="submit" variant='contained' disabled={dateError} color='success'>Guardar</LoadingButton>
             </DialogActions>
         </FormProvider>
     )

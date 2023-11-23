@@ -171,6 +171,9 @@ export default function CalendarioView(){
             onClose={onCloseForm}
         >
             <DialogTitle sx= {{ minHeight: 76 }}>
+              <IconButton onClick={onCloseForm}>
+                <Iconify icon="solar:close-circle-outline"/>
+              </IconButton>
                 <Stack direction="row" justifyContent='space-between' useFlexGap flexWrap="wrap">
                     { openForm && <> { currentEvent?.id ? 'Editar horario' : 'Cancelar horario' } </> }
                     {!!currentEvent?.id && (
