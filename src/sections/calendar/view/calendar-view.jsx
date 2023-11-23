@@ -38,6 +38,7 @@ import { useEvent, useCalendar } from '../hooks';
 import CalendarToolbar from '../calendar-toolbar';
 import CalendarFilters from '../calendar-filters';
 import CalendarFiltersResult from '../calendar-filters-result';
+import NuevaCitaForm from '../calendario-formulario';
 
 // ----------------------------------------------------------------------
 
@@ -64,10 +65,11 @@ export default function CalendarView() {
  
 
   // const [citas] = useState(GetCitasDisponibles().citas);
-  const [ citas, setCitas ] = useState([]);
-  const handleChange = (event) => {
-    setCitas(event.target.value);
-  };
+  const [ citas, setCitas ] = useState('');
+  const [ citasServicio, setCitasServicio ] = useState([]);
+  const [ modalCitas, setModalCitas ] = useState(false);
+
+
   const dateError =
     filters.startDate && filters.endDate
       ? filters.startDate.getTime() > filters.endDate.getTime()
@@ -106,12 +108,9 @@ export default function CalendarView() {
   }, [onInitialView]);
 
 
-let arrayManejo = [];
 async function getCitasDisponibles() {
-  
   servicios.getServiciosDisponibles(data => {
-    arrayManejo.append(data);
-    setCitas(data);
+    setCitasServicio([{datos:data.beneficios, statusButton:data.statusButton}]);
 });
 }
 
@@ -132,6 +131,10 @@ useEffect(() => {
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
+  const handleChange = (event) => {
+    setCitas(event.target.value);
+    setModalCitas(true);
+  };
 
   const canReset = !!filters.colors.length || (!!filters.startDate && !!filters.endDate);
 
@@ -180,17 +183,15 @@ useEffect(() => {
                 labelId="demo-simple-select-label"
                 id="demo-simple-select-001"
                 label="Consultas"
+                value={citas}
                 onChange={handleChange}
+                disabled={(citasServicio[0] == undefined) ? false : citasServicio[0].statusButton}
               >
-                <MenuItem value=''>Selecciona</MenuItem>
                 {
-                  citas.map((element, index)=>{
-                    console.log('elementos:', element);
-                    return (
-                      
-                      <MenuItem key={element.idUsuario} value={element.idUsuario}>{element.nombre}</MenuItem>
-                    )
-                  })
+                    citasServicio[0] !== undefined     &&
+                      citasServicio[0].datos.map((element, index)=>
+                          <MenuItem key={element.idOpcion} value={element.idOpcion}>{element.nombre}</MenuItem>
+                      ) 
                 }
               </Select>
             </FormControl>
@@ -285,6 +286,9 @@ useEffect(() => {
         colorOptions={CALENDAR_COLOR_OPTIONS}
         onClickEvent={onClickEventInFilters}
       />
+      <NuevaCitaForm open={modalCitas} especialidadElegida={citasServicio}/>
+        
+
     </>
   );
 }

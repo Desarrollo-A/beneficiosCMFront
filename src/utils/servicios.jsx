@@ -6,7 +6,7 @@ const Servicios = () => {
     const context = React.useContext(contextGeneral);
     return {
         getInfoCliente: context.llamarServidor('loginController/usuarios'),
-        getServiciosDisponibles: context.llamarServidorRespuesta('calendarioController/getBeneficiosDisponibles'),
+        getServiciosDisponibles: context.llamarServidorRespuesta('CalendarioController/getBeneficiosDisponibles'),
         addRegistroEmpleado: context.llamarServidor('loginController/addRegistroEmpleado'),
 
 /*
