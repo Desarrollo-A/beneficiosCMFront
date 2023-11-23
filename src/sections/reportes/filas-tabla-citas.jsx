@@ -65,6 +65,7 @@ export default function FilasTabla({ row, selected, rol, rel  }) {
             variant="soft"
             color={
               (estatus === 'Asistencia' && 'success') ||
+              (estatus === 'Por asistir' && 'primary') ||
               (estatus === 'Penalización' && 'warning') ||
               (estatus === 'Cancelada' && 'error') ||
               'default'
@@ -96,7 +97,7 @@ export default function FilasTabla({ row, selected, rol, rel  }) {
 
       </TableRow>
 
-      <UserQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} idCita={idCita} rel={rel}/>
+      <UserQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} idCita={idCita} row={row} rel={rel}/>
 
     </>
   );

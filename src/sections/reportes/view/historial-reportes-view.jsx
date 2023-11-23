@@ -21,9 +21,7 @@ import { useBoolean } from 'src/hooks/use-boolean';
 
 import uuidv4 from "src/utils/uuidv4";
 
-import { useGetReportes, useGetEspecialistas } from 'src/api/reportes';
-
-import Reportes from 'src/api/reportes';
+import Reportes, { useGetReportes, useGetEspecialistas } from 'src/api/reportes';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -142,7 +140,22 @@ function handleDownloadPDF(tableData, header, rol) {
 // ----------------------------------------------------------------------
 export default function HistorialReportesView() {
 
-  const { reportesData } = useGetReportes();
+  // const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+
+  // console.log(datosUser.idRol)
+
+  const rol = 3;
+
+  let TABLE_HEAD = [];
+
+  let header = [];
+
+  const headerBase = ["ID Cita", "Especialista", "Paciente", "Oficina", "Departamento", "Sede", "Sexo", "Motivo Consulta", "Estatus",
+    "Fecha Inicio", "Fecha Final"];
+
+  const [ReportData, setReportData] = useState('Reporte General');
+
+  const { reportesData, dataMutate } = useGetReportes(ReportData);
 
   const { especialistasData } = useGetEspecialistas();
 
@@ -150,27 +163,23 @@ export default function HistorialReportesView() {
 
   const [especialistas, setEspecialistas] = useState([]);
 
-  console.log(especialistas);
+  const reportes = Reportes();
 
-  console.log(datosTabla);
+  const [espe, setEs] = useState([]);
 
-  useEffect(() => {
-    if (reportesData.length) {
-      setDatosTabla(reportesData);
-    }
-  }, [reportesData]);
+  const [tableData, setTableData] = useState([]);
 
-  useEffect(() => {
-    if (especialistasData.length) {
-      setEspecialistas(especialistasData);
-    }
-  }, [reportesData]);
+  const _rp = especialistas.flatMap((es) => (es.nombre));
 
-  const rol = 3;
+  const table = useTable();
 
-  let TABLE_HEAD = [];
+  const settings = useSettingsContext();
 
-  let header = [];
+  const router = useRouter();
+
+  const confirm = useBoolean();
+
+  const [filters, setFilters] = useState(defaultFilters);
 
   const TABLE_BASE = [
     { id: '', label: 'ID Cita' },
@@ -186,9 +195,6 @@ export default function HistorialReportesView() {
     { id: '', label: 'Fecha Final' },
     { id: '', width: 88 },
   ];
-
-  const headerBase = ["ID Cita", "Especialista", "Paciente", "Oficina", "Departamento", "Sede", "Sexo", "Motivo Consulta", "Estatus",
-    "Fecha Inicio", "Fecha Final"];
 
   if (rol === 1) {
 
@@ -211,14 +217,6 @@ export default function HistorialReportesView() {
     header = headerBase;
   }
 
-  const reportes = Reportes();
-
-  const [espe, setEs] = useState([]);
-
-  const [tableData, setTableData] = useState([]);
-
-  const [ReportData, setReportData] = useState('Reporte General');
-
   const handleReportes = () => {
     reportes.getReportes(data => {
       const ct = data.data.map((cita) => ({
@@ -237,34 +235,8 @@ export default function HistorialReportesView() {
     });
   }
 
-  useEffect(() => {
-    handleReportes();
-  }, [ReportData]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  async function handleEspe() {
-    reportes.getEspecialistas(data => {
-      setEs(data.data);
-    });
-  }
-
-  useEffect(() => {
-    handleEspe();
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
-  const _rp = espe.flatMap((es) => (es.nombre));
-
-  const table = useTable();
-
-  const settings = useSettingsContext();
-
-  const router = useRouter();
-
-  const confirm = useBoolean();
-
-  const [filters, setFilters] = useState(defaultFilters);
-
   const dataFiltered = applyFilter({
-    inputData: tableData,
+    inputData: datosTabla,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
@@ -273,7 +245,7 @@ export default function HistorialReportesView() {
     table.page * table.rowsPerPage,
     table.page * table.rowsPerPage + table.rowsPerPage
   );
-  
+
   const denseHeight = table.dense ? 52 : 72;
 
   const canReset = !isEqual(defaultFilters, filters);
@@ -332,6 +304,7 @@ export default function HistorialReportesView() {
       rol
     );
   }
+  
   const handlePdf = async e => {
     e.preventDefault();
     handleDownloadPDF(
@@ -344,6 +317,32 @@ export default function HistorialReportesView() {
   const handleChangeReport = (newData) => {
     setReportData(newData);
   }
+
+  useEffect(() => {
+    if (reportesData.length) {
+      setDatosTabla(reportesData);
+    }
+  }, [reportesData]);
+
+  useEffect(() => {
+    if (especialistasData.length) {
+      setEspecialistas(especialistasData);
+    }
+  }, [especialistasData]);
+
+  useEffect(() => {
+    handleReportes();
+  }, [ReportData]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  async function handleEspe() {
+    reportes.getEspecialistas(data => {
+      setEs(data.data);
+    });
+  }
+
+  useEffect(() => {
+    handleEspe();
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>
@@ -368,6 +367,7 @@ export default function HistorialReportesView() {
             //
             roleOptions={_rp}
             handleChangeReport={handleChangeReport}
+            table={table}
           />
 
           {canReset && (
@@ -441,7 +441,7 @@ export default function HistorialReportesView() {
                         onDeleteRow={() => handleDeleteRow(row.idCita)}
                         onEditRow={() => handleEditRow(row.idCita)}
                         rol={rol}
-                        rel={handleReportes}
+                        rel={handleChangeReport}
                       />
                     ))}
 

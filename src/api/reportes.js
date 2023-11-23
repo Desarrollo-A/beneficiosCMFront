@@ -1,11 +1,9 @@
-import useSWR from 'swr';
-import { useMemo } from 'react';
+import useSWR, { mutate } from 'swr';
+import { useMemo, useEffect, useContext } from 'react';
 
-import { fetcher_cx, rutas } from 'src/utils/ax';
+import { rutas, fetcherGet, fetcherPost, fetcherUpdate } from 'src/utils/ax';
 
-import { useContext } from "react";
-
-import { contextGeneral } from "src/utils/contextGeneralProvider";
+import { contextGeneral } from 'src/utils/contextGeneralProvider';
 
 const Reportes = () => {
     const context = useContext(contextGeneral);
@@ -17,10 +15,22 @@ const Reportes = () => {
 }
 export default Reportes
 
-export function useGetReportes() {
-    const URL_AX = rutas.reportes.lista;
+const options = {
+  revalidateIfStale: false,
+  revalidateOnFocus: false,
+  revalidateOnReconnect: false,
+  refreshInterval: 0
+}
+
+export function useGetReportes(ReportData) {
   
-    const { data, isLoading, error, isValidating } = useSWR(URL_AX, fetcher_cx);
+    const URL = rutas.reportes.lista;
+  
+    const { data, isLoading, error, isValidating } = useSWR(URL, url => fetcherPost(url, ReportData), options);
+
+    useEffect(() => {
+      mutate(URL);
+    }, [URL, ReportData]);
     
     const memoizedVal = useMemo(
       () => ({
@@ -29,17 +39,17 @@ export function useGetReportes() {
         dataError: error,
         dataValidating: isValidating,
         dataEmpty: !isLoading && !data?.data.length,
+        dataMutate: mutate
       }),
       [data?.data, error, isLoading, isValidating]
     );
-  
     return memoizedVal;
 }
 
 export function useGetEspecialistas() {
-    const URL_AX = rutas.reportes.especialistas;
+    const URL = rutas.reportes.especialistas;
   
-    const { data, isLoading, error, isValidating } = useSWR(URL_AX, fetcher_cx);
+    const { data, isLoading, error, isValidating } = useSWR(URL, fetcherGet, options);
     
     const memoizedVal = useMemo(
       () => ({
@@ -54,3 +64,18 @@ export function useGetEspecialistas() {
   
     return memoizedVal;
 }
+
+export function useUpdateObservacion(){
+
+  const updateObservacion = async (obj) => {
+
+    console.log('datos:', obj)
+
+    const URL = obj ? rutas.reportes.observacion : '';
+    return fetcherUpdate([URL, obj]);
+  };
+
+  return updateObservacion;
+
+}
+

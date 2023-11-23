@@ -22,6 +22,7 @@ export default function BarraTareasTabla({
   //
   roleOptions,
   handleChangeReport,
+  table,
 }) {
   const popover = usePopover();
 
@@ -44,7 +45,7 @@ export default function BarraTareasTabla({
 
   const report = [ 
     { value: 'Reporte General', label: 'Reporte General' },
-    { value: 'Reporte de faltas', label: 'Reporte de faltas' },
+    { value: 'Reporte de faltas', label: 'Reporte de Faltas' },
   ];
 
   const [currentStatus, setCurrentStatus] = useState(report[0].label);
@@ -52,7 +53,8 @@ export default function BarraTareasTabla({
   const handleChangeStatus = useCallback((event) => {
     setCurrentStatus(event.target.value);
     handleChangeReport(event.target.value);
-  }, [handleChangeReport]); 
+    table.onResetPage();
+  }, [handleChangeReport, table]); 
 
   return (
     <>
@@ -182,4 +184,5 @@ BarraTareasTabla.propTypes = {
   onFilters: PropTypes.func,
   roleOptions: PropTypes.array,
   handleChangeReport: PropTypes.func,
+  table: PropTypes.func,
 };

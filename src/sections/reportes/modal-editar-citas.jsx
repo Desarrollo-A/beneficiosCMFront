@@ -12,7 +12,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
-import Reportes from 'src/api/reportes';
+import Reportes, {useUpdateObservacion} from 'src/api/reportes';
 
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
@@ -23,6 +23,8 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
   const { enqueueSnackbar } = useSnackbar();
 
   const reportes = Reportes();
+
+  const updateObservacion = useUpdateObservacion();
 
   const NewUserSchema = Yup.object().shape({
     descripcion: Yup.string().required('El campo es requerido'),
@@ -53,16 +55,20 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
       await new Promise((resolve) => setTimeout(resolve, 500));
       reset();
       onClose();
-        reportes.getObservacion(resp => {
-          if (resp.estatus===200) {
-            enqueueSnackbar(resp.mensaje);
-            rel();
-          }
-        },{
-          data
-        });
+
+      const update = await updateObservacion(data);
+
+      if (update.estatus===200) {
+        enqueueSnackbar(update.mensaje, { variant: 'success' });
+        rel();
+      } else {
+        enqueueSnackbar(update.mensaje, { variant: 'success' });
+      }
     } catch (error) {
-      console.error(error);
+
+      console.error("Error en handleSubmit:", error);
+      enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'danger' });
+
     }
   });
 
