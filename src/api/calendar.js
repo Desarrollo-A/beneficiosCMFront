@@ -17,7 +17,6 @@ const options = {
 
 export function useGetEvents() {
   const { data, isLoading, error, isValidating } = useSWR(URL, fetcher, options);
-
   const memoizedValue = useMemo(() => {
     const events = data?.events.map((event) => ({
       ...event,

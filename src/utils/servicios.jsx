@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import React, { useContext } from "react";
 
 import { contextGeneral } from "src/utils/contextGeneralProvider";
 
@@ -6,6 +6,7 @@ const Servicios = () => {
     const context = useContext(contextGeneral);
     return {
         getInfoCliente: context.llamarServidor('loginController/usuarios'),
+        getServiciosDisponibles: context.llamarServidorRespuesta('CalendarioController/getBeneficiosDisponibles'),
         addRegistroEmpleado: context.llamarServidorRespuesta('loginController/addRegistroEmpleado'),
 
 /*
