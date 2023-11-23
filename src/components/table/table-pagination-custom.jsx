@@ -12,6 +12,10 @@ export default function TablePaginationCustom({
   onChangeDense,
   rowsPerPageOptions = [5, 10, 25],
   sx,
+  labels = {
+    rowsPerPage: 'Filas por página',
+    displayRows: 'de',
+  },
   ...other
 }) {
   return (
@@ -49,4 +53,8 @@ TablePaginationCustom.propTypes = {
   onChangeDense: PropTypes.func,
   rowsPerPageOptions: PropTypes.arrayOf(PropTypes.number),
   sx: PropTypes.object,
+  labels: PropTypes.shape({
+    rowsPerPage: PropTypes.string,
+    displayRows: PropTypes.string,
+  }),
 };

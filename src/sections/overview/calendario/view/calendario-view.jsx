@@ -1,6 +1,6 @@
 import Calendar from '@fullcalendar/react'; // => request placed at the top
-import { useState } from 'react';
 import listPlugin from '@fullcalendar/list';
+import { useState, useCallback } from 'react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import timelinePlugin from '@fullcalendar/timeline';
@@ -11,7 +11,9 @@ import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
+import Tooltip from '@mui/material/Tooltip';
 import Container from '@mui/material/Container';
+import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import DialogTitle from '@mui/material/DialogTitle';
 
@@ -19,16 +21,15 @@ import { useResponsive } from 'src/hooks/use-responsive';
 
 import { fTimestamp } from 'src/utils/format-time';
 
-import { GetCustomEvents } from 'src/api/calendar';
-
+import Iconify from 'src/components/iconify';
+import { useSnackbar } from 'src/components/snackbar';
 import { useSettingsContext } from 'src/components/settings';
 
 import Lista from "./lista";
 import { StyledCalendar } from '../styles';
-import { useEvent, useCalendar } from '../hooks';
 import CalendarToolbar from '../calendar-tool';
-
-
+import { useEvent, useCalendar } from '../hooks';
+import { deleteEvent, GetCustomEvents } from '../calendar';
 // ----------------------------------------------------------------------
 
 const defaultFilters = {
@@ -39,12 +40,13 @@ const defaultFilters = {
   
   // ----------------------------------------------------------------------
 
-export default function OverviewTestView(){
+export default function CalendarioView(){
+    const { enqueueSnackbar } = useSnackbar();
     const smUp = useResponsive('up', 'sm');
     const settings = useSettingsContext();
     const [ day, setDay] = useState();
     const [filters] = useState(defaultFilters);
-    const { events, eventsLoading } = GetCustomEvents(new Date());
+
     const dateError =
     filters.startDate && filters.endDate
       ? filters.startDate.getTime() > filters.endDate.getTime()
@@ -64,15 +66,37 @@ export default function OverviewTestView(){
         onClickEvent, 
         openForm,
         onCloseForm,
+        //
+        selectEventId
     } = useCalendar();
 
-    const currentEvent = useEvent(events, openForm);
+    const { events, eventsLoading} = GetCustomEvents(date);
+
+    const currentEvent = useEvent(events, selectEventId, openForm);
 
     const dataFiltered = applyFilter({
         inputData: events,
         filters,
         dateError,
       });
+
+      const onDelete = useCallback(async () => {
+        try {
+          const resp = await deleteEvent(`${currentEvent?.id}`);
+          
+          if(resp.status){
+            enqueueSnackbar(resp.message);
+          }
+          else{
+            enqueueSnackbar(resp.message, {variant: "error"});
+          }
+
+          onCloseForm();
+        } catch (error) {
+          enqueueSnackbar("Error", {variant: "error"});
+          onCloseForm();
+        }
+      }, [currentEvent?.id, enqueueSnackbar, onCloseForm]);
 
     return(
         <>
@@ -122,7 +146,7 @@ export default function OverviewTestView(){
                      ref={calendarRef}
                      dayMaxEventRows={3}
                      eventDisplay="block"
-                     dateClick={(date) => setDay(date.date)}
+                     dateClick={(currentDate) => setDay(currentDate.date)}
                      events={dataFiltered}
                      headerToolbar = { false }
                      select={onSelectRange}
@@ -147,13 +171,23 @@ export default function OverviewTestView(){
             onClose={onCloseForm}
         >
             <DialogTitle sx= {{ minHeight: 76 }}>
-                Cancelar horarios
-            </DialogTitle>  
+                <Stack direction="row" justifyContent='space-between' useFlexGap flexWrap="wrap">
+                    { openForm && <> { currentEvent?.id ? 'Editar horario' : 'Cancelar horario' } </> }
+                    {!!currentEvent?.id && (
+                      <Tooltip title="Eliminar horario">
+                        <IconButton onClick={onDelete}>
+                            <Iconify icon="solar:trash-bin-trash-bold" />
+                        </IconButton>
+                      </Tooltip>
+                    )}
+                </Stack>
+            </DialogTitle>
 
             <Lista 
                 currentEvent={currentEvent}
                 onClose={onCloseForm}
                 currentDay= {day}
+                current={date}
             />
                 
         </Dialog>

@@ -1,6 +1,7 @@
 // import axios from "axios";
+import 'dayjs/locale/es';
 import * as yup from 'yup';
-import { useState } from "react";
+import dayjs  from 'dayjs';
 import PropTypes from 'prop-types';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -16,16 +17,14 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import uuidv4 from 'src/utils/uuidv4';
 import { fTimestamp } from 'src/utils/format-time';
 
-import { createCustom } from 'src/api/calendar';
-
 import { useSnackbar } from 'src/components/snackbar';
 import { RHFTextField } from 'src/components/hook-form';
 import FormProvider from 'src/components/hook-form/form-provider';
 
+import { createCustom, updateCustom } from '../calendar';
+
 export default function Lista({ currentEvent, onClose, currentDay }){
     const { enqueueSnackbar } = useSnackbar();
-    const [horaInicio, setHoraInicio] = useState();
-    const [horaFinal, setHoraFinal] = useState();
 
     const formSchema = yup.object().shape({
         title: yup.string().max(100).required('Se necesita el titulo'),
@@ -38,6 +37,8 @@ export default function Lista({ currentEvent, onClose, currentDay }){
         defaultValues: currentEvent
     });
 
+    dayjs.locale('es') // variable para cambiar el idioma del dayjs
+
     const { handleSubmit } = methods;
 
     const onSubmit = handleSubmit(async (data) => {
@@ -47,18 +48,28 @@ export default function Lista({ currentEvent, onClose, currentDay }){
             const eventData = {
                 id: currentEvent?.id ? currentEvent?.id : uuidv4(),
                 title: data?.title,
-                start: fTimestamp(`${fecha}' '${horaInicio.getHours()}:${horaInicio.getMinutes()}`),
-                end: fTimestamp(`${fecha}' '${horaFinal.getHours()}:${horaFinal.getMinutes()}`),
-                hora_inicio: `${horaInicio.getHours()}:${horaInicio.getMinutes()}`,
-                hora_final: `${horaFinal.getHours()}:${horaFinal.getMinutes()}`
+                start: currentEvent?.id ? fTimestamp(`${currentEvent.occupied} ${data.start.getHours()}:${data.start.getMinutes()}`) : dayjs(`${fecha} ${data.start.getHours()}:${data.start.getMinutes()}`).format("YYYY-MM-DD HH:mm"),
+                end: currentEvent?.id ? fTimestamp(`${currentEvent.occupied} ${data.end.getHours()}:${data.end.getMinutes()}`) : dayjs(`${fecha} ${data.end  .getHours()}:${data.end.getMinutes()}`).format("YYYY-MM-DD HH:mm"),
+                hora_inicio: `${data.start.getHours()}:${data.start.getMinutes()}`,
+                hora_final: `${data.end.getHours()}:${data.end.getMinutes()}`,
+                occupied: currentEvent?.id ? currentEvent.occupied : fecha
             };
 
+            let save ='';
+
             try{
-                const save = await createCustom(fecha, eventData);
+                if(currentEvent?.id){
+                    save = await updateCustom(eventData);
+                }
+                else{
+                    save = await createCustom(fecha, eventData); 
+                }
+
                 if(save.status)
                     enqueueSnackbar(save.message);
                 else
                     enqueueSnackbar(save.message);
+                 
             }
             catch(error){
                 enqueueSnackbar(error);
@@ -69,7 +80,6 @@ export default function Lista({ currentEvent, onClose, currentDay }){
     
     // el formato de la fecha para enviar a la base de datos se envia en formato frances, ya que es el mismo formato en que se almacena en sql
     const fecha = new Intl.DateTimeFormat('fr-ca', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(currentDay);
-
     const fechaTitulo = new Intl.DateTimeFormat('es-MX', {weekday: 'long', year: 'numeric', month: '2-digit',day: '2-digit'}).format(currentDay);
 
     return(
@@ -78,19 +88,17 @@ export default function Lista({ currentEvent, onClose, currentDay }){
                 <Stack spacing = {3} sx={{ p: { xs: 1, md: 2 } }}>
                     <RHFTextField name="title" label="Titulo" />
                     <Typography variant="h5">Agregar horario </Typography>
-                    <Typography variant="subtitle1">{fechaTitulo}</Typography>
+                    <Typography variant="subtitle1">{currentEvent?.id ? dayjs(currentEvent.start).format("dddd, DD/MM/YYYY") : fechaTitulo}</Typography>
                 </Stack>
                 <Stack direction= "row" spacing={ 2 } sx={{ p: { xs: 1, md: 2 } }}>
-                    
                     <Controller
                         name = "start"
                         render = {({field})=>
                             <TimePicker 
-                                disableFuture 
                                 label="Hora de inicio" 
-                                format='hh:mm a' 
+                                defaultValue={currentEvent?.id ? dayjs(currentEvent.start).$d : new Date()}
                                 onChange={
-                                    (value) => {field.onChange(value), setHoraInicio(value)} 
+                                    (value) => field.onChange(value)
                                 } 
                             />
                         }
@@ -100,10 +108,10 @@ export default function Lista({ currentEvent, onClose, currentDay }){
                         name = "end"
                         render = {({field})=>
                             <TimePicker
-                                disableFuture 
-                                label="Hora finalización" 
+                                label="Hora finalización"
+                                defaultValue={currentEvent?.id ? dayjs(currentEvent.end).$d : new Date()}
                                 onChange={
-                                    (value) => {field.onChange(value), setHoraFinal(value)} 
+                                    (value) => field.onChange(value)
                                 } 
                             />
                         }
@@ -122,5 +130,5 @@ export default function Lista({ currentEvent, onClose, currentDay }){
 Lista.propTypes = {
     currentEvent: PropTypes.object,
     onClose: PropTypes.func,
-    currentDay: PropTypes.instanceOf(Date)
+    currentDay: PropTypes.instanceOf(Date),
   };

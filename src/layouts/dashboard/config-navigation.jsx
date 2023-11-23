@@ -109,9 +109,9 @@ export function useNavData() {
             icon: ICONS.file,
           },
           {
-            title: t('test'),
-            path: paths.dashboard.general.test,
-            icon: ICONS.donut,
+            title: t('Calendario'),
+            path: paths.dashboard.general.calendario,
+            icon: ICONS.calendar,
           }
         ],
       },
@@ -218,6 +218,16 @@ export function useNavData() {
             ],
           },
 
+           // Usuarios batch
+           {
+            title: t('user'),
+            path: paths.dashboard.usuarios.root,
+            icon: ICONS.user,
+            children: [
+              { title: t('list'), path: paths.dashboard.usuarios.new },
+            ],
+          },
+          
           // FILE MANAGER
           {
             title: t('file_manager'),

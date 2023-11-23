@@ -42,6 +42,7 @@ export default function CalendarForm({ currentEvent, colorOptions, onClose }) {
     resolver: yupResolver(EventSchema),
     defaultValues: currentEvent,
   });
+  console.log(currentEvent);
 
   const {
     reset,

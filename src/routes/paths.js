@@ -108,7 +108,7 @@ export const paths = {
       banking: `${ROOTS.DASHBOARD}/banking`,
       booking: `${ROOTS.DASHBOARD}/booking`,
       file: `${ROOTS.DASHBOARD}/file`,
-      test: `${ROOTS.DASHBOARD}/test`
+      calendario: `${ROOTS.DASHBOARD}/calendario`
     },
     reportes: {
       root: `${ROOTS.DASHBOARD}/reportes`,
@@ -182,6 +182,10 @@ export const paths = {
         details: `${ROOTS.DASHBOARD}/tour/${MOCK_ID}`,
         edit: `${ROOTS.DASHBOARD}/tour/${MOCK_ID}/edit`,
       },
+    },
+    usuarios: {
+      root: `${ROOTS.DASHBOARD}/usuarios`,
+      new: `${ROOTS.DASHBOARD}/usuarios/new`,
     },
   },
 };

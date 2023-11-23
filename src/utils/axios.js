@@ -21,6 +21,17 @@ export const fetcher = async (args) => {
   console.log(res)
   return res.data;
 };
+
+export const fetcher_custom = async (args, year, month) => {
+  const [url, config] = Array.isArray(args) ? args : [args];
+  
+  const res = await axiosInstance.post(url, {year, month}, { 
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }}, {...config});
+
+  return res.data;
+};
   
 // ----------------------------------------------------------------------
 
@@ -52,5 +63,9 @@ export const endpoints = {
     list: '/api/product/list',
     details: '/api/product/details',
     search: '/api/product/search',
+  },
+  user: {
+    list: 'Usuario/getUsers',
+    update: 'Usuario/updateUser',
   },
 };
