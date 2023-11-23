@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { HOST_API } from 'src/config-global';
+import { HOST, HOST_API } from 'src/config-global';
 
 // ----------------------------------------------------------------------
 
@@ -12,16 +12,36 @@ axiosInstance.interceptors.response.use(
 
 export default axiosInstance;
 
+const instance = axios.create({ baseURL: HOST });
+instance.interceptors.response.use(
+  (res) => res,
+  (error) => Promise.reject((error.response && error.response.data) || 'Something went wrong')
+);
+export {instance};
+
 // ----------------------------------------------------------------------
 
-export const fetcher = async (args) => {
+export const fetcherGet = async (args) => {
   const [url, config] = Array.isArray(args) ? args : [args];
 
-  const res = await axiosInstance.get(url, { ...config });
+  const res = await instance.get(url, { ...config });
+  
+  return res.data;
+};
+
+export const fetcherPost = async (args) => {
+  const [url, data, config] = Array.isArray(args) ? args : [args];
+
+  const res = await instance.post(url, data, {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    ...config,
+  });
 
   return res.data;
 };
-  
+
 // ----------------------------------------------------------------------
 
 export const endpoints = {
@@ -56,5 +76,7 @@ export const endpoints = {
   user: {
     list: 'Usuario/getUsers',
     update: 'Usuario/updateUser',
+    areas: 'Usuario/getAreas',
+    batch: 'Usuario/insertBatchUsers'
   },
 };

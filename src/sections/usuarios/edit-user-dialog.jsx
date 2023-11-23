@@ -20,7 +20,7 @@ import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFSelect, RHFTextField } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
-export default function UserQuickEditForm({ currentUser, open, onClose, getAreas, usersMutate, popoverOnClose }) {
+export default function UserQuickEditForm({ currentUser, open, onClose, areasMutate, usersMutate, popoverOnClose }) {
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -106,7 +106,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose, getAreas
         popoverOnClose();
         enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'warning' });
       }
-      getAreas();
+      areasMutate();
     } catch (error) {
       reset();
       onClose();
@@ -185,7 +185,7 @@ UserQuickEditForm.propTypes = {
   currentUser: PropTypes.object,
   onClose: PropTypes.func,
   open: PropTypes.bool,
-  getAreas: PropTypes.func,
+  areasMutate: PropTypes.func,
   usersMutate: PropTypes.func,
   popoverOnClose: PropTypes.func,
 };

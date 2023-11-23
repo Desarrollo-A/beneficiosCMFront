@@ -13,7 +13,7 @@ import { paths } from 'src/routes/paths';
 import { useBoolean } from 'src/hooks/use-boolean';
 
 // import UserContext from 'src/api/users'
-import { useGetUser } from 'src/api/user';
+import { useGetUsers, useBatchUsers } from 'src/api/user';
 
 import Iconify from 'src/components/iconify';
 import { Upload } from 'src/components/upload';
@@ -31,10 +31,11 @@ export default function UserListView() {
   const settings = useSettingsContext();
   const { enqueueSnackbar } = useSnackbar();  
   
-  const { data: usersData, error: usersError, usersMutate } = useGetUser();
+  const { data: usersData, error: usersError, usersMutate } = useGetUsers();
     
     const reader = new FileReader();
     const upload = useBoolean();
+    const batchUsers = useBatchUsers();
 
     const [file, setFile] = useState(null);
     const [userData, setUserData] = useState([])

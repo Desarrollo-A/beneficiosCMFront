@@ -1,14 +1,14 @@
 import useSWR from 'swr';
 import { useMemo } from 'react';
 
-import { fetcher, endpoints } from 'src/utils/axios';
+import { endpoints, fetcherGet, fetcherPost } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
-export function useGetUser() { // useGetLabels
+export function useGetUsers() {
   const URL = endpoints.user.list;
 
-  const { data, mutate, isLoading, error, isValidating } = useSWR(URL, fetcher);
+  const { data, mutate, isLoading, error, isValidating } = useSWR(URL, fetcherGet);
 
   const memoizedValue = useMemo(
     () => ({
@@ -25,44 +25,40 @@ export function useGetUser() { // useGetLabels
   return memoizedValue;
 }
 
-export function useUpdateUser(query) {
-    const URL = query ? [endpoints.user.update, { params: { query } }] : '';
-  
-    const { data, isLoading, error, isValidating } = useSWR(URL, fetcher, {
-      keepPreviousData: true,
-    });
-  
-    const memoizedValue = useMemo(
-      () => ({
-        updateResults: data?.results || [],
-        updateLoading: isLoading,
-        updateError: error,
-        updateValidating: isValidating,
-        updateEmpty: !isLoading && !data?.results.length,
-      }),
-      [data?.results, error, isLoading, isValidating]
-    );
-  
-    return memoizedValue;
+export function useGetAreas() {
+  const URL = endpoints.user.areas;
+
+  const { data, mutate, isLoading, error, isValidating } = useSWR(URL, fetcherGet);
+
+  const memoizedValue = useMemo(
+    () => ({
+      data: data?.data || [],
+      areasLoading: isLoading,
+      areasError: error,
+      areasValidating: isValidating,
+      areasEmpty: !isLoading && !data?.data.length,
+      areasMutate: mutate,
+    }),
+    [data?.data, error, isLoading, isValidating, mutate]
+  );
+
+  return memoizedValue;
 }
 
-export function useSearchProducts(query) {
-    const URL = query ? [endpoints.product.search, { params: { query } }] : '';
-  
-    const { data, isLoading, error, isValidating } = useSWR(URL, fetcher, {
-      keepPreviousData: true,
-    });
-  
-    const memoizedValue = useMemo(
-      () => ({
-        searchResults: data?.results || [],
-        searchLoading: isLoading,
-        searchError: error,
-        searchValidating: isValidating,
-        searchEmpty: !isLoading && !data?.results.length,
-      }),
-      [data?.results, error, isLoading, isValidating]
-    );
-  
-    return memoizedValue;
+export function useUpdateUser() {
+  const updateUser = async (obj) => {
+    const URL = obj ? endpoints.user.update : '';
+    return fetcherPost([URL, obj]);
+  };
+
+  return updateUser;
+}
+
+export function useBatchUsers() {
+  const batchUsers = async (obj) => {
+    const URL = obj ? endpoints.user.batch : '';
+    return fetcherPost([URL, obj]);
+  };
+
+  return batchUsers;
 }
