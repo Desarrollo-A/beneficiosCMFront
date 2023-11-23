@@ -1,33 +1,32 @@
-import PropTypes from 'prop-types';
-import { useState, useCallback, useEffect } from 'react';
 import Xlsx from 'json-as-xlsx';
+import PropTypes from 'prop-types';
+import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import ButtonBase from '@mui/material/ButtonBase';
 import CardHeader from '@mui/material/CardHeader';
+
+import Dashboard from 'src/api/dash';
 
 import Iconify from 'src/components/iconify';
 import Chart, { useChart } from 'src/components/chart';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
-import { PostDash } from "src/api/dash";
-import { padding } from '@mui/system';
-
 // ----------------------------------------------------------------------
 
-function CitasDownloadExcel(datos, seriesData, title) {
-    const year = seriesData.toString();
+function CitasDownloadExcel(Grafic, seriesData, title) {
     const data = [
       {
-        sheet: title+year,
+        sheet: `${title}${" "}${seriesData}`,
         columns: [
           { label: "Mes", value: "mes" },
           { label: "Total", value: "cantidad" },
           { label: "Estatus", value: "nombre" },
         ],
-        content: datos,
+        content: Grafic,
       },
     ]
   
@@ -39,18 +38,21 @@ function CitasDownloadExcel(datos, seriesData, title) {
       RTL: false,
     }
     Xlsx(data, settings)
-  }
+}
 
 // ----------------------------------------------------------------------
 
 export default function GraficaBarras({ title, subheader, chart, year, handleChangeYear, ...other }) {
+
+  const dashborad = Dashboard();
+
   const { categories, colors, series, options } = chart;
 
   const popover = usePopover();
 
   const [seriesData, setSeriesData] = useState(year);
 
-  const [datos, setDatos] = useState([]);
+  const [Grafic, setGrafic] = useState([]);
 
   const chartOptions = useChart({
     colors,
@@ -79,19 +81,22 @@ export default function GraficaBarras({ title, subheader, chart, year, handleCha
     [popover, handleChangeYear]
   );
 
-  async function DatosGrafic(dta) {
-    const data = await PostDash("citas_anual", dta);
-    setDatos(data);
+  async function handleGrafic() {
+    dashborad.getCitasAnual(data => {
+      setGrafic(data.data);
+    },{
+      dt:seriesData
+    });
   }
 
   useEffect(() => {
-    DatosGrafic(seriesData);
-  }, [seriesData]);
+    handleGrafic();
+  }, [seriesData]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleExcel = async e => {
     e.preventDefault();
     CitasDownloadExcel(
-      datos,
+      Grafic,
       seriesData,
       title
     );
@@ -100,15 +105,18 @@ export default function GraficaBarras({ title, subheader, chart, year, handleCha
   return (
     <>
       <Card {...other}>
+
+      <Tooltip title="Exportar XLS" placement="top" arrow>
           <MenuItem
             sx={{ width: 50, ml: 2, mt: 2 }}
-            title='Exportar Excel'
             onClick={handleExcel}
           >
             <Iconify 
             icon="teenyicons:xls-outline"
             width={24} />
           </MenuItem>
+      </Tooltip>
+
         <CardHeader
           title={title}
           subheader={subheader}

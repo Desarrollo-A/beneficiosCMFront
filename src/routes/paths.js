@@ -110,9 +110,9 @@ export const paths = {
       file: `${ROOTS.DASHBOARD}/file`,
       calendario: `${ROOTS.DASHBOARD}/calendario`
     },
-    citas: {
-      root: `${ROOTS.DASHBOARD}/citas`,
-      historial: `${ROOTS.DASHBOARD}/citas/historial`,
+    reportes: {
+      root: `${ROOTS.DASHBOARD}/reportes`,
+      historial: `${ROOTS.DASHBOARD}/reportes/historial`,
     },
     user: {
       root: `${ROOTS.DASHBOARD}/user`,
@@ -182,6 +182,10 @@ export const paths = {
         details: `${ROOTS.DASHBOARD}/tour/${MOCK_ID}`,
         edit: `${ROOTS.DASHBOARD}/tour/${MOCK_ID}/edit`,
       },
+    },
+    usuarios: {
+      root: `${ROOTS.DASHBOARD}/usuarios`,
+      new: `${ROOTS.DASHBOARD}/usuarios/new`,
     },
   },
 };

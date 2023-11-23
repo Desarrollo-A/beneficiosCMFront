@@ -8,7 +8,7 @@ import { LoadingScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
 // CITAS
-const HistorialCitasPage = lazy(() => import('src/pages/dashboard/citas/historial-citas'));
+const HistorialReportesPage = lazy(() => import('src/pages/dashboard/reportes/historial-reportes'));
 // OVERVIEW
 const IndexPage = lazy(() => import('src/pages/dashboard/app'));
 const DashPage = lazy(() => import('src/pages/dashboard/dash'));
@@ -53,6 +53,8 @@ const TourDetailsPage = lazy(() => import('src/pages/dashboard/tour/details'));
 const TourListPage = lazy(() => import('src/pages/dashboard/tour/list'));
 const TourCreatePage = lazy(() => import('src/pages/dashboard/tour/new'));
 const TourEditPage = lazy(() => import('src/pages/dashboard/tour/edit'));
+// Test
+const TestInsertBatch = lazy(() => import('src/pages/dashboard/usuarios/new'));
 // FILE MANAGER
 const FileManagerPage = lazy(() => import('src/pages/dashboard/file-manager'));
 // APP
@@ -63,7 +65,8 @@ const KanbanPage = lazy(() => import('src/pages/dashboard/kanban'));
 // TEST RENDER PAGE BY ROLE
 const PermissionDeniedPage = lazy(() => import('src/pages/dashboard/permission'));
 // BLANK PAGE
-const BlankPage = lazy(() => import('src/pages/dashboard/blank'));
+// const BlankPage = lazy(() => import('src/pages/dashboard/blank'));
+const BlankPage = lazy(() => import('src/sections/_examples/extra/upload-view'));
 
 // ----------------------------------------------------------------------
 
@@ -82,9 +85,9 @@ export const dashboardRoutes = [
     children: [
       { element: <IndexPage />, index: true },
       {
-        path: 'citas',
+        path: 'reportes',
         children: [
-          { path: 'historial', element: <HistorialCitasPage /> },
+          { path: 'historial', element: <HistorialReportesPage /> },
         ],
       },
       { path: 'dash', element: <DashPage /> },
@@ -162,6 +165,13 @@ export const dashboardRoutes = [
           { path: ':id', element: <TourDetailsPage /> },
           { path: 'new', element: <TourCreatePage /> },
           { path: ':id/edit', element: <TourEditPage /> },
+        ],
+      },
+      {
+        path: 'usuarios',
+        children: [
+          { element: <TestInsertBatch />, index: true },
+          { path: 'new', element: <TestInsertBatch /> },
         ],
       },
       { path: 'file-manager', element: <FileManagerPage /> },

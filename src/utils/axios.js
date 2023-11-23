@@ -18,7 +18,7 @@ export const fetcher = async (args) => {
   const [url, config] = Array.isArray(args) ? args : [args];
 
   const res = await axiosInstance.get(url, { ...config });
-
+  console.log(res)
   return res.data;
 };
 
@@ -63,5 +63,9 @@ export const endpoints = {
     list: '/api/product/list',
     details: '/api/product/details',
     search: '/api/product/search',
+  },
+  user: {
+    list: 'Usuario/getUsers',
+    update: 'Usuario/updateUser',
   },
 };

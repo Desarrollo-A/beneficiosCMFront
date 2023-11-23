@@ -51,7 +51,8 @@ export default function UserTableToolbar({
           md: 'row',
         }}
         sx={{
-          p: 2.5,
+          pt: { xs: 1, md: 1 },
+          pb: { xs: 1, md: 1 },
           pr: { xs: 2.5, md: 1 },
         }}
       >
@@ -61,13 +62,13 @@ export default function UserTableToolbar({
             width: { xs: 1, md: 200 },
           }}
         >
-          <InputLabel>Area</InputLabel>
+          <InputLabel>Área</InputLabel>
 
           <Select
             multiple
             value={filters.area}
             onChange={handleFilterRole}
-            input={<OutlinedInput label="Area" />}
+            input={<OutlinedInput label="Área" />}
             renderValue={(selected) => selected.map((value) => value).join(', ')}
             MenuProps={{
               PaperProps: {

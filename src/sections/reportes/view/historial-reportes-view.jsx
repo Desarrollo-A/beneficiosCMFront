@@ -1,14 +1,14 @@
-import isEqual from 'lodash/isEqual';
-import { useRef, useState, useEffect, useCallback } from 'react';
-import Xlsx from 'json-as-xlsx';
 import JsPDF from 'jspdf';
+import Xlsx from 'json-as-xlsx';
+import isEqual from 'lodash/isEqual';
 import autoTable from 'jspdf-autotable';
-import uuidv4 from "src/utils/uuidv4";
+import { useRef, useState, useEffect, useCallback } from 'react';
 
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
@@ -18,6 +18,12 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
+
+import uuidv4 from "src/utils/uuidv4";
+
+import { useGetReportes, useGetEspecialistas } from 'src/api/reportes';
+
+import Reportes from 'src/api/reportes';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -34,24 +40,11 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-import UserTableRow from '../filas-tabla-citas';
-import UserTableToolbar from '../barratareas-tabla-citas';
-import UserTableFiltersResult from '../filtros-tabla-citas';
+import FilasTabla from '../filas-tabla-citas';
+import FiltrosTabla from '../filtros-tabla-citas';
+import BarraTareasTabla from '../barratareas-tabla-citas';
 
 // ----------------------------------------------------------------------
-
-const TABLE_HEAD = [
-  { id: '', label: 'ID Cita' },
-  { id: '', label: 'ID Especialista' },
-  { id: '', label: 'ID Paciente' },
-  { id: '', label: 'Area' },
-  { id: '', label: 'Estatus' },
-  { id: '', label: 'Fecha Inicio'},
-  { id: '', label: 'Fecha Final'},
-  { id: '', width: 88 },
-];
-
-const header = ["ID Cita", "ID Especialista", "ID Paciente", "Area", "Estatus", "Fecha Inicio", "Fecha Final"];
 
 const defaultFilters = {
   name: '',
@@ -62,87 +55,201 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 const doc = new JsPDF();
 
-function handleDownloadExcel(tableData) { 
-  console.log(tableData.idCita)
-  const data = [
+function handleDownloadExcel(tableData, rol) {
+  
+  let data = [];
+
+  const baseArray = [
     {
-      sheet: "Historial Citas",
+      sheet: "Historial Reportes",
       columns: [
         { label: "ID Cita", value: "idCita" },
-        { label: "ID Especialista", value: "idEspecialista" },
-        { label: "ID Paciente", value: "idPaciente" },
-        { label: "Area", value: "area" },
+        { label: "Especialista", value: "idEspecialista" },
+        { label: "Paciente", value: "idPaciente" },
+        { label: "Oficina", value: "oficina" },
+        { label: "Departamento", value: "departamento" },
+        { label: "Sede", value: "sede" },
+        { label: "Sexo", value: "sexo" },
+        { label: "Motivo Consulta", value: "motivo" },
         { label: "Estatus", value: "estatus" },
         { label: "Fecha Inicio", value: "fechaInicio" },
         { label: "Fecha Final", value: "fechaFinal" },
       ],
-      content:tableData,
+      content: tableData,
     },
-  ]
+  ];
+
+  if (rol === 1) {
+    const arr = baseArray[0].columns;
+    arr.splice(1, 1);
+
+    data = [
+      {
+        sheet: "Historial Reportes",
+        columns: arr,
+        content: tableData,
+      },
+    ];
+
+  } else if (rol === 2) {
+    const arr = baseArray[0].columns;
+    arr.splice(2, 1);
+
+    data = [
+      {
+        sheet: "Historial Reportes",
+        columns: arr,
+        content: tableData,
+      },
+    ];
+
+  } else {
+    data = baseArray;
+  }
 
   const settings = {
-    fileName: "Historial Citas", 
-    extraLength: 3, 
-    writeMode: "writeFile", 
-    writeOptions: {}, 
-    RTL: false, 
+    fileName: "Historial Reportes",
+    extraLength: 3,
+    writeMode: "writeFile",
+    writeOptions: {},
+    RTL: false,
   }
   Xlsx(data, settings)
 }
 
-function handleDownloadPDF(tableData) { autoTable(doc, {
-  head: [header],
-  body: tableData.map( item => ([item.idCita, item.idEspecialista, item.idPaciente,
-  item.area, item.estatus, item.fechaInicio, item.fechaFinal])) ,
+function handleDownloadPDF(tableData, header, rol) {
+
+  let data = [];
+
+  if (rol === 1) {
+    data = tableData.map(item => ([item.idCita, item.idPaciente,
+    item.area, item.estatus, item.fechaInicio, item.fechaFinal]))
+  }
+  else if (rol === 2) {
+    data = tableData.map(item => ([item.idCita, item.idEspecialista,
+    item.area, item.estatus, item.fechaInicio, item.fechaFinal]))
+  } else {
+    data = tableData.map(item => ([item.idCita, item.idEspecialista, item.idPaciente,
+    item.area, item.estatus, item.fechaInicio, item.fechaFinal]))
+  }
+
+  autoTable(doc, {
+    head: [header],
+    body: data,
   })
-  doc.save('Historial Citas.pdf')
+  doc.save('Historial Reportes.pdf')
 }
 // ----------------------------------------------------------------------
-export default function HistorialCitasView() {
+export default function HistorialReportesView() {
+
+  const { reportesData } = useGetReportes();
+
+  const { especialistasData } = useGetEspecialistas();
+
+  const [datosTabla, setDatosTabla] = useState([]);
+
+  const [especialistas, setEspecialistas] = useState([]);
+
+  console.log(especialistas);
+
+  console.log(datosTabla);
+
+  useEffect(() => {
+    if (reportesData.length) {
+      setDatosTabla(reportesData);
+    }
+  }, [reportesData]);
+
+  useEffect(() => {
+    if (especialistasData.length) {
+      setEspecialistas(especialistasData);
+    }
+  }, [reportesData]);
+
+  const rol = 3;
+
+  let TABLE_HEAD = [];
+
+  let header = [];
+
+  const TABLE_BASE = [
+    { id: '', label: 'ID Cita' },
+    { id: '', label: 'Especialista' },
+    { id: '', label: 'Paciente' },
+    { id: '', label: 'Oficina' },
+    { id: '', label: 'Departamento' },
+    { id: '', label: 'Sede' },
+    { id: '', label: 'Sexo' },
+    { id: '', label: 'Motivo Consulta' },
+    { id: '', label: 'Estatus' },
+    { id: '', label: 'Fecha Inicio' },
+    { id: '', label: 'Fecha Final' },
+    { id: '', width: 88 },
+  ];
+
+  const headerBase = ["ID Cita", "Especialista", "Paciente", "Oficina", "Departamento", "Sede", "Sexo", "Motivo Consulta", "Estatus",
+    "Fecha Inicio", "Fecha Final"];
+
+  if (rol === 1) {
+
+    TABLE_BASE.splice(1, 1);
+    headerBase.splice(1, 1);
+
+    TABLE_HEAD = TABLE_BASE;
+    header = headerBase;
+
+  } else if (rol === 2) {
+
+    TABLE_BASE.splice(2, 1);
+    headerBase.splice(2, 1);
+
+    TABLE_HEAD = TABLE_BASE;
+    header = headerBase;
+
+  } else {
+    TABLE_HEAD = TABLE_BASE;
+    header = headerBase;
+  }
+
+  const reportes = Reportes();
 
   const [espe, setEs] = useState([]);
 
   const [tableData, setTableData] = useState([]);
 
-  useEffect(() => {
-    fetch("http://localhost/beneficiosCMBack/welcome/citas")
-      .then((res) => res.json())
-      .then((data) => {
-        const ct = data.data.map((cita) => ({
-          idCita: cita.idCita,
-          idEspecialista: cita.idEspecialista,
-          idPaciente: cita.idPaciente,
-          area: cita.area,
-          estatus: cita.estatus,
-          fechaInicio: cita.fechaInicio,
-          fechaFinal: cita.fechaFinal,
-        }));
-        setTableData(ct);
-      })
-      .catch((error) => {
-        alert("Error en la conexión");
-      });
-  }, []);
+  const [ReportData, setReportData] = useState('Reporte General');
+
+  const handleReportes = () => {
+    reportes.getReportes(data => {
+      const ct = data.data.map((cita) => ({
+        idCita: cita.idCita,
+        idEspecialista: cita.idEspecialista,
+        idPaciente: cita.idPaciente,
+        area: cita.area,
+        estatus: cita.estatus,
+        fechaInicio: cita.fechaInicio,
+        fechaFinal: cita.fechaFinal,
+        observaciones: cita.observaciones,
+      }));
+      setTableData(ct);
+    }, {
+      ReportData
+    });
+  }
 
   useEffect(() => {
     fetch("http://localhost/beneficiosCMBack/welcome/especialistas")
       .then((res) => res.json())
       .then((data) => {
+        // console.log(data)
         setEs(data.data);
       })
       .catch((error) => {
-        alert("Error en la conexión");
+        alert(error);
       });
   }, []);
 
   const _rp = espe.flatMap((es) => (es.nombre));
-
-  /* useEffect(() => {
-    const ct2 = citas.map((cita) => ({
-      id: cita.area
-    }));
-    setTableD(ct2);
-  }, [citas]); */
 
   const table = useTable();
 
@@ -164,7 +271,7 @@ export default function HistorialCitasView() {
     table.page * table.rowsPerPage,
     table.page * table.rowsPerPage + table.rowsPerPage
   );
-
+  
   const denseHeight = table.dense ? 52 : 72;
 
   const canReset = !isEqual(defaultFilters, filters);
@@ -215,28 +322,35 @@ export default function HistorialCitasView() {
   }, []);
 
   const targetRef = useRef();
-  
-  const handleExcel = async e =>{
+
+  const handleExcel = async e => {
     e.preventDefault();
-        handleDownloadExcel(
-            tableData
-        );
-  } 
-  const handlePdf = async e =>{
+    handleDownloadExcel(
+      tableData,
+      rol
+    );
+  }
+  const handlePdf = async e => {
     e.preventDefault();
-        handleDownloadPDF(
-          tableData
-        );
+    handleDownloadPDF(
+      tableData,
+      header,
+      rol
+    );
+  }
+
+  const handleChangeReport = (newData) => {
+    setReportData(newData);
   }
 
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Historial Citas"
+          heading="Historial Reportes"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Citas'/* , href: paths.dashboard.user.root */ },
+            { name: 'Reportes'/* , href: paths.dashboard.user.root */ },
             { name: 'Historial' },
           ]}
           sx={{
@@ -246,15 +360,16 @@ export default function HistorialCitasView() {
 
         <Card>
 
-          <UserTableToolbar
+          <BarraTareasTabla
             filters={filters}
             onFilters={handleFilters}
             //
             roleOptions={_rp}
+            handleChangeReport={handleChangeReport}
           />
 
           {canReset && (
-            <UserTableFiltersResult
+            <FiltrosTabla
               filters={filters}
               onFilters={handleFilters}
               //
@@ -266,31 +381,34 @@ export default function HistorialCitasView() {
           )}
 
           <Stack
-             spacing={1}
-             alignItems={{ xs: 'flex-end', md: 'center' }}
-             direction={{
-               xs: 'column',
-               md: 'row',
-             }}
-             sx={{
-               p: 1,
-               pr: { xs: 1, md: 1 },
-             }}
+            spacing={1}
+            alignItems={{ xs: 'flex-start', md: 'flex-start' }}
+            direction={{
+              xs: 'column',
+              md: 'row',
+            }}
+            sx={{
+              p: 1,
+              pr: { xs: 1, md: 1 },
+            }}
           >
-
+            <Tooltip title="Exportar a XLS" placement="top" arrow>
               <MenuItem
                 sx={{ width: 50, p: 1 }}
                 onClick={handleExcel}
               >
                 <Iconify icon="teenyicons:xls-outline" />
               </MenuItem>
+            </Tooltip>
 
-              <MenuItem
-                sx={{ width: 50, p: 1 }}
-                onClick={handlePdf}
-              >
-                <Iconify icon="teenyicons:pdf-outline" />
-              </MenuItem>
+            <Tooltip title="Exportar a PDF" placement="top" arrow>
+            <MenuItem
+              sx={{ width: 50, p: 1 }}
+              onClick={handlePdf}
+            >
+              <Iconify icon="teenyicons:pdf-outline" />
+            </MenuItem>
+            </Tooltip>
 
           </Stack>
 
@@ -312,14 +430,16 @@ export default function HistorialCitasView() {
                       table.page * table.rowsPerPage,
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
-                    .map((cita) => (
-                      <UserTableRow
+                    .map((row) => (
+                      <FilasTabla
                         key={`route_${uuidv4()}`}
-                        row={cita}
-                        selected={table.selected.includes(cita.idCita)}
-                        onSelectRow={() => table.onSelectRow(cita.idCita)}
-                        onDeleteRow={() => handleDeleteRow(cita.idCita)}
-                        onEditRow={() => handleEditRow(cita.idCita)}
+                        row={row}
+                        selected={table.selected.includes(row.idCita)}
+                        onSelectRow={() => table.onSelectRow(row.idCita)}
+                        onDeleteRow={() => handleDeleteRow(row.idCita)}
+                        onEditRow={() => handleEditRow(row.idCita)}
+                        rol={rol}
+                        rel={handleReportes}
                       />
                     ))}
 

@@ -97,9 +97,9 @@ export function AuthProvider({ children }) {
   }, [initialize]);
 
   // LOGIN 
-  const login = useCallback(async (numEmpleado, password) => {
-
-    const data = JSON.stringify({numempleado : numEmpleado,password:password});
+  const login = useCallback(async (numempleado, password) => {
+    const data = JSON.stringify({ numempleado, password });
+    
     const response = await instance.post(endpoints.auth.login, data);
 
     if(response.data.result === 1){

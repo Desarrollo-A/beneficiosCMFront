@@ -14,17 +14,18 @@ import DialogContent from '@mui/material/DialogContent';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useRouter } from 'src/routes/hooks';
 import { useLocation } from 'react-router-dom';
-
 import InputAdornment from '@mui/material/InputAdornment';
-
+import { paths } from 'src/routes/paths';
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, { RHFSelect, RHFTextField, RHFAutocomplete } from 'src/components/hook-form';
+import FormProvider, {  RHFTextField } from 'src/components/hook-form';
 import Servicios from 'src/utils/servicios';
 import { useState } from 'react';
+import { useAuthContext } from 'src/auth/hooks';
 // ----------------------------------------------------------------------
 
-export default function preRegisterUser({ currentUser, open, onClose }) {
+export default function preRegisterUser({ currentUser }) {
+  const { login } = useAuthContext();
 
   const { enqueueSnackbar } = useSnackbar();
   const password = useBoolean();
@@ -68,28 +69,29 @@ const servicios = Servicios();
   });
 
   const {
-    reset,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
 
-  const onSubmit = handleSubmit(async (data) => {
-    setDatosEmpleado({password:data.password});
-    servicios.addRegistroEmpleado(data => {
+  const onSubmit = handleSubmit( (data) => {
+    const temDatos = {...datosEmpleado,password:data.password}
+    setDatosEmpleado(temDatos);
+     servicios.addRegistroEmpleado(data => {
+      if(data.estatus === 1){
+        login?.(datosEmpleado.num_empleado, temDatos.password)
+        .then(response=>{
+          if(response.result === 0){
+            setErrorMsg(typeof error === 'string' ? error : response.message);
+          }else{
+              router.push(returnTo || PATH_AFTER_LOGIN);
+          }
+        })
+      }
     },{
-      params:datosEmpleado,password:data.password
+      params:temDatos
     }
     );
-    return false;
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      reset();
-      onClose();
-      enqueueSnackbar('Update success!');
-      console.info('DATA', data);
-    } catch (error) {
-      console.error(error);1
-    }
+    console.log(datosEmpleado);
   });
 
   return (
@@ -139,7 +141,7 @@ const servicios = Servicios();
         </DialogContent>
 
         <DialogActions>
-          <Button variant="outlined" onClick={onClose}>
+          <Button variant="outlined" href={paths.auth.jwt.login}>
             Cancelar
           </Button>
 

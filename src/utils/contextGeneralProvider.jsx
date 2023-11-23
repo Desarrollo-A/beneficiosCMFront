@@ -1,6 +1,5 @@
-import React, { createContext, useState } from 'react';
-import {Backdrop, Snackbar, IconButton} from '@material-ui/core';
-import spinner from 'src/images/logo/spinner.gif';
+import React, { useState, createContext } from 'react';
+import {Snackbar} from '@material-ui/core';
 import { Alert } from '@mui/lab';
 import instance from './axiosBack';
 
@@ -8,8 +7,8 @@ import instance from './axiosBack';
 export const contextGeneral = createContext();
 
 const ContextGeneralProvider = (props) => {
-    const [cargando, setCargando] = React.useState(false);
-    const [mensaje, setMensaje] = React.useState({});
+    const [cargando, setCargando] = useState(false);
+    const [mensaje, setMensaje] = useState({});
     const cerrarMensaje = () => setMensaje({});
 
     const llamarServidor=(ruta)=>(setCtl,body)=>{
@@ -19,16 +18,15 @@ const ContextGeneralProvider = (props) => {
             setCtl(response.data);
             setCargando(false);
         })
-        .catch(error=>{
+        .catch(error=> {
             setCtl([]);
             setCargando(false);
         });
     }
     
-    
     const llamarServidorRespuesta=(ruta)=>(respuesta,body)=>{
         setCargando(true);
-        instance.post(ruta,body)
+        instance.post(ruta,body, { headers: {'Content-Type' : 'application/x-www-form-urlencoded'}})
         .then(response=>{
             setCargando(false);
             if(response.status===200){
@@ -71,7 +69,7 @@ const ContextGeneralProvider = (props) => {
             }
         })
         .catch(error=>{
-            //console.log(error);
+            // console.log(error);
             setMensaje({ open: true, status: -1, value: "ERROR DE SERVIDOR" });
             respuesta(-1,'Error de servidor');
             setCargando(false);
@@ -79,16 +77,12 @@ const ContextGeneralProvider = (props) => {
     }
 
     return (
-        <contextGeneral.Provider value={{llamarServidor,llamarServidorRespuesta,llamarServidorRespuestaPDF,setCargando,setMensaje}}>
-            <Snackbar open={mensaje.open} autoHideDuration={10000} onClose={cerrarMensaje}>
+        <contextGeneral.Provider value={{llamarServidor,llamarServidorRespuesta,setCargando,setMensaje}}>
+          {  <Snackbar open={mensaje.open} autoHideDuration={10000} onClose={cerrarMensaje}>
                 <Alert onClose={cerrarMensaje} variant="filled" severity={mensaje.status<0?'error':mensaje.status>0?'success':'info'}>
                 {mensaje.value}
                 </Alert>
-            </Snackbar>
-            <Backdrop id="cargando" open={cargando}>
-                {/* <CircularProgress color="inherit" /> */}
-                <img src={spinner} alt={'OOAM'} width="450" height="250" />
-            </Backdrop>
+            </Snackbar>}
             {props.children}
         </contextGeneral.Provider>
     );
