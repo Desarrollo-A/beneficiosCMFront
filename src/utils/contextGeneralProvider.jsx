@@ -1,10 +1,6 @@
-import { useState, createContext } from 'react';
-import {Backdrop, Snackbar} from '@material-ui/core';
-
+import React, { useState, createContext } from 'react';
+import {Snackbar} from '@material-ui/core';
 import { Alert } from '@mui/lab';
-
-import spinner from 'src/images/logo/spinner.gif';
-
 import instance from './axiosBack';
 
 // create a context, with createContext api
@@ -28,10 +24,9 @@ const ContextGeneralProvider = (props) => {
         });
     }
     
-    
     const llamarServidorRespuesta=(ruta)=>(respuesta,body)=>{
         setCargando(true);
-        instance.post(ruta,body)
+        instance.post(ruta,body, { headers: {'Content-Type' : 'application/x-www-form-urlencoded'}})
         .then(response=>{
             setCargando(false);
             if(response.status===200){
@@ -82,16 +77,12 @@ const ContextGeneralProvider = (props) => {
     }
 
     return (
-        <contextGeneral.Provider value={{llamarServidor,llamarServidorRespuesta,llamarServidorRespuestaPDF,setCargando,setMensaje}}>
-            <Snackbar open={mensaje.open} autoHideDuration={10000} onClose={cerrarMensaje}>
+        <contextGeneral.Provider value={{llamarServidor,llamarServidorRespuesta,setCargando,setMensaje}}>
+          {  <Snackbar open={mensaje.open} autoHideDuration={10000} onClose={cerrarMensaje}>
                 <Alert onClose={cerrarMensaje} variant="filled" severity={mensaje.status<0?'error':mensaje.status>0?'success':'info'}>
                 {mensaje.value}
                 </Alert>
-            </Snackbar>
-            <Backdrop id="cargando" open={cargando}>
-                {/* <CircularProgress color="inherit" /> */}
-                <img src={spinner} alt={'OOAM'} width="450" height="250" />
-            </Backdrop>
+            </Snackbar>}
             {props.children}
         </contextGeneral.Provider>
     );

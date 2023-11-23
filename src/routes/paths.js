@@ -108,11 +108,11 @@ export const paths = {
       banking: `${ROOTS.DASHBOARD}/banking`,
       booking: `${ROOTS.DASHBOARD}/booking`,
       file: `${ROOTS.DASHBOARD}/file`,
-      test: `${ROOTS.DASHBOARD}/test`
+      calendario: `${ROOTS.DASHBOARD}/calendario`
     },
-    citas: {
-      root: `${ROOTS.DASHBOARD}/citas`,
-      historial: `${ROOTS.DASHBOARD}/citas/historial`,
+    reportes: {
+      root: `${ROOTS.DASHBOARD}/reportes`,
+      historial: `${ROOTS.DASHBOARD}/reportes/historial`,
     },
     user: {
       root: `${ROOTS.DASHBOARD}/user`,

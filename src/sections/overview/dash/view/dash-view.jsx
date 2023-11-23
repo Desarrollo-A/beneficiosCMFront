@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
-import uuidv4 from "src/utils/uuidv4";
 
 import Grid from '@mui/material/Unstable_Grid2';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 
+import uuidv4 from "src/utils/uuidv4";
+
+import Dashboard from 'src/api/dash';
+
 import { useSettingsContext } from 'src/components/settings';
 
-import { GetDash, PostDash } from "src/api/dash";
 import WidgetSumas from '../widget-sumas';
 import GraficaArea from '../grafica-area';
 import GraficaPastel from '../grafica-pastel';
@@ -17,135 +19,150 @@ import GraficaBarras from '../grafica-barras';
 
 export default function DashView() {
 
-  const d = new  Date();
+  const dashborad = Dashboard();
 
-  const  year = d.getFullYear();
+  const d = new Date();
 
-  const [usr, usrPost] = useState([]);
+  const year = d.getFullYear();
 
-  const [cts, citasPost] = useState([]);
+  const [usr, setUserCount] = useState([]);
 
-  const [ests, estadoPost] = useState([]);
-  
-  const [estatusCitas, estatusPost] = useState([]);
+  const [CtCount, setCtCount] = useState([]);
 
-  const [estatusCitasXLS, estadoPostCitaXLS] = useState([]);
+  const [EstatusCount, setEstatusCount] = useState([]);
 
-  const [ctAsistencia, ctFechaAsistencia] = useState([]);
+  const [EstatusTot, setEstatusTot] = useState([]);
 
-  const [ctCancelada, ctFechaCancelada] = useState([]);
+  const [EstatusXls, setEstatusXls] = useState([]);
 
-  const [ctPenalizada, ctFechaPenalizada] = useState([]);
+  const [FechaAsis, setFechaAsis] = useState([]);
 
-  const [ctMinima, ctFechaMinima] = useState([]);
+  const [ctCancelada, setFechaCanc] = useState([]);
+
+  const [ctPenalizada, setFechaPen] = useState([]);
+
+  const [FechaMin, setFechaMin] = useState([]);
 
   const settings = useSettingsContext();
 
   const [yearData, setYearData] = useState(year);
 
-  async function UsrCount() {
-    const data = await GetDash("usr_count");
-    usrPost(data);
+  async function handleUsrCount() {
+    dashborad.getUsersCount(data => {
+      setUserCount(data.data);
+    });
   }
 
   useEffect(() => {
-    UsrCount();
-  }, []);
+    handleUsrCount();
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  async function CitasCount() {
-    const data = await GetDash("citas_count");
-    citasPost(data);
+  async function handleCtCount() {
+    dashborad.getCitasCount(data => {
+      setCtCount(data.data);
+    });
   }
 
   useEffect(() => {
-    CitasCount();
-  }, []);
+    handleCtCount();
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  async function CitasCountEstatus() {
-    const data = await GetDash("citas_count_status");
-    const estado = data.map((edo) => ({
-      label: edo.estatus,
-      value: edo.total,
-    }));
-
-    estadoPost(estado);
+  async function handleCountEstatus() {
+    dashborad.getCitasEstatus(data => {
+      const ct = data.data.map((cita) => ({
+        label: cita.estatus,
+        value: cita.total,
+      }));
+      setEstatusCount(ct);
+    });
   }
 
   useEffect(() => {
-    CitasCountEstatus();
-  }, []);
+    handleCountEstatus();
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  async function CtEstatusXLS() {
-    const data = await GetDash("citas_count_status");
-
-    const estadoCitaXLS = data.map((edo) => ({
-      estatus: edo.estatus,
-      total: edo.total,
-    }));
-    estadoPostCitaXLS(estadoCitaXLS);
+  async function handleEstatusXLS() {
+    dashborad.getCitasEstatus(data => {
+      const ct = data.data.map((cita) => ({
+        estatus: cita.estatus,
+        total: cita.total,
+      }));
+      setEstatusXls(ct);
+    });
   }
 
   useEffect(() => {
-    CtEstatusXLS();
-  }, []);
+    handleEstatusXLS();
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  async function EstatusCitasCount() {
-    const data = await GetDash("total_status_citas");
-    estatusPost(data);
+  async function handleEstatusTot() {
+    dashborad.getEstatusTotal(data => {
+      setEstatusTot(data.data);
+    });
   }
 
   useEffect(() => {
-    EstatusCitasCount();
-  }, []);
+    handleEstatusTot();
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  async function CitasFechaAsistencia(dta) {
-    const data = await PostDash("estatus_fecha_asistencia", dta);
-    ctFechaAsistencia(data);
+  async function handleFechaMin() {
+    dashborad.getFechaMinima(data => {
+      setFechaMin(data.data);
+    });
   }
 
   useEffect(() => {
-    CitasFechaAsistencia(yearData);
-  }, [yearData]);
+    handleFechaMin();
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  async function CitasFechaCancelada(dta) {
-    const data = await PostDash("estatus_fecha_cancelada", dta);
-    ctFechaCancelada(data);
+  async function handleFechaAsis() {
+    dashborad.getFechaAsistencia(data => {
+      setFechaAsis(data.data);
+    },{
+      yearData
+    });
   }
 
   useEffect(() => {
-    CitasFechaCancelada(yearData);
-  }, [yearData]);
+    handleFechaAsis();
+  }, [yearData]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  async function CitasFechaPenalizada(dta) {
-    const data = await PostDash("estatus_fecha_penalizada", dta);
-    ctFechaPenalizada(data);
+  async function handleFechaCanc() {
+    dashborad.getFechaCancelada(data => {
+      setFechaCanc(data.data);
+    },{
+      yearData
+    });
   }
 
   useEffect(() => {
-    CitasFechaPenalizada(yearData);
-  }, [yearData]);
+    handleFechaCanc();
+  }, [yearData]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  async function CitasFechaMinima() {
-    const data = await GetDash("fecha_minima");
-    ctFechaMinima(data);
+  async function handleFechaPen() {
+    dashborad.getFechaPenalizada(data => {
+      setFechaPen(data.data);
+    },{
+      yearData
+    });
   }
 
   useEffect(() => {
-    CitasFechaMinima();
-  }, []);
+    handleFechaPen();
+  }, [yearData]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleChangeYear = (newYear) => {
     setYearData(newYear);
   }
 
   const desiredLength = 12;
-  
+
   const resultAs = [];
   let IndexAs = 0;
-  for (let i = 1; i <= desiredLength; i+=1) {
-    if (IndexAs < ctAsistencia.length && ctAsistencia[IndexAs].mes === i) {
-      resultAs.push(ctAsistencia[IndexAs]);
-      IndexAs+=1;
+  for (let i = 1; i <= desiredLength; i += 1) {
+    if (IndexAs < FechaAsis.length && FechaAsis[IndexAs].mes === i) {
+      resultAs.push(FechaAsis[IndexAs]);
+      IndexAs += 1;
     } else {
       resultAs.push({ mes: i, cantidad: 0, nombre: 'Asistencia' });
     }
@@ -154,10 +171,10 @@ export default function DashView() {
 
   const resultCn = [];
   let IndexCn = 0;
-  for (let i = 1; i <= desiredLength; i+=1) {
+  for (let i = 1; i <= desiredLength; i += 1) {
     if (IndexCn < ctCancelada.length && ctCancelada[IndexCn].mes === i) {
       resultCn.push(ctCancelada[IndexCn]);
-      IndexCn+=1;
+      IndexCn += 1;
     } else {
       resultCn.push({ mes: i, cantidad: 0, nombre: 'Cancelada' });
     }
@@ -166,10 +183,10 @@ export default function DashView() {
 
   const resultPn = [];
   let IndexPn = 0;
-  for (let i = 1; i <= desiredLength; i+=1) {
+  for (let i = 1; i <= desiredLength; i += 1) {
     if (IndexPn < ctPenalizada.length && ctPenalizada[IndexPn].mes === i) {
       resultPn.push(ctPenalizada[IndexPn]);
-      IndexPn+=1;
+      IndexPn += 1;
     } else {
       resultPn.push({ mes: i, cantidad: 0, nombre: 'Penalización' });
     }
@@ -191,7 +208,7 @@ export default function DashView() {
     },
   ];
 
-  const yearMin = parseInt(ctMinima.map((u) => (u.year)), 10);
+  const yearMin = parseInt(FechaMin.map((u) => (u.year)), 10);
 
   const propGrafic = [
     {
@@ -200,7 +217,7 @@ export default function DashView() {
     },
   ];
 
-  for (let i = yearMin; i < year; i+=1) {
+  for (let i = yearMin; i < year; i += 1) {
     propGrafic.push({ type: i, data: dataReg });
   }
 
@@ -229,7 +246,7 @@ export default function DashView() {
         </Grid>
 
         <Grid xs={12} md={4}>
-          {cts.flatMap((u) => (
+          {CtCount.flatMap((u) => (
             <WidgetSumas
               key={`route_${uuidv4()}`}
               title="Total de citas"
@@ -249,11 +266,11 @@ export default function DashView() {
           <GraficaArea
             title="Estados de Citas"
             chart={{
-              series: ests,
+              series: EstatusCount,
             }}
-            estatus={estatusCitas}
-            registros={estatusCitasXLS}
-            count={cts}
+            estatus={EstatusTot}
+            registros={EstatusXls}
+            count={CtCount}
           />
         </Grid>
 
@@ -262,10 +279,10 @@ export default function DashView() {
           <GraficaPastel
             title="Estados de Citas"
             chart={{
-              series: ests,
+              series: EstatusCount,
             }}
-            registros={estatusCitasXLS}
-            count={cts}
+            registros={EstatusXls}
+            count={CtCount}
           />
         </Grid>
 

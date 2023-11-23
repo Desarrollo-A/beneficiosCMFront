@@ -59,11 +59,11 @@ export function useNavData() {
         subheader: t('agenda'),
         items: [
           {
-            title: t('citas'),
-            path: paths.dashboard.citas.root,
-            icon: ICONS.calendar,
+            title: t('reportes'),
+            path: paths.dashboard.reportes.root,
+            icon: ICONS.file,
             children: [
-              { title: t('historial'), path: paths.dashboard.citas.historial },
+              { title: t('historial'), path: paths.dashboard.reportes.historial },
             ],
           }
         ],
@@ -109,9 +109,9 @@ export function useNavData() {
             icon: ICONS.file,
           },
           {
-            title: t('test'),
-            path: paths.dashboard.general.test,
-            icon: ICONS.donut,
+            title: t('Calendario'),
+            path: paths.dashboard.general.calendario,
+            icon: ICONS.calendar,
           }
         ],
       },

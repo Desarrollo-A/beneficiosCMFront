@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useCallback } from 'react';
+import { useState, useCallback } from 'react';
 
 import Stack from '@mui/material/Stack';
 import Select from '@mui/material/Select';
@@ -16,11 +16,12 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
 
-export default function UserTableToolbar({
+export default function BarraTareasTabla({
   filters,
   onFilters,
   //
   roleOptions,
+  handleChangeReport,
 }) {
   const popover = usePopover();
 
@@ -41,6 +42,18 @@ export default function UserTableToolbar({
     [onFilters]
   );
 
+  const report = [ 
+    { value: 'Reporte General', label: 'Reporte General' },
+    { value: 'Reporte de faltas', label: 'Reporte de faltas' },
+  ];
+
+  const [currentStatus, setCurrentStatus] = useState(report[0].label);
+
+  const handleChangeStatus = useCallback((event) => {
+    setCurrentStatus(event.target.value);
+    handleChangeReport(event.target.value);
+  }, [handleChangeReport]); 
+
   return (
     <>
       <Stack
@@ -55,6 +68,31 @@ export default function UserTableToolbar({
           pr: { xs: 2.5, md: 1 },
         }}
       >
+        <FormControl
+          sx={{
+            flexShrink: 0,
+            width: { xs: 1, md: 200 },
+          }}
+        >
+          <TextField
+          fullWidth
+          select
+          label="Tipo de Reporte"
+          value={currentStatus}
+          onChange={handleChangeStatus}
+        >
+          
+          {report.map((option) => (
+            <MenuItem 
+              key={option.value} 
+              value={option.value}
+            >
+              {option.label}
+            </MenuItem>
+          ))}
+        </TextField>
+        </FormControl>
+
         <FormControl
           sx={{
             flexShrink: 0,
@@ -98,7 +136,7 @@ export default function UserTableToolbar({
               ),
             }}
           />
-          
+
         </Stack>
       </Stack>
 
@@ -139,8 +177,9 @@ export default function UserTableToolbar({
   );
 }
 
-UserTableToolbar.propTypes = {
+BarraTareasTabla.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   roleOptions: PropTypes.array,
+  handleChangeReport: PropTypes.func,
 };

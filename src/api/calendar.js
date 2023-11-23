@@ -17,7 +17,6 @@ const options = {
 
 export function useGetEvents() {
   const { data, isLoading, error, isValidating } = useSWR(URL, fetcher, options);
-
   const memoizedValue = useMemo(() => {
     const events = data?.events.map((event) => ({
       ...event,
@@ -37,10 +36,7 @@ export function useGetEvents() {
 }
 
 // ----------------------------------------------------------------------
-export function GetCustomEvents(current) {
-  const year = current.getFullYear();
-  const month = (current.getMonth() + 1);
-  console.log(month);
+export function GetCustomEvents() {
 
   const { data, isLoading, error, isValidating } = useSWR(URLC, fetcher, options);
 

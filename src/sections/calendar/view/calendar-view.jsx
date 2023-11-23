@@ -6,18 +6,24 @@ import timelinePlugin from '@fullcalendar/timeline';
 import { useState, useEffect, useCallback } from 'react';
 import interactionPlugin from '@fullcalendar/interaction';
 
+import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
+import Select from '@mui/material/Select';
 import Dialog from '@mui/material/Dialog';
+import MenuItem from '@mui/material/MenuItem';
 import { useTheme } from '@mui/material/styles';
 import Container from '@mui/material/Container';
+import InputLabel from '@mui/material/InputLabel';
 import Typography from '@mui/material/Typography';
 import DialogTitle from '@mui/material/DialogTitle';
+import FormControl from '@mui/material/FormControl';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 
+import Servicios from 'src/utils/servicios';
 import { fTimestamp } from 'src/utils/format-time';
 
 import { CALENDAR_COLOR_OPTIONS } from 'src/_mock/_calendar';
@@ -32,6 +38,7 @@ import { useEvent, useCalendar } from '../hooks';
 import CalendarToolbar from '../calendar-toolbar';
 import CalendarFilters from '../calendar-filters';
 import CalendarFiltersResult from '../calendar-filters-result';
+import NuevaCitaForm from '../calendario-formulario';
 
 // ----------------------------------------------------------------------
 
@@ -51,10 +58,17 @@ export default function CalendarView() {
   const smUp = useResponsive('up', 'sm');
 
   const openFilters = useBoolean();
-
+  const servicios = Servicios();
   const [filters, setFilters] = useState(defaultFilters);
 
   const { events, eventsLoading } = useGetEvents();
+ 
+
+  // const [citas] = useState(GetCitasDisponibles().citas);
+  const [ citas, setCitas ] = useState('');
+  const [ citasServicio, setCitasServicio ] = useState([]);
+  const [ modalCitas, setModalCitas ] = useState(false);
+
 
   const dateError =
     filters.startDate && filters.endDate
@@ -93,16 +107,34 @@ export default function CalendarView() {
     onInitialView();
   }, [onInitialView]);
 
+
+async function getCitasDisponibles() {
+  servicios.getServiciosDisponibles(data => {
+    setCitasServicio([{datos:data.beneficios, statusButton:data.statusButton}]);
+});
+}
+
+useEffect(() => {
+  getCitasDisponibles();
+}, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+
+
   const handleFilters = useCallback((name, value) => {
     setFilters((prevState) => ({
       ...prevState,
       [name]: value,
     }));
+  
   }, []);
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
+  const handleChange = (event) => {
+    setCitas(event.target.value);
+    setModalCitas(true);
+  };
 
   const canReset = !!filters.colors.length || (!!filters.startDate && !!filters.endDate);
 
@@ -142,8 +174,28 @@ export default function CalendarView() {
             startIcon={<Iconify icon="mingcute:add-line" />}
             onClick={onOpenForm}
           >
-            New Event
+            Vámonos alv
           </Button>
+          <Box sx={{ minWidth: 120 }}>
+            <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label">Consultas</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select-001"
+                label="Consultas"
+                value={citas}
+                onChange={handleChange}
+                disabled={(citasServicio[0] == undefined) ? false : citasServicio[0].statusButton}
+              >
+                {
+                    citasServicio[0] !== undefined     &&
+                      citasServicio[0].datos.map((element, index)=>
+                          <MenuItem key={element.idOpcion} value={element.idOpcion}>{element.nombre}</MenuItem>
+                      ) 
+                }
+              </Select>
+            </FormControl>
+          </Box>
         </Stack>
 
         {canReset && renderResults}
@@ -234,6 +286,9 @@ export default function CalendarView() {
         colorOptions={CALENDAR_COLOR_OPTIONS}
         onClickEvent={onClickEventInFilters}
       />
+      <NuevaCitaForm open={modalCitas} especialidadElegida={citasServicio}/>
+        
+
     </>
   );
 }
