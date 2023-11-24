@@ -94,8 +94,8 @@ const handleDownloadPDF = (dataFiltered) => {
 
 export default function UserList({users, usersMutate}) {
   const table = useTable();
+  const updateUser = useUpdateUser();
   const { enqueueSnackbar } = useSnackbar();
-  // const settings = useSettingsContext();
 
   const targetRef = useRef();
   
@@ -105,21 +105,18 @@ export default function UserList({users, usersMutate}) {
   const { data, areasError, areasMutate } = useGetAreas();
   const [areas, setAreas] = useState([]);
 
-  const updateUser = useUpdateUser();
-
   // Utiliza useEffect con dependencia en las props 'usuarios'
   useEffect(() => {
     setUserData(users || []);
   }, [users]);
 
   useEffect(() => {
-    console.log("Console de areas", data);
     if (!areasError && data) {
       setAreas(data);
     }else {
       setAreas([]);
     }
-  }, [data, areasError, users]);
+  }, [data, areasError]);
   
   const canReset = !isEqual(defaultFilters, filters);
   const _rp = areas.flatMap((es) => (es.area));
@@ -148,7 +145,7 @@ export default function UserList({users, usersMutate}) {
     [table]
   );
 
-  const handleDeleteRow = async (id) => {
+  const handleDisableUser = async (id) => {
     try {
       const update = await updateUser(new URLSearchParams({
         'idUsuario': id,
@@ -163,7 +160,7 @@ export default function UserList({users, usersMutate}) {
         enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'success' });
       }
     } catch (error) {
-      console.error("Error en handleDeleteRow:", error);
+      console.error("Error en handleDisableUser:", error);
       enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'danger' });
     }
   };
@@ -251,7 +248,7 @@ export default function UserList({users, usersMutate}) {
                             row={usuario}
                             selected={table.selected.includes(usuario.id)}
                             onSelectRow={() => table.onSelectRow(usuario.id)}
-                            onDeleteRow={() => handleDeleteRow(usuario.id)}
+                            onDeleteRow={() => handleDisableUser(usuario.id)}
                             areasMutate={areasMutate}
                             usersMutate={usersMutate}
                           />

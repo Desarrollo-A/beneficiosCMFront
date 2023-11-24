@@ -12,7 +12,6 @@ import { paths } from 'src/routes/paths';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-// import UserContext from 'src/api/users'
 import { useGetUsers, useBatchUsers } from 'src/api/user';
 
 import Iconify from 'src/components/iconify';
@@ -23,11 +22,9 @@ import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
 import UserList from '../userList';
 
-const BACK = 'http://localhost/beneficiosCMBack/';
 // ----------------------------------------------------------------------
 
 export default function UserListView() {
-  // const userContext = UserContext();
   const settings = useSettingsContext();
   const { enqueueSnackbar } = useSnackbar();  
   
@@ -59,30 +56,24 @@ export default function UserListView() {
       }
     }, [usersData, usersError])
 
-    // useEffect(() => {
-    //   loadUsers();
-    // }, [])
-    
-    // const loadUsers = async () => {
-    //   await fetch(`${BACK}/Usuario/getUsers`)
-    //   .then((res) => res.json()).then((data) => {
-    //     const obj = data.data.map((i) => ({
-    //       id: i.idUsuario,
-    //       contrato: i.numContrato,
-    //       empleado: i.numEmpleado,
-    //       nombre: i.nombre,
-    //       telefono: i.telPersonal,
-    //       area: i.area,
-    //       puesto: i.puesto,
-    //       oficina: i.oficina,
-    //       sede: i.sede,
-    //       correo: i.correo,
-    //       estatus: i.estatus,
-    //     }));
-    //     setUserData(obj);
-    //   })
-    //   .catch((error) =>alert(error));
-    // }
+    useEffect(() => {
+      if (!usersError && usersData) {
+        const obj = usersData.map((i) => ({
+          id: i.idUsuario,
+          contrato: i.numContrato,
+          empleado: i.numEmpleado,
+          nombre: i.nombre,
+          telefono: i.telPersonal,
+          area: i.area,
+          puesto: i.puesto,
+          oficina: i.oficina,
+          sede: i.sede,
+          correo: i.correo,
+          estatus: i.estatus,
+        }));
+        setUserData(obj);
+      }
+    }, [usersData, usersError])
 
     const isExcelFile = (fileName) => {
       const boolean = /\.(xlsx|xls)$/.test(fileName);
@@ -98,7 +89,7 @@ export default function UserListView() {
         }
         setFile(
           Object.assign(newFile, {
-            preview: `${BACK}/assets/images/user/excel-file.png`,
+            preview: `./assets/images/user/excel-file.png`,
           })
         );
       }
@@ -186,33 +177,24 @@ export default function UserListView() {
     };
 
     const handleCreateUsers = async (users) => {
-      console.log(users);
-      await fetch(`${BACK}Usuario/insertBatchUsers`, {
-        method: 'POST',
-        body: JSON.stringify(users),
-      })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-          if (data.result) {
-            enqueueSnackbar(`¡Los usuarios han sido registrados exitosamente!`, { variant: 'success' });
-            usersMutate();
-          } else {
-            enqueueSnackbar(`¡Ha surgido un error al intentar registrar los usuarios!`, { variant: 'warning' });
-          }
-        })
-      .catch((error) => {
-          enqueueSnackbar(`¡Ha surgido un error al intentar registrar los usuarios!`, { variant: 'danger' });
-          console.error(error);
+      try {
+        const update = await batchUsers(JSON.stringify(users));
+        if (update.result) {
+          enqueueSnackbar(`¡Los usuarios han sido registrados exitosamente!`, { variant: 'success' });
+          usersMutate();
+        } else {
+          enqueueSnackbar(`¡Ha surgido un error al intentar registrar los usuarios!`, { variant: 'warning' });
         }
-      );
+      } catch (error) {
+        console.error("Error en handleDeleteRow:", error);
+        enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'danger' });
+      }
       handleCloseDialog();
     };
 
     const handleCloseDialog = () =>{
       upload.onFalse();
       setFile(null);
-      console.log("usersMutate type:", typeof usersMutate);
     } 
 
   return (

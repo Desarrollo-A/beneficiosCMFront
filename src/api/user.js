@@ -16,7 +16,7 @@ export function useGetUsers() {
       usersLoading: isLoading,
       usersError: error,
       usersValidating: isValidating,
-      usersEmpty: !isLoading && !data?.data.length,
+      usersEmpty: !isLoading && !data?.data?.length,
       usersMutate: mutate,
     }),
     [data?.data, error, isLoading, isValidating, mutate]
@@ -36,7 +36,7 @@ export function useGetAreas() {
       areasLoading: isLoading,
       areasError: error,
       areasValidating: isValidating,
-      areasEmpty: !isLoading && !data?.data.length,
+      areasEmpty: !isLoading && !data?.data?.length,
       areasMutate: mutate,
     }),
     [data?.data, error, isLoading, isValidating, mutate]

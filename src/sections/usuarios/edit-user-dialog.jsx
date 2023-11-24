@@ -12,16 +12,15 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-// import { mutate } from 'swr';
 
-// import { useGetUser } from 'src/api/user';
+import { useUpdateUser } from 'src/api/user';
 
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFSelect, RHFTextField } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 export default function UserQuickEditForm({ currentUser, open, onClose, areasMutate, usersMutate, popoverOnClose }) {
-
+  const updateUser = useUpdateUser();
   const { enqueueSnackbar } = useSnackbar();
 
   const NewUserSchema = Yup.object().shape({
@@ -71,51 +70,40 @@ export default function UserQuickEditForm({ currentUser, open, onClose, areasMut
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      const response = await fetch('http://localhost/beneficiosCMBack/Usuario/updateUser', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-          'idUsuario': data.id,
-          'numContrato': data.contrato,
-          'numEmpleado': data.empleado,
-          'nombre': data.nombre,
-          'telPersonal': data.telefono,
-          'area': data.area,
-          'puesto': data.puesto,
-          'oficina': data.oficina,
-          'sede': data.sede,
-          'correo': data.correo,
-        }),
-      });
+      const updateData = {
+        'idUsuario': data.id,
+        'numContrato': data.contrato,
+        'numEmpleado': data.empleado,
+        'nombre': data.nombre,
+        'telPersonal': data.telefono,
+        'area': data.area,
+        'puesto': data.puesto,
+        'oficina': data.oficina,
+        'sede': data.sede,
+        'correo': data.correo,
+      };
   
-      const res = await response.json();
-      console.log(res)
-      
-      if (res.result) {
-        reset();
-        onClose();
-        usersMutate();
-        popoverOnClose();
+      const update = await updateUser(new URLSearchParams(updateData));
+  
+      if (update.result) {
         enqueueSnackbar(`¡Se ha actualizado los datos del usuario exitosamente!`, { variant: 'success' });
       } else {
-        reset();
-        onClose();
-        usersMutate();
-        popoverOnClose();
-        enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'warning' });
+        enqueueSnackbar(`¡No se pudo actualizar los datos de usuario!`, { variant: 'warning' });
       }
+      
+      reset();
+      onClose();
+      usersMutate();
       areasMutate();
+      popoverOnClose();
     } catch (error) {
       reset();
       onClose();
       popoverOnClose();
-      enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'success' });
-      console.log("usersMutate type:", typeof usersMutate);
-      console.log("ERROR", error);
+      enqueueSnackbar(`¡No se pudo actualizar los datos de usuario!`, { variant: 'error' });
+      console.error("Error", error);
     }
-  });
+  });  
 
   return (
     <Dialog
