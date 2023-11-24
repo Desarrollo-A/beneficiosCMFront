@@ -33,7 +33,7 @@ export function GetCustomEvents(current) {
   const memoizedValue = useMemo(() => {
       const events = data?.events?.map((event) => ({
         ...event,
-        textColor: 'red',
+        textColor: event?.color ? event.color : 'red',
       }));
     
     return {
@@ -60,10 +60,8 @@ export async function createCustom(fecha, eventData) {
         hora_final:  eventData.hora_final,
         id_unico: eventData.id,
         id_usuario: datosUser.idUsuario
-    }, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
+    }, { 
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     }, false)
     .then((response) => response.data)
     .then(
@@ -122,4 +120,27 @@ export async function deleteEvent(eventId) {
   );
 
   return delEvent;
+}
+
+export async function cancelDate(eventId){
+  const delDate = await axios.post('http://localhost/beneficiosCMBack/calendarioController/delete_date', {
+    id: eventId
+  }, {
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+  }).then(response => response.data);
+
+  mutate(
+    URLC,
+    (currentData) => {
+      const events = currentData.events.filter((event) => event.id !== eventId);
+
+      return {
+        ...currentData,
+        events
+      }
+    },
+    false
+  );
+
+  return delDate;
 }

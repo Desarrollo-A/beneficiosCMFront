@@ -95,8 +95,8 @@ export default function Lista({ currentEvent, onClose, currentDay }){
         <FormProvider methods={methods} onSubmit={onSubmit}>
             <DialogContent sx={{ p: { xs: 1, md: 2 } }}>
                 <Stack spacing = {3} sx={{ p: { xs: 1, md: 2 } }}>
-                    <RHFTextField name="title" label="Titulo" />
-                    <Typography variant="h5">Agregar horario </Typography>
+                    <RHFTextField disabled={!!currentEvent?.type} name="title" label="Titulo" />
+                    <Typography variant="h5">{currentEvent?.type ? "Horario de la cita" : "Agregar horario"} </Typography>
                     <Typography variant="subtitle1">{currentEvent?.id ? dayjs(currentEvent.start).format("dddd, DD/MM/YYYY") : fechaTitulo}</Typography>
                 </Stack>
                 <Stack direction= "row" spacing={ 2 } sx={{ p: { xs: 1, md: 2 } }}>
@@ -104,6 +104,7 @@ export default function Lista({ currentEvent, onClose, currentDay }){
                         name = "start"
                         render = {({field})=>
                             <TimePicker
+                                disabled = {!!currentEvent?.type}
                                 label="Hora de inicio"
                                 defaultValue={currentEvent?.id ? dayjs(currentEvent.start).$d : null}
                                 onChange={
@@ -116,6 +117,7 @@ export default function Lista({ currentEvent, onClose, currentDay }){
                         name = "end"
                         render = {({field})=>
                             <TimePicker
+                                disabled = {!!currentEvent?.type}
                                 label="Hora finalización"
                                 slotProps={{
                                     textField: {

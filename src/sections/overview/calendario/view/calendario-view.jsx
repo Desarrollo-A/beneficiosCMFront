@@ -29,7 +29,7 @@ import Lista from "./lista";
 import { StyledCalendar } from '../styles';
 import CalendarToolbar from '../calendar-tool';
 import { useEvent, useCalendar } from '../hooks';
-import { deleteEvent, GetCustomEvents } from '../calendar';
+import { cancelDate, deleteEvent, GetCustomEvents } from '../calendar';
 // ----------------------------------------------------------------------
 
 const defaultFilters = {
@@ -38,7 +38,7 @@ const defaultFilters = {
     endDate: null,
   };
   
-  // ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
 
 export default function CalendarioView(){
     const { enqueueSnackbar } = useSnackbar();
@@ -83,6 +83,24 @@ export default function CalendarioView(){
       const onDelete = useCallback(async () => {
         try {
           const resp = await deleteEvent(`${currentEvent?.id}`);
+          
+          if(resp.status){
+            enqueueSnackbar(resp.message);
+          }
+          else{
+            enqueueSnackbar(resp.message, {variant: "error"});
+          }
+
+          onCloseForm();
+        } catch (error) {
+          enqueueSnackbar("Error", {variant: "error"});
+          onCloseForm();
+        }
+      }, [currentEvent?.id, enqueueSnackbar, onCloseForm]);
+
+      const onCancel = useCallback(async () => {
+        try {
+          const resp = await cancelDate(`${currentEvent?.id}`);
           
           if(resp.status){
             enqueueSnackbar(resp.message);
@@ -171,14 +189,11 @@ export default function CalendarioView(){
             onClose={onCloseForm}
         >
             <DialogTitle sx= {{ minHeight: 76 }}>
-              <IconButton onClick={onCloseForm}>
-                <Iconify icon="solar:close-circle-outline"/>
-              </IconButton>
                 <Stack direction="row" justifyContent='space-between' useFlexGap flexWrap="wrap">
                     { openForm && <> { currentEvent?.id ? 'Editar horario' : 'Cancelar horario' } </> }
                     {!!currentEvent?.id && (
-                      <Tooltip title="Eliminar horario">
-                        <IconButton onClick={onDelete}>
+                      <Tooltip title= {currentEvent.type ? "Cancelar cita" : "Eliminar horario"}>
+                        <IconButton onClick={currentEvent.type ? onCancel : onDelete }>
                             <Iconify icon="solar:trash-bin-trash-bold" />
                         </IconButton>
                       </Tooltip>
