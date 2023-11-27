@@ -1,6 +1,6 @@
 import Xlsx from 'json-as-xlsx';
 import PropTypes from 'prop-types';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -9,7 +9,9 @@ import MenuItem from '@mui/material/MenuItem';
 import ButtonBase from '@mui/material/ButtonBase';
 import CardHeader from '@mui/material/CardHeader';
 
-import Dashboard from 'src/api/dash';
+import { endpoints } from 'src/utils/axios';
+
+import { useGetGeneral } from 'src/api/general';
 
 import Iconify from 'src/components/iconify';
 import Chart, { useChart } from 'src/components/chart';
@@ -17,7 +19,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
 
-function CitasDownloadExcel(Grafic, seriesData, title) {
+function CitasDownloadExcel(citasAnualData, seriesData, title) {
     const data = [
       {
         sheet: `${title}${" "}${seriesData}`,
@@ -26,7 +28,7 @@ function CitasDownloadExcel(Grafic, seriesData, title) {
           { label: "Total", value: "cantidad" },
           { label: "Estatus", value: "nombre" },
         ],
-        content: Grafic,
+        content: citasAnualData,
       },
     ]
   
@@ -44,15 +46,13 @@ function CitasDownloadExcel(Grafic, seriesData, title) {
 
 export default function GraficaBarras({ title, subheader, chart, year, handleChangeYear, ...other }) {
 
-  const dashborad = Dashboard();
+  const [seriesData, setSeriesData] = useState(year);
+
+  const {citasAnualData} = useGetGeneral(endpoints.dashboard.citasAnual, "citasAnualData");
 
   const { categories, colors, series, options } = chart;
 
   const popover = usePopover();
-
-  const [seriesData, setSeriesData] = useState(year);
-
-  const [Grafic, setGrafic] = useState([]);
 
   const chartOptions = useChart({
     colors,
@@ -81,22 +81,10 @@ export default function GraficaBarras({ title, subheader, chart, year, handleCha
     [popover, handleChangeYear]
   );
 
-  async function handleGrafic() {
-    dashborad.getCitasAnual(data => {
-      setGrafic(data.data);
-    },{
-      dt:seriesData
-    });
-  }
-
-  useEffect(() => {
-    handleGrafic();
-  }, [seriesData]) // eslint-disable-line react-hooks/exhaustive-deps
-
   const handleExcel = async e => {
     e.preventDefault();
     CitasDownloadExcel(
-      Grafic,
+      citasAnualData,
       seriesData,
       title
     );

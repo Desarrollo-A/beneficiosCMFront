@@ -1,12 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 import Grid from '@mui/material/Unstable_Grid2';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 
 import uuidv4 from "src/utils/uuidv4";
+import { endpoints } from 'src/utils/axios';
 
-import Dashboard from 'src/api/dash';
+import { useGetGeneral, usePostGeneral } from 'src/api/general';
 
 import { useSettingsContext } from 'src/components/settings';
 
@@ -19,137 +20,39 @@ import GraficaBarras from '../grafica-barras';
 
 export default function DashView() {
 
-  const dashborad = Dashboard();
-
   const d = new Date();
 
   const year = d.getFullYear();
 
-  const [usr, setUserCount] = useState([]);
+  const [dataValue, setYearData] = useState(year);
 
-  const [CtCount, setCtCount] = useState([]);
+  const { usrCountData } = useGetGeneral(endpoints.dashboard.usersCount, "usrCountData");
 
-  const [EstatusCount, setEstatusCount] = useState([]);
+  const { ctCountData } = useGetGeneral(endpoints.dashboard.citasCount, "ctCountData");
 
-  const [EstatusTot, setEstatusTot] = useState([]);
+  const { estCountData } = useGetGeneral(endpoints.dashboard.citasEstatus, "estCountData");
 
-  const [EstatusXls, setEstatusXls] = useState([]);
+  const { estTotData } = useGetGeneral(endpoints.dashboard.estatusTotal, "estTotData");
 
-  const [FechaAsis, setFechaAsis] = useState([]);
+  const { fechaMinData } = useGetGeneral(endpoints.dashboard.fechaMinima, "fechaMinData");
 
-  const [ctCancelada, setFechaCanc] = useState([]);
+  const { fechaAsisData } = usePostGeneral(dataValue, endpoints.dashboard.fechaAsistencia, "fechaAsisData");
 
-  const [ctPenalizada, setFechaPen] = useState([]);
+  const { fechaCncData } = usePostGeneral(dataValue, endpoints.dashboard.fechaCancelada, "fechaCncData");
 
-  const [FechaMin, setFechaMin] = useState([]);
+  const { fechaPnData } = usePostGeneral(dataValue, endpoints.dashboard.fechaPenalizada, "fechaPnData");
 
   const settings = useSettingsContext();
 
-  const [yearData, setYearData] = useState(year);
+  const estCount = estCountData.map((i) => ({
+    label: i.estatus,
+    value: i.total,
+  }));
 
-  async function handleUsrCount() {
-    dashborad.getUsersCount(data => {
-      setUserCount(data.data);
-    });
-  }
-
-  useEffect(() => {
-    handleUsrCount();
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
-  async function handleCtCount() {
-    dashborad.getCitasCount(data => {
-      setCtCount(data.data);
-    });
-  }
-
-  useEffect(() => {
-    handleCtCount();
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
-  async function handleCountEstatus() {
-    dashborad.getCitasEstatus(data => {
-      const ct = data.data.map((cita) => ({
-        label: cita.estatus,
-        value: cita.total,
-      }));
-      setEstatusCount(ct);
-    });
-  }
-
-  useEffect(() => {
-    handleCountEstatus();
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
-  async function handleEstatusXLS() {
-    dashborad.getCitasEstatus(data => {
-      const ct = data.data.map((cita) => ({
-        estatus: cita.estatus,
-        total: cita.total,
-      }));
-      setEstatusXls(ct);
-    });
-  }
-
-  useEffect(() => {
-    handleEstatusXLS();
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
-  async function handleEstatusTot() {
-    dashborad.getEstatusTotal(data => {
-      setEstatusTot(data.data);
-    });
-  }
-
-  useEffect(() => {
-    handleEstatusTot();
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
-  async function handleFechaMin() {
-    dashborad.getFechaMinima(data => {
-      setFechaMin(data.data);
-    });
-  }
-
-  useEffect(() => {
-    handleFechaMin();
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
-  async function handleFechaAsis() {
-    dashborad.getFechaAsistencia(data => {
-      setFechaAsis(data.data);
-    },{
-      yearData
-    });
-  }
-
-  useEffect(() => {
-    handleFechaAsis();
-  }, [yearData]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  async function handleFechaCanc() {
-    dashborad.getFechaCancelada(data => {
-      setFechaCanc(data.data);
-    },{
-      yearData
-    });
-  }
-
-  useEffect(() => {
-    handleFechaCanc();
-  }, [yearData]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  async function handleFechaPen() {
-    dashborad.getFechaPenalizada(data => {
-      setFechaPen(data.data);
-    },{
-      yearData
-    });
-  }
-
-  useEffect(() => {
-    handleFechaPen();
-  }, [yearData]); // eslint-disable-line react-hooks/exhaustive-deps
+  const estCountXls = estCountData.map((i) => ({
+    estatus: i.estatus,
+    total: i.total,
+  }));
 
   const handleChangeYear = (newYear) => {
     setYearData(newYear);
@@ -160,8 +63,8 @@ export default function DashView() {
   const resultAs = [];
   let IndexAs = 0;
   for (let i = 1; i <= desiredLength; i += 1) {
-    if (IndexAs < FechaAsis.length && FechaAsis[IndexAs].mes === i) {
-      resultAs.push(FechaAsis[IndexAs]);
+    if (IndexAs < fechaAsisData.length && fechaAsisData[IndexAs].mes === i) {
+      resultAs.push(fechaAsisData[IndexAs]);
       IndexAs += 1;
     } else {
       resultAs.push({ mes: i, cantidad: 0, nombre: 'Asistencia' });
@@ -172,8 +75,8 @@ export default function DashView() {
   const resultCn = [];
   let IndexCn = 0;
   for (let i = 1; i <= desiredLength; i += 1) {
-    if (IndexCn < ctCancelada.length && ctCancelada[IndexCn].mes === i) {
-      resultCn.push(ctCancelada[IndexCn]);
+    if (IndexCn < fechaCncData.length && fechaCncData[IndexCn].mes === i) {
+      resultCn.push(fechaCncData[IndexCn]);
       IndexCn += 1;
     } else {
       resultCn.push({ mes: i, cantidad: 0, nombre: 'Cancelada' });
@@ -184,8 +87,8 @@ export default function DashView() {
   const resultPn = [];
   let IndexPn = 0;
   for (let i = 1; i <= desiredLength; i += 1) {
-    if (IndexPn < ctPenalizada.length && ctPenalizada[IndexPn].mes === i) {
-      resultPn.push(ctPenalizada[IndexPn]);
+    if (IndexPn < fechaPnData.length && fechaPnData[IndexPn].mes === i) {
+      resultPn.push(fechaPnData[IndexPn]);
       IndexPn += 1;
     } else {
       resultPn.push({ mes: i, cantidad: 0, nombre: 'Penalización' });
@@ -208,7 +111,7 @@ export default function DashView() {
     },
   ];
 
-  const yearMin = parseInt(FechaMin.map((u) => (u.year)), 10);
+  const yearMin = parseInt(fechaMinData.map((u) => (u.year)), 10);
 
   const propGrafic = [
     {
@@ -236,7 +139,7 @@ export default function DashView() {
       <Grid container spacing={3}>
 
         <Grid xs={12} md={4}>
-          {usr.flatMap((u) => (
+          {usrCountData.flatMap((u) => (
             <WidgetSumas
               key={`route_${uuidv4()}`}
               title="Total de Usuarios"
@@ -246,7 +149,7 @@ export default function DashView() {
         </Grid>
 
         <Grid xs={12} md={4}>
-          {CtCount.flatMap((u) => (
+          {ctCountData.flatMap((u) => (
             <WidgetSumas
               key={`route_${uuidv4()}`}
               title="Total de citas"
@@ -266,11 +169,11 @@ export default function DashView() {
           <GraficaArea
             title="Estados de Citas"
             chart={{
-              series: EstatusCount,
+              series: estCount,
             }}
-            estatus={EstatusTot}
-            registros={EstatusXls}
-            count={CtCount}
+            estatus={estTotData}
+            registros={estCountXls}
+            count={ctCountData}
           />
         </Grid>
 
@@ -279,10 +182,10 @@ export default function DashView() {
           <GraficaPastel
             title="Estados de Citas"
             chart={{
-              series: EstatusCount,
+              series: estCount,
             }}
-            registros={EstatusXls}
-            count={CtCount}
+            registros={estCountXls}
+            count={ctCountData}
           />
         </Grid>
 

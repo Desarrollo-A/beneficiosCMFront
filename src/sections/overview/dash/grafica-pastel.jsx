@@ -124,7 +124,6 @@ export default function GraficaPastel({ title, subheader, chart, registros, coun
     <Tooltip title="Exportar XLS" placement="top" arrow>
       <MenuItem
             sx={{ width: 50, ml: 2, mt: 2 }}
-            title='Exportar Excel'
             onClick={handleExcel}
           >
             <Iconify 

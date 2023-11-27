@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-import { HOST_API } from 'src/config-global';
+import { HOST } from 'src/config-global';
 
 // ----------------------------------------------------------------------
 
-const axiosInstance = axios.create({ baseURL: HOST_API });
+const axiosInstance = axios.create({ baseURL: HOST });
 axiosInstance.interceptors.response.use(
   (res) => res,
   (error) => Promise.reject((error.response && error.response.data) || 'Something went wrong')
@@ -29,6 +29,37 @@ export const fetcher_custom = async (args, year, month) => {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
     }}, {...config});
+
+  return res.data;
+};
+
+export const fetcherGet = async (args) => {
+  const [url, config] = Array.isArray(args) ? args : [args];
+
+  const res = await axiosInstance.get(url, { ...config });
+    
+  return res.data;
+};
+
+export const fetcherPost = async (args, dataValue) => {
+  const [url, config] = Array.isArray(args) ? args : [args];
+
+  const res = await axiosInstance.post(url, {dataValue},{
+    headers: {'Content-Type' : 'application/x-www-form-urlencoded'}},
+     { ...config });
+  
+  return res.data;
+};
+
+export const fetcherUpdate = async (args) => {
+  const [url, data, config] = Array.isArray(args) ? args : [args];
+
+  const res = await axiosInstance.post(url, data, {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    ...config,
+  });
 
   return res.data;
 };
@@ -68,4 +99,23 @@ export const endpoints = {
     list: 'Usuario/getUsers',
     update: 'Usuario/updateUser',
   },
+  reportes: {
+    lista: '/reportesController/citas',
+    especialistas: '/generalController/especialistas',
+    observacion: '/reportesController/observacion',
+  },
+  dashboard: {
+    usersCount: '/generalController/usr_count',
+    citasCount: '/generalController/citas_count',
+    citasEstatus: '/dashboardController/citas_count_status',
+    estatusTotal: '/dashboardController/total_status_citas',
+    fechaMinima: '/dashboardController/fecha_minima',
+    fechaAsistencia: '/dashboardController/estatus_fecha_asistencia',
+    fechaCancelada: '/dashboardController/estatus_fecha_cancelada',
+    fechaPenalizada: '/dashboardController/estatus_fecha_penalizada',
+    citasAnual: '/dashboardController/citas_anual'
+  },
+  calendario: {
+    ServiciosDisp: '/CalendarioController/getBeneficiosDisponibles',
+  }
 };

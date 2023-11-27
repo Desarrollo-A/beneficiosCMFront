@@ -20,8 +20,10 @@ import { useRouter } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import uuidv4 from "src/utils/uuidv4";
+import { endpoints } from 'src/utils/axios';
 
-import Reportes, { useGetReportes, useGetEspecialistas } from 'src/api/reportes';
+import { useGetGeneral } from 'src/api/general';
+import { useGetReportes } from 'src/api/reportes';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -153,19 +155,15 @@ export default function HistorialReportesView() {
   const headerBase = ["ID Cita", "Especialista", "Paciente", "Oficina", "Departamento", "Sede", "Sexo", "Motivo Consulta", "Estatus",
     "Fecha Inicio", "Fecha Final"];
 
-  const [ReportData, setReportData] = useState('Reporte General');
+  const [dataValue, setReportData] = useState('Reporte General');
 
-  const { reportesData, dataMutate } = useGetReportes(ReportData);
+  const { reportesData } = useGetReportes(dataValue);
 
-  const { especialistasData } = useGetEspecialistas();
+  const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
 
   const [datosTabla, setDatosTabla] = useState([]);
 
   const [especialistas, setEspecialistas] = useState([]);
-
-  const reportes = Reportes();
-
-  const [espe, setEs] = useState([]);
 
   const [tableData, setTableData] = useState([]);
 
@@ -215,24 +213,6 @@ export default function HistorialReportesView() {
   } else {
     TABLE_HEAD = TABLE_BASE;
     header = headerBase;
-  }
-
-  const handleReportes = () => {
-    reportes.getReportes(data => {
-      const ct = data.data.map((cita) => ({
-        idCita: cita.idCita,
-        idEspecialista: cita.idEspecialista,
-        idPaciente: cita.idPaciente,
-        area: cita.area,
-        estatus: cita.estatus,
-        fechaInicio: cita.fechaInicio,
-        fechaFinal: cita.fechaFinal,
-        observaciones: cita.observaciones,
-      }));
-      setTableData(ct);
-    }, {
-      ReportData
-    });
   }
 
   const dataFiltered = applyFilter({
@@ -329,20 +309,6 @@ export default function HistorialReportesView() {
       setEspecialistas(especialistasData);
     }
   }, [especialistasData]);
-
-  useEffect(() => {
-    handleReportes();
-  }, [ReportData]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  async function handleEspe() {
-    reportes.getEspecialistas(data => {
-      setEs(data.data);
-    });
-  }
-
-  useEffect(() => {
-    handleEspe();
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>

@@ -23,9 +23,11 @@ import FormControl from '@mui/material/FormControl';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 
-import Servicios from 'src/utils/servicios';
+// import Servicios from 'src/utils/servicios';
+import { endpoints } from 'src/utils/axios';
 import { fTimestamp } from 'src/utils/format-time';
 
+import { useGetGeneral } from 'src/api/general';
 import { CALENDAR_COLOR_OPTIONS } from 'src/_mock/_calendar';
 import { updateEvent, useGetEvents } from 'src/api/calendar';
 
@@ -37,8 +39,8 @@ import CalendarForm from '../calendar-form';
 import { useEvent, useCalendar } from '../hooks';
 import CalendarToolbar from '../calendar-toolbar';
 import CalendarFilters from '../calendar-filters';
-import CalendarFiltersResult from '../calendar-filters-result';
 import NuevaCitaForm from '../calendario-formulario';
+import CalendarFiltersResult from '../calendar-filters-result';
 
 // ----------------------------------------------------------------------
 
@@ -51,6 +53,11 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 
 export default function CalendarView() {
+
+  const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
+
+  const [espeData,  setEspeData] = useState();
+
   const theme = useTheme();
 
   const settings = useSettingsContext();
@@ -58,17 +65,15 @@ export default function CalendarView() {
   const smUp = useResponsive('up', 'sm');
 
   const openFilters = useBoolean();
-  const servicios = Servicios();
+  // const servicios = Servicios();
   const [filters, setFilters] = useState(defaultFilters);
 
   const { events, eventsLoading } = useGetEvents();
- 
 
   // const [citas] = useState(GetCitasDisponibles().citas);
-  const [ citas, setCitas ] = useState('');
-  const [ citasServicio, setCitasServicio ] = useState([]);
-  const [ modalCitas, setModalCitas ] = useState(false);
-
+  // const [citas, setCitas] = useState('');
+  // const [citasServicio, setCitasServicio] = useState([]);
+  const [modalCitas, setModalCitas] = useState(false);
 
   const dateError =
     filters.startDate && filters.endDate
@@ -107,34 +112,38 @@ export default function CalendarView() {
     onInitialView();
   }, [onInitialView]);
 
+/* 
+  async function getCitasDisponibles() {
+    servicios.getServiciosDisponibles(data => {
+      setCitasServicio([{ datos: data.beneficios, statusButton: data.statusButton }]);
+    });
+  }
 
-async function getCitasDisponibles() {
-  servicios.getServiciosDisponibles(data => {
-    setCitasServicio([{datos:data.beneficios, statusButton:data.statusButton}]);
-});
-}
-
-useEffect(() => {
-  getCitasDisponibles();
-}, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-
+  useEffect(() => {
+    getCitasDisponibles();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps */
 
   const handleFilters = useCallback((name, value) => {
     setFilters((prevState) => ({
       ...prevState,
       [name]: value,
     }));
-  
+
   }, []);
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
-  const handleChange = (event) => {
+
+/*   const handleChange = (event) => {
     setCitas(event.target.value);
     setModalCitas(true);
-  };
+  }; */
+
+  const handleChange = (event) => {
+    setEspeData(event.target.value);
+    setModalCitas(true);
+  }
 
   const canReset = !!filters.colors.length || (!!filters.startDate && !!filters.endDate);
 
@@ -183,16 +192,18 @@ useEffect(() => {
                 labelId="demo-simple-select-label"
                 id="demo-simple-select-001"
                 label="Consultas"
-                value={citas}
+                value={espeData}
                 onChange={handleChange}
-                disabled={(citasServicio[0] == undefined) ? false : citasServicio[0].statusButton}
+                disabled={(especialistasData[0] === undefined) ? false : especialistasData[0].statusButton}
               >
-                {
-                    citasServicio[0] !== undefined     &&
-                      citasServicio[0].datos.map((element, index)=>
-                          <MenuItem key={element.idOpcion} value={element.idOpcion}>{element.nombre}</MenuItem>
-                      ) 
-                }
+                {especialistasData.map((option) => (
+                  <MenuItem
+                    key={option.idOpcion}
+                    value={option.idOpcion}
+                  >
+                    {option.nombre}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Box>
@@ -286,8 +297,11 @@ useEffect(() => {
         colorOptions={CALENDAR_COLOR_OPTIONS}
         onClickEvent={onClickEventInFilters}
       />
-      <NuevaCitaForm open={modalCitas} especialidadElegida={citasServicio}/>
-        
+      <NuevaCitaForm 
+      open={modalCitas} 
+      especialidadElegida={especialistasData} 
+      />
+
 
     </>
   );
