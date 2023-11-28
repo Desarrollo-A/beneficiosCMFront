@@ -53,7 +53,7 @@ export function GetCustomEvents(current) {
 
 export async function createCustom(fecha, eventData) {
 
-    return axios.post('http://localhost/beneficiosCMBack/calendarioController/save_occupied', {
+    const create = axios.post('http://localhost/beneficiosCMBack/calendarioController/save_occupied', {
         fecha,
         titulo: eventData.title,
         hora_inicio: eventData.hora_inicio,
@@ -63,30 +63,24 @@ export async function createCustom(fecha, eventData) {
     }, { 
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     }, false)
-    .then((response) => response.data)
-    .then(
-      // lo que se trae de la url se guarda en current data y se junta con eventData
-      // es necesario tener la url en el axios para el renderizado
-      mutate(
-        URLC,
-      (currentData) => {
-        const events = [...currentData.events, eventData];
-        return {
-          ...currentData,
-          events,
-        };
-      },
-      false
-    ))
+    .then((response) => response.data);
+
+    return create;
+}
+
+export async function reRender(){
+  mutate(URLC);
 }
 // ----------------------------------------------------------------------
 
 export async function updateCustom(eventData) {
+  
   const update = await axios.put('http://localhost/beneficiosCMBack/calendarioController/update_occupied', {
         hora_inicio: eventData.hora_inicio,
         hora_final:  eventData.hora_final,
         titulo: eventData.title,
-        id_unico: eventData.id
+        id_unico: eventData.id,
+        fechaOcupado: eventData.newDate
     }).then(response => response.data);
 
       // lo que se trae de la url se guarda en current data y se junta con eventData

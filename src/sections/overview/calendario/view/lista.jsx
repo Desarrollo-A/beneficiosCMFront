@@ -2,34 +2,42 @@
 import 'dayjs/locale/es';
 import * as yup from 'yup';
 import dayjs  from 'dayjs';
+import {es} from 'date-fns/locale'
 import PropTypes from 'prop-types';
+import { useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import Stack from "@mui/system/Stack";
 import Button from "@mui/material/Button";
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
+import { MobileDatePicker } from '@mui/x-date-pickers';
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from '@mui/material/DialogContent';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 import uuidv4 from 'src/utils/uuidv4';
-import {fTimestamp } from 'src/utils/format-time';
+import {fDate, fTimestamp } from 'src/utils/format-time';
 
+import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import { RHFTextField } from 'src/components/hook-form';
 import FormProvider from 'src/components/hook-form/form-provider';
 
-import { createCustom, updateCustom } from '../calendar';
+import { reRender, cancelDate, deleteEvent, createCustom, updateCustom } from '../calendar';
 
 export default function Lista({ currentEvent, onClose, currentDay }){
     const { enqueueSnackbar } = useSnackbar();
 
     const formSchema = yup.object().shape({
-        title: yup.string().max(100).required('Se necesita el titulo'),
+        title: yup.string().max(100).required('Se necesita el titulo').trim(),
         start: yup.date().required(),
-        end: yup.date().required()
+        end: yup.date().required(),
     });
 
     const methods = useForm({
@@ -47,18 +55,20 @@ export default function Lista({ currentEvent, onClose, currentDay }){
 
     const values = watch();
     const dateError = values.start && values.end ? fTimestamp(values.start) >= fTimestamp(values.end) : false;
-
+   
     const onSubmit = handleSubmit(async (data) => {
+        
             // se da el formato fTimestamp juntando la fecha actual y la hora que se elige con los minutos
             // este procedimiento para start, hora_inicio y hora_final
             const eventData = {
                 id: currentEvent?.id ? currentEvent?.id : uuidv4(),
                 title: data?.title,
-                start: currentEvent?.id ? `${currentEvent.occupied} ${data.start.getHours()}:${data.start.getMinutes()}` : dayjs(`${fecha} ${data.start.getHours()}:${data.start.getMinutes()}`).format("YYYY-MM-DD HH:mm"),
-                end: currentEvent?.id ? `${currentEvent.occupied} ${data.end.getHours()}:${data.end.getMinutes()}` : dayjs(`${fecha} ${data.end  .getHours()}:${data.end.getMinutes()}`).format("YYYY-MM-DD HH:mm"),
+                start: currentEvent?.id ? `${fDate(data?.newData)} ${data.start.getHours()}:${data.start.getMinutes()}` : dayjs(`${fecha} ${data.start.getHours()}:${data.start.getMinutes()}`).format("YYYY-MM-DD HH:mm"),
+                end: currentEvent?.id ? `${fDate(data?.newData)} ${data.end.getHours()}:${data.end.getMinutes()}` : dayjs(`${fecha} ${data.end  .getHours()}:${data.end.getMinutes()}`).format("YYYY-MM-DD HH:mm"),
                 hora_inicio: `${data.start.getHours()}:${data.start.getMinutes()}`,
                 hora_final: `${data.end.getHours()}:${data.end.getMinutes()}`,
-                occupied: currentEvent?.id ? currentEvent.occupied : fecha
+                occupied: currentEvent?.id ? currentEvent.occupied : fecha,
+                newDate: fDate(data?.newDate)
             };
 
             let save ='';
@@ -72,10 +82,12 @@ export default function Lista({ currentEvent, onClose, currentDay }){
                         save = await createCustom(fecha, eventData); 
                     }
     
-                    if(save.status)
+                    if(save.status){
                         enqueueSnackbar(save.message);
+                        reRender();
+                    }
                     else
-                        enqueueSnackbar(save.message);
+                        enqueueSnackbar(save.message, {variant: 'error'});
 
                     reset();
                 }
@@ -86,19 +98,86 @@ export default function Lista({ currentEvent, onClose, currentDay }){
                
         onClose();
     });
+
+    const onDelete = useCallback(async () => {
+        try {
+          const resp = await deleteEvent(`${currentEvent?.id}`);
+          
+          if(resp.status){
+            enqueueSnackbar(resp.message);
+          }
+          else{
+            enqueueSnackbar(resp.message, {variant: "error"});
+          }
+
+          onClose();
+        } catch (error) {
+          enqueueSnackbar("Error", {variant: "error"});
+          onClose();
+        }
+      }, [currentEvent?.id, enqueueSnackbar, onClose]);
+
+      const onCancel = useCallback(async () => {
+        try {
+          const resp = await cancelDate(`${currentEvent?.id}`);
+          
+          if(resp.status){
+            enqueueSnackbar(resp.message);
+          }
+          else{
+            enqueueSnackbar(resp.message, {variant: "error"});
+          }
+
+          onClose();
+        } catch (error) {
+          enqueueSnackbar("Error", {variant: "error"});
+          onClose();
+        }
+      }, [currentEvent?.id, enqueueSnackbar, onClose]);
+
     
     // el formato de la fecha para enviar a la base de datos se envia en formato frances, ya que es el mismo formato en que se almacena en sql
     const fecha = new Intl.DateTimeFormat('fr-ca', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(currentDay);
-    const fechaTitulo = new Intl.DateTimeFormat('es-MX', {weekday: 'long', year: 'numeric', month: '2-digit',day: '2-digit'}).format(currentDay);
+    const fechaTitulo = dayjs(currentDay).format("dddd, DD MMMM YYYY");
+
 
     return(
         <FormProvider methods={methods} onSubmit={onSubmit}>
             <DialogContent sx={{ p: { xs: 1, md: 2 } }}>
-                <Stack spacing = {3} sx={{ p: { xs: 1, md: 2 } }}>
-                    <RHFTextField disabled={!!currentEvent?.type} name="title" label="Titulo" />
-                    <Typography variant="h5">{currentEvent?.type ? "Horario de la cita" : "Agregar horario"} </Typography>
-                    <Typography variant="subtitle1">{currentEvent?.id ? dayjs(currentEvent.start).format("dddd, DD/MM/YYYY") : fechaTitulo}</Typography>
+                <Stack direction="row" justifyContent='space-between' useFlexGap flexWrap="wrap" sx={{ p: { xs:1, md:2 } }}>
+                    <Typography variant='h5' sx={{ display: "flex", alignItems: "center" }}>{ currentEvent?.id ? 'EDITAR HORARIO' : 'AGREGAR HORARIO' }</Typography>
+                    {!!currentEvent?.id && (
+                      <Tooltip title= {currentEvent.type ? "Cancelar cita" : "Eliminar horario"}>
+                        <IconButton onClick={currentEvent.type ? onCancel : onDelete }>
+                            <Iconify icon="solar:trash-bin-trash-bold" />
+                        </IconButton>
+                      </Tooltip>
+                    )}
                 </Stack>
+                <Stack spacing = {3} sx={{ p: { xs: 1, md: 2 } }}>
+                    <Typography variant="subtitle1">{currentEvent?.id ? dayjs(currentEvent.start).format("dddd, DD MMMM YYYY") : fechaTitulo}</Typography>
+                    <RHFTextField disabled={!!currentEvent?.type} name="title" label="Titulo" />
+                </Stack>
+                {!!currentEvent?.id && (
+                    <Stack direction="row" sx={{ p: { xs: 1, md: 2 } }}>
+                        <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
+                            <Controller
+                                name = "newDate"
+                                defaultValue={currentEvent?.id ? dayjs(currentEvent.start).$d : null}
+                                render = {({field})=>
+                                    <MobileDatePicker 
+                                        label="Fecha" 
+                                        defaultValue={currentEvent?.id ? dayjs(currentEvent.start).$d : null}
+                                        onChange={
+                                            (value) => field.onChange(value)
+                                        }
+                                    />
+                                }
+                            />
+                        </LocalizationProvider>
+                        
+                    </Stack>
+                )}
                 <Stack direction= "row" spacing={ 2 } sx={{ p: { xs: 1, md: 2 } }}>
                     <Controller
                         name = "start"
