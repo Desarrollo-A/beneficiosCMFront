@@ -4,6 +4,7 @@ import merge from 'lodash/merge';
 // ----------------------------------------------------------------------
 
 export default function useEvent(events, selectEventId, openForm) {
+
   const currentEvent = events.find((event) => event.id === selectEventId);
 
   const defaultValues = useMemo(
@@ -12,7 +13,8 @@ export default function useEvent(events, selectEventId, openForm) {
       title: '',
       start : '',
       end: '',
-      occupied: ''
+      occupied: '',
+      usuario: ''
     }),
     []
   );

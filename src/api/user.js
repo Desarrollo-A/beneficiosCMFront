@@ -45,6 +45,42 @@ export function useGetAreas() {
   return memoizedValue;
 }
 
+export function useGetNameUser() { // useGetLabels
+  const URL = endpoints.user.names;
+
+  const { data } = useSWR(URL, fetcherGet);
+
+  const memoizedValue = useMemo(
+    () => ({
+      data: data?.data || []
+    }),
+    [data?.data]
+  ); 
+
+  return memoizedValue;
+}
+
+export function useUpdateUserQuery(query) {
+    const URL = query ? [endpoints.user.update, { params: { query } }] : '';
+  
+    const { data, isLoading, error, isValidating } = useSWR(URL, fetcher, {
+      keepPreviousData: true,
+    });
+  
+    const memoizedValue = useMemo(
+      () => ({
+        updateResults: data?.results || [],
+        updateLoading: isLoading,
+        updateError: error,
+        updateValidating: isValidating,
+        updateEmpty: !isLoading && !data?.results.length,
+      }),
+      [data?.results, error, isLoading, isValidating]
+    );
+  
+    return memoizedValue;
+}
+
 export function useUpdateUser() {
   const updateUser = async (obj) => {
     const URL = obj ? endpoints.user.update : '';
