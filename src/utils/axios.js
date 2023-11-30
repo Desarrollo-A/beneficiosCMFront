@@ -1,10 +1,6 @@
 import axios from 'axios';
 
-<<<<<<< HEAD
 import { HOST, HOST_API } from 'src/config-global';
-=======
-import { HOST_API, HOST } from 'src/config-global';
->>>>>>> dcc0286d9c9d65ec83ed3e2056ab5b90fb4c02fc
 
 // ----------------------------------------------------------------------
 
@@ -23,10 +19,6 @@ instance.interceptors.response.use(
 );
 export {instance};
 
-<<<<<<< HEAD
-=======
-
->>>>>>> dcc0286d9c9d65ec83ed3e2056ab5b90fb4c02fc
 // ----------------------------------------------------------------------
 
 export const fetcher = async (args) => {
@@ -39,32 +31,6 @@ export const fetcher = async (args) => {
     ...config,
   });
 
-  return res.data;
-};
-
-export const fetcherGet = async (args) => {
-  const [url, config] = Array.isArray(args) ? args : [args];
-
-<<<<<<< HEAD
-  const res = await instance.get(url, { ...config });
-  
-  return res.data;
-};
-
-export const fetcherPost = async (args) => {
-  const [url, data, config] = Array.isArray(args) ? args : [args];
-
-  const res = await instance.post(url, data, {
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    ...config,
-  });
-
-=======
-  const res = await axiosInstance.get(url, { ...config });
-  
->>>>>>> dcc0286d9c9d65ec83ed3e2056ab5b90fb4c02fc
   return res.data;
 };
 
@@ -134,12 +100,9 @@ export const endpoints = {
   user: {
     list: 'Usuario/getUsers',
     update: 'Usuario/updateUser',
-<<<<<<< HEAD
     areas: 'Usuario/getAreas',
-    batch: 'Usuario/insertBatchUsers'
-=======
+    batch: 'Usuario/insertBatchUsers',
     names: 'Usuario/getNameUser'
->>>>>>> dcc0286d9c9d65ec83ed3e2056ab5b90fb4c02fc
   },
   benefits: {
     list: 'CalendarioController/getBeneficiosPorSede' 
