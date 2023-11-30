@@ -171,7 +171,6 @@ export default function Lista({ currentEvent, onClose, currentDay, userData }) {
                             value={type}
                             size="small"
                             onChange={handleChangeType}
-                            sx={{ mb: 5 }}
                         >
                             <ToggleButton value="cancel">
                                 Cancelar horario
