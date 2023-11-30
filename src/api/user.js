@@ -1,7 +1,7 @@
 import useSWR from 'swr';
 import { useMemo } from 'react';
 
-import { fetcher, endpoints } from 'src/utils/axios';
+import { fetcher, endpoints, fetcherGet } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -21,6 +21,21 @@ export function useGetUser() { // useGetLabels
     }),
     [data?.data, error, isLoading, isValidating, mutate]
   );
+
+  return memoizedValue;
+}
+
+export function useGetNameUser() { // useGetLabels
+  const URL = endpoints.user.names;
+
+  const { data } = useSWR(URL, fetcherGet);
+
+  const memoizedValue = useMemo(
+    () => ({
+      data: data?.data || []
+    }),
+    [data?.data]
+  ); 
 
   return memoizedValue;
 }

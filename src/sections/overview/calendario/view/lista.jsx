@@ -1,10 +1,9 @@
-// import axios from "axios";
 import 'dayjs/locale/es';
+import dayjs from 'dayjs';
 import * as yup from 'yup';
-import dayjs  from 'dayjs';
-import {es} from 'date-fns/locale'
 import PropTypes from 'prop-types';
-import { useCallback } from 'react';
+import { es } from 'date-fns/locale'
+import { useState, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -14,25 +13,32 @@ import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
+import ToggleButton from '@mui/material/ToggleButton';
 import { MobileDatePicker } from '@mui/x-date-pickers';
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from '@mui/material/DialogContent';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 import uuidv4 from 'src/utils/uuidv4';
-import {fDate, fTimestamp } from 'src/utils/format-time';
+import { fDate, fTimestamp } from 'src/utils/format-time';
 
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
-import { RHFTextField } from 'src/components/hook-form';
 import FormProvider from 'src/components/hook-form/form-provider';
+import { RHFTextField, RHFAutocomplete } from 'src/components/hook-form';
 
-import { reRender, cancelDate, deleteEvent, createCustom, updateCustom } from '../calendar';
+import { reRender, cancelDate, deleteEvent, createCustom, updateCustom, createAppointment } from '../calendar';
 
-export default function Lista({ currentEvent, onClose, currentDay }){
+export default function Lista({ currentEvent, onClose, currentDay, userData }) {
+    dayjs.locale('es') // valor para cambiar el idioma del dayjs
+
     const { enqueueSnackbar } = useSnackbar();
+    const [patientId, setPatienId] = useState('');
+    const [patientName, setPatientName] = useState('');
+    const [type, setType] = useState('cancel');
 
     const formSchema = yup.object().shape({
         title: yup.string().max(100).required('Se necesita el titulo').trim(),
@@ -40,12 +46,16 @@ export default function Lista({ currentEvent, onClose, currentDay }){
         end: yup.date().required(),
     });
 
+    const handleChangeType = useCallback((event, newType) => {
+        if (newType !== null) {
+            setType(newType);
+        }
+    }, []);
+
     const methods = useForm({
         resolver: yupResolver(formSchema),
         defaultValues: currentEvent
     });
-
-    dayjs.locale('es') // variable para cambiar el idioma del dayjs
 
     const {
         reset,
@@ -54,107 +64,135 @@ export default function Lista({ currentEvent, onClose, currentDay }){
     } = methods;
 
     const values = watch();
-    const dateError = values.start && values.end ? fTimestamp(values.start) >= fTimestamp(values.end) : false;
-   
+    const dateError = values.start && values.end ? fTimestamp(values.start) >= fTimestamp(values.end) : false; // se dan los datos de star y end, para la validacion que el fin no sea antes que el inicio
+
     const onSubmit = handleSubmit(async (data) => {
-        
-            // se da el formato fTimestamp juntando la fecha actual y la hora que se elige con los minutos
-            // este procedimiento para start, hora_inicio y hora_final
-            const eventData = {
-                id: currentEvent?.id ? currentEvent?.id : uuidv4(),
-                title: data?.title,
-                start: currentEvent?.id ? `${fDate(data?.newData)} ${data.start.getHours()}:${data.start.getMinutes()}` : dayjs(`${fecha} ${data.start.getHours()}:${data.start.getMinutes()}`).format("YYYY-MM-DD HH:mm"),
-                end: currentEvent?.id ? `${fDate(data?.newData)} ${data.end.getHours()}:${data.end.getMinutes()}` : dayjs(`${fecha} ${data.end  .getHours()}:${data.end.getMinutes()}`).format("YYYY-MM-DD HH:mm"),
-                hora_inicio: `${data.start.getHours()}:${data.start.getMinutes()}`,
-                hora_final: `${data.end.getHours()}:${data.end.getMinutes()}`,
-                occupied: currentEvent?.id ? currentEvent.occupied : fecha,
-                newDate: fDate(data?.newDate)
-            };
 
-            let save ='';
+        // se da el formato juntando la fecha elegida y la hora que se elige con los minutos
+        const eventData = {
+            id: currentEvent?.id ? currentEvent?.id : uuidv4(),
+            title: data?.title,
+            start: currentEvent?.id ? `${fDate(data?.newData)} ${data.start.getHours()}:${data.start.getMinutes()}` : dayjs(`${fecha} ${data.start.getHours()}:${data.start.getMinutes()}`).format("YYYY-MM-DD HH:mm"),
+            end: currentEvent?.id ? `${fDate(data?.newData)} ${data.end.getHours()}:${data.end.getMinutes()}` : dayjs(`${fecha} ${data.end.getHours()}:${data.end.getMinutes()}`).format("YYYY-MM-DD HH:mm"),
+            hora_inicio: `${data.start.getHours()}:${data.start.getMinutes()}`,
+            hora_final: `${data.end.getHours()}:${data.end.getMinutes()}`,
+            occupied: currentEvent?.id ? currentEvent.occupied : fecha,
+            newDate: fDate(data?.newDate),
+            usuario: patientId
+        };
 
-            try{
-                if(!dateError){
-                    if(currentEvent?.id){
-                        save = await updateCustom(eventData);
-                    }
-                    else{
-                        save = await createCustom(fecha, eventData); 
-                    }
-    
-                    if(save.status){
-                        enqueueSnackbar(save.message);
-                        reRender();
-                    }
-                    else
-                        enqueueSnackbar(save.message, {variant: 'error'});
+        let save = '';
 
+        try {
+            if (!dateError) {
+                if (currentEvent?.id) {
+                    save = await updateCustom(eventData);
+                }
+                else {
+                    save = type === 'cancel' ? await createCustom(fecha, eventData) : await createAppointment(fecha, eventData);
+                }
+
+                if (save.status) {
+                    enqueueSnackbar(save.message);
+                    reRender();
                     reset();
+                    onClose();
+                }
+                else {
+                    enqueueSnackbar(save.message, { variant: 'error' });
                 }
             }
-            catch(error){
-                enqueueSnackbar(error);
-            }
-               
-        onClose();
+        }
+        catch (error) {
+            enqueueSnackbar(error);
+        }
     });
 
+    // funcion para borrar horarios ocupados 
     const onDelete = useCallback(async () => {
         try {
-          const resp = await deleteEvent(`${currentEvent?.id}`);
-          
-          if(resp.status){
-            enqueueSnackbar(resp.message);
-          }
-          else{
-            enqueueSnackbar(resp.message, {variant: "error"});
-          }
+            const resp = await deleteEvent(`${currentEvent?.id}`);
 
-          onClose();
+            if (resp.status) {
+                enqueueSnackbar(resp.message);
+            }
+            else {
+                enqueueSnackbar(resp.message, { variant: "error" });
+            }
+
+            onClose();
         } catch (error) {
-          enqueueSnackbar("Error", {variant: "error"});
-          onClose();
+            enqueueSnackbar("Error", { variant: "error" });
+            onClose();
         }
-      }, [currentEvent?.id, enqueueSnackbar, onClose]);
+    }, [currentEvent?.id, enqueueSnackbar, onClose]);
 
-      const onCancel = useCallback(async () => {
+    // funcion para cancelar citas
+    const onCancel = useCallback(async () => {
         try {
-          const resp = await cancelDate(`${currentEvent?.id}`);
-          
-          if(resp.status){
-            enqueueSnackbar(resp.message);
-          }
-          else{
-            enqueueSnackbar(resp.message, {variant: "error"});
-          }
+            const resp = await cancelDate(`${currentEvent?.id}`);
 
-          onClose();
+            if (resp.status) {
+                enqueueSnackbar(resp.message);
+            }
+            else {
+                enqueueSnackbar(resp.message, { variant: "error" });
+            }
+
+            onClose();
         } catch (error) {
-          enqueueSnackbar("Error", {variant: "error"});
-          onClose();
+            enqueueSnackbar("Error", { variant: "error" });
+            onClose();
         }
-      }, [currentEvent?.id, enqueueSnackbar, onClose]);
+    }, [currentEvent?.id, enqueueSnackbar, onClose]);
 
-    
+
     // el formato de la fecha para enviar a la base de datos se envia en formato frances, ya que es el mismo formato en que se almacena en sql
+    // se puede hacer el cambio tambien usando el dayjs
     const fecha = new Intl.DateTimeFormat('fr-ca', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(currentDay);
     const fechaTitulo = dayjs(currentDay).format("dddd, DD MMMM YYYY");
 
 
-    return(
+    return (
         <FormProvider methods={methods} onSubmit={onSubmit}>
             <DialogContent sx={{ p: { xs: 1, md: 2 } }}>
-                <Stack direction="row" justifyContent='space-between' useFlexGap flexWrap="wrap" sx={{ p: { xs:1, md:2 } }}>
-                    <Typography variant='h5' sx={{ display: "flex", alignItems: "center" }}>{ currentEvent?.id ? 'EDITAR HORARIO' : 'AGREGAR HORARIO' }</Typography>
+                <Stack direction="row" justifyContent='space-between' useFlexGap flexWrap="wrap" sx={{ p: { xs: 1, md: 2 } }}>
+                    <Typography variant='h5' sx={{ display: "flex", alignItems: "center" }}>{currentEvent?.id ? 'EDITAR HORARIO' : 'AGREGAR HORARIO'}</Typography>
                     {!!currentEvent?.id && (
-                      <Tooltip title= {currentEvent.type ? "Cancelar cita" : "Eliminar horario"}>
-                        <IconButton onClick={currentEvent.type ? onCancel : onDelete }>
-                            <Iconify icon="solar:trash-bin-trash-bold" />
-                        </IconButton>
-                      </Tooltip>
+                        <Tooltip title={currentEvent.type ? "Cancelar cita" : "Eliminar horario"}>
+                            <IconButton onClick={currentEvent.type ? onCancel : onDelete}>
+                                <Iconify icon="solar:trash-bin-trash-bold" />
+                            </IconButton>
+                        </Tooltip>
+                    )}
+                    {!!currentEvent?.id || (
+                        <ToggleButtonGroup
+                            exclusive
+                            value={type}
+                            size="small"
+                            onChange={handleChangeType}
+                            sx={{ mb: 5 }}
+                        >
+                            <ToggleButton value="cancel" aria-label="admin role">
+                                Cancelar horario
+                            </ToggleButton>
+
+                            <ToggleButton value="date" aria-label="user role">
+                                Crear cita
+                            </ToggleButton>
+                        </ToggleButtonGroup>
                     )}
                 </Stack>
-                <Stack spacing = {3} sx={{ p: { xs: 1, md: 2 } }}>
+                <Stack spacing={3} sx={{ p: { xs: 1, md: 2 } }}>
+                    {type === 'date' && (
+                        <RHFAutocomplete
+                            name = "usuario"
+                            label = "Usuarios"
+                            value = {patientName}
+                            onChange={(event, value) => {setPatientName(value?.label ? value?.label : ''); setPatienId(value?.value)} }
+                            options={userData.map((user) => ({label: user.nombre, value: user.idUsuario}))}         
+                        />
+                    )}
                     <Typography variant="subtitle1">{currentEvent?.id ? dayjs(currentEvent.start).format("dddd, DD MMMM YYYY") : fechaTitulo}</Typography>
                     <RHFTextField disabled={!!currentEvent?.type} name="title" label="Titulo" />
                 </Stack>
@@ -162,11 +200,11 @@ export default function Lista({ currentEvent, onClose, currentDay }){
                     <Stack direction="row" sx={{ p: { xs: 1, md: 2 } }}>
                         <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
                             <Controller
-                                name = "newDate"
+                                name="newDate"
                                 defaultValue={currentEvent?.id ? dayjs(currentEvent.start).$d : null}
-                                render = {({field})=>
-                                    <MobileDatePicker 
-                                        label="Fecha" 
+                                render={({ field }) =>
+                                    <MobileDatePicker
+                                        label="Fecha"
                                         defaultValue={currentEvent?.id ? dayjs(currentEvent.start).$d : null}
                                         onChange={
                                             (value) => field.onChange(value)
@@ -175,15 +213,14 @@ export default function Lista({ currentEvent, onClose, currentDay }){
                                 }
                             />
                         </LocalizationProvider>
-                        
                     </Stack>
                 )}
-                <Stack direction= "row" spacing={ 2 } sx={{ p: { xs: 1, md: 2 } }}>
+                <Stack direction="row" spacing={2} sx={{ p: { xs: 1, md: 2 } }}>
                     <Controller
-                        name = "start"
-                        render = {({field})=>
+                        name="start"
+                        render={({ field }) =>
                             <TimePicker
-                                disabled = {!!currentEvent?.type}
+                                disabled={!!currentEvent?.type}
                                 label="Hora de inicio"
                                 defaultValue={currentEvent?.id ? dayjs(currentEvent.start).$d : null}
                                 onChange={
@@ -193,15 +230,15 @@ export default function Lista({ currentEvent, onClose, currentDay }){
                         }
                     />
                     <Controller
-                        name = "end"
-                        render = {({field})=>
+                        name="end"
+                        render={({ field }) =>
                             <TimePicker
-                                disabled = {!!currentEvent?.type}
+                                disabled={!!currentEvent?.type}
                                 label="Hora finalización"
                                 slotProps={{
                                     textField: {
-                                      error: dateError,
-                                      helperText: dateError && 'La hora de fin no puede ser inferior o igual',
+                                        error: dateError,
+                                        helperText: dateError && 'La hora de fin no puede ser inferior o igual',
                                     }
                                 }}
                                 defaultValue={currentEvent?.id ? dayjs(currentEvent.end).$d : null}
@@ -212,7 +249,7 @@ export default function Lista({ currentEvent, onClose, currentDay }){
                         }
                     />
 
-                    
+
                 </Stack>
             </DialogContent>
 
@@ -228,4 +265,5 @@ Lista.propTypes = {
     currentEvent: PropTypes.object,
     onClose: PropTypes.func,
     currentDay: PropTypes.instanceOf(Date),
-  };
+    userData: PropTypes.object
+};

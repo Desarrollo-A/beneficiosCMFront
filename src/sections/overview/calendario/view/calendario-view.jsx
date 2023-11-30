@@ -1,5 +1,5 @@
 import Calendar from '@fullcalendar/react'; // => request placed at the top
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import listPlugin from '@fullcalendar/list';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -17,6 +17,8 @@ import Typography from '@mui/material/Typography';
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import { fTimestamp } from 'src/utils/format-time';
+
+import { useGetNameUser } from 'src/api/user';
 
 import { useSettingsContext } from 'src/components/settings';
 
@@ -40,6 +42,8 @@ export default function CalendarioView(){
     const settings = useSettingsContext();
     const [ day, setDay] = useState();
     const [filters] = useState(defaultFilters);
+    const { data: names } = useGetNameUser();
+    const [userData, setUserData] = useState('');
 
     const dateError =
     filters.startDate && filters.endDate
@@ -74,6 +78,13 @@ export default function CalendarioView(){
         dateError,
       });
 
+      useEffect(() => {
+        if(names){
+          setUserData(names);
+        }
+      }, [names]);
+      
+
     return(
         <>
         <Container maxWidth={settings.themeStretch ? false : 'xl'}>
@@ -89,11 +100,7 @@ export default function CalendarioView(){
                 <Typography variant='h4'>
                     Prueba de calendario
                 </Typography>
-                <Button
-                    variant='outlined'
-                >
-                    Botón
-                </Button>
+               
             </Stack>
 
             <Card>
@@ -151,6 +158,7 @@ export default function CalendarioView(){
               onClose={onCloseForm}
               currentDay= {day}
               current={date}
+              userData={userData}
           />
                 
         </Dialog>

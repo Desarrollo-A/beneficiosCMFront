@@ -138,3 +138,20 @@ export async function cancelDate(eventId){
 
   return delDate;
 }
+
+export async function createAppointment(fecha, eventData){
+  const create = axios.post('http://localhost/beneficiosCMBack/calendarioController/create_appointment', {
+        idEspecialista: datosUser.idUsuario,
+        idPaciente: eventData.usuario,
+        fechaInicio: `${fecha} ${eventData.hora_inicio}`,
+        fechaFinal: `${fecha} ${eventData.hora_final}`,
+        creadoPor: datosUser.idUsuario,
+        observaciones: eventData.title,
+        modificadoPor: datosUser.idUsuario
+    }, { 
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }, false)
+    .then((response) => response.data);
+
+    return create;
+}
