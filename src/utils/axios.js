@@ -21,6 +21,19 @@ export {instance};
 
 // ----------------------------------------------------------------------
 
+export const fetcher = async (args) => {
+  const [url, data, config] = Array.isArray(args) ? args : [args];
+
+  const res = await axiosInstance.get(url, data, {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    ...config,
+  });
+
+  return res.data;
+};
+
 export const fetcherGet = async (args) => {
   const [url, config] = Array.isArray(args) ? args : [args];
 
@@ -90,4 +103,7 @@ export const endpoints = {
     areas: 'Usuario/getAreas',
     batch: 'Usuario/insertBatchUsers'
   },
+  benefits: {
+    list: 'CalendarioController/getBeneficiosPorSede' 
+  }
 };

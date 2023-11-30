@@ -1,3 +1,4 @@
+import { Base64 } from 'js-base64';
 import Calendar from '@fullcalendar/react'; // => request placed at the top
 import listPlugin from '@fullcalendar/list';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -27,7 +28,7 @@ import Servicios from 'src/utils/servicios';
 import { fTimestamp } from 'src/utils/format-time';
 
 import { CALENDAR_COLOR_OPTIONS } from 'src/_mock/_calendar';
-import { updateEvent, useGetEvents } from 'src/api/calendar';
+import { updateEvent, useGetEvents, useGetBenefits } from 'src/api/calendar';
 
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
@@ -37,8 +38,8 @@ import CalendarForm from '../calendar-form';
 import { useEvent, useCalendar } from '../hooks';
 import CalendarToolbar from '../calendar-toolbar';
 import CalendarFilters from '../calendar-filters';
-import CalendarFiltersResult from '../calendar-filters-result';
 import NuevaCitaForm from '../calendario-formulario';
+import CalendarFiltersResult from '../calendar-filters-result';
 
 // ----------------------------------------------------------------------
 
@@ -63,12 +64,10 @@ export default function CalendarView() {
 
   const { events, eventsLoading } = useGetEvents();
  
+  const { data } = useGetBenefits();
 
-  // const [citas] = useState(GetCitasDisponibles().citas);
-  const [ citas, setCitas ] = useState('');
-  const [ citasServicio, setCitasServicio ] = useState([]);
-  const [ modalCitas, setModalCitas ] = useState(false);
-
+  const [beneficios, setBeneficios] = useState([]);
+  const [selected, setSelected] = useState('');
 
   const dateError =
     filters.startDate && filters.endDate
@@ -103,22 +102,21 @@ export default function CalendarView() {
 
   const currentEvent = useEvent(events, selectEventId, selectedRange, openForm);
 
+  const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+
   useEffect(() => {
     onInitialView();
   }, [onInitialView]);
 
+  useEffect(() => {
+    console.log("ID", datosUser);
+  }, [datosUser])
 
-async function getCitasDisponibles() {
-  servicios.getServiciosDisponibles(data => {
-    setCitasServicio([{datos:data.beneficios, statusButton:data.statusButton}]);
-});
-}
-
-useEffect(() => {
-  getCitasDisponibles();
-}, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-
+  useEffect(() => {
+    if (data) {
+      setBeneficios(data);
+    }
+  }, [data])
 
   const handleFilters = useCallback((name, value) => {
     setFilters((prevState) => ({
@@ -131,9 +129,9 @@ useEffect(() => {
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
+
   const handleChange = (event) => {
-    setCitas(event.target.value);
-    setModalCitas(true);
+    setBeneficios(event.target.value);
   };
 
   const canReset = !!filters.colors.length || (!!filters.startDate && !!filters.endDate);
@@ -148,10 +146,8 @@ useEffect(() => {
     <CalendarFiltersResult
       filters={filters}
       onFilters={handleFilters}
-      //
       canReset={canReset}
       onResetFilters={handleResetFilters}
-      //
       results={dataFiltered.length}
       sx={{ mb: { xs: 3, md: 5 } }}
     />
@@ -180,19 +176,18 @@ useEffect(() => {
             <FormControl fullWidth>
               <InputLabel id="demo-simple-select-label">Consultas</InputLabel>
               <Select
-                labelId="demo-simple-select-label"
+                labelId="Beneficio"
                 id="demo-simple-select-001"
-                label="Consultas"
-                value={citas}
-                onChange={handleChange}
-                disabled={(citasServicio[0] == undefined) ? false : citasServicio[0].statusButton}
+                label="Beneficio"
+                value={selected}
+                onChange={(e) => setSelected(e.target.value)}
+                disabled={data.length === 0}
               >
-                {
-                    citasServicio[0] !== undefined     &&
-                      citasServicio[0].datos.map((element, index)=>
-                          <MenuItem key={element.idOpcion} value={element.idOpcion}>{element.nombre}</MenuItem>
-                      ) 
-                }
+                {data.map((e, index) => (
+                  <MenuItem key={e.area} value={e.area}>
+                    {e.area}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Box>
@@ -286,9 +281,7 @@ useEffect(() => {
         colorOptions={CALENDAR_COLOR_OPTIONS}
         onClickEvent={onClickEventInFilters}
       />
-      <NuevaCitaForm open={modalCitas} especialidadElegida={citasServicio}/>
-        
-
+      <NuevaCitaForm open={false} /* especialidadElegida={citasServicio} */ />
     </>
   );
 }
