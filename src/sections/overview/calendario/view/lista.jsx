@@ -165,7 +165,7 @@ export default function Lista({ currentEvent, onClose, currentDay, userData }) {
                             </IconButton>
                         </Tooltip>
                     )}
-                    {!!currentEvent?.id || (
+                    {!currentEvent?.id && (
                         <ToggleButtonGroup
                             exclusive
                             value={type}
@@ -173,11 +173,11 @@ export default function Lista({ currentEvent, onClose, currentDay, userData }) {
                             onChange={handleChangeType}
                             sx={{ mb: 5 }}
                         >
-                            <ToggleButton value="cancel" aria-label="admin role">
+                            <ToggleButton value="cancel">
                                 Cancelar horario
                             </ToggleButton>
 
-                            <ToggleButton value="date" aria-label="user role">
+                            <ToggleButton value="date">
                                 Crear cita
                             </ToggleButton>
                         </ToggleButtonGroup>
@@ -205,6 +205,7 @@ export default function Lista({ currentEvent, onClose, currentDay, userData }) {
                                 render={({ field }) =>
                                     <MobileDatePicker
                                         label="Fecha"
+                                        disabled={!!currentEvent?.type}
                                         defaultValue={currentEvent?.id ? dayjs(currentEvent.start).$d : null}
                                         onChange={
                                             (value) => field.onChange(value)
@@ -265,5 +266,5 @@ Lista.propTypes = {
     currentEvent: PropTypes.object,
     onClose: PropTypes.func,
     currentDay: PropTypes.instanceOf(Date),
-    userData: PropTypes.object
+    userData: PropTypes.any
 };
