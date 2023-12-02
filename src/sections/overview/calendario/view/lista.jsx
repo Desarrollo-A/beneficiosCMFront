@@ -38,10 +38,10 @@ export default function Lista({ currentEvent, onClose, currentDay, userData }) {
     const { enqueueSnackbar } = useSnackbar();
     const [patientId, setPatienId] = useState('');
     const [patientName, setPatientName] = useState('');
-    const [type, setType] = useState('cancel');
+    const [type, setType] = useState('cancel'); // constante para el cambio entre cancelar hora y agendar cita
 
     const formSchema = yup.object().shape({
-        title: yup.string().max(100).required('Se necesita el titulo').trim(),
+        title: yup.string().max(100).required('Se necesita el titulo').trim(), // maximo de caracteres para el titulo 100
         start: yup.date().required(),
         end: yup.date().required(),
     });
@@ -64,9 +64,10 @@ export default function Lista({ currentEvent, onClose, currentDay, userData }) {
     } = methods;
 
     const values = watch();
-    const dateError = values.start && values.end ? fTimestamp(values.start) >= fTimestamp(values.end) : false; // se dan los datos de star y end, para la validacion que el fin no sea antes que el inicio
+    const dateError = values.start && values.end ? fTimestamp(values.start) >= fTimestamp(values.end) : false; // validación que start no sea mayor a end
 
     const onSubmit = handleSubmit(async (data) => {
+        let save = '';
 
         // se da el formato juntando la fecha elegida y la hora que se elige con los minutos
         const eventData = {
@@ -81,20 +82,18 @@ export default function Lista({ currentEvent, onClose, currentDay, userData }) {
             usuario: patientId
         };
 
-        let save = '';
-
         try {
             if (!dateError) {
                 if (currentEvent?.id) {
-                    save = await updateCustom(eventData);
+                    save = await updateCustom(eventData); // en caso de que se un evento se modifica
                 }
                 else {
-                    save = type === 'cancel' ? await createCustom(fecha, eventData) : await createAppointment(fecha, eventData);
+                    save = type === 'cancel' ? await createCustom(fecha, eventData) : await createAppointment(fecha, eventData); // si no hay id, se cancela una hora o se crea una cita
                 }
 
                 if (save.status) {
                     enqueueSnackbar(save.message);
-                    reRender();
+                    reRender(); // ayuda a que se haga un mutate en caso que sea true el resultado
                     reset();
                     onClose();
                 }
@@ -104,7 +103,7 @@ export default function Lista({ currentEvent, onClose, currentDay, userData }) {
             }
         }
         catch (error) {
-            enqueueSnackbar(error);
+            enqueueSnackbar("Ha ocurrido un error al guardar");
         }
     });
 
@@ -115,6 +114,7 @@ export default function Lista({ currentEvent, onClose, currentDay, userData }) {
 
             if (resp.status) {
                 enqueueSnackbar(resp.message);
+                reRender();
             }
             else {
                 enqueueSnackbar(resp.message, { variant: "error" });
@@ -122,7 +122,7 @@ export default function Lista({ currentEvent, onClose, currentDay, userData }) {
 
             onClose();
         } catch (error) {
-            enqueueSnackbar("Error", { variant: "error" });
+            enqueueSnackbar("Ha ocurrido un error al eliminar", { variant: "error" });
             onClose();
         }
     }, [currentEvent?.id, enqueueSnackbar, onClose]);
@@ -134,6 +134,7 @@ export default function Lista({ currentEvent, onClose, currentDay, userData }) {
 
             if (resp.status) {
                 enqueueSnackbar(resp.message);
+                reRender();
             }
             else {
                 enqueueSnackbar(resp.message, { variant: "error" });
@@ -141,17 +142,13 @@ export default function Lista({ currentEvent, onClose, currentDay, userData }) {
 
             onClose();
         } catch (error) {
-            enqueueSnackbar("Error", { variant: "error" });
+            enqueueSnackbar("Ha ocurrido un error al cancelar", { variant: "error" });
             onClose();
         }
     }, [currentEvent?.id, enqueueSnackbar, onClose]);
 
-
-    // el formato de la fecha para enviar a la base de datos se envia en formato frances, ya que es el mismo formato en que se almacena en sql
-    // se puede hacer el cambio tambien usando el dayjs
-    const fecha = new Intl.DateTimeFormat('fr-ca', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(currentDay);
-    const fechaTitulo = dayjs(currentDay).format("dddd, DD MMMM YYYY");
-
+    const fecha = dayjs(currentDay).format("YYYY/MM/DD"); // se da el formato de la hora con el dayjs ya que viene en timestamp
+    const fechaTitulo = dayjs(currentDay).format("dddd, DD MMMM YYYY"); // unicamente visual
 
     return (
         <FormProvider methods={methods} onSubmit={onSubmit}>
@@ -188,8 +185,8 @@ export default function Lista({ currentEvent, onClose, currentDay, userData }) {
                             name = "usuario"
                             label = "Usuarios"
                             value = {patientName}
-                            onChange={(event, value) => {setPatientName(value?.label ? value?.label : ''); setPatienId(value?.value)} }
-                            options={userData.map((user) => ({label: user.nombre, value: user.idUsuario}))}         
+                            onChange={(_event, value) => {setPatientName(value?.label ? value?.label : ''); setPatienId(value?.value)} }
+                            options={userData.map((user) => ({label: user.nombre, value: user.idUsuario}))}
                         />
                     )}
                     <Typography variant="subtitle1">{currentEvent?.id ? dayjs(currentEvent.start).format("dddd, DD MMMM YYYY") : fechaTitulo}</Typography>
@@ -248,8 +245,6 @@ export default function Lista({ currentEvent, onClose, currentDay, userData }) {
                             />
                         }
                     />
-
-
                 </Stack>
             </DialogContent>
 

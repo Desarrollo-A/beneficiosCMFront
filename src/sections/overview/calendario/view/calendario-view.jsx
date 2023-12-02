@@ -93,13 +93,11 @@ export default function CalendarioView(){
                 justifyContent= "space-between"
                 sx= {{
                     mb: { xs: 3, md: 5 }
-
                 }}
             >
                 <Typography variant='h4'>
                     Prueba de calendario
                 </Typography>
-               
             </Stack>
 
             <Card>
@@ -112,7 +110,6 @@ export default function CalendarioView(){
                      onPrevDate={onDatePrev}
                      onToday={onDateToday}
                      onChangeView={onChangeView}
-                     // onOpenFilters={openFilters.onTrue}
                     />
 
                     <Calendar
