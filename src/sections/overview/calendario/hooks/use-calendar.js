@@ -21,6 +21,8 @@ export default function useCalendar() {
 
   const [selectedRange, setSelectedRange] = useState(null);
 
+  const[selectedDate, setSelectedDate] = useState();
+
   const [view, setView] = useState(smUp ? 'dayGridMonth' : 'listWeek');
 
   const onOpenForm = useCallback(() => {
@@ -104,6 +106,7 @@ export default function useCalendar() {
       
       onOpenForm();
       setSelectEventId(event.id);
+      setSelectedDate(event.start);
     },
     [onOpenForm]
   );
@@ -121,12 +124,13 @@ export default function useCalendar() {
 
   const onDropEvent = useCallback((arg, updateEvent) => {
     const { event } = arg;
-
+    
     updateEvent({
       id: event.id,
       allDay: event.allDay,
       start: fTimestamp(event.start),
       end: fTimestamp(event.end),
+      color: event.textColor
     });
   }, []);
 
@@ -162,6 +166,7 @@ export default function useCalendar() {
     //
     selectEventId,
     selectedRange,
+    selectedDate,
     //
     onClickEventInFilters,
   };

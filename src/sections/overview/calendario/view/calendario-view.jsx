@@ -23,9 +23,9 @@ import { useSettingsContext } from 'src/components/settings';
 
 import Lista from "./lista";
 import { StyledCalendar } from '../styles';
-import { GetCustomEvents } from '../calendar';
 import CalendarToolbar from '../calendar-tool';
 import { useEvent, useCalendar } from '../hooks';
+import { dropUpdate, GetCustomEvents } from '../../../../api/calendar-specialist';
 // ----------------------------------------------------------------------
 
 const defaultFilters = {
@@ -33,7 +33,7 @@ const defaultFilters = {
     startDate: null,
     endDate: null,
   };
-  
+
 // ----------------------------------------------------------------------
 
 export default function CalendarioView(){
@@ -56,6 +56,7 @@ export default function CalendarioView(){
         date,
         //
         onDatePrev,
+        onDropEvent,
         onDateNext,
         onSelectRange,
         onDateToday,
@@ -64,7 +65,8 @@ export default function CalendarioView(){
         openForm,
         onCloseForm,
         //
-        selectEventId
+        selectEventId,
+        selectedDate
     } = useCalendar();
 
     const { events, eventsLoading} = GetCustomEvents(date);
@@ -113,6 +115,7 @@ export default function CalendarioView(){
                     />
 
                     <Calendar
+                     // hiddenDays={[ 0 ]}
                      weekends
                      editable
                      droppable
@@ -131,6 +134,9 @@ export default function CalendarioView(){
                      select={onSelectRange}
                      eventClick={onClickEvent}
                      height={ smUp ? 720 : 'auto' }
+                     eventDrop={(arg) => {
+                      onDropEvent(arg, dropUpdate);
+                    }}
                      plugins={[
                          listPlugin,
                          dayGridPlugin,
@@ -149,12 +155,13 @@ export default function CalendarioView(){
             open={openForm}
             onClose={onCloseForm}
         >
-          <Lista 
+          <Lista
               currentEvent={currentEvent}
               onClose={onCloseForm}
               currentDay= {day}
               current={date}
               userData={userData}
+              selectedDate={selectedDate}
           />
                 
         </Dialog>

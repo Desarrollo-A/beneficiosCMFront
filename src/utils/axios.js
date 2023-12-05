@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { HOST_API, HOST } from 'src/config-global';
+import { HOST, HOST_API } from 'src/config-global';
 
 // ----------------------------------------------------------------------
 
@@ -114,6 +114,7 @@ export const endpoints = {
     update_occupied: 'calendarioController/update_occupied',
     delete_occupied: 'calendarioController/delete_occupied',
     delete_date: 'calendarioController/delete_date',
-    create_appointment: 'calendarioController/create_appointment'
+    create_appointment: 'calendarioController/create_appointment',
+    update_on_drop: 'calendarioController/update_on_drop'
   }
 };

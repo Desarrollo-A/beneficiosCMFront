@@ -1,6 +1,8 @@
+import dayjs from 'dayjs';
 import { Base64 } from 'js-base64';
 import useSWR, { mutate } from 'swr';
 import { useMemo, useEffect } from 'react';
+import { enqueueSnackbar } from 'notistack';
 
 import { endpoints, fetcherInsert, fetcher_custom  } from 'src/utils/axios';
 
@@ -13,10 +15,11 @@ const updateOccupied = endpoints.calendario.update_occupied;
 const deleteOccupied = endpoints.calendario.delete_occupied;
 const deleteDate = endpoints.calendario.delete_date;
 const saveAppointment = endpoints.calendario.create_appointment;
+const updateOnDrop = endpoints.calendario.update_on_drop;
 
 const options = {
   revalidateIfStale: false,
-  revalidateOnFocus: false,
+  revalidateOnFocus: true,
   revalidateOnReconnect: true,
   refreshInterval: 0
 };
@@ -87,7 +90,8 @@ export async function updateCustom(eventData) {
         hora_final:  eventData.hora_final,
         titulo: eventData.title,
         id_unico: eventData.id,
-        fecha_ocupado: eventData.newDate
+        fecha_ocupado: eventData.newDate,
+        id_usuario: datosUser.idUsuario
     }
 
     const update = fetcherInsert(updateOccupied, data);
@@ -130,4 +134,29 @@ export async function createAppointment(fecha, eventData){
     const create = fetcherInsert(saveAppointment, data);
 
     return create;
+}
+
+// ----------------------------------------------------------------------
+
+export async function dropUpdate(args){
+  const tipo = args.color === "green" ? "cita" : "ocupado"; 
+
+  const data = {
+    id: args.id,
+    fechaInicio: dayjs(args.start).format('YYYY/MM/DD HH:mm:ss'),
+    fechaFinal: dayjs(args.end).format('YYYY/MM/DD HH:mm:ss'),
+    idEspecialista: datosUser.idUsuario,
+    tipo
+  }
+
+  const update = await fetcherInsert(updateOnDrop, data);
+
+  if(update.status)
+    enqueueSnackbar(update.message);
+  else{
+    enqueueSnackbar(update.message, {variant: "error"});
+    reRender(); // se utiliza el rerender aqui parta que pueda regresar el evento en caso de no quedar
+  }
+
+  return update;
 }
