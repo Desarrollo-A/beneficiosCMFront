@@ -101,7 +101,7 @@ export async function updateCustom(eventData) {
         id_especialista: datosUser.idUsuario
     }
     
-    if(eventData.newDate > dayjs(new Date()).format('DD MMM YYYY'))
+    if(dayjs(eventData.newDate).format('YYYY/M/DD') > dayjs(new Date()).format('YYYY/M/DD'))
       update = fetcherInsert(updateOccupied, data);
     else
       update = { status: false, message: "No se pueden mover las fechas a un dia anterior o actual" }
@@ -150,32 +150,30 @@ export async function createAppointment(fecha, eventData){
 // ----------------------------------------------------------------------
 
 export async function dropUpdate(args){
-  const tipo = args.color === "green" ? "cita" : "ocupado";
+  const tipo = args.color === "green" ? "cita" : "ocupado"; // para identificar si es cita u horario ocupado, mediante el color de la etiqueta
   let update = '';
+  const start = dayjs(args.start).format('YYYY/M/DD'); // fecha a la que se movera
+  const oldStart = dayjs(args.oldStart).format('YYYY/M/DD'); // fecha original del evento
 
   const data = {
     id: args.id,
     fechaInicio: dayjs(args.start).format('YYYY/MM/DD HH:mm:ss'),
     fechaFinal: dayjs(args.end).format('YYYY/MM/DD HH:mm:ss'),
     idEspecialista: datosUser.idUsuario,
-    tipo
-  }
-
-  if(dayjs(args.start).format('DD MMM YYYY') > dayjs(new Date()).format('DD MMM YYYY')){
-    update = await fetcherInsert(updateOnDrop, data);
-
-    if(update.status)
-      enqueueSnackbar(update.message);
-    else{
-      enqueueSnackbar(update.message, {variant: "error"});
-      reRender(); // se utiliza el rerender aqui parta que pueda regresar el evento en caso de no quedar
-    }
-  }
-  else{
-    enqueueSnackbar("No se pueden mover las fechas a un dia anterior o actual", { variant: "error" });
-    reRender(); // se utiliza el rerender aqui parta que pueda regresar el evento en caso de no quedar
+    tipo,
+    start,
+    oldStart
   }
   
+  update = await fetcherInsert(updateOnDrop, data);
+
+  if(update.status)
+    enqueueSnackbar(update.message);
+  else{
+    enqueueSnackbar(update.message, {variant: "error"});
+    reRender(); // se utiliza el rerender aqui parta que pueda regresar el evento en caso de no quedar
+  }
+    
 
   return update;
 }

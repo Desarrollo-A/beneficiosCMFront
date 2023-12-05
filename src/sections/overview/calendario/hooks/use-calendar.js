@@ -131,13 +131,14 @@ export default function useCalendar() {
   }, []);
 
   const onDropEvent = useCallback((arg, updateEvent) => {
-    const { event } = arg;
+    const { event, oldEvent } = arg;
     
     updateEvent({
       id: event.id,
       allDay: event.allDay,
       start: fTimestamp(event.start),
       end: fTimestamp(event.end),
+      oldStart: fTimestamp(oldEvent.start),
       color: event.textColor
     });
   }, []);
