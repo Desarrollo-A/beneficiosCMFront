@@ -12,6 +12,11 @@ const HistorialReportesPage = lazy(() => import('src/pages/dashboard/reportes/hi
 // OVERVIEW
 const IndexPage = lazy(() => import('src/pages/dashboard/app'));
 const DashPage = lazy(() => import('src/pages/dashboard/dash'));
+// ENCUESTAS
+const EncuestasPage = lazy(() => import('src/pages/dashboard/encuestas/encuestas-view'))
+const CrearEncuestaPage = lazy(() => import('src/pages/dashboard/encuestas/crear-view'))
+const AprovarEncuestaPage = lazy(() => import('src/pages/dashboard/encuestas/aprovar-view'))
+// ----------------------------------------------------------------------
 const OverviewEcommercePage = lazy(() => import('src/pages/dashboard/ecommerce'));
 const OverviewAnalyticsPage = lazy(() => import('src/pages/dashboard/analytics'));
 const OverviewBankingPage = lazy(() => import('src/pages/dashboard/banking'));
@@ -90,7 +95,16 @@ export const dashboardRoutes = [
           { path: 'historial', element: <HistorialReportesPage /> },
         ],
       },
+      {
+        path: 'encuestas',
+        children: [
+          { path: 'contestar', element: <EncuestasPage /> },
+          { path: 'crear', element: <CrearEncuestaPage /> },
+          { path: 'aprovar', element: <AprovarEncuestaPage /> },
+        ],
+      },
       { path: 'dash', element: <DashPage /> },
+/*       { path: 'encuestas', element: <EncuestasPage /> }, */
       { path: 'ecommerce', element: <OverviewEcommercePage /> },
       { path: 'analytics', element: <OverviewAnalyticsPage /> },
       { path: 'banking', element: <OverviewBankingPage /> },

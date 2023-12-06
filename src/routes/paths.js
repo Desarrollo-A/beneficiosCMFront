@@ -102,6 +102,7 @@ export const paths = {
     permission: `${ROOTS.DASHBOARD}/permission`,
     general: {
       dash: `${ROOTS.DASHBOARD}/dash`,
+/*       encuestas: `${ROOTS.DASHBOARD}/encuestas`, */
       app: `${ROOTS.DASHBOARD}/app`,
       ecommerce: `${ROOTS.DASHBOARD}/ecommerce`,
       analytics: `${ROOTS.DASHBOARD}/analytics`,
@@ -113,6 +114,11 @@ export const paths = {
     reportes: {
       root: `${ROOTS.DASHBOARD}/reportes`,
       historial: `${ROOTS.DASHBOARD}/reportes/historial`,
+    },
+    encuestas: {
+      root: `${ROOTS.DASHBOARD}/encuestas`,
+      contestar: `${ROOTS.DASHBOARD}/encuestas/contestar`,
+      crear: `${ROOTS.DASHBOARD}/encuestas/crear`,
     },
     user: {
       root: `${ROOTS.DASHBOARD}/user`,

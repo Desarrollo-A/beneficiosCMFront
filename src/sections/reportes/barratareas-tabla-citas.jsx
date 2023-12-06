@@ -107,7 +107,7 @@ export default function BarraTareasTabla({
             multiple
             value={filters.area}
             onChange={handleFilterRole}
-            input={<OutlinedInput label="Area" />}
+            input={<OutlinedInput label="Área" />}
             renderValue={(selected) => selected.map((value) => value).join(', ')}
             MenuProps={{
               PaperProps: {

@@ -42,12 +42,26 @@ export const fetcherGet = async (args) => {
 };
 
 export const fetcherPost = async (args, dataValue) => {
+  
   const [url, config] = Array.isArray(args) ? args : [args];
 
   const res = await axiosInstance.post(url, {dataValue},{
     headers: {'Content-Type' : 'application/x-www-form-urlencoded'}},
      { ...config });
   
+  return res.data;
+};
+
+export const fetcherInsert = async (args) => {
+  const [url, data, config] = Array.isArray(args) ? args : [args];
+ 
+  const res = await axiosInstance.post(url, {"dat": JSON.stringify(data)}, {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    ...config,
+  });
+
   return res.data;
 };
 
@@ -105,17 +119,28 @@ export const endpoints = {
     observacion: '/reportesController/observacion',
   },
   dashboard: {
-    usersCount: '/generalController/usr_count',
-    citasCount: '/generalController/citas_count',
-    citasEstatus: '/dashboardController/citas_count_status',
-    estatusTotal: '/dashboardController/total_status_citas',
-    fechaMinima: '/dashboardController/fecha_minima',
-    fechaAsistencia: '/dashboardController/estatus_fecha_asistencia',
-    fechaCancelada: '/dashboardController/estatus_fecha_cancelada',
-    fechaPenalizada: '/dashboardController/estatus_fecha_penalizada',
-    citasAnual: '/dashboardController/citas_anual'
+    usersCount: '/generalController/usrCount',
+    citasCount: '/generalController/citasCount',
+    citasEstatus: '/dashboardController/citasCountStatus',
+    estatusTotal: '/dashboardController/totalStatusCitas',
+    fechaMinima: '/dashboardController/fechaMinima',
+    fechaAsistencia: '/dashboardController/estatusFechaAsistencia',
+    fechaCancelada: '/dashboardController/estatusFechaCancelada',
+    fechaPenalizada: '/dashboardController/estatusFechaPenalizada',
+    citasAnual: '/dashboardController/citasAnual'
   },
   calendario: {
     ServiciosDisp: '/CalendarioController/getBeneficiosDisponibles',
+  },
+  encuestas: {
+    encuestaInsert: '/encuestasController/encuestaInsert',
+    getRespuestas: '/encuestasController/getRespuestas',
+    encuestaCreate: '/encuestasController/encuestaCreate',
+    encuestaMinima: '/encuestasController/encuestaMinima',
+    getEncuesta: '/encuestasController/getEncuesta',
+    getResp1: '/encuestasController/getResp1',
+    getResp2: '/encuestasController/getResp2',
+    getResp3: '/encuestasController/getResp3',
+    getResp4: '/encuestasController/getResp4',
   }
 };
