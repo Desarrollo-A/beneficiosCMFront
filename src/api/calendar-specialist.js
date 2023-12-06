@@ -73,7 +73,10 @@ export async function createCustom(fecha, eventData) {
         hora_inicio: eventData.hora_inicio,
         hora_final:  eventData.hora_final,
         id_unico: eventData.id,
-        id_usuario: datosUser.idUsuario
+        id_usuario: datosUser.idUsuario,
+        fecha_inicio: `${fecha} ${eventData.hora_inicio}`,
+        fecha_final: `${fecha} ${eventData.hora_final}`,
+        id_especialista: datosUser.idUsuario
     }
 
     const create = fetcherInsert(saveOccupied, data);
@@ -91,7 +94,10 @@ export async function updateCustom(eventData) {
         titulo: eventData.title,
         id_unico: eventData.id,
         fecha_ocupado: eventData.newDate,
-        id_usuario: datosUser.idUsuario
+        id_usuario: datosUser.idUsuario,
+        fecha_inicio: `${eventData.newDate} ${eventData.hora_inicio}`,
+        fecha_final: `${eventData.newDate} ${eventData.hora_final}`,
+        id_especialista: datosUser.idUsuario
     }
 
     const update = fetcherInsert(updateOccupied, data);
@@ -122,6 +128,7 @@ export async function cancelDate(eventId){
 export async function createAppointment(fecha, eventData){
 
   const data = {
+        fechaOcupado: fecha,
         idEspecialista: datosUser.idUsuario,
         idPaciente: eventData.usuario,
         fechaInicio: `${fecha} ${eventData.hora_inicio}`,

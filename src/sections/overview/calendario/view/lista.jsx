@@ -41,7 +41,7 @@ export default function Lista({ currentEvent, onClose, currentDay, userData, sel
     const [type, setType] = useState('cancel'); // constante para el cambio entre cancelar hora y agendar cita
 
     const formSchema = yup.object().shape({
-        title: yup.string().max(100).required('Se necesita el titulo').trim(), // maximo de caracteres para el titulo 100
+        title: yup.string().max(100).required('Se necesita el título').trim(), // maximo de caracteres para el titulo 100
         start: yup.date().required(),
         end: yup.date().required(),
     });
@@ -190,7 +190,7 @@ export default function Lista({ currentEvent, onClose, currentDay, userData, sel
                         />
                     )}
                     <Typography variant="subtitle1">{currentEvent?.id ? dayjs(currentEvent.start).format("dddd, DD MMMM YYYY") : fechaTitulo}</Typography>
-                    <RHFTextField disabled={!!currentEvent?.type} name="title" label="Titulo" />
+                    <RHFTextField disabled={!!currentEvent?.type} name="title" label="Título" />
                 </Stack>
                 {!!currentEvent?.id && (
                     <Stack direction="row" sx={{ p: { xs: 1, md: 2 } }}>

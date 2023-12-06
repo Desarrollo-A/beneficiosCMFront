@@ -120,6 +120,8 @@ export default function CalendarioView(){
                      editable
                      droppable
                      selectable
+                     selectLongPressDelay={0}
+                     LongPressDelay={0}
                      locales={allLocales} 
                      locale='es'
                      rerenderDelay={10}
