@@ -87,6 +87,7 @@ export async function createCustom(fecha, eventData) {
 // ----------------------------------------------------------------------
 
 export async function updateCustom(eventData) {
+  let update = '';
   
   const data = {
         hora_inicio: eventData.hora_inicio,
@@ -100,9 +101,12 @@ export async function updateCustom(eventData) {
         id_especialista: datosUser.idUsuario
     }
 
-    const update = fetcherInsert(updateOccupied, data);
+    if(dayjs(eventData.newDate).$d > new Date())
+      update = fetcherInsert(updateOccupied, data);
+    else
+      update = { status: false, message: "No se pueden mover las fechas a un dia anterior" }
 
-      return update;
+    return update;
 }
 
 // ----------------------------------------------------------------------
@@ -146,7 +150,8 @@ export async function createAppointment(fecha, eventData){
 // ----------------------------------------------------------------------
 
 export async function dropUpdate(args){
-  const tipo = args.color === "green" ? "cita" : "ocupado"; 
+  const tipo = args.color === "green" ? "cita" : "ocupado";
+  let update = '';
 
   const data = {
     id: args.id,
@@ -156,14 +161,21 @@ export async function dropUpdate(args){
     tipo
   }
 
-  const update = await fetcherInsert(updateOnDrop, data);
+  if(args.start > new Date()){
+    update = await fetcherInsert(updateOnDrop, data);
 
-  if(update.status)
-    enqueueSnackbar(update.message);
+    if(update.status)
+      enqueueSnackbar(update.message);
+    else{
+      enqueueSnackbar(update.message, {variant: "error"});
+      reRender(); // se utiliza el rerender aqui parta que pueda regresar el evento en caso de no quedar
+    }
+  }
   else{
-    enqueueSnackbar(update.message, {variant: "error"});
+    enqueueSnackbar("No se pueden mover las fechas a un dia anterior", { variant: "error" });
     reRender(); // se utiliza el rerender aqui parta que pueda regresar el evento en caso de no quedar
   }
+  
 
   return update;
 }

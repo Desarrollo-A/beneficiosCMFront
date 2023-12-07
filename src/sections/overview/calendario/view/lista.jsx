@@ -183,7 +183,7 @@ export default function Lista({ currentEvent, onClose, currentDay, userData, sel
                     {type === 'date' && (
                         <RHFAutocomplete
                             name = "usuario"
-                            label = "Usuarios"
+                            label = "Pacientes"
                             value = {patientName}
                             onChange={(_event, value) => {setPatientName(value?.label ? value?.label : ''); setPatienId(value?.value)} }
                             options={userData.map((user) => ({label: user.nombre, value: user.idUsuario}))}

@@ -1,3 +1,4 @@
+import { enqueueSnackbar } from 'notistack';
 import { useRef, useState, useCallback } from 'react';
 
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -91,7 +92,13 @@ export default function useCalendar() {
 
         calendarApi.unselect();
       }
-      onOpenForm();
+      
+      if(arg.start > new Date())
+        onOpenForm();
+
+      else
+        enqueueSnackbar('No se puede agendar el mismo dia o anteriores', { variant: 'error' });
+      
       setSelectedRange({
         start: fTimestamp(arg.start),
         end: fTimestamp(arg.end),
