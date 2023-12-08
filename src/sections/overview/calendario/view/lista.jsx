@@ -141,14 +141,15 @@ export default function Lista({ currentEvent, onClose, currentDay, userData, sel
             }
 
             onClose();
-        } catch (error) {
+        } 
+        catch (error) {
             enqueueSnackbar("Ha ocurrido un error al cancelar", { variant: "error" });
             onClose();
         }
     }, [currentEvent?.id, enqueueSnackbar, onClose]);
-
-    const fecha = dayjs(currentDay).format("YYYY/MM/DD"); // se da el formato de la hora con el dayjs ya que viene en timestamp
-    const fechaTitulo = dayjs(currentDay).format("dddd, DD MMMM YYYY"); // unicamente visual
+                 
+    const fecha = dayjs(selectedDate).format("YYYY/MM/DD"); // se da el formato de la hora con el dayjs ya que viene en timestamp
+    const fechaTitulo = dayjs(selectedDate).format("dddd, DD MMMM YYYY"); // unicamente visual
 
     return (
         <FormProvider methods={methods} onSubmit={onSubmit}>

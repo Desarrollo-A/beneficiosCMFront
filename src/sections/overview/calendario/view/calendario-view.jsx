@@ -130,7 +130,7 @@ export default function CalendarioView(){
                      ref={calendarRef}
                      dayMaxEventRows={3}
                      eventDisplay="block"
-                     dateClick={(currentDate) => setDay(currentDate.date)}
+                     // dateClick={(currentDate) => setDay(selectedDate)}
                      events={dataFiltered}
                      headerToolbar = { false }
                      select={onSelectRange}

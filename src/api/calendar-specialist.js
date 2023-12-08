@@ -100,11 +100,11 @@ export async function updateCustom(eventData) {
         fecha_final: `${eventData.newDate} ${eventData.hora_final}`,
         id_especialista: datosUser.idUsuario
     }
-
-    if(dayjs(eventData.newDate).$d > new Date())
+    
+    if(eventData.newDate > dayjs(new Date()).format('DD MMM YYYY'))
       update = fetcherInsert(updateOccupied, data);
     else
-      update = { status: false, message: "No se pueden mover las fechas a un dia anterior" }
+      update = { status: false, message: "No se pueden mover las fechas a un dia anterior o actual" }
 
     return update;
 }
@@ -161,7 +161,7 @@ export async function dropUpdate(args){
     tipo
   }
 
-  if(args.start > new Date()){
+  if(dayjs(args.start).format('DD MMM YYYY') > dayjs(new Date()).format('DD MMM YYYY')){
     update = await fetcherInsert(updateOnDrop, data);
 
     if(update.status)
@@ -172,7 +172,7 @@ export async function dropUpdate(args){
     }
   }
   else{
-    enqueueSnackbar("No se pueden mover las fechas a un dia anterior", { variant: "error" });
+    enqueueSnackbar("No se pueden mover las fechas a un dia anterior o actual", { variant: "error" });
     reRender(); // se utiliza el rerender aqui parta que pueda regresar el evento en caso de no quedar
   }
   

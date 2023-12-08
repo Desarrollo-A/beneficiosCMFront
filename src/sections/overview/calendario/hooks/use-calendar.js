@@ -93,9 +93,10 @@ export default function useCalendar() {
         calendarApi.unselect();
       }
       
-      if(arg.start > new Date())
+      if(arg.start > new Date()){
         onOpenForm();
-
+        setSelectedDate(arg.start);
+      }
       else
         enqueueSnackbar('No se puede agendar el mismo dia o anteriores', { variant: 'error' });
       
