@@ -32,7 +32,7 @@ import { RHFTextField, RHFAutocomplete } from 'src/components/hook-form';
 
 import { reRender, cancelDate, deleteEvent, createCustom, updateCustom, createAppointment } from '../../../../api/calendar-specialist';
 
-export default function Lista({ currentEvent, onClose, currentDay, userData, selectedDate }) {
+export default function Lista({ currentEvent, onClose, userData, selectedDate }) {
     dayjs.locale('es') // valor para cambiar el idioma del dayjs
 
     const { enqueueSnackbar } = useSnackbar();
@@ -260,7 +260,6 @@ export default function Lista({ currentEvent, onClose, currentDay, userData, sel
 Lista.propTypes = {
     currentEvent: PropTypes.object,
     onClose: PropTypes.func,
-    currentDay: PropTypes.instanceOf(Date),
     userData: PropTypes.any,
     selectedDate: PropTypes.instanceOf(Date)
 };

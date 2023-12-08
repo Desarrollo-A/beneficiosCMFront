@@ -39,7 +39,6 @@ const defaultFilters = {
 export default function CalendarioView(){
     const smUp = useResponsive('up', 'sm');
     const settings = useSettingsContext();
-    const [ day, setDay] = useState();
     const [filters] = useState(defaultFilters);
     const { data: names } = useGetNameUser();
     const [userData, setUserData] = useState('');
@@ -130,7 +129,6 @@ export default function CalendarioView(){
                      ref={calendarRef}
                      dayMaxEventRows={3}
                      eventDisplay="block"
-                     // dateClick={(currentDate) => setDay(selectedDate)}
                      events={dataFiltered}
                      headerToolbar = { false }
                      select={onSelectRange}
@@ -160,7 +158,6 @@ export default function CalendarioView(){
           <Lista
               currentEvent={currentEvent}
               onClose={onCloseForm}
-              currentDay= {day}
               current={date}
               userData={userData}
               selectedDate={selectedDate}
