@@ -66,10 +66,20 @@ export const fetcher_custom = async (args, year, month, idUsuario) => {
   return res.data;
 };
 
+export const  fetcherInsert = async (args, data) => {
+  const [url, config] = Array.isArray(args) ? args : [args];
+  
+  const res = await instance.post(url, {data}, { 
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }}, {...config});
+
+  return res.data;
+};
+  
 // ----------------------------------------------------------------------
 
 export const endpoints = {
-  extra: 'calendarioController/get_occupied',
   chat: '/api/chat',
   kanban: '/api/kanban',
   calendar: '/api/calendar',
@@ -112,4 +122,13 @@ export const endpoints = {
     modalities: 'CalendarioController/getModalidadesEspecialista',
     
   },
+  calendario: {
+    get_occupied: 'calendarioController/get_occupied',
+    save_occupied: 'calendarioController/save_occupied',
+    update_occupied: 'calendarioController/update_occupied',
+    delete_occupied: 'calendarioController/delete_occupied',
+    delete_date: 'calendarioController/delete_date',
+    create_appointment: 'calendarioController/create_appointment',
+    update_on_drop: 'calendarioController/update_on_drop'
+  }
 };

@@ -23,9 +23,9 @@ import { useSettingsContext } from 'src/components/settings';
 
 import Lista from "./lista";
 import { StyledCalendar } from '../styles';
-import { GetCustomEvents } from '../calendar';
 import CalendarToolbar from '../calendar-tool';
 import { useEvent, useCalendar } from '../hooks';
+import { dropUpdate, GetCustomEvents } from '../../../../api/calendar-specialist';
 // ----------------------------------------------------------------------
 
 const defaultFilters = {
@@ -33,13 +33,12 @@ const defaultFilters = {
     startDate: null,
     endDate: null,
   };
-  
+
 // ----------------------------------------------------------------------
 
 export default function CalendarioView(){
     const smUp = useResponsive('up', 'sm');
     const settings = useSettingsContext();
-    const [ day, setDay] = useState();
     const [filters] = useState(defaultFilters);
     const { data: names } = useGetNameUser();
     const [userData, setUserData] = useState('');
@@ -56,6 +55,7 @@ export default function CalendarioView(){
         date,
         //
         onDatePrev,
+        onDropEvent,
         onDateNext,
         onSelectRange,
         onDateToday,
@@ -64,7 +64,8 @@ export default function CalendarioView(){
         openForm,
         onCloseForm,
         //
-        selectEventId
+        selectEventId,
+        selectedDate
     } = useCalendar();
 
     const { events, eventsLoading} = GetCustomEvents(date);
@@ -93,13 +94,11 @@ export default function CalendarioView(){
                 justifyContent= "space-between"
                 sx= {{
                     mb: { xs: 3, md: 5 }
-
                 }}
             >
                 <Typography variant='h4'>
                     Prueba de calendario
                 </Typography>
-               
             </Stack>
 
             <Card>
@@ -112,14 +111,16 @@ export default function CalendarioView(){
                      onPrevDate={onDatePrev}
                      onToday={onDateToday}
                      onChangeView={onChangeView}
-                     // onOpenFilters={openFilters.onTrue}
                     />
 
                     <Calendar
+                     // hiddenDays={[ 0 ]}
                      weekends
                      editable
                      droppable
                      selectable
+                     selectLongPressDelay={0}
+                     LongPressDelay={0}
                      locales={allLocales} 
                      locale='es'
                      rerenderDelay={10}
@@ -128,12 +129,14 @@ export default function CalendarioView(){
                      ref={calendarRef}
                      dayMaxEventRows={3}
                      eventDisplay="block"
-                     dateClick={(currentDate) => setDay(currentDate.date)}
                      events={dataFiltered}
                      headerToolbar = { false }
                      select={onSelectRange}
                      eventClick={onClickEvent}
                      height={ smUp ? 720 : 'auto' }
+                     eventDrop={(arg) => {
+                      onDropEvent(arg, dropUpdate);
+                    }}
                      plugins={[
                          listPlugin,
                          dayGridPlugin,
@@ -152,12 +155,12 @@ export default function CalendarioView(){
             open={openForm}
             onClose={onCloseForm}
         >
-          <Lista 
+          <Lista
               currentEvent={currentEvent}
               onClose={onCloseForm}
-              currentDay= {day}
               current={date}
               userData={userData}
+              selectedDate={selectedDate}
           />
                 
         </Dialog>

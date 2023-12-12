@@ -1,3 +1,4 @@
+import { enqueueSnackbar } from 'notistack';
 import { useRef, useState, useCallback } from 'react';
 
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -20,6 +21,8 @@ export default function useCalendar() {
   const [selectEventId, setSelectEventId] = useState('');
 
   const [selectedRange, setSelectedRange] = useState(null);
+
+  const[selectedDate, setSelectedDate] = useState();
 
   const [view, setView] = useState(smUp ? 'dayGridMonth' : 'listWeek');
 
@@ -89,7 +92,14 @@ export default function useCalendar() {
 
         calendarApi.unselect();
       }
-      onOpenForm();
+      
+      if(arg.start > new Date()){
+        onOpenForm();
+        setSelectedDate(arg.start);
+      }
+      else
+        enqueueSnackbar('No se puede agendar el mismo dia o anteriores', { variant: 'error' });
+      
       setSelectedRange({
         start: fTimestamp(arg.start),
         end: fTimestamp(arg.end),
@@ -104,6 +114,7 @@ export default function useCalendar() {
       
       onOpenForm();
       setSelectEventId(event.id);
+      setSelectedDate(event.start);
     },
     [onOpenForm]
   );
@@ -120,13 +131,15 @@ export default function useCalendar() {
   }, []);
 
   const onDropEvent = useCallback((arg, updateEvent) => {
-    const { event } = arg;
-
+    const { event, oldEvent } = arg;
+    
     updateEvent({
       id: event.id,
       allDay: event.allDay,
       start: fTimestamp(event.start),
       end: fTimestamp(event.end),
+      oldStart: fTimestamp(oldEvent.start),
+      color: event.textColor
     });
   }, []);
 
@@ -162,6 +175,7 @@ export default function useCalendar() {
     //
     selectEventId,
     selectedRange,
+    selectedDate,
     //
     onClickEventInFilters,
   };
