@@ -106,5 +106,10 @@ export const endpoints = {
   },
   benefits: {
     list: 'CalendarioController/getBeneficiosPorSede' 
-  }
+  },
+  especialistas: {
+    list: 'CalendarioController/getEspecialistaPorBeneficioYSede',
+    modalities: 'CalendarioController/getModalidadesEspecialista',
+    
+  },
 };

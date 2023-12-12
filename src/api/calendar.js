@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useMemo } from 'react';
 import useSWR, { mutate } from 'swr';
 
-import { fetcher, endpoints, fetcherGet, fetcherPost } from 'src/utils/axios';
+import { fetcher, endpoints, fetcherPost } from 'src/utils/axios';
 
 
 // ----------------------------------------------------------------------
@@ -175,22 +175,3 @@ export async function deleteEvent(eventId) {
 }
 
 // ----------------------------------------------------------------------
-
-export function useGetBenefits() {
-  const URL_BENEFITS = endpoints.benefits.list;;
-  const { data, mutate: revalidate, isLoading, error, isValidating } = useSWR(URL_BENEFITS, fetcherGet);
-
-  const memoizedValue = useMemo(
-    () => ({
-      data: data?.data || [],
-      benefitsLoading: isLoading,
-      benefitsError: error,
-      benefitsValidating: isValidating,
-      benefitsEmpty: !isLoading && !data?.data?.length,
-      benefitsMutate: revalidate,
-    }),
-    [data?.data, error, isLoading, isValidating, revalidate]
-  );
-
-  return memoizedValue;
-}
