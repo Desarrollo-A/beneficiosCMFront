@@ -38,38 +38,13 @@ export const fetcherGet = async (args) => {
   return res.data;
 };
 
-export const fetcherPost = async (args) => {
-  const [url, data, config] = Array.isArray(args) ? args : [args];
-
-  const res = await instance.post(url, data, {
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    ...config,
-  });
-
-  return res.data;
-};
-
-export const fetcher_custom = async (args, year, month, idUsuario) => {
+export const fetcherPost = async (args, dataValue) => {
   const [url, config] = Array.isArray(args) ? args : [args];
+
+  const res = await instance.post(url, {dataValue},{
+    headers: {'Content-Type' : 'application/x-www-form-urlencoded'}},
+     { ...config });
   
-  const res = await instance.post(url, {year, month, idUsuario}, { 
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    }}, {...config});
-
-  return res.data;
-};
-
-export const  fetcherInsert = async (args, data) => {
-  const [url, config] = Array.isArray(args) ? args : [args];
-  
-  const res = await instance.post(url, {data}, { 
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    }}, {...config});
-
   return res.data;
 };
   
@@ -109,8 +84,8 @@ export const endpoints = {
     names: 'Usuario/getNameUser'
   },
   calendario: {
-    get_occupied: 'calendarioController/get_occupied',
-    save_occupied: 'calendarioController/save_occupied',
+    get_occupied: 'calendarioController/get1',
+    save_occupied: 'calendarioController/saveOccupied',
     update_occupied: 'calendarioController/update_occupied',
     delete_occupied: 'calendarioController/delete_occupied',
     delete_date: 'calendarioController/delete_date',
