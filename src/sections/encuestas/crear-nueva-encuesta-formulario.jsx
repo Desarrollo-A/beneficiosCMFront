@@ -32,7 +32,7 @@ export default function InvoiceNewEditForm({ currentInvoice }) {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const { areasData } = useGetGeneral(endpoints.reportes.especialistas, "areasData");
+  const { areasData } = useGetGeneral(endpoints.encuestas.getPuestos, "areasData");
 
   const insertData = useInsertGeneral(endpoints.encuestas.encuestaCreate);
 
@@ -80,7 +80,7 @@ export default function InvoiceNewEditForm({ currentInvoice }) {
   const handleCreateAndSend = handleSubmit(async (data) => {
     /* loadingSend.onTrue(); */
 
-    console.log(data);
+    /* console.log(data); */
 
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -130,10 +130,10 @@ export default function InvoiceNewEditForm({ currentInvoice }) {
 
         {areasData.map((res) => (
           <MenuItem
-            key={res.idOpcion}
-            value={res.idOpcion}
+            key={res.idPuesto}
+            value={res.idPuesto}
           >
-            {res.nombre}
+            {res.puesto}
           </MenuItem>
         ))}
       </RHFSelect>

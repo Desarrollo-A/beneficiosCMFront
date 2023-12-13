@@ -78,7 +78,7 @@ export function useNavData() {
             path: paths.dashboard.encuestas.root,
             icon: ICONS.blog,
             children: [
-              { title: t('contestar'), path: paths.dashboard.encuestas.contestar },
+              /* { title: t('contestar'), path: paths.dashboard.encuestas.contestar }, */
               { title: t('crear'), path: paths.dashboard.encuestas.crear },
             ],
           }

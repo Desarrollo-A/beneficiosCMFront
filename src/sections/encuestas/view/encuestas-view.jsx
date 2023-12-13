@@ -1,3 +1,5 @@
+import { useLocation } from 'react-router-dom';
+
 import Container from '@mui/material/Container';
 
 import { paths } from 'src/routes/paths';
@@ -12,14 +14,19 @@ import FormularioEncuesta from '../formulario-encuesta';
 export default function EncuestasView() {
   const settings = useSettingsContext();
 
+  const location = useLocation();
+
+  const searchParams = new URLSearchParams(location.search);
+  const idEncuesta = searchParams.get('idEncuesta');
+
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
         heading="Encuesta"
         links={[
           {
-            name: 'Encuesta',
-            href: paths.dashboard.root,
+            /* name: 'Encuesta',
+            href: paths.dashboard.root, */
           },
           /* {
             name: 'User',
@@ -32,7 +39,9 @@ export default function EncuestasView() {
         }}
       />
 
-      <FormularioEncuesta />
+      <FormularioEncuesta 
+        idEncuesta={idEncuesta}
+      />
     </Container>
   );
 }

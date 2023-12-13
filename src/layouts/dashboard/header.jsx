@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { Base64 } from 'js-base64';
 
 import Stack from '@mui/material/Stack';
 import AppBar from '@mui/material/AppBar';
@@ -9,7 +10,10 @@ import IconButton from '@mui/material/IconButton';
 import { useOffSetTop } from 'src/hooks/use-off-set-top';
 import { useResponsive } from 'src/hooks/use-responsive';
 
+import { endpoints } from 'src/utils/axios';
+
 import { bgBlur } from 'src/theme/css';
+import { usePostGeneral } from 'src/api/general';
 
 import Logo from 'src/components/logo';
 import SvgColor from 'src/components/svg-color';
@@ -19,11 +23,17 @@ import Searchbar from '../common/searchbar';
 import { NAV, HEADER } from '../config-layout';
 import SettingsButton from '../common/settings-button';
 import AccountPopover from '../common/account-popover';
+import NotifiEncuesta from '../common/notificacion-encuesta';
 import NotificationsPopover from '../common/notifications-popover';
 
 // ----------------------------------------------------------------------
 
 export default function Header({ onOpenNav }) {
+
+  const idUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+
+  const { getData } = usePostGeneral(idUser.idUsuario, endpoints.encuestas.getEncNotificacion, "getData");
+
   const theme = useTheme();
 
   const settings = useSettingsContext();
@@ -60,6 +70,8 @@ export default function Header({ onOpenNav }) {
         {/* <LanguagePopover /> */}
 
         <NotificationsPopover />
+
+        {getData.length > 0 && <NotifiEncuesta data={getData} />}
 
         {/* <ContactsPopover /> */}
 

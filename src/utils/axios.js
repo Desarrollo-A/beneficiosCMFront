@@ -142,5 +142,7 @@ export const endpoints = {
     getResp2: '/encuestasController/getResp2',
     getResp3: '/encuestasController/getResp3',
     getResp4: '/encuestasController/getResp4',
+    getEncNotificacion:'/encuestasController/getEncNotificacion',
+    getPuestos:'/encuestasController/getPuestos',
   }
 };

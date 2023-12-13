@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import { Base64 } from 'js-base64';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 import Box from '@mui/material/Box';
@@ -14,7 +15,7 @@ import { useRouter } from 'src/routes/hooks';
 
 import { endpoints } from 'src/utils/axios';
 
-import { useGetGeneral, useInsertGeneral } from 'src/api/general';
+import { useGetGeneral, usePostGeneral, useInsertGeneral } from 'src/api/general';
 
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, {
@@ -24,9 +25,13 @@ import FormProvider, {
 
 // ----------------------------------------------------------------------
 
-export default function FormularioEncuesta({ currentUser }) {
+export default function FormularioEncuesta({ idEncuesta }) {
 
-  const { encuestaData } = useGetGeneral(endpoints.encuestas.getEncuesta, "encuestaData");
+  const router = useRouter();
+
+  const idUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+
+  const { encuestaData } = usePostGeneral(idEncuesta, endpoints.encuestas.getEncuesta, "encuestaData");
 
   const { Resp1Data } = useGetGeneral(endpoints.encuestas.getResp1, "Resp1Data");
 
@@ -37,8 +42,6 @@ export default function FormularioEncuesta({ currentUser }) {
   const { Resp4Data } = useGetGeneral(endpoints.encuestas.getResp4, "Resp4Data");
 
   const insertData = useInsertGeneral(endpoints.encuestas.encuestaInsert);
-
-  const router = useRouter();
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -88,22 +91,22 @@ export default function FormularioEncuesta({ currentUser }) {
 
       return {
         ...item,
+        idUsuario:idUser.idUsuario,
         resp: data[respKey]
       };
     });
 
-    /* console.log(newData) */
-
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve));
 
       const insert = await insertData(newData);
-
-      router.push(paths.dashboard.encuestas.contestar);
 
       if (insert.estatus === 200) {
         enqueueSnackbar(insert.mensaje, { variant: 'success' });
         resetForm();
+        
+        router.push(paths.dashboard);
+
       } else {
         enqueueSnackbar(insert.mensaje, { variant: 'error' });
       }
@@ -128,11 +131,11 @@ export default function FormularioEncuesta({ currentUser }) {
                 sm: 'repeat(1, 1fr)',
               }}
             >
-
               {encuestaData.map((item, index) => (
+
                 <Stack spacing={1} key={item.pregunta}>
 
-                  <Typography variant="subtitle2">
+                  <Typography variant="subtitle2" >
                     {item.pregunta}
                   </Typography>
 
@@ -188,5 +191,5 @@ export default function FormularioEncuesta({ currentUser }) {
 }
 
 FormularioEncuesta.propTypes = {
-  currentUser: PropTypes.object,
+  idEncuesta: PropTypes.number,
 };
