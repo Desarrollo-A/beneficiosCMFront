@@ -84,9 +84,9 @@ export const endpoints = {
     names: 'Usuario/getNameUser'
   },
   calendario: {
-    get_occupied: 'calendarioController/get1',
-    save_occupied: 'calendarioController/saveOccupied',
-    update_occupied: 'calendarioController/update_occupied',
+    getAllEvents: 'calendarioController/getAllEvents',
+    saveOccupied: 'calendarioController/saveOccupied',
+    updateOccupied: 'calendarioController/updateOccupied',
     delete_occupied: 'calendarioController/delete_occupied',
     delete_date: 'calendarioController/delete_date',
     create_appointment: 'calendarioController/create_appointment',

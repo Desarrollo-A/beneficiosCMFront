@@ -9,13 +9,13 @@ import { endpoints, fetcherPost  } from 'src/utils/axios';
 // ----------------------------------------------------------------------
 
 // cadenas de url extraidas de lo que se encuentra en el axios
-const getOccupied = endpoints.calendario.get_occupied;
-const saveOccupied = endpoints.calendario.save_occupied;
-const updateOccupied = endpoints.calendario.update_occupied;
-const deleteOccupied = endpoints.calendario.delete_occupied;
-const deleteDate = endpoints.calendario.delete_date;
-const saveAppointment = endpoints.calendario.create_appointment;
-const updateOnDrop = endpoints.calendario.update_on_drop;
+const get_all_events = endpoints.calendario.getAllEvents;
+const save_occupied = endpoints.calendario.saveOccupied;
+const update_occupied = endpoints.calendario.updateOccupied;
+const {deleteOccupied} = endpoints.calendario.delete_occupied;
+const {deleteDate} = endpoints.calendario.delete_date;
+const {saveAppointment} = endpoints.calendario.create_appointment;
+const {updateOnDrop} = endpoints.calendario.update_on_drop;
 
 const options = {
   revalidateIfStale: false,
@@ -29,7 +29,7 @@ const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken')
 // ----------------------------------------------------------------------
 
 export async function reRender(){ // se separa la funcion del mutate unicamente para cuando se crea el evento (previsto en update)
-  mutate(getOccupied);
+  mutate(get_all_events);
 }
 
 // ----------------------------------------------------------------------
@@ -38,16 +38,17 @@ export function GetCustomEvents(current) {
   const year = current.getFullYear();
   const month = (current.getMonth() + 1); // para obtener el mes que se debe, ya que el default da 0
   
-  const dataToSend = {
+  const dataValue = {
     year,
     month,
     idUsuario: datosUser.idUsuario
   }
 
-  const { data, isLoading, error, isValidating } = useSWR(getOccupied, url => fetcherPost(url, dataToSend), options);
+  const { data, isLoading, error, isValidating } = useSWR(get_all_events, url => fetcherPost(url, dataValue), options);
 
   useEffect(()=> { // esta función ayuda a que se de un trigger para traer de nuevo los eventos del mes, cada que cambia month
-    mutate(getOccupied);
+    // mutate(getAllEvents);
+    reRender();
   },[month]);
 
   const memoizedValue = useMemo(() => {
@@ -72,7 +73,7 @@ export function GetCustomEvents(current) {
 
 export async function createCustom(fecha, eventData) {
 
-    const data = {
+    const dataValue = {
         fecha,
         titulo: eventData.title,
         hora_inicio: eventData.hora_inicio,
@@ -84,7 +85,7 @@ export async function createCustom(fecha, eventData) {
         id_especialista: datosUser.idUsuario
     }
 
-    const create = fetcherPost(saveOccupied, data);
+    const create = fetcherPost(save_occupied, dataValue);
  
   return create;
 }
@@ -97,7 +98,7 @@ export async function updateCustom(eventData) {
   const now = dayjs(new Date()).format('YYYY/M/DD');
   const oldStart = dayjs(eventData.occupied).format('YYYY/M/DD'); // fecha original del evento
 
-  const data = {
+  const dataValue = {
         hora_inicio: eventData.hora_inicio,
         hora_final:  eventData.hora_final,
         titulo: eventData.title,
@@ -113,7 +114,7 @@ export async function updateCustom(eventData) {
 
     if(oldStart > now){
       if(start > now){
-        update = fetcherPost(updateOccupied, data);
+        update = fetcherPost(update_occupied, dataValue);
       }
       else{
         update = { status: false, message: "No se pueden mover las fechas a un dia anterior o actual" }
