@@ -12,10 +12,10 @@ import { endpoints, fetcherPost  } from 'src/utils/axios';
 const get_all_events = endpoints.calendario.getAllEvents;
 const save_occupied = endpoints.calendario.saveOccupied;
 const update_occupied = endpoints.calendario.updateOccupied;
-const {deleteOccupied} = endpoints.calendario.delete_occupied;
-const {deleteDate} = endpoints.calendario.delete_date;
-const {saveAppointment} = endpoints.calendario.create_appointment;
-const {updateOnDrop} = endpoints.calendario.update_on_drop;
+const delete_occupied = endpoints.calendario.deleteOccupied;
+const cancel_appointment = endpoints.calendario.cancelAppointment;
+const save_appointment = endpoints.calendario.createAppointment;
+const update_on_drop = endpoints.calendario.updateOnDrop;
 
 const options = {
   revalidateIfStale: false,
@@ -131,7 +131,7 @@ export async function updateCustom(eventData) {
 
 export async function deleteEvent(eventId) {
 
-  const delEvent = fetcherPost(deleteOccupied, eventId);
+  const delEvent = fetcherPost(delete_occupied, eventId);
 
   return delEvent;
 }
@@ -140,7 +140,7 @@ export async function deleteEvent(eventId) {
 
 export async function cancelDate(eventId){
 
-  const delDate = fetcherPost(deleteDate, eventId);
+  const delDate = fetcherPost(cancel_appointment, eventId);
 
   return delDate;
 }
@@ -150,17 +150,17 @@ export async function cancelDate(eventId){
 export async function createAppointment(fecha, eventData){
 
   const data = {
-        fechaOcupado: fecha,
-        idEspecialista: datosUser.idUsuario,
-        idPaciente: eventData.usuario,
-        fechaInicio: `${fecha} ${eventData.hora_inicio}`,
-        fechaFinal: `${fecha} ${eventData.hora_final}`,
-        creadoPor: datosUser.idUsuario,
+        fecha,
+        id_usuario: datosUser.idUsuario,
+        id_paciente: eventData.usuario,
+        fecha_inicio: `${fecha} ${eventData.hora_inicio}`,
+        fecha_final: `${fecha} ${eventData.hora_final}`,
+        creado_por: datosUser.idUsuario,
         observaciones: eventData.title,
-        modificadoPor: datosUser.idUsuario
+        modificado_por: datosUser.idUsuario
   }
 
-    const create = fetcherPost(saveAppointment, data);
+    const create = fetcherPost(save_appointment, data);
 
     return create;
 }
@@ -184,14 +184,9 @@ export async function dropUpdate(args){
     oldStart
   }
 
-  const array =[
-    updateOnDrop,
-    {data}
-  ]
-
   if(oldStart > now){
     if(start > now){
-      update = await fetcherPost(array);
+      update = await fetcherPost(update_on_drop, data);
 
       if(update.status)
         enqueueSnackbar(update.message);

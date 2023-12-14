@@ -87,9 +87,9 @@ export const endpoints = {
     getAllEvents: 'calendarioController/getAllEvents',
     saveOccupied: 'calendarioController/saveOccupied',
     updateOccupied: 'calendarioController/updateOccupied',
-    delete_occupied: 'calendarioController/delete_occupied',
-    delete_date: 'calendarioController/delete_date',
-    create_appointment: 'calendarioController/create_appointment',
-    update_on_drop: 'calendarioController/update_on_drop'
+    deleteOccupied: 'calendarioController/deleteOccupied',
+    cancelAppointment: 'calendarioController/cancelAppointment',
+    createAppointment: 'calendarioController/createAppointment',
+    updateOnDrop: 'calendarioController/updateOnDrop'
   }
 };
