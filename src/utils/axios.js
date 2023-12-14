@@ -42,38 +42,13 @@ export const fetcherGet = async (args) => {
   return res.data;
 };
 
-export const fetcherPost = async (args) => {
-  const [url, data, config] = Array.isArray(args) ? args : [args];
-
-  const res = await instance.post(url, data, {
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    ...config,
-  });
-
-  return res.data;
-};
-
-export const fetcher_custom = async (args, year, month, idUsuario) => {
+export const fetcherPost = async (args, dataValue) => {
   const [url, config] = Array.isArray(args) ? args : [args];
+
+  const res = await instance.post(url, {dataValue},{
+    headers: {'Content-Type' : 'application/x-www-form-urlencoded'}},
+     { ...config });
   
-  const res = await instance.post(url, {year, month, idUsuario}, { 
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    }}, {...config});
-
-  return res.data;
-};
-
-export const  fetcherInsert = async (args, data) => {
-  const [url, config] = Array.isArray(args) ? args : [args];
-  
-  const res = await instance.post(url, {data}, { 
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    }}, {...config});
-
   return res.data;
 };
   

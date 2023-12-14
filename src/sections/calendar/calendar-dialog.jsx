@@ -23,40 +23,31 @@ import { MobileDatePicker } from '@mui/x-date-pickers';
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from '@mui/material/DialogContent';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 import uuidv4 from 'src/utils/uuidv4';
 import { fDate, fTimestamp } from 'src/utils/format-time';
 
-import { reRender, cancelDate, deleteEvent, createCustom, updateCustom, createAppointment } from 'src/api/calendar-colaborador';
+import { reRender, cancelDate, deleteEvent, updateCustom, createAppointment } from 'src/api/calendar-colaborador';
 
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
+import { RHFTextField } from 'src/components/hook-form';
 import FormProvider from 'src/components/hook-form/form-provider';
-import { RHFTextField, RHFAutocomplete } from 'src/components/hook-form';
+
 
 
 export default function CalendarDialog({ currentEvent, onClose, currentDay, /* userData */ }) {
-    dayjs.locale('es') // valor para cambiar el idioma del dayjs
+    dayjs.locale('es')
 
     const { enqueueSnackbar } = useSnackbar();
-    // const [patientId, setPatienId] = useState('');
-    // const [patientName, setPatientName] = useState('');
-    const [type, setType] = useState('cancel');
 
     const formSchema = yup.object().shape({
         title: yup.string().max(100).required('Se necesita el titulo').trim(),
         start: yup.date().required(),
         end: yup.date().required(),
     });
-
-    const handleChangeType = useCallback((event, newType) => {
-        if (newType !== null) {
-            setType(newType);
-        }
-    }, []);
 
     const methods = useForm({
         resolver: yupResolver(formSchema),
@@ -70,12 +61,10 @@ export default function CalendarDialog({ currentEvent, onClose, currentDay, /* u
     } = methods;
 
     const values = watch();
-    const dateError = values.start && values.end ? fTimestamp(values.start) >= fTimestamp(values.end) : false; // se dan los datos de star y end, para la validacion que el fin no sea antes que el inicio
+    const dateError = values.start && values.end ? fTimestamp(values.start) >= fTimestamp(values.end) : false; // Se dan los datos de star y end, para la validacion que el fin no sea antes que el inicio
 
     const onSubmit = handleSubmit(async (data) => {
-
-
-        // se da el formato juntando la fecha elegida y la hora que se elige con los minutos
+        // Se da el formato juntando la fecha elegida y la hora que se elige con los minutos
         const eventData = {
             id: currentEvent?.id ? currentEvent?.id : uuidv4(),
             title: data?.title,
@@ -85,20 +74,14 @@ export default function CalendarDialog({ currentEvent, onClose, currentDay, /* u
             hora_final: `${data.end.getHours()}:${data.end.getMinutes()}`,
             occupied: currentEvent?.id ? currentEvent.occupied : fecha,
             newDate: fDate(data?.newDate),
-            usuario: patientId
+            usuario: 1, 
         };
 
         let save = '';
 
         try {
             if (!dateError) {
-                if (currentEvent?.id) {
-                    save = await updateCustom(eventData);
-                }
-                else {
-                    save = type === 'cancel' ? await createCustom(fecha, eventData) : await createAppointment(fecha, eventData);
-                }
-
+                save = currentEvent?.id ? save = await updateCustom(eventData) : await createAppointment(fecha, eventData);
                 if (save.status) {
                     enqueueSnackbar(save.message);
                     reRender();
@@ -177,51 +160,51 @@ export default function CalendarDialog({ currentEvent, onClose, currentDay, /* u
                     <Typography variant="subtitle1">{currentEvent?.id ? dayjs(currentEvent.start).format("dddd, DD MMMM YYYY") : fechaTitulo}</Typography>
                     <RHFTextField disabled={!!currentEvent?.type} name="title" label="Titulo" />
                 </Stack>
-                {!!currentEvent?.id && (
-                    <Stack direction="row" sx={{ p: { xs: 1, md: 2 } }}>
-                        <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
-                            <Controller
-                                name="newDate"
-                                defaultValue={currentEvent?.id ? dayjs(currentEvent.start).$d : null}
-                                render={({ field }) =>
-                                    <MobileDatePicker
-                                        label="Fecha"
-                                        disabled={!!currentEvent?.type}
-                                        defaultValue={currentEvent?.id ? dayjs(currentEvent.start).$d : null}
-                                        onChange={
-                                            (value) => field.onChange(value)
-                                        }
-                                    />
-                                }
-                            />
-                        </LocalizationProvider>
+                {/* 
+                //////////////////////////////////////////////////////////////////////////////////////////////////
+                */}
+                <Box>
+                  <FormControl fullWidth sx={{ flex: 1 }}>
+                    <Stack direction="row" spacing={1} justifyContent="space-between" sx={{ p: { xs: 1, md: 2 }}}>
+                      <Controller
+                        name="start"
+                        render={({ field }) => (
+                          <TimePicker
+                            sx={{ width: '100%' }}
+                            disabled={!!currentEvent?.type}
+                            label="Hora de inicio"
+                            defaultValue={currentEvent?.id ? dayjs(currentEvent.start).$d : null}
+                            onChange={(value) => field.onChange(value)}
+                          />
+                        )}
+                      
+                      />
+                      <Controller
+                        name="end"
+                        render={({ field }) => (
+                          <TimePicker
+                            sx={{ width: '100%' }}
+                            disabled={!!currentEvent?.type}
+                            label="Hora finalización"
+                            slotProps={{
+                              textField: {
+                                error: dateError,
+                                helperText: dateError && 'La hora de fin no puede ser inferior o igual',
+                              },
+                            }}
+                            defaultValue={currentEvent?.id ? dayjs(currentEvent.end).$d : null}
+                            onChange={(value) => field.onChange(value)}
+                          />
+                        )}
+                      />
                     </Stack>
-                )}
-                {/* AQUI VA EL SELECT */}
-                <Box sx={{ minWidth: 250, flexDirection: 'row'}}>
-                    <FormControl fullWidth>
-                      <InputLabel id="modalidad-input">Modalidad</InputLabel>
-                      {/* <Select
-                        labelId="Modalidad"
-                        id="demo-simple-select-003"
-                        label="Modalidad"
-                        value={modalidad}
-                        onChange={(e) => setModalidad(e.target.value)}
-                        disabled={modalidades.length === 0}
-                      >
-                        {modalidades.map((e, index) => (
-                          <MenuItem key={e.idUsuario} value={e.nombre}>
-                            {e.nombre.toUpperCase()}
-                          </MenuItem>
-                        ))}
-                      </Select> */}
-                    </FormControl>
+                  </FormControl>
                 </Box>
             </DialogContent>
 
             <DialogActions>
                 <Button variant='contained' color='error' onClick={onClose}>Cancelar</Button>
-                <LoadingButton type="submit" variant='contained' disabled={dateError} color='success'>Guardar</LoadingButton>
+                <LoadingButton type="submit" variant='contained' disabled={dateError} color='success'>Agendar</LoadingButton>
             </DialogActions>
         </FormProvider>
     )

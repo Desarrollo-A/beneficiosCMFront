@@ -151,7 +151,7 @@ export async function createAppointment(fecha, eventData){
 
 export async function dropUpdate(args){
   const tipo = args.color === "green" ? "cita" : "ocupado"; // para identificar si es cita u horario ocupado, mediante el color de la etiqueta
-  let update = '';
+
   const start = dayjs(args.start).format('YYYY/M/DD'); // fecha a la que se movera
   const oldStart = dayjs(args.oldStart).format('YYYY/M/DD'); // fecha original del evento
 
@@ -165,7 +165,7 @@ export async function dropUpdate(args){
     oldStart
   }
   
-  update = await fetcherInsert(updateOnDrop, data);
+  const update = await fetcherInsert(updateOnDrop, data);
 
   if(update.status)
     enqueueSnackbar(update.message);

@@ -84,7 +84,7 @@ export function useUpdateUserQuery(query) {
 export function useUpdateUser() {
   const updateUser = async (obj) => {
     const URL = obj ? endpoints.user.update : '';
-    return fetcherPost([URL, obj]);
+    return fetcherPost(URL, obj);
   };
 
   return updateUser;
@@ -93,7 +93,7 @@ export function useUpdateUser() {
 export function useBatchUsers() {
   const batchUsers = async (obj) => {
     const URL = obj ? endpoints.user.batch : '';
-    return fetcherPost([URL, obj]);
+    return fetcherPost(URL, obj);
   };
 
   return batchUsers;

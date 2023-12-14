@@ -18,9 +18,9 @@ const options = {
 // ----------------------------------------------------------------------
 
 export function useGetBenefits(sede) {
-  const URL_BENEFITS = [endpoints.benefits.list, { sede }]
-  const { data, mutate: revalidate, isLoading, error, isValidating } = useSWR(URL_BENEFITS, fetcherPost);
-
+  const URL_BENEFITS = [endpoints.benefits.list]
+  const { data, mutate: revalidate, isLoading, error, isValidating } = useSWR(URL_BENEFITS, url => fetcherPost(url, {sede}));
+  console.log("DESDE AXIOS", data);
   const memoizedValue = useMemo(
     () => ({
       data: data?.data || [],
@@ -37,6 +37,8 @@ export function useGetBenefits(sede) {
 }
 
 export function useGetEspecialists(sede, beneficio) {
+
+
   const URL_ESPECIALISTA = [endpoints.especialistas.list, { sede, beneficio }]
   const { data, mutate: revalidate, isLoading, error, isValidating } = useSWR(URL_ESPECIALISTA, fetcherPost);
 

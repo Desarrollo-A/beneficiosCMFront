@@ -4,7 +4,6 @@ import useSWR, { mutate } from 'swr';
 
 import { fetcher, endpoints, fetcherPost } from 'src/utils/axios';
 
-
 // ----------------------------------------------------------------------
 
 const URL = endpoints.calendar;
