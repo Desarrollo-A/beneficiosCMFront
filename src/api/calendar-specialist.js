@@ -15,7 +15,8 @@ const update_occupied = endpoints.calendario.updateOccupied;
 const delete_occupied = endpoints.calendario.deleteOccupied;
 const cancel_appointment = endpoints.calendario.cancelAppointment;
 const save_appointment = endpoints.calendario.createAppointment;
-const update_on_drop = endpoints.calendario.updateOnDrop;
+const appointment_drop = endpoints.calendario.appointmentDrop;
+const occupied_drop = endpoints.calendario.occupiedDrop;
 
 const options = {
   revalidateIfStale: false,
@@ -102,12 +103,11 @@ export async function updateCustom(eventData) {
         hora_inicio: eventData.hora_inicio,
         hora_final:  eventData.hora_final,
         titulo: eventData.title,
-        id_unico: eventData.id,
+        id: eventData.id,
         fecha_ocupado: eventData.newDate,
         id_usuario: datosUser.idUsuario,
         fecha_inicio: `${eventData.newDate} ${eventData.hora_inicio}`,
         fecha_final: `${eventData.newDate} ${eventData.hora_final}`,
-        id_especialista: datosUser.idUsuario,
         start,
         oldStart
     }
@@ -117,11 +117,11 @@ export async function updateCustom(eventData) {
         update = fetcherPost(update_occupied, dataValue);
       }
       else{
-        update = { status: false, message: "No se pueden mover las fechas a un dia anterior o actual" }
+        update = { result: false, msg: "No se pueden mover las fechas a un dia anterior o actual" }
       }
     }
     else{
-      update = { status: false, message: "Las citas u horarios pasados no se pueden mover" }
+      update = { result: false, msg: "Las citas u horarios pasados no se pueden mover" }
     }
 
     return update;
@@ -172,26 +172,31 @@ export async function dropUpdate(args){
   const tipo = args.color === "green" ? "cita" : "ocupado"; // para identificar si es cita u horario ocupado, mediante el color de la etiqueta
   const start = dayjs(args.start).format('YYYY/M/DD'); // fecha a la que se movera
   const now = dayjs(new Date()).format('YYYY/M/DD');
-  const oldStart = dayjs(args.oldStart).format('YYYY/M/DD'); // fecha original del evento
+  const old_start = dayjs(args.oldStart).format('YYYY/M/DD'); // fecha original del evento
 
   const data = {
     id: args.id,
-    fechaInicio: dayjs(args.start).format('YYYY/MM/DD HH:mm:ss'),
-    fechaFinal: dayjs(args.end).format('YYYY/MM/DD HH:mm:ss'),
-    idEspecialista: datosUser.idUsuario,
-    tipo,
+    fecha: dayjs(args.start).format('YYYY/MM/DD'),
+    fecha_inicio: dayjs(args.start).format('YYYY/MM/DD HH:mm:ss'),
+    fecha_final: dayjs(args.end).format('YYYY/MM/DD HH:mm:ss'),
+    id_usuario: datosUser.idUsuario,
     start,
-    oldStart
+    old_start
   }
 
-  if(oldStart > now){
+  if(old_start > now){
     if(start > now){
-      update = await fetcherPost(update_on_drop, data);
-
-      if(update.status)
-        enqueueSnackbar(update.message);
+      if(tipo === "cita"){
+        update = await fetcherPost(appointment_drop, data);
+      }
       else{
-        enqueueSnackbar(update.message, {variant: "error"});
+        update = await fetcherPost(occupied_drop, data);
+      }
+
+      if(update.result)
+        enqueueSnackbar(update.msg);
+      else{
+        enqueueSnackbar(update.msg, {variant: "error"});
         reRender(); // se utiliza el rerender aqui parta que pueda regresar el evento en caso de no quedar
       }
     }
@@ -204,6 +209,5 @@ export async function dropUpdate(args){
     enqueueSnackbar("Las citas u horarios pasados no se pueden mover", {variant: "error"});
     reRender();
   }
-  
-  return update;
+  // return update;
 }

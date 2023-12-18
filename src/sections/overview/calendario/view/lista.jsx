@@ -91,14 +91,14 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate })
                     save = type === 'cancel' ? await createCustom(fecha, eventData) : await createAppointment(fecha, eventData); // si no hay id, se cancela una hora o se crea una cita
                 }
 
-                if (save.status) {
-                    enqueueSnackbar(save.message);
+                if (save.result) {
+                    enqueueSnackbar(save.msg);
                     reRender(); // ayuda a que se haga un mutate en caso que sea true el resultado
                     reset();
                     onClose();
                 }
                 else {
-                    enqueueSnackbar(save.message, { variant: 'error' });
+                    enqueueSnackbar(save.msg, { variant: 'error' });
                 }
             }
         }
@@ -112,16 +112,17 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate })
         try {
             const resp = await deleteEvent(`${currentEvent?.id}`);
 
-            if (resp.status) {
-                enqueueSnackbar(resp.message);
+            if (resp.result) {
+                enqueueSnackbar(resp.msg);
                 reRender();
             }
             else {
-                enqueueSnackbar(resp.message, { variant: "error" });
+                enqueueSnackbar(resp.msg, { variant: "error" });
             }
 
             onClose();
-        } catch (error) {
+        } 
+        catch (error) {
             enqueueSnackbar("Ha ocurrido un error al eliminar", { variant: "error" });
             onClose();
         }
@@ -132,12 +133,12 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate })
         try {
             const resp = await cancelDate(`${currentEvent?.id}`);
 
-            if (resp.status) {
-                enqueueSnackbar(resp.message);
+            if (resp.result) {
+                enqueueSnackbar(resp.msg);
                 reRender();
             }
             else {
-                enqueueSnackbar(resp.message, { variant: "error" });
+                enqueueSnackbar(resp.msg, { variant: "error" });
             }
 
             onClose();
