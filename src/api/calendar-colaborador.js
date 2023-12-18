@@ -1,8 +1,10 @@
+import dayjs from 'dayjs';
 import axios from 'axios';
 import { useMemo } from 'react';
+import { Base64 } from 'js-base64';
 import useSWR, { mutate } from 'swr';
 
-import { fetcher, endpoints, fetcherPost } from 'src/utils/axios';
+import { endpoints, fetcherGet, fetcherPost } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -15,12 +17,14 @@ const options = {
   revalidateOnReconnect: false,
 };
 
+const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+
 // ----------------------------------------------------------------------
 
 export function useGetBenefits(sede) {
   const URL_BENEFITS = [endpoints.benefits.list]
   const { data, mutate: revalidate, isLoading, error, isValidating } = useSWR(URL_BENEFITS, url => fetcherPost(url, {sede}));
-  console.log("DESDE AXIOS", data);
+  
   const memoizedValue = useMemo(
     () => ({
       data: data?.data || [],
@@ -37,10 +41,8 @@ export function useGetBenefits(sede) {
 }
 
 export function useGetEspecialists(sede, beneficio) {
-
-
-  const URL_ESPECIALISTA = [endpoints.especialistas.list, { sede, beneficio }]
-  const { data, mutate: revalidate, isLoading, error, isValidating } = useSWR(URL_ESPECIALISTA, fetcherPost);
+  const URL_ESPECIALISTA = [endpoints.especialistas.list];
+  const { data, mutate: revalidate, isLoading, error, isValidating } = useSWR(URL_ESPECIALISTA, url =>  fetcherPost(url, {sede, beneficio}));
 
   const memoizedValue = useMemo(
     () => ({
@@ -58,8 +60,8 @@ export function useGetEspecialists(sede, beneficio) {
 }
 
 export function useGetModalities(sede, especialista) {
-  const URL_MODALITIES = [endpoints.especialistas.modalities, { sede, especialista }]
-  const { data, mutate: revalidate, isLoading, error, isValidating } = useSWR(URL_MODALITIES, fetcherPost);
+  const URL_MODALITIES = [endpoints.especialistas.modalities]
+  const { data, mutate: revalidate, isLoading, error, isValidating } = useSWR(URL_MODALITIES, url => fetcherPost(url, {sede, especialista}));
 
   const memoizedValue = useMemo(
     () => ({
@@ -168,19 +170,101 @@ mutate(
 return delDate;
 }
 
-export async function createAppointment(fecha, eventData){
-const create = axios.post('http://localhost/beneficiosCMBack/calendarioController/create_appointment', {
-      idEspecialista: datosUser.idUsuario,
-      idPaciente: eventData.usuario,
-      fechaInicio: `${fecha} ${eventData.hora_inicio}`,
-      fechaFinal: `${fecha} ${eventData.hora_final}`,
-      creadoPor: datosUser.idUsuario,
-      observaciones: eventData.title,
-      modificadoPor: datosUser.idUsuario
-  }, { 
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-  }, false)
-  .then((response) => response.data);
+// export function getAppointmentsByUserr(current) {
+//   const year = current.getFullYear();
+//   const month = (current.getMonth() + 1); // para obtener el mes que se debe, ya que el default da 0
+  
+//   const { data, isLoading, error, isValidating } = useSWR(URL_APPOINTMENTS, url => fetcherPost(url, year, month, datosUser.idUsuario), options);
 
-  return create;
+//   useEffect(()=> { // esta función ayuda a que se de un trigger para traer de nuevo los eventos del mes
+//     mutate(URL_APPOINTMENTS);
+//   },[month]);
+
+//   const memoizedValue = useMemo(() => {
+//       const events = data?.events?.map((event) => ({
+//         ...event,
+//         textColor: event?.color ? event.color : 'red',
+//       }));
+    
+//     return {
+//       events: events || [],
+//       eventsLoading: isLoading,
+//       eventsError: error,
+//       eventsValidating: isValidating,
+//       eventsEmpty: !isLoading && !data?.events?.length,
+//     };
+//   }, [data?.events, error, isLoading, isValidating]);
+  
+
+//   return memoizedValue;
+// }
+
+export async function createAppointment(fecha, eventData){
+
+  const data = {
+        fechaOcupado: fecha,
+        idEspecialista: datosUser.idUsuario,
+        idPaciente: eventData.usuario,
+        fechaInicio: `${fecha} ${eventData.hora_inicio}`,
+        fechaFinal: `${fecha} ${eventData.hora_final}`,
+        creadoPor: datosUser.idUsuario,
+        observaciones: eventData.title,
+        modificadoPor: datosUser.idUsuario
+  }
+
+    const create = fetcherPost(saveAppointment, data);
+
+    return create;
+}
+
+// ----------------------------------------------------------------------
+
+// export async function dropUpdate(args){
+//   const tipo = args.color === "green" ? "cita" : "ocupado"; // para identificar si es cita u horario ocupado, mediante el color de la etiqueta
+
+//   const start = dayjs(args.start).format('YYYY/M/DD'); // fecha a la que se movera
+//   const oldStart = dayjs(args.oldStart).format('YYYY/M/DD'); // fecha original del evento
+
+//   const data = {
+//     id: args.id,
+//     fechaInicio: dayjs(args.start).format('YYYY/MM/DD HH:mm:ss'),
+//     fechaFinal: dayjs(args.end).format('YYYY/MM/DD HH:mm:ss'),
+//     idEspecialista: datosUser.idUsuario,
+//     tipo,
+//     start,
+//     oldStart
+//   }
+  
+//   const update = await fetcherPost(updateOnDrop, data);
+
+//   if(update.status)
+//     enqueueSnackbar(update.message);
+//   else{
+//     enqueueSnackbar(update.message, {variant: "error"});
+//     reRender(); // se utiliza el rerender aqui parta que pueda regresar el evento en caso de no quedar
+//   }
+    
+//   return update;
+// }
+
+export function useGetAppointmentsByUser(current) {
+  const URL_APPOINTMENTS = [endpoints.calendarioColaborador.getAppointmentsByUser];
+  const year = current.getFullYear();
+  const month = (current.getMonth() + 1);
+
+  const { data, mutate: revalidate, isLoading, error, isValidating } = useSWR(URL_APPOINTMENTS, url => fetcherPost(url, year, month, datosUser.idUsuario));
+
+  const memoizedValue = useMemo(
+    () => ({
+      data: data?.data || [],
+      appointmentLoading: isLoading,
+      appointmentError: error,
+      appointmentValidating: isValidating,
+      appointmentEmpty: !isLoading && !data?.data?.length,
+      appointmentMutate: revalidate,
+    }),
+    [data?.data, error, isLoading, isValidating, revalidate]
+  );
+
+  return memoizedValue;
 }

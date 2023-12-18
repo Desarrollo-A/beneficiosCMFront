@@ -95,7 +95,6 @@ export const endpoints = {
   especialistas: {
     list: 'CalendarioController/getEspecialistaPorBeneficioYSede',
     modalities: 'CalendarioController/getModalidadesEspecialista',
-    
   },
   calendario: {
     get_occupied: 'calendarioController/get_occupied',
@@ -105,5 +104,8 @@ export const endpoints = {
     delete_date: 'calendarioController/delete_date',
     create_appointment: 'calendarioController/create_appointment',
     update_on_drop: 'calendarioController/update_on_drop'
+  },
+  calendarioColaborador: {
+    getAppointmentsByUser: 'calendarioController/getAppointmentsByUser'
   }
 };

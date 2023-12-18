@@ -27,7 +27,7 @@ import { fTimestamp } from 'src/utils/format-time';
 
 import { CALENDAR_COLOR_OPTIONS } from 'src/_mock/_calendar';
 import { updateEvent, useGetEvents } from 'src/api/calendar';
-import { useGetBenefits, useGetModalities, useGetEspecialists } from 'src/api/calendar-colaborador';
+import { useGetBenefits, useGetModalities, useGetEspecialists, useGetAppointmentsByUser } from 'src/api/calendar-colaborador';
 
 import { useSettingsContext } from 'src/components/settings';
 
@@ -55,7 +55,7 @@ export default function CalendarView() {
   const smUp = useResponsive('up', 'sm');
   const [filters, setFilters] = useState(defaultFilters);
 
-  const { events, eventsLoading } = useGetEvents();
+  // const { events, eventsLoading } = useGetEvents();
 
   const [beneficios, setBeneficios] = useState([]);
   const [beneficio, setBeneficio] = useState('');
@@ -64,11 +64,6 @@ export default function CalendarView() {
   const [modalidades, setModalidades] = useState([]);
   const [modalidad, setModalidad] = useState('');
   const [day, setDay] = useState();
-
-  const { data: benefits } = useGetBenefits(datosUser.sede);
-  
-  const { data: especialists } = useGetEspecialists(datosUser.sede, beneficio);
-  const { data: modalities } = useGetModalities(datosUser.sede, especialista);
 
   const dateError =
     filters.startDate && filters.endDate
@@ -93,6 +88,11 @@ export default function CalendarView() {
     selectEventId,
     selectedRange,
   } = useCalendar();
+
+  const { data: benefits } = useGetBenefits(datosUser.sede);  
+  const { data: especialists } = useGetEspecialists(datosUser.sede, beneficio);
+  const { data: modalities } = useGetModalities(datosUser.sede, especialista);
+  const { data: events, appointmentLoading: eventsLoading } = useGetAppointmentsByUser(date);
 
   const currentEvent = useEvent(events, selectEventId, selectedRange, openForm);
 

@@ -4,7 +4,7 @@ import useSWR, { mutate } from 'swr';
 import { useMemo, useEffect } from 'react';
 import { enqueueSnackbar } from 'notistack';
 
-import { endpoints, fetcherInsert, fetcher_custom  } from 'src/utils/axios';
+import { endpoints, fetcherGet, fetcherPost  } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -38,7 +38,7 @@ export function GetCustomEvents(current) {
   const year = current.getFullYear();
   const month = (current.getMonth() + 1); // para obtener el mes que se debe, ya que el default da 0
   
-  const { data, isLoading, error, isValidating } = useSWR(getOccupied, url => fetcher_custom(url, year, month, datosUser.idUsuario), options);
+  const { data, isLoading, error, isValidating } = useSWR(getOccupied, url => fetcherPost(url, year, month, datosUser.idUsuario), options);
 
   useEffect(()=> { // esta función ayuda a que se de un trigger para traer de nuevo los eventos del mes
     mutate(getOccupied);
@@ -79,7 +79,7 @@ export async function createCustom(fecha, eventData) {
         id_especialista: datosUser.idUsuario
     }
 
-    const create = fetcherInsert(saveOccupied, data);
+    const create = fetcherPost(saveOccupied, data);
  
   return create;
 }
@@ -102,7 +102,7 @@ export async function updateCustom(eventData) {
     }
     
     if(dayjs(eventData.newDate).format('YYYY/M/DD') > dayjs(new Date()).format('YYYY/M/DD'))
-      update = fetcherInsert(updateOccupied, data);
+      update = fetcherPost(updateOccupied, data);
     else
       update = { status: false, message: "No se pueden mover las fechas a un dia anterior o actual" }
 
@@ -113,7 +113,7 @@ export async function updateCustom(eventData) {
 
 export async function deleteEvent(eventId) {
 
-  const delEvent = fetcherInsert(deleteOccupied, eventId);
+  const delEvent = fetcherPost(deleteOccupied, eventId);
 
   return delEvent;
 }
@@ -122,7 +122,7 @@ export async function deleteEvent(eventId) {
 
 export async function cancelDate(eventId){
 
-  const delDate = fetcherInsert(deleteDate, eventId);
+  const delDate = fetcherPost(deleteDate, eventId);
 
   return delDate;
 }
@@ -142,7 +142,7 @@ export async function createAppointment(fecha, eventData){
         modificadoPor: datosUser.idUsuario
   }
 
-    const create = fetcherInsert(saveAppointment, data);
+    const create = fetcherPost(saveAppointment, data);
 
     return create;
 }
@@ -165,7 +165,7 @@ export async function dropUpdate(args){
     oldStart
   }
   
-  const update = await fetcherInsert(updateOnDrop, data);
+  const update = await fetcherPost(updateOnDrop, data);
 
   if(update.status)
     enqueueSnackbar(update.message);
@@ -174,6 +174,5 @@ export async function dropUpdate(args){
     reRender(); // se utiliza el rerender aqui parta que pueda regresar el evento en caso de no quedar
   }
     
-
   return update;
 }
