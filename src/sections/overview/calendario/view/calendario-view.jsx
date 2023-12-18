@@ -18,6 +18,7 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import { fTimestamp } from 'src/utils/format-time';
 
 import { useGetNameUser } from 'src/api/user';
+import { dropUpdate, GetCustomEvents } from 'src/api/calendar-specialist';
 
 import { useSettingsContext } from 'src/components/settings';
 
@@ -25,7 +26,6 @@ import Lista from "./lista";
 import { StyledCalendar } from '../styles';
 import CalendarToolbar from '../calendar-tool';
 import { useEvent, useCalendar } from '../hooks';
-import { dropUpdate, GetCustomEvents } from '../../../../api/calendar-specialist';
 // ----------------------------------------------------------------------
 
 const defaultFilters = {

@@ -213,12 +213,13 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate })
                         </LocalizationProvider>
                     </Stack>
                 )}
-                <Stack direction="row" spacing={2} sx={{ p: { xs: 1, md: 2 } }}>
+                <Stack direction="row" justifyContent='space-between' spacing={2} sx={{ p: { xs: 1, md: 2 } }}>
                     <Controller
                         name="start"
                         render={({ field }) =>
                             <TimePicker
                                 disabled={!!currentEvent?.type}
+                                sx={{width:'100%'}}
                                 label="Hora de inicio"
                                 defaultValue={currentEvent?.id ? dayjs(currentEvent.start).$d : null}
                                 onChange={
@@ -231,6 +232,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate })
                         name="end"
                         render={({ field }) =>
                             <TimePicker
+                                sx={{width:'100%'}}
                                 disabled={!!currentEvent?.type}
                                 label="Hora finalización"
                                 slotProps={{

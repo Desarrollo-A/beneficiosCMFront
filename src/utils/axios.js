@@ -97,15 +97,12 @@ export const endpoints = {
     modalities: 'CalendarioController/getModalidadesEspecialista',
   },
   calendario: {
-    get_occupied: 'calendarioController/get_occupied',
-    save_occupied: 'calendarioController/save_occupied',
-    update_occupied: 'calendarioController/update_occupied',
-    delete_occupied: 'calendarioController/delete_occupied',
-    delete_date: 'calendarioController/delete_date',
-    create_appointment: 'calendarioController/create_appointment',
-    update_on_drop: 'calendarioController/update_on_drop'
-  },
-  calendarioColaborador: {
-    getAppointmentsByUser: 'calendarioController/getAppointmentsByUser'
+    getAllEvents: 'calendarioController/getAllEvents',
+    saveOccupied: 'calendarioController/saveOccupied',
+    updateOccupied: 'calendarioController/updateOccupied',
+    deleteOccupied: 'calendarioController/deleteOccupied',
+    cancelAppointment: 'calendarioController/cancelAppointment',
+    createAppointment: 'calendarioController/createAppointment',
+    updateOnDrop: 'calendarioController/updateOnDrop'
   }
 };
