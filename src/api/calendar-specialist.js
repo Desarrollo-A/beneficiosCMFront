@@ -209,5 +209,4 @@ export async function dropUpdate(args){
     enqueueSnackbar("Las citas u horarios pasados no se pueden mover", {variant: "error"});
     reRender();
   }
-  // return update;
 }

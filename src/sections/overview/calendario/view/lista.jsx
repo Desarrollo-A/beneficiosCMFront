@@ -25,12 +25,13 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import uuidv4 from 'src/utils/uuidv4';
 import { fDate, fTimestamp } from 'src/utils/format-time';
 
+import { reRender, cancelDate, deleteEvent, createCustom, updateCustom, createAppointment } from 'src/api/calendar-specialist';
+
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider from 'src/components/hook-form/form-provider';
 import { RHFTextField, RHFAutocomplete } from 'src/components/hook-form';
 
-import { reRender, cancelDate, deleteEvent, createCustom, updateCustom, createAppointment } from '../../../../api/calendar-specialist';
 
 export default function Lista({ currentEvent, onClose, userData, selectedDate }) {
     dayjs.locale('es') // valor para cambiar el idioma del dayjs
