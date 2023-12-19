@@ -4,11 +4,7 @@ import useSWR, { mutate } from 'swr';
 import { useMemo, useEffect } from 'react';
 import { enqueueSnackbar } from 'notistack';
 
-<<<<<<< HEAD
 import { endpoints, fetcherGet, fetcherPost  } from 'src/utils/axios';
-=======
-import { endpoints, fetcherPost  } from 'src/utils/axios';
->>>>>>> 1f7296676cb005cc38f81348cd0587b3cd5447d1
 
 // ----------------------------------------------------------------------
 
@@ -42,15 +38,11 @@ export function GetCustomEvents(current) {
   const year = current.getFullYear();
   const month = (current.getMonth() + 1); // para obtener el mes que se debe, ya que el default da 0
   
-<<<<<<< HEAD
-  const { data, isLoading, error, isValidating } = useSWR(getOccupied, url => fetcherPost(url, year, month, datosUser.idUsuario), options);
-=======
   const dataValue = {
     year,
     month,
     idUsuario: datosUser.idUsuario
   }
->>>>>>> 1f7296676cb005cc38f81348cd0587b3cd5447d1
 
   const { data, isLoading, error, isValidating } = useSWR(get_all_events, url => fetcherPost(url, dataValue), options);
 
@@ -93,11 +85,7 @@ export async function createCustom(fecha, eventData) {
         id_especialista: datosUser.idUsuario
     }
 
-<<<<<<< HEAD
-    const create = fetcherPost(saveOccupied, data);
-=======
     const create = fetcherPost(save_occupied, dataValue);
->>>>>>> 1f7296676cb005cc38f81348cd0587b3cd5447d1
  
   return create;
 }

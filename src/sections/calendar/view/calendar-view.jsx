@@ -53,48 +53,59 @@ export default function CalendarView() {
 
   const settings = useSettingsContext();
   const smUp = useResponsive('up', 'sm');
-  const [filters, setFilters] = useState(defaultFilters);
+  const [filters] = useState(defaultFilters);
 
   // const { events, eventsLoading } = useGetEvents();
 
   const [beneficios, setBeneficios] = useState([]);
-  const [beneficio, setBeneficio] = useState('');
+  // const [beneficio, setBeneficio] = useState('');
   const [especialistas, setEspecialistas] = useState([]);
-  const [especialista, setEspecialista] = useState('');
+  // const [especialista, setEspecialista] = useState('');
   const [modalidades, setModalidades] = useState([]);
-  const [modalidad, setModalidad] = useState('');
+  // const [modalidad, setModalidad] = useState('');
   const [day, setDay] = useState();
+
+  const [selectedValues, setSelectedValues] = useState({
+    beneficio: '',
+    especialista: '',
+    modalidad: '',
+  });
 
   const dateError =
     filters.startDate && filters.endDate
       ? filters.startDate.getTime() > filters.endDate.getTime()
       : false;
 
-  const {
-    calendarRef,
-    view,
-    date,
-    openForm,
-    onDatePrev,
-    onDateNext,
-    onDateToday,
-    onCloseForm,
-    onDropEvent,
-    onChangeView,
-    onSelectRange,
-    onClickEvent,
-    onResizeEvent,
-    onInitialView,
-    selectEventId,
-    selectedRange,
-  } = useCalendar();
+    const {
+      calendarRef,
+      view,
+      date,
+      openForm,
+      onDatePrev,
+      onDateNext,
+      onDateToday,
+      onCloseForm,
+      onDropEvent,
+      onChangeView,
+      onSelectRange,
+      onClickEvent,
+      onResizeEvent,
+      onInitialView,
+      selectEventId,
+    } = useCalendar();
 
-  const { data: benefits } = useGetBenefits(datosUser.sede);  
-  const { data: especialists } = useGetEspecialists(datosUser.sede, beneficio);
-  const { data: modalities } = useGetModalities(datosUser.sede, especialista);
+  const { data: benefits } = useGetBenefits(datosUser.sede);
+  const { data: especialists } = useGetEspecialists(datosUser.sede, selectedValues.beneficio);
+  const { data: modalities } = useGetModalities(datosUser.sede, selectedValues.especialista);
   const { data: events, appointmentLoading: eventsLoading } = useGetAppointmentsByUser(date);
 
-  const currentEvent = useEvent(events, selectEventId, selectedRange, openForm);
+  const currentEvent = useEvent(events, selectEventId, openForm);
+
+  const dataFiltered = applyFilter({
+    inputData: events ,// events,  // [] ,
+    filters,
+    dateError,
+  });
 
   useEffect(() => {
     onInitialView();
@@ -112,7 +123,7 @@ export default function CalendarView() {
     if (especialists) {
       setEspecialistas(especialists);
     }
-  }, [especialists, benefits])
+  }, [especialists, beneficios])
 
   useEffect(() => {
     console.log("Modalidades", modalities);
@@ -121,11 +132,26 @@ export default function CalendarView() {
     }
   }, [modalities])
 
-  const dataFiltered = applyFilter({
-    inputData: events ,// events,  // [] ,
-    filters,
-    dateError,
-  });
+  const handleChange = (input, value) => {
+    if (input === 'beneficio') {
+      setSelectedValues({
+        beneficio: value,
+        especialista: '',
+        modalidad: '',
+      });
+    } else if (input === 'especialista') {
+      setSelectedValues({
+        ...selectedValues,
+        especialista: value,
+        modalidad: '',
+      });
+    } else if (input === 'modalidad'){
+      setSelectedValues({
+        ...selectedValues,
+        modalidad: value,
+      });
+    }
+  };
 
   return (
     <>
@@ -138,7 +164,7 @@ export default function CalendarView() {
             mb: { xs: 3, md: 5 },
           }}
         >
-          <Typography variant="h4">Calendar</Typography>
+          <Typography variant="h4">Calendar {selectedValues.beneficio +' - '+selectedValues.especialista+' - ' +selectedValues.modalidad}</Typography>
           <Stack direction="row" minWidth="300" justifyContent="flex-end" spacing={0.5}>
             <Box sx={{ minWidth: 200, flexDirection: 'row'}}>
               <FormControl fullWidth>
@@ -147,8 +173,8 @@ export default function CalendarView() {
                   labelId="Beneficio"
                   id="demo-simple-select-001"
                   label="Beneficio"
-                  value={beneficio}
-                  onChange={(e) => setBeneficio(e.target.value)}
+                  value={selectedValues.beneficio}
+                  onChange={(e) => handleChange('beneficio', e.target.value)}
                   disabled={beneficios.length === 0}
                 >
                   {beneficios.map((e, index) => (
@@ -166,13 +192,13 @@ export default function CalendarView() {
                   labelId="Especialista"
                   id="demo-simple-select-002"
                   label="Especialista"
-                  value={especialista}
-                  onChange={(e) => setEspecialista(e.target.value)}
+                  value={selectedValues.especialista}
+                  onChange={(e) => handleChange('especialista', e.target.value)}
                   disabled={especialistas.length === 0}
                 >
                   {especialistas.map((e, index) => (
                     <MenuItem key={e.id} value={e.id}>
-                      {e.especialista}
+                      {e.especialista.toUpperCase()}
                     </MenuItem>
                   ))}
                 </Select>
@@ -185,8 +211,8 @@ export default function CalendarView() {
                   labelId="Modalidad"
                   id="demo-simple-select-003"
                   label="Modalidad"
-                  value={modalidad}
-                  onChange={(e) => setModalidad(e.target.value)}
+                  value={selectedValues.modalidad}
+                  onChange={(e) => handleChange('modalidad', e.target.value)}
                   disabled={modalidades.length === 0}
                 >
                   {modalidades.map((e, index) => (

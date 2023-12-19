@@ -104,5 +104,8 @@ export const endpoints = {
     cancelAppointment: 'calendarioController/cancelAppointment',
     createAppointment: 'calendarioController/createAppointment',
     updateOnDrop: 'calendarioController/updateOnDrop'
+  },
+  calendarioColaborador: {
+    getAppointmentsByUser: 'calendarioController/getAppointmentsByUser'
   }
 };
