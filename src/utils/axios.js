@@ -19,14 +19,18 @@ instance.interceptors.response.use(
 );
 export {instance};
 
-
 // ----------------------------------------------------------------------
 
 export const fetcher = async (args) => {
-  const [url, config] = Array.isArray(args) ? args : [args];
+  const [url, data, config] = Array.isArray(args) ? args : [args];
 
-  const res = await axiosInstance.get(url, { ...config });
-  
+  const res = await axiosInstance.get(url, data, {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    ...config,
+  });
+
   return res.data;
 };
 
@@ -81,7 +85,16 @@ export const endpoints = {
   user: {
     list: 'Usuario/getUsers',
     update: 'Usuario/updateUser',
+    areas: 'Usuario/getAreas',
+    batch: 'Usuario/insertBatchUsers',
     names: 'Usuario/getNameUser'
+  },
+  benefits: {
+    list: 'CalendarioController/getBeneficiosPorSede' 
+  },
+  especialistas: {
+    list: 'CalendarioController/getEspecialistaPorBeneficioYSede',
+    modalities: 'CalendarioController/getModalidadesEspecialista',
   },
   calendario: {
     getAllEvents: 'calendarioController/getAllEvents',
@@ -92,5 +105,8 @@ export const endpoints = {
     createAppointment: 'calendarioController/createAppointment',
     appointmentDrop: 'calendarioController/appointmentDrop',
     occupiedDrop: 'calendarioController/occupiedDrop'
+  },
+  calendarioColaborador: {
+    getAppointmentsByUser: 'calendarioController/getAppointmentsByUser'
   }
 };

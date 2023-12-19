@@ -4,7 +4,7 @@ import useSWR, { mutate } from 'swr';
 import { useMemo, useEffect } from 'react';
 import { enqueueSnackbar } from 'notistack';
 
-import { endpoints, fetcherPost  } from 'src/utils/axios';
+import { endpoints, fetcherGet, fetcherPost  } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -125,6 +125,11 @@ export async function updateCustom(eventData) {
     else{
       update = { result: false, msg: "Las citas u horarios pasados no se pueden mover" }
     }
+    
+    if(dayjs(eventData.newDate).format('YYYY/M/DD') > dayjs(new Date()).format('YYYY/M/DD'))
+      update = fetcherPost(updateOccupied, data);
+    else
+      update = { status: false, message: "No se pueden mover las fechas a un dia anterior o actual" }
 
     return update;
 }

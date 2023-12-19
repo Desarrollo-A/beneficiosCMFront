@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useMemo } from 'react';
 import useSWR, { mutate } from 'swr';
 
-import { fetcher, endpoints } from 'src/utils/axios';
+import { fetcher, endpoints, fetcherPost } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -158,7 +158,7 @@ export async function deleteEvent(eventId) {
 
   /**
    * Work in local
-   */
+  */
   mutate(
     URL,
     (currentData) => {
@@ -172,3 +172,5 @@ export async function deleteEvent(eventId) {
     false
   );
 }
+
+// ----------------------------------------------------------------------
