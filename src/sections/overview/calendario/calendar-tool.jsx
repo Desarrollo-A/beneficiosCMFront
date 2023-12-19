@@ -9,8 +9,6 @@ import LinearProgress from '@mui/material/LinearProgress';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
-import { fDate } from 'src/utils/format-time';
-
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
@@ -19,11 +17,11 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 const VIEW_OPTIONS = [
   {
     value: 'dayGridMonth',
-    label: 'Month',
+    label: 'Mes',
     icon: 'mingcute:calendar-month-line',
   },
-  { value: 'timeGridWeek', label: 'Week', icon: 'mingcute:calendar-week-line' },
-  { value: 'timeGridDay', label: 'Day', icon: 'mingcute:calendar-day-line' },
+  { value: 'timeGridWeek', label: 'Semana', icon: 'mingcute:calendar-week-line' },
+  { value: 'timeGridDay', label: 'Dia', icon: 'mingcute:calendar-day-line' },
   {
     value: 'listWeek',
     label: 'Agenda',
@@ -48,6 +46,8 @@ export default function CalendarToolbar({
   const popover = usePopover();
 
   const selectedItem = VIEW_OPTIONS.filter((item) => item.value === view)[0];
+
+  const fechaTitulo = new Intl.DateTimeFormat('es-MX', {year: 'numeric', month: 'long'}).format(date);
 
   return (
     <>
@@ -74,7 +74,7 @@ export default function CalendarToolbar({
             <Iconify icon="eva:arrow-ios-back-fill" />
           </IconButton>
 
-          <Typography variant="h6">{fDate(date)}</Typography>
+          <Typography variant="h6">{fechaTitulo}</Typography>
 
           <IconButton onClick={onNextDate}>
             <Iconify icon="eva:arrow-ios-forward-fill" />
@@ -83,12 +83,8 @@ export default function CalendarToolbar({
 
         <Stack direction="row" alignItems="center" spacing={1}>
           <Button size="small" color="error" variant="contained" onClick={onToday}>
-            Today
-          </Button>
-
-          <IconButton onClick={onOpenFilters}>
-            <Iconify icon="ic:round-filter-list" />
-          </IconButton>
+            Hoy
+          </Button> 
         </Stack>
 
         {loading && (

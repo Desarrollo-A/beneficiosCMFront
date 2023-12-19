@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { HOST } from 'src/config-global';
+import { HOST, HOST_API } from 'src/config-global';
 
 // ----------------------------------------------------------------------
 
@@ -12,24 +12,43 @@ axiosInstance.interceptors.response.use(
 
 export default axiosInstance;
 
+const instance = axios.create({ baseURL: HOST });
+instance.interceptors.response.use(
+  (res) => res,
+  (error) => Promise.reject((error.response && error.response.data) || 'Something went wrong')
+);
+export {instance};
+
 // ----------------------------------------------------------------------
 
 export const fetcher = async (args) => {
-  const [url, config] = Array.isArray(args) ? args : [args];
+  const [url, data, config] = Array.isArray(args) ? args : [args];
 
-  const res = await axiosInstance.get(url, { ...config });
-  console.log(res)
+  const res = await axiosInstance.get(url, data, {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    ...config,
+  });
+
   return res.data;
 };
 
-export const fetcher_custom = async (args, year, month) => {
+export const fetcherGet = async (args) => {
   const [url, config] = Array.isArray(args) ? args : [args];
-  
-  const res = await axiosInstance.post(url, {year, month}, { 
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    }}, {...config});
 
+  const res = await instance.get(url, { ...config });
+  
+  return res.data;
+};
+
+export const fetcherPost = async (args, dataValue) => {
+  const [url, config] = Array.isArray(args) ? args : [args];
+
+  const res = await instance.post(url, {dataValue},{
+    headers: {'Content-Type' : 'application/x-www-form-urlencoded'}},
+     { ...config });
+  
   return res.data;
 };
 
@@ -81,7 +100,6 @@ export const fetcherUpdate = async (args) => {
 // ----------------------------------------------------------------------
 
 export const endpoints = {
-  extra: 'http://localhost/beneficiosCMBack/calendarioController/get_occupied',
   chat: '/api/chat',
   kanban: '/api/kanban',
   calendar: '/api/calendar',
@@ -112,6 +130,29 @@ export const endpoints = {
   user: {
     list: 'Usuario/getUsers',
     update: 'Usuario/updateUser',
+    areas: 'Usuario/getAreas',
+    batch: 'Usuario/insertBatchUsers',
+    names: 'Usuario/getNameUser'
+  },
+  benefits: {
+    list: 'CalendarioController/getBeneficiosPorSede' 
+  },
+  especialistas: {
+    list: 'CalendarioController/getEspecialistaPorBeneficioYSede',
+    modalities: 'CalendarioController/getModalidadesEspecialista',
+  },
+  calendario: {
+    getAllEvents: 'calendarioController/getAllEvents',
+    saveOccupied: 'calendarioController/saveOccupied',
+    updateOccupied: 'calendarioController/updateOccupied',
+    deleteOccupied: 'calendarioController/deleteOccupied',
+    cancelAppointment: 'calendarioController/cancelAppointment',
+    createAppointment: 'calendarioController/createAppointment',
+    appointmentDrop: 'calendarioController/appointmentDrop',
+    occupiedDrop: 'calendarioController/occupiedDrop'
+  },
+  calendarioColaborador: {
+    getAppointmentsByUser: 'calendarioController/getAppointmentsByUser'
   },
   reportes: {
     lista: '/reportesController/citas',
@@ -129,9 +170,6 @@ export const endpoints = {
     fechaPenalizada: '/dashboardController/estatusFechaPenalizada',
     citasAnual: '/dashboardController/citasAnual'
   },
-  calendario: {
-    ServiciosDisp: '/CalendarioController/getBeneficiosDisponibles',
-  },
   encuestas: {
     encuestaInsert: '/encuestasController/encuestaInsert',
     getRespuestas: '/encuestasController/getRespuestas',
@@ -144,6 +182,6 @@ export const endpoints = {
     getResp4: '/encuestasController/getResp4',
     getEncNotificacion:'/encuestasController/getEncNotificacion',
     getPuestos:'/encuestasController/getPuestos',
-    getEcuestaValidacion: '/encuestasController/getEcuestaValidacion',
+    getEcuestaValidacion: '/encuestasController/getEcuestaValidacion'
   }
 };

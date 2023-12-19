@@ -22,8 +22,6 @@ export default function NuevaCitaForm({open, especialidadElegida}) {
 
   return (
     <div>
-
-
       <Button variant="outlined" onClick={handleClickOpen}>
         Open form dialog
       </Button>

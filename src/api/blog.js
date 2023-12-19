@@ -27,7 +27,7 @@ export function useGetPosts() {
 // ----------------------------------------------------------------------
 
 export function useGetPost(title) {
-  const URL = title ? [endpoints.post.details, { params: { title } }] : '';
+  const URL = title ? [endpoints.post.details, { params: { 'title': title } }] : '';
 
   const { data, isLoading, error, isValidating } = useSWR(URL, fetcher);
 

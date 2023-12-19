@@ -14,6 +14,8 @@ import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import TableContainer from '@mui/material/TableContainer';
 
+import { useGetAreas, useUpdateUser } from 'src/api/user';
+
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
@@ -25,15 +27,13 @@ import {
   TableEmptyRows,
   TableHeadCustom,
   TablePaginationCustom,
-} from 'src/components/table'; 
+} from 'src/components/table';
 
 import UserTableRow from './user-table-row';
 import UserTableToolbar from './user-table-toolbar';
 import UserTableFiltersResult from './user-table-filters';
 
 const doc = new JsPDF();
-
-const BACK = 'http://localhost/beneficiosCMBack/'
 
 const TABLE_HEAD = [
   { id: '', label: 'ID' },
@@ -42,7 +42,7 @@ const TABLE_HEAD = [
   { id: '', label: 'ÁREA' },
   { id: '', label: 'OFICINA' },
   { id: '', label: 'SEDE'},
-  { id: '', label: 'CORREO'},
+  { id: '', label: 'CORREO'}, 
   { id: '', label: 'ESTATUS' },
   { id: '', label: '' },
 ];
@@ -92,15 +92,18 @@ const handleDownloadPDF = (dataFiltered) => {
   doc.save('Usuarios.pdf')
 }
 
-export default function UserList({users, mutateUser}) {
+export default function UserList({users, usersMutate}) {
   const table = useTable();
+  const updateUser = useUpdateUser();
   const { enqueueSnackbar } = useSnackbar();
-  // const settings = useSettingsContext();
-  const targetRef = useRef();
 
+  const targetRef = useRef();
+  
   const [filters, setFilters] = useState(defaultFilters);
-  const [areas, setAreas] = useState([]); // areas
   const [userData, setUserData] = useState(users || []);
+  
+  const { data, areasError, areasMutate } = useGetAreas();
+  const [areas, setAreas] = useState([]);
 
   // Utiliza useEffect con dependencia en las props 'usuarios'
   useEffect(() => {
@@ -108,8 +111,12 @@ export default function UserList({users, mutateUser}) {
   }, [users]);
 
   useEffect(() => {
-    getAreas();
-  }, []);
+    if (!areasError && data) {
+      setAreas(data);
+    }else {
+      setAreas([]);
+    }
+  }, [data, areasError]);
   
   const canReset = !isEqual(defaultFilters, filters);
   const _rp = areas.flatMap((es) => (es.area));
@@ -118,17 +125,6 @@ export default function UserList({users, mutateUser}) {
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
-
-  const getAreas = async () => {
-    await fetch(`${BACK}/Usuario/getAreas`)
-      .then((res) => res.json())
-      .then((data) => {
-        setAreas(data.data);
-      })
-      .catch((error) => {
-        alert(error);
-      });
-  }
 
   const dataFiltered = applyFilter({
     inputData: userData,
@@ -149,32 +145,24 @@ export default function UserList({users, mutateUser}) {
     [table]
   );
 
-  const handleDeleteRow = async (id) => {
+  const handleDisableUser = async (id) => {
     try {
-      const response = await fetch(`${BACK}Usuario/updateUser`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-          'idUsuario': id,
-          'estatus': 0,
-          'modificadoPor': 1
-        }),
-      });
-      const data = await response.json();
-      if (data.result) {
+      const update = await updateUser(new URLSearchParams({
+        'idUsuario': id,
+        'estatus': 0,
+        'modificadoPor': 1
+      }));
+      if (update.result) {
         enqueueSnackbar(`¡Se ha actualizado el usuario exitosamente!`, { variant: 'success' });
-        mutateUser();
-        getAreas();
+        usersMutate();
+        areasMutate();
       } else {
-        enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'warning' });
+        enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'success' });
       }
     } catch (error) {
-      console.error(error);
+      console.error("Error en handleDisableUser:", error);
       enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'danger' });
     }
-    
   };
 
   const handleExcel = async e =>{
@@ -260,9 +248,9 @@ export default function UserList({users, mutateUser}) {
                             row={usuario}
                             selected={table.selected.includes(usuario.id)}
                             onSelectRow={() => table.onSelectRow(usuario.id)}
-                            onDeleteRow={() => handleDeleteRow(usuario.id)}
-                            getAreas={getAreas}
-                            mutateUser={mutateUser}
+                            onDeleteRow={() => handleDisableUser(usuario.id)}
+                            areasMutate={areasMutate}
+                            usersMutate={usersMutate}
                           />
                         ))}
 
@@ -291,7 +279,7 @@ export default function UserList({users, mutateUser}) {
 
 UserList.propTypes = {
   users: PropTypes.array,
-  mutateUser: PropTypes.func
+  usersMutate: PropTypes.func
 }
 
 const applyFilter = ({ inputData, comparator, filters }) => {

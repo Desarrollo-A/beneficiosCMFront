@@ -1,6 +1,6 @@
 import Calendar from '@fullcalendar/react'; // => request placed at the top
+import { useState, useEffect } from 'react';
 import listPlugin from '@fullcalendar/list';
-import { useState, useCallback } from 'react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import timelinePlugin from '@fullcalendar/timeline';
@@ -9,27 +9,23 @@ import interactionPlugin from '@fullcalendar/interaction';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import Tooltip from '@mui/material/Tooltip';
 import Container from '@mui/material/Container';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import DialogTitle from '@mui/material/DialogTitle';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import { fTimestamp } from 'src/utils/format-time';
 
-import Iconify from 'src/components/iconify';
-import { useSnackbar } from 'src/components/snackbar';
+import { useGetNameUser } from 'src/api/user';
+import { dropUpdate, GetCustomEvents } from 'src/api/calendar-specialist';
+
 import { useSettingsContext } from 'src/components/settings';
 
 import Lista from "./lista";
 import { StyledCalendar } from '../styles';
 import CalendarToolbar from '../calendar-tool';
 import { useEvent, useCalendar } from '../hooks';
-import { deleteEvent, GetCustomEvents } from '../calendar';
 // ----------------------------------------------------------------------
 
 const defaultFilters = {
@@ -37,15 +33,15 @@ const defaultFilters = {
     startDate: null,
     endDate: null,
   };
-  
-  // ----------------------------------------------------------------------
+
+// ----------------------------------------------------------------------
 
 export default function CalendarioView(){
-    const { enqueueSnackbar } = useSnackbar();
     const smUp = useResponsive('up', 'sm');
     const settings = useSettingsContext();
-    const [ day, setDay] = useState();
     const [filters] = useState(defaultFilters);
+    const { data: names } = useGetNameUser();
+    const [userData, setUserData] = useState('');
 
     const dateError =
     filters.startDate && filters.endDate
@@ -59,6 +55,7 @@ export default function CalendarioView(){
         date,
         //
         onDatePrev,
+        onDropEvent,
         onDateNext,
         onSelectRange,
         onDateToday,
@@ -67,7 +64,8 @@ export default function CalendarioView(){
         openForm,
         onCloseForm,
         //
-        selectEventId
+        selectEventId,
+        selectedDate
     } = useCalendar();
 
     const { events, eventsLoading} = GetCustomEvents(date);
@@ -80,23 +78,12 @@ export default function CalendarioView(){
         dateError,
       });
 
-      const onDelete = useCallback(async () => {
-        try {
-          const resp = await deleteEvent(`${currentEvent?.id}`);
-          
-          if(resp.status){
-            enqueueSnackbar(resp.message);
-          }
-          else{
-            enqueueSnackbar(resp.message, {variant: "error"});
-          }
-
-          onCloseForm();
-        } catch (error) {
-          enqueueSnackbar("Error", {variant: "error"});
-          onCloseForm();
+      useEffect(() => {
+        if(names){
+          setUserData(names);
         }
-      }, [currentEvent?.id, enqueueSnackbar, onCloseForm]);
+      }, [names]);
+      
 
     return(
         <>
@@ -107,17 +94,11 @@ export default function CalendarioView(){
                 justifyContent= "space-between"
                 sx= {{
                     mb: { xs: 3, md: 5 }
-
                 }}
             >
                 <Typography variant='h4'>
                     Prueba de calendario
                 </Typography>
-                <Button
-                    variant='outlined'
-                >
-                    Botón
-                </Button>
             </Stack>
 
             <Card>
@@ -130,14 +111,16 @@ export default function CalendarioView(){
                      onPrevDate={onDatePrev}
                      onToday={onDateToday}
                      onChangeView={onChangeView}
-                     // onOpenFilters={openFilters.onTrue}
                     />
 
                     <Calendar
+                     // hiddenDays={[ 0 ]}
                      weekends
                      editable
                      droppable
                      selectable
+                     selectLongPressDelay={0}
+                     LongPressDelay={0}
                      locales={allLocales} 
                      locale='es'
                      rerenderDelay={10}
@@ -146,12 +129,14 @@ export default function CalendarioView(){
                      ref={calendarRef}
                      dayMaxEventRows={3}
                      eventDisplay="block"
-                     dateClick={(currentDate) => setDay(currentDate.date)}
                      events={dataFiltered}
                      headerToolbar = { false }
                      select={onSelectRange}
                      eventClick={onClickEvent}
                      height={ smUp ? 720 : 'auto' }
+                     eventDrop={(arg) => {
+                      onDropEvent(arg, dropUpdate);
+                    }}
                      plugins={[
                          listPlugin,
                          dayGridPlugin,
@@ -170,25 +155,13 @@ export default function CalendarioView(){
             open={openForm}
             onClose={onCloseForm}
         >
-            <DialogTitle sx= {{ minHeight: 76 }}>
-                <Stack direction="row" justifyContent='space-between' useFlexGap flexWrap="wrap">
-                    { openForm && <> { currentEvent?.id ? 'Editar horario' : 'Cancelar horario' } </> }
-                    {!!currentEvent?.id && (
-                      <Tooltip title="Eliminar horario">
-                        <IconButton onClick={onDelete}>
-                            <Iconify icon="solar:trash-bin-trash-bold" />
-                        </IconButton>
-                      </Tooltip>
-                    )}
-                </Stack>
-            </DialogTitle>
-
-            <Lista 
-                currentEvent={currentEvent}
-                onClose={onCloseForm}
-                currentDay= {day}
-                current={date}
-            />
+          <Lista
+              currentEvent={currentEvent}
+              onClose={onCloseForm}
+              current={date}
+              userData={userData}
+              selectedDate={selectedDate}
+          />
                 
         </Dialog>
         

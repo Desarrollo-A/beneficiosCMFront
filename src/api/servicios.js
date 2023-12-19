@@ -11,7 +11,7 @@ export function GetCitasDisponibles() {
     const { data } = useSWR(URL, fetcher);
     console.log('from init:', data, ' ', URL);
 
-    let obj = data;
+    const obj = data;
     return {citas:obj};
   }
 
