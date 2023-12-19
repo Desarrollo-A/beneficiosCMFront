@@ -29,14 +29,12 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import uuidv4 from 'src/utils/uuidv4';
 import { fDate, fTimestamp } from 'src/utils/format-time';
 
-import { reRender, cancelDate, deleteEvent, updateCustom, createAppointment } from 'src/api/calendar-colaborador';
+import { /* reRender, */ cancelDate, deleteEvent, updateCustom, createAppointment } from 'src/api/calendar-colaborador';
 
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import { RHFTextField } from 'src/components/hook-form';
 import FormProvider from 'src/components/hook-form/form-provider';
-
-
 
 export default function CalendarDialog({ currentEvent, onClose, currentDay, /* userData */ }) {
     dayjs.locale('es')
@@ -66,7 +64,7 @@ export default function CalendarDialog({ currentEvent, onClose, currentDay, /* u
     const onSubmit = handleSubmit(async (data) => {
         // Se da el formato juntando la fecha elegida y la hora que se elige con los minutos
         const eventData = {
-            id: currentEvent?.id ? currentEvent?.id : uuidv4(),
+            id: currentEvent?.id ? currentEvent?.id : '',
             title: data?.title,
             start: currentEvent?.id ? `${fDate(data?.newData)} ${data.start.getHours()}:${data.start.getMinutes()}` : dayjs(`${fecha} ${data.start.getHours()}:${data.start.getMinutes()}`).format("YYYY-MM-DD HH:mm"),
             end: currentEvent?.id ? `${fDate(data?.newData)} ${data.end.getHours()}:${data.end.getMinutes()}` : dayjs(`${fecha} ${data.end.getHours()}:${data.end.getMinutes()}`).format("YYYY-MM-DD HH:mm"),
@@ -77,14 +75,12 @@ export default function CalendarDialog({ currentEvent, onClose, currentDay, /* u
             usuario: 1, 
         };
 
-        let save = '';
-
         try {
             if (!dateError) {
-                save = currentEvent?.id ? save = await updateCustom(eventData) : await createAppointment(fecha, eventData);
+                const save = currentEvent?.id ? await updateCustom(eventData) : await createAppointment(fecha, eventData);
                 if (save.status) {
                     enqueueSnackbar(save.message);
-                    reRender();
+                    // reRender();
                     reset();
                     onClose();
                 }

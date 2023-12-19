@@ -26,27 +26,6 @@ const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken')
 
 // ----------------------------------------------------------------------
 
-export async function reRender(){ // se separa la funcion del mutate unicamente para cuando se crea el evento (previsto en update)
-  mutate(get_all_events);
-}
-
-// ----------------------------------------------------------------------
-export function useGetNameUser() { // useGetLabels
-  const URL = endpoints.user.names;
-
-  const { data } = useSWR(URL, fetcherGet);
-
-  const memoizedValue = useMemo(
-    () => ({
-      data: data?.data || []
-    }),
-    [data?.data]
-  ); 
-
-  return memoizedValue;
-}
-// ----------------------------------------------------------------------
-
 export function useGetBenefits(sede) {
   const URL_BENEFITS = [endpoints.benefits.list]
   const { data, mutate: revalidate, isLoading, error, isValidating } = useSWR(URL_BENEFITS, url => fetcherPost(url, {sede}));
@@ -118,24 +97,33 @@ export function useGetAppointmentsByUser(current) {
   const month = (current.getMonth() + 1);
   
 
-  const dataa = {
+  const dataValue = {
     year,
     month,
     idUsuario: datosUser.idUsuario
   }
 
-  const { data, mutate: revalidate, isLoading, error, isValidating } = useSWR(URL_APPOINTMENTS, url => fetcherPost(url, dataa));
+  const { data, mutate: revalidate, isLoading, error, isValidating } = useSWR(URL_APPOINTMENTS, url => fetcherPost(url, dataValue));
 
-  const memoizedValue = useMemo(
-    () => ({
-      data: data?.data || [],
+  useEffect(()=> {
+    revalidate();
+  },[month, revalidate]);
+
+  const memoizedValue = useMemo(() => {
+    const events = data?.data?.map((event) => ({
+      ...event,
+      textColor: event?.color ? event.color : 'blue',
+    }));
+    
+    return {
+      data: events || [],
       appointmentLoading: isLoading,
       appointmentError: error,
       appointmentValidating: isValidating,
       appointmentEmpty: !isLoading && !data?.data?.length,
       appointmentMutate: revalidate,
-    }),
-    [data?.data, error, isLoading, isValidating, revalidate]
+    }
+    },[data?.data, error, isLoading, isValidating, revalidate]
   );
 
   return memoizedValue;

@@ -52,10 +52,10 @@ export function GetCustomEvents(current) {
   },[month]);
 
   const memoizedValue = useMemo(() => {
-      const events = data?.events?.map((event) => ({
-        ...event,
-        textColor: event?.color ? event.color : 'red',
-      }));
+    const events = data?.events?.map((event) => ({
+      ...event,
+      textColor: event?.color ? event.color : 'red',
+    }));
     
     return {
       events: events || [],

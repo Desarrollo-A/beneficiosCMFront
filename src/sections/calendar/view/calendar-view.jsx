@@ -25,11 +25,11 @@ import { useResponsive } from 'src/hooks/use-responsive';
 
 import { fTimestamp } from 'src/utils/format-time';
 
+import { useSettingsContext } from 'src/components/settings';
 import { CALENDAR_COLOR_OPTIONS } from 'src/_mock/_calendar';
 import { updateEvent, useGetEvents } from 'src/api/calendar';
+// import { dropUpdate, GetCustomEvents } from 'src/api/calendar-specialist';
 import { useGetBenefits, useGetModalities, useGetEspecialists, useGetAppointmentsByUser } from 'src/api/calendar-colaborador';
-
-import { useSettingsContext } from 'src/components/settings';
 
 import { StyledCalendar } from '../styles';
 import CalendarForm from '../calendar-form';
@@ -98,6 +98,7 @@ export default function CalendarView() {
   const { data: especialists } = useGetEspecialists(datosUser.sede, selectedValues.beneficio);
   const { data: modalities } = useGetModalities(datosUser.sede, selectedValues.especialista);
   const { data: events, appointmentLoading: eventsLoading } = useGetAppointmentsByUser(date);
+  // const { events, eventsLoading} = GetCustomEvents(date);
 
   const currentEvent = useEvent(events, selectEventId, openForm);
 
@@ -164,14 +165,14 @@ export default function CalendarView() {
             mb: { xs: 3, md: 5 },
           }}
         >
-          <Typography variant="h4">Calendar {selectedValues.beneficio +' - '+selectedValues.especialista+' - ' +selectedValues.modalidad}</Typography>
+          <Typography variant="h4">Calendar</Typography>
           <Stack direction="row" minWidth="300" justifyContent="flex-end" spacing={0.5}>
             <Box sx={{ minWidth: 200, flexDirection: 'row'}}>
               <FormControl fullWidth>
                 <InputLabel id="beneficio-input">Beneficio</InputLabel>
                 <Select
                   labelId="Beneficio"
-                  id="demo-simple-select-001"
+                  id="select-beneficio"
                   label="Beneficio"
                   value={selectedValues.beneficio}
                   onChange={(e) => handleChange('beneficio', e.target.value)}
@@ -190,7 +191,7 @@ export default function CalendarView() {
                 <InputLabel id="especialista-input">Especialista</InputLabel>
                 <Select
                   labelId="Especialista"
-                  id="demo-simple-select-002"
+                  id="select-especialista"
                   label="Especialista"
                   value={selectedValues.especialista}
                   onChange={(e) => handleChange('especialista', e.target.value)}
@@ -209,7 +210,7 @@ export default function CalendarView() {
                 <InputLabel id="modalidad-input">Modalidad</InputLabel>
                 <Select
                   labelId="Modalidad"
-                  id="demo-simple-select-003"
+                  id="select-modalidad"
                   label="Modalidad"
                   value={selectedValues.modalidad}
                   onChange={(e) => handleChange('modalidad', e.target.value)}
