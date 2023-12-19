@@ -62,9 +62,11 @@ export default function CalendarDialog({ currentEvent, onClose, currentDay, /* u
     const dateError = values.start && values.end ? fTimestamp(values.start) >= fTimestamp(values.end) : false; // Se dan los datos de star y end, para la validacion que el fin no sea antes que el inicio
 
     const onSubmit = handleSubmit(async (data) => {
-        // Se da el formato juntando la fecha elegida y la hora que se elige con los minutos
+        let save = '';
+
+        // se da el formato juntando la fecha elegida y la hora que se elige con los minutos
         const eventData = {
-            id: currentEvent?.id ? currentEvent?.id : '',
+            id: currentEvent?.id ? currentEvent?.id : uuidv4(),
             title: data?.title,
             start: currentEvent?.id ? `${fDate(data?.newData)} ${data.start.getHours()}:${data.start.getMinutes()}` : dayjs(`${fecha} ${data.start.getHours()}:${data.start.getMinutes()}`).format("YYYY-MM-DD HH:mm"),
             end: currentEvent?.id ? `${fDate(data?.newData)} ${data.end.getHours()}:${data.end.getMinutes()}` : dayjs(`${fecha} ${data.end.getHours()}:${data.end.getMinutes()}`).format("YYYY-MM-DD HH:mm"),
@@ -72,25 +74,31 @@ export default function CalendarDialog({ currentEvent, onClose, currentDay, /* u
             hora_final: `${data.end.getHours()}:${data.end.getMinutes()}`,
             occupied: currentEvent?.id ? currentEvent.occupied : fecha,
             newDate: fDate(data?.newDate),
-            usuario: 1, 
+            usuario: patientId
         };
 
         try {
             if (!dateError) {
-                const save = currentEvent?.id ? await updateCustom(eventData) : await createAppointment(fecha, eventData);
-                if (save.status) {
-                    enqueueSnackbar(save.message);
-                    // reRender();
+                if (currentEvent?.id) {
+                    save = await updateCustom(eventData); // en caso de que se un evento se modifica
+                }
+                else {
+                    save = type === 'cancel' ? await createCustom(fecha, eventData) : await createAppointment(fecha, eventData); // si no hay id, se cancela una hora o se crea una cita
+                }
+
+                if (save.result) {
+                    enqueueSnackbar(save.msg);
+                    // reRender(); // ayuda a que se haga un mutate en caso que sea true el resultado
                     reset();
                     onClose();
                 }
                 else {
-                    enqueueSnackbar(save.message, { variant: 'error' });
+                    enqueueSnackbar(save.msg, { variant: 'error' });
                 }
             }
         }
         catch (error) {
-            enqueueSnackbar(error);
+            enqueueSnackbar("Ha ocurrido un error al guardar");
         }
     });
 

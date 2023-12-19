@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { enqueueSnackbar } from 'notistack';
 import { useRef, useState, useCallback } from 'react';
 
@@ -92,8 +93,8 @@ export default function useCalendar() {
 
         calendarApi.unselect();
       }
-      
-      if(arg.start > new Date()){
+
+      if(dayjs(arg.start).format('YYYY/MM/DD') >= dayjs(new Date()).format('YYYY/MM/DD')){
         onOpenForm();
         setSelectedDate(arg.start);
       }

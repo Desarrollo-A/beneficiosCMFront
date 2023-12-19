@@ -14,6 +14,7 @@ const delete_occupied = endpoints.calendario.deleteOccupied;
 const cancel_appointment = endpoints.calendario.cancelAppointment;
 const save_appointment = endpoints.calendario.createAppointment;
 const update_on_drop = endpoints.calendario.updateOnDrop;
+const p1 = endpoints.calendarioColaborador.getAppointmentsByUser;
 
 const options = {
   revalidateIfStale: false,
@@ -91,11 +92,10 @@ export function useGetModalities(sede, especialista) {
   return memoizedValue;
 }
 
-export function useGetAppointmentsByUser(current) {
+export function useGetAppointmentsByUser(current) { 
   const URL_APPOINTMENTS = [endpoints.calendarioColaborador.getAppointmentsByUser];
   const year = current.getFullYear();
   const month = (current.getMonth() + 1);
-  
 
   const dataValue = {
     year,
@@ -220,10 +220,10 @@ export async function updateCustom(eventData) {
       update = { status: false, message: "Las citas u horarios pasados no se pueden mover" }
     }
     
-    if(dayjs(eventData.newDate).format('YYYY/M/DD') > dayjs(new Date()).format('YYYY/M/DD'))
-      update = fetcherPost(updateOccupied, data);
-    else
-      update = { status: false, message: "No se pueden mover las fechas a un dia anterior o actual" }
+    // if(dayjs(eventData.newDate).format('YYYY/M/DD') > dayjs(new Date()).format('YYYY/M/DD'))
+    //   update = fetcherPost(updateOccupied, data);
+    // else
+    //   update = { status: false, message: "No se pueden mover las fechas a un dia anterior o actual" }
 
     return update;
 }

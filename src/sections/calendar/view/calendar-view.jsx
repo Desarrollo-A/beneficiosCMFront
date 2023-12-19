@@ -103,7 +103,7 @@ export default function CalendarView() {
   const currentEvent = useEvent(events, selectEventId, openForm);
 
   const dataFiltered = applyFilter({
-    inputData: events ,// events,  // [] ,
+    inputData: events,
     filters,
     dateError,
   });
