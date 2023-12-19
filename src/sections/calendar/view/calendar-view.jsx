@@ -102,7 +102,7 @@ export default function CalendarView() {
   const currentEvent = useEvent(events, selectEventId, openForm);
 
   const dataFiltered = applyFilter({
-    inputData: events ,// events,  // [] ,
+    inputData: events,
     filters,
     dateError,
   });
@@ -164,7 +164,7 @@ export default function CalendarView() {
             mb: { xs: 3, md: 5 },
           }}
         >
-          <Typography variant="h4">Calendar {selectedValues.beneficio +' - '+selectedValues.especialista+' - ' +selectedValues.modalidad}</Typography>
+          <Typography variant="h4">Calendar</Typography>
           <Stack direction="row" minWidth="300" justifyContent="flex-end" spacing={0.5}>
             <Box sx={{ minWidth: 200, flexDirection: 'row'}}>
               <FormControl fullWidth>

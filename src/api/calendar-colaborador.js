@@ -14,6 +14,7 @@ const delete_occupied = endpoints.calendario.deleteOccupied;
 const cancel_appointment = endpoints.calendario.cancelAppointment;
 const save_appointment = endpoints.calendario.createAppointment;
 const update_on_drop = endpoints.calendario.updateOnDrop;
+const p1 = endpoints.calendarioColaborador.getAppointmentsByUser;
 
 const options = {
   revalidateIfStale: false,
@@ -113,10 +114,9 @@ export function useGetModalities(sede, especialista) {
 }
 
 export function useGetAppointmentsByUser(current) {
-  const URL_APPOINTMENTS = [endpoints.calendarioColaborador.getAppointmentsByUser];
+  
   const year = current.getFullYear();
   const month = (current.getMonth() + 1);
-  
 
   const dataa = {
     year,
@@ -124,7 +124,12 @@ export function useGetAppointmentsByUser(current) {
     idUsuario: datosUser.idUsuario
   }
 
-  const { data, mutate: revalidate, isLoading, error, isValidating } = useSWR(URL_APPOINTMENTS, url => fetcherPost(url, dataa));
+  const { data, mutate: revalidate, isLoading, error, isValidating } = useSWR(p1, url => fetcherPost(url, dataa), options);
+
+  useEffect(()=> { // esta función ayuda a que se de un trigger para traer de nuevo los eventos del mes, cada que cambia month
+    // mutate(getAllEvents);
+    revalidate();
+  },[month, revalidate]);
 
   const memoizedValue = useMemo(
     () => ({
@@ -232,10 +237,10 @@ export async function updateCustom(eventData) {
       update = { status: false, message: "Las citas u horarios pasados no se pueden mover" }
     }
     
-    if(dayjs(eventData.newDate).format('YYYY/M/DD') > dayjs(new Date()).format('YYYY/M/DD'))
-      update = fetcherPost(updateOccupied, data);
-    else
-      update = { status: false, message: "No se pueden mover las fechas a un dia anterior o actual" }
+    // if(dayjs(eventData.newDate).format('YYYY/M/DD') > dayjs(new Date()).format('YYYY/M/DD'))
+    //   update = fetcherPost(updateOccupied, data);
+    // else
+    //   update = { status: false, message: "No se pueden mover las fechas a un dia anterior o actual" }
 
     return update;
 }
