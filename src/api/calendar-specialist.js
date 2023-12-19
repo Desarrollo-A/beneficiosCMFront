@@ -73,6 +73,7 @@ export function GetCustomEvents(current) {
 // ----------------------------------------------------------------------
 
 export async function createCustom(fecha, eventData) {
+  const fecha_inicio = dayjs(`${fecha} ${eventData.hora_inicio}`).format('YYYY/MM/D HH:mm:ss');
 
     const dataValue = {
         fecha,
@@ -81,7 +82,7 @@ export async function createCustom(fecha, eventData) {
         hora_final:  eventData.hora_final,
         id_unico: eventData.id,
         id_usuario: datosUser.idUsuario,
-        fecha_inicio: `${fecha} ${eventData.hora_inicio}`,
+        fecha_inicio,
         fecha_final: `${fecha} ${eventData.hora_final}`,
         id_especialista: datosUser.idUsuario
     }
@@ -95,9 +96,10 @@ export async function createCustom(fecha, eventData) {
 
 export async function updateCustom(eventData) {
   let update = '';
-  const start = dayjs(eventData.newDate).format('YYYY/M/DD'); // fecha a la que se movera
-  const now = dayjs(new Date()).format('YYYY/M/DD');
-  const oldStart = dayjs(eventData.occupied).format('YYYY/M/DD'); // fecha original del evento
+  
+  const start = dayjs(`${eventData.newDate} ${eventData.hora_inicio}`).format('YYYY/MM/DD HH:mm:ss'); // fecha a la que se movera
+  const now = dayjs(new Date()).format('YYYY/MM/DD HH:mm:ss');
+  const oldStart = dayjs(`${eventData.occupied} ${eventData.hora_inicio}`).format('YYYY/MM/DD HH:mm:ss'); // fecha original del evento
 
   const dataValue = {
         hora_inicio: eventData.hora_inicio,
@@ -170,9 +172,9 @@ export async function createAppointment(fecha, eventData){
 export async function dropUpdate(args){
   let update = '';
   const tipo = args.color === "green" ? "cita" : "ocupado"; // para identificar si es cita u horario ocupado, mediante el color de la etiqueta
-  const start = dayjs(args.start).format('YYYY/M/DD'); // fecha a la que se movera
-  const now = dayjs(new Date()).format('YYYY/M/DD');
-  const old_start = dayjs(args.oldStart).format('YYYY/M/DD'); // fecha original del evento
+  const start = dayjs(args.start).format('YYYY/MM/DD HH:mm:ss'); // fecha a la que se movera
+  const now = dayjs(new Date()).format('YYYY/MM/DD HH:mm:ss');
+  const old_start = dayjs(args.oldStart).format('YYYY/MM/DD HH:mm:ss'); // fecha original del evento
 
   const data = {
     id: args.id,
