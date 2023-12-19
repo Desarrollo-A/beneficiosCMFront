@@ -33,10 +33,6 @@ export default function NotifiEncuesta() {
 
   const drawer = useBoolean();
 
-  const _rp = getData.map((es) => (es[0].idEncuesta));
-
-  console.log(_rp);
-
   const renderHead = (
     <Stack direction="row" alignItems="center" sx={{ py: 2, pl: 2.5, pr: 1, minHeight: 68 }}>
       <Typography variant="h6" sx={{ flexGrow: 1 }}>

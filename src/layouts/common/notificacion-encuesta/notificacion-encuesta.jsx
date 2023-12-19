@@ -1,3 +1,4 @@
+import { mutate } from 'swr';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -11,6 +12,8 @@ import ListItemButton from '@mui/material/ListItemButton';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
+import { endpoints } from 'src/utils/axios';
+
 // ----------------------------------------------------------------------
 
 export default function NotificationEncuesta({ notification }) {
@@ -20,9 +23,11 @@ export default function NotificationEncuesta({ notification }) {
   const renderText = (
     <ListItemText
       disableTypography
-      primary={reader(notification[0].puesto)}
+      primary={reader(notification.puesto)}
     />
   );
+
+  const mut = mutate(endpoints.encuestas.getEcuestaValidacion);
 
   const renderUnReadBadge = (
     <Box
@@ -41,11 +46,12 @@ export default function NotificationEncuesta({ notification }) {
   const friendAction = (
     <Stack spacing={1} direction="row" sx={{ mt: 1.5 }}>
       <Link
-        to={`/dashboard/encuestas/contestar?idEncuesta=${notification[0].idEncuesta}`}
+        to={`/dashboard/encuestas/contestar?idEncuesta=${notification.idEncuesta}`}
         >
           <Button size="small" variant="contained"
-        key={notification[0].idArea}
+        key={notification.idArea}
         notification={notification}
+        onClick={mut}
       >
           Constestar
         </Button>

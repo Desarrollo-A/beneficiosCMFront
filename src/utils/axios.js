@@ -144,5 +144,6 @@ export const endpoints = {
     getResp4: '/encuestasController/getResp4',
     getEncNotificacion:'/encuestasController/getEncNotificacion',
     getPuestos:'/encuestasController/getPuestos',
+    getEcuestaValidacion: '/encuestasController/getEcuestaValidacion',
   }
 };
