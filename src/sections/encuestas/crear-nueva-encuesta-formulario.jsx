@@ -19,7 +19,8 @@ import { useBoolean } from 'src/hooks/use-boolean';
 
 import { endpoints } from 'src/utils/axios';
 
-import { useGetGeneral, useInsertGeneral } from 'src/api/general';
+import { useInsert } from  'src/api/encuestas';
+import { useGetGeneral } from 'src/api/general';
 
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFSelect} from 'src/components/hook-form';
@@ -34,7 +35,7 @@ export default function InvoiceNewEditForm({ currentInvoice }) {
 
   const { areasData } = useGetGeneral(endpoints.encuestas.getPuestos, "areasData");
 
-  const insertData = useInsertGeneral(endpoints.encuestas.encuestaCreate);
+  const insertData = useInsert(endpoints.encuestas.encuestaCreate);
 
   const router = useRouter();
 
@@ -78,9 +79,6 @@ export default function InvoiceNewEditForm({ currentInvoice }) {
   };
 
   const handleCreateAndSend = handleSubmit(async (data) => {
-    /* loadingSend.onTrue(); */
-
-    /* console.log(data); */
 
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));

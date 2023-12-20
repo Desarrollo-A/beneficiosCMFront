@@ -14,7 +14,7 @@ import DialogContent from '@mui/material/DialogContent';
 
 import { endpoints } from 'src/utils/axios';
 
-import { useUpdateGeneral } from 'src/api/general';
+import { useUpdate } from 'src/api/reportes';
 
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
@@ -24,7 +24,7 @@ import FormProvider, { RHFTextField } from 'src/components/hook-form';
 export default function UserQuickEditForm({ currentUser, open, onClose, idCita, rel }) {
   const { enqueueSnackbar } = useSnackbar();
   
-  const updateObservacion = useUpdateGeneral(endpoints.reportes.observacion);
+  const updateObservacion = useUpdate(endpoints.reportes.observacion);
 
   const NewUserSchema = Yup.object().shape({
     descripcion: Yup.string().required('El campo es requerido'),
