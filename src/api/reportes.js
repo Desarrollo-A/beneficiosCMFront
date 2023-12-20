@@ -33,3 +33,15 @@ export function useGetReportes(dataValue) {
     return memoizedVal;
 }
 
+export function useUpdate(rt){
+
+  const updateData = async (obj) => {
+
+    const URL = obj ? rt : '';
+    return fetcherPost(URL, obj);
+  };
+
+  return updateData;
+
+}
+

@@ -45,27 +45,3 @@ export function useGetGeneral(URL, nameData) {
 
     return memoizedVal;
 }
-
-export function useInsertGeneral(endpoints){
-
-  const insertData = async (obj) => {
-
-    const URL = obj ? endpoints : '';
-    return fetcherPost([URL, obj]);
-  };
-
-  return insertData;
-
-}
-
-export function useUpdateGeneral(endpoints){
-
-    const updateData = async (obj) => {
-  
-      const URL = obj ? endpoints : '';
-      return fetcherPost([URL, obj]);
-    };
-  
-    return updateData;
-  
-}

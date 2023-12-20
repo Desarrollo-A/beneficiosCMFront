@@ -4,7 +4,7 @@ import { HOST, HOST_API } from 'src/config-global';
 
 // ----------------------------------------------------------------------
 
-const axiosInstance = axios.create({ baseURL: HOST });
+const axiosInstance = axios.create({ baseURL: HOST_API });
 axiosInstance.interceptors.response.use(
   (res) => res,
   (error) => Promise.reject((error.response && error.response.data) || 'Something went wrong')
@@ -51,6 +51,8 @@ export const fetcherPost = async (args, dataValue) => {
   
   return res.data;
 };
+
+
   
 // ----------------------------------------------------------------------
 

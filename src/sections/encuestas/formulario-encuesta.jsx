@@ -16,8 +16,8 @@ import { useRouter } from 'src/routes/hooks';
 
 import { endpoints } from 'src/utils/axios';
 
-import { usePost } from 'src/api/encuestas';
-import { useGetGeneral, usePostGeneral, useInsertGeneral } from 'src/api/general';
+import { usePost, useInsert  } from 'src/api/encuestas';
+import { useGetGeneral, usePostGeneral } from 'src/api/general';
 
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, {
@@ -47,7 +47,7 @@ export default function FormularioEncuesta({ idEncuesta }) {
 
   const { Resp4Data } = useGetGeneral(endpoints.encuestas.getResp4, "Resp4Data");
 
-  const insertData = useInsertGeneral(endpoints.encuestas.encuestaInsert);
+  const insertData = useInsert(endpoints.encuestas.encuestaInsert);
 
   const { enqueueSnackbar } = useSnackbar();
 
