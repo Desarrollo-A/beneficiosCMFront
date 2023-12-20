@@ -49,14 +49,16 @@ export function useGetAreas() {
 
 export function useGetNameUser() { // useGetLabels
   const URL = endpoints.user.names;
+  
 
-  const { data } = useSWR(URL, url=> fetcherPost(url, datosUser.idUsuario));
+  const { data, mutate } = useSWR(URL, url=> fetcherPost(url, datosUser.idUsuario));
 
   const memoizedValue = useMemo(
     () => ({
-      data: data?.data || []
+      data: data?.data || [],
+      usersMutate: mutate
     }),
-    [data?.data]
+    [data?.data, mutate]
   ); 
 
   return memoizedValue;

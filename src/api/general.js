@@ -1,7 +1,7 @@
 import useSWR, { mutate } from 'swr';
 import { useMemo, useEffect } from 'react';
 
-import { fetcherGet, fetcherPost, fetcherInsert, fetcherUpdate } from 'src/utils/axios';
+import { fetcherGet, fetcherPost } from 'src/utils/axios';
 
 const options = {
   revalidateIfStale: false,
@@ -51,7 +51,7 @@ export function useInsertGeneral(endpoints){
   const insertData = async (obj) => {
 
     const URL = obj ? endpoints : '';
-    return fetcherInsert([URL, obj]);
+    return fetcherPost([URL, obj]);
   };
 
   return insertData;
@@ -63,7 +63,7 @@ export function useUpdateGeneral(endpoints){
     const updateData = async (obj) => {
   
       const URL = obj ? endpoints : '';
-      return fetcherUpdate([URL, obj]);
+      return fetcherPost([URL, obj]);
     };
   
     return updateData;

@@ -33,7 +33,7 @@ import FormProvider from 'src/components/hook-form/form-provider';
 import { RHFTextField, RHFAutocomplete } from 'src/components/hook-form';
 
 
-export default function Lista({ currentEvent, onClose, userData, selectedDate }) {
+export default function Lista({ currentEvent, onClose, userData, selectedDate, usersMutate }) {
     dayjs.locale('es') // valor para cambiar el idioma del dayjs
 
     const { enqueueSnackbar } = useSnackbar();
@@ -51,7 +51,9 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate })
         if (newType !== null) {
             setType(newType);
         }
-    }, []);
+        // Actualizar datos
+        usersMutate();
+    }, [usersMutate]);
 
     const methods = useForm({
         resolver: yupResolver(formSchema),
@@ -104,7 +106,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate })
             }
         }
         catch (error) {
-            enqueueSnackbar("Ha ocurrido un error al guardar");
+            enqueueSnackbar("Ha ocurrido un error al guardar", { variant: 'error' });
         }
     });
 
@@ -265,5 +267,6 @@ Lista.propTypes = {
     currentEvent: PropTypes.object,
     onClose: PropTypes.func,
     userData: PropTypes.any,
+    usersMutate: PropTypes.func,
     selectedDate: PropTypes.instanceOf(Date)
 };
