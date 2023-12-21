@@ -1,8 +1,8 @@
 import { mutate } from 'swr';
 import PropTypes from 'prop-types';
 import { Base64 } from 'js-base64';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import React, { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -35,6 +35,8 @@ export default function FormularioEncuesta({ idEncuesta }) {
 
   const array = [idEncuesta, user.idUsuario];
 
+  const { getData } = usePostGeneral(user.idUsuario, endpoints.encuestas.getEncNotificacion, "getData");
+
   const validarData = usePost(array, endpoints.encuestas.getEcuestaValidacion, "validarData");
 
   const { encuestaData } = usePostGeneral(idEncuesta, endpoints.encuestas.getEncuesta, "encuestaData");
@@ -51,9 +53,15 @@ export default function FormularioEncuesta({ idEncuesta }) {
 
   const { enqueueSnackbar } = useSnackbar();
 
+  let validacion;
+
+  if(getData.length === 0){
+    validacion = false;
+  } else {
+    validacion = true;
+  }
+
   const methods = useForm({
-    /*  resolver: yupResolver(NewUserSchema),
-     defaultValues, */
   });
 
   const {
@@ -86,15 +94,15 @@ export default function FormularioEncuesta({ idEncuesta }) {
 
       const insert = await insertData(newData);
 
-      if (insert.estatus === 200) {
-        enqueueSnackbar(insert.mensaje, { variant: 'success' });
+      if (insert.estatus === true) {
+        enqueueSnackbar(insert.msj, { variant: 'success' });
         resetForm();
         mutate(endpoints.encuestas.getEncNotificacion);
         mutate(endpoints.encuestas.getEcuestaValidacion);
         router.replace(paths.dashboard.root);
 
       } else {
-        enqueueSnackbar(insert.mensaje, { variant: 'error' });
+        enqueueSnackbar(insert.msj, { variant: 'error' });
       }
     } catch (error) {
       console.error("Error en handleSubmit:", error);
@@ -105,7 +113,7 @@ export default function FormularioEncuesta({ idEncuesta }) {
 
   return (
 
-    validarData.validarData === true ? (
+    validarData.validarData === true && validacion === true ? (
 
       <FormProvider methods={methods} onSubmit={onSubmit} key={formKey}>
         <Grid container spacing={3}>

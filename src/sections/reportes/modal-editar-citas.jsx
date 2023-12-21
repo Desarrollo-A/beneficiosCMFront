@@ -58,11 +58,11 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
 
       const update = await updateObservacion(data);
 
-      if (update.estatus===200) {
-        enqueueSnackbar(update.mensaje, { variant: 'success' });
+      if (update.estatus === true) {
+        enqueueSnackbar(update.msj, { variant: 'success' });
         rel();
       } else {
-        enqueueSnackbar(update.mensaje, { variant: 'error' });
+        enqueueSnackbar(update.msj, { variant: 'error' });
       }
     } catch (error) {
 
