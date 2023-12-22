@@ -11,7 +11,7 @@ export default function useEvent(events, selectEventId, openForm) {
     () => ({
       id: '',
       title: '',
-      start : '',
+      start: '',
       end: '',
       occupied: '',
       usuario: ''

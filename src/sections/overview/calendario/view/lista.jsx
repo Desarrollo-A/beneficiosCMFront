@@ -14,16 +14,15 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import ToggleButton from '@mui/material/ToggleButton';
-import { MobileDatePicker } from '@mui/x-date-pickers';
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from '@mui/material/DialogContent';
-import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 import uuidv4 from 'src/utils/uuidv4';
-import { fDate, fTimestamp } from 'src/utils/format-time';
+import { fDate } from 'src/utils/format-time';
 
 import { reRender, cancelDate, deleteEvent, createCustom, updateCustom, createAppointment } from 'src/api/calendar-specialist';
 
@@ -37,23 +36,19 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
     dayjs.locale('es') // valor para cambiar el idioma del dayjs
 
     const { enqueueSnackbar } = useSnackbar();
-    const [patientId, setPatienId] = useState('');
-    const [patientName, setPatientName] = useState('');
+    const fecha = dayjs(selectedDate).format("YYYY/MM/DD"); // se da el formato de la hora con el dayjs ya que viene en timestamp
+    const fechaTitulo = dayjs(selectedDate).format("dddd, DD MMMM YYYY"); // unicamente visual
     const [type, setType] = useState('cancel'); // constante para el cambio entre cancelar hora y agendar cita
-
+    const [patient, setPatient] = useState({
+        id: '',
+        nombre: ''
+    });       
+    
     const formSchema = yup.object().shape({
         title: yup.string().max(100).required('Se necesita el título').trim(), // maximo de caracteres para el titulo 100
         start: yup.date().required(),
         end: yup.date().required(),
     });
-
-    const handleChangeType = useCallback((event, newType) => {
-        if (newType !== null) {
-            setType(newType);
-        }
-        // Actualizar datos
-        usersMutate();
-    }, [usersMutate]);
 
     const methods = useForm({
         resolver: yupResolver(formSchema),
@@ -66,8 +61,22 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
         handleSubmit,
     } = methods;
 
+    const handleChangeType = useCallback((event, newType) => { // handle para el cambio entre ocupar una hora o hacer cita solo quantum balance
+        if (newType !== null) {
+            setType(newType);
+            setPatient({
+                id: '',
+                nombre: ''
+            });
+            reset();
+        }
+
+        usersMutate();// Actualizar datos
+    }, [usersMutate, reset]);
+
     const values = watch();
-    const dateError = values.start && values.end ? fTimestamp(values.start) >= fTimestamp(values.end) : false; // validación que start no sea mayor a end
+    const dateError = checkDate(values.start, values.end);
+    const selectedUser = userSelect(type, patient);
 
     const onSubmit = handleSubmit(async (data) => {
         let save = '';
@@ -82,11 +91,11 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
             hora_final: `${data.end.getHours()}:${data.end.getMinutes()}`,
             occupied: currentEvent?.id ? currentEvent.occupied : fecha,
             newDate: fDate(data?.newDate),
-            usuario: patientId
+            usuario: patient.id
         };
 
         try {
-            if (!dateError) {
+            if (dateError && selectedUser) {
                 if (currentEvent?.id) {
                     save = await updateCustom(eventData); // en caso de que se un evento se modifica
                 }
@@ -104,14 +113,16 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
                     enqueueSnackbar(save.msg, { variant: 'error' });
                 }
             }
+            else{
+                enqueueSnackbar("Faltan datos en el formulario", { variant: 'error' });
+            }
         }
         catch (error) {
             enqueueSnackbar("Ha ocurrido un error al guardar", { variant: 'error' });
         }
     });
-
-    // funcion para borrar horarios ocupados 
-    const onDelete = useCallback(async () => {
+    
+    const onDelete = useCallback(async () => { // funcion para borrar horarios ocupados 
         try {
             const resp = await deleteEvent(`${currentEvent?.id}`);
 
@@ -131,8 +142,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
         }
     }, [currentEvent?.id, enqueueSnackbar, onClose]);
 
-    // funcion para cancelar citas
-    const onCancel = useCallback(async () => {
+    const onCancel = useCallback(async () => { // funcion para cancelar citas
         try {
             const resp = await cancelDate(`${currentEvent?.id}`);
 
@@ -151,9 +161,6 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
             onClose();
         }
     }, [currentEvent?.id, enqueueSnackbar, onClose]);
-                 
-    const fecha = dayjs(selectedDate).format("YYYY/MM/DD"); // se da el formato de la hora con el dayjs ya que viene en timestamp
-    const fechaTitulo = dayjs(selectedDate).format("dddd, DD MMMM YYYY"); // unicamente visual
 
     return (
         <FormProvider methods={methods} onSubmit={onSubmit}>
@@ -189,12 +196,12 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
                         <RHFAutocomplete
                             name = "usuario"
                             label = "Pacientes"
-                            value = {patientName}
-                            onChange={(_event, value) => {setPatientName(value?.label ? value?.label : ''); setPatienId(value?.value)} }
+                            value = {patient.nombre} // setPatientName(value?.label ? value?.label : ''); setPatienId(value?.value)
+                            onChange={(_event, value) => {setPatient({id: value?.value, nombre: value?.label ? value?.label : ''});} }
                             options={userData.map((user) => ({label: user.nombre, value: user.idUsuario}))}
                         />
                     )}
-                    <Typography variant="subtitle1">{currentEvent?.id ? dayjs(currentEvent.start).format("dddd, DD MMMM YYYY") : fechaTitulo}</Typography>
+                    <Typography variant="subtitle1">{fechaTitulo}</Typography>
                     <RHFTextField disabled={!!currentEvent?.type} name="title" label="Título" />
                 </Stack>
                 {!!currentEvent?.id && (
@@ -221,7 +228,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
                     <Controller
                         name="start"
                         render={({ field }) =>
-                            <TimePicker
+                            <MobileTimePicker
                                 disabled={!!currentEvent?.type}
                                 sx={{width:'100%'}}
                                 label="Hora de inicio"
@@ -235,7 +242,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
                     <Controller
                         name="end"
                         render={({ field }) =>
-                            <TimePicker
+                            <MobileTimePicker
                                 sx={{width:'100%'}}
                                 disabled={!!currentEvent?.type}
                                 label="Hora finalización"
@@ -261,6 +268,32 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
             </DialogActions>
         </FormProvider>
     )
+}
+
+function checkDate(start, end){
+    let dateError = true;
+    
+        if(start === end){
+            dateError = false;
+        }
+    
+
+    return dateError;
+}
+
+function userSelect(type, patient){
+    let selectedUser;
+    if (type === "cancel") {
+        selectedUser = true;
+    } 
+    else if (type === "date" && patient.id) {
+        selectedUser = true;
+    } 
+    else {
+        selectedUser = false;
+    }
+
+    return selectedUser;
 }
 
 Lista.propTypes = {

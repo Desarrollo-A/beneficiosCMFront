@@ -55,7 +55,7 @@ export function GetCustomEvents(current) {
   const memoizedValue = useMemo(() => {
     const events = data?.events?.map((event) => ({
       ...event,
-      textColor: event?.color ? event.color : 'red',
+      textColor: event?.color,
     }));
     
     return {
@@ -158,7 +158,7 @@ export async function createAppointment(fecha, eventData){
         fecha_inicio: `${fecha} ${eventData.hora_inicio}`,
         fecha_final: `${fecha} ${eventData.hora_final}`,
         creado_por: datosUser.idUsuario,
-        observaciones: eventData.title,
+        titulo: eventData.title,
         modificado_por: datosUser.idUsuario
   }
 
