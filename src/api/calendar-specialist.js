@@ -162,7 +162,7 @@ export async function createAppointment(eventData){
   const data = {
         fecha: eventData.newDate,
         id_usuario: datosUser.idUsuario,
-        id_paciente: eventData.usuario,
+        id_paciente: eventData.paciente,
         fecha_inicio,
         fecha_final,
         creado_por: datosUser.idUsuario,
@@ -184,6 +184,7 @@ export async function createAppointment(eventData){
 
 export async function updateAppointment(eventData) {
   let update = '';
+  console.log(eventData);
   
   const start = dayjs(`${eventData.newDate} ${eventData.hora_inicio}`).format('YYYY/MM/DD HH:mm:ss'); // fecha a la que se movera
   const end = dayjs(`${eventData.newDate} ${eventData.hora_final}`).format('YYYY/MM/DD HH:mm:ss'); // fecha a la que se movera
@@ -198,7 +199,8 @@ export async function updateAppointment(eventData) {
         id_usuario: datosUser.idUsuario,
         fecha_inicio: start,
         fecha_final: end,
-        start
+        start,
+        id_paciente : eventData.paciente
     }
 
       if(start > now){

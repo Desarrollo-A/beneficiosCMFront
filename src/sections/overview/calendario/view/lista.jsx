@@ -86,7 +86,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
             hora_inicio: `${data.start.getHours()}:${data.start.getMinutes()}`,
             hora_final: `${data.end.getHours()}:${data.end.getMinutes()}`,
             newDate: fDate(data?.newDate),
-            usuario: patient.id,
+            paciente: currentEvent?.id ? currentEvent.idPaciente : patient.id,
             estatus: currentEvent?.estatus
         };
 
