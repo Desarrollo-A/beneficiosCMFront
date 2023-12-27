@@ -14,7 +14,8 @@ export default function useEvent(events, selectEventId, openForm) {
       start: '',
       end: '',
       occupied: '',
-      usuario: ''
+      usuario: '',
+      estatus: ''
     }),
     []
   );

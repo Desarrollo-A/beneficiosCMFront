@@ -102,6 +102,7 @@ export const endpoints = {
     getAllEvents: 'calendarioController/getAllEvents',
     saveOccupied: 'calendarioController/saveOccupied',
     updateOccupied: 'calendarioController/updateOccupied',
+    updateAppointment: 'calendarioController/updateAppointment',
     deleteOccupied: 'calendarioController/deleteOccupied',
     cancelAppointment: 'calendarioController/cancelAppointment',
     createAppointment: 'calendarioController/createAppointment',

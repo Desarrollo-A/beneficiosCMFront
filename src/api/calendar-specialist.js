@@ -12,6 +12,7 @@ import { endpoints, fetcherPost  } from 'src/utils/axios';
 const get_all_events = endpoints.calendario.getAllEvents;
 const save_occupied = endpoints.calendario.saveOccupied;
 const update_occupied = endpoints.calendario.updateOccupied;
+const update_appointment = endpoints.calendario.updateAppointment;
 const delete_occupied = endpoints.calendario.deleteOccupied;
 const cancel_appointment = endpoints.calendario.cancelAppointment;
 const save_appointment = endpoints.calendario.createAppointment;
@@ -37,7 +38,7 @@ export async function reRender(){ // se separa la funcion del mutate unicamente 
 
 export function GetCustomEvents(current) {
   const year = current.getFullYear();
-  const month = (current.getMonth() + 1); // para obtener el mes que se debe, ya que el default da 0
+  const month = (current.getMonth() + 1); // para obtener el mes que se debe se suma 1, ya que el default da 0
   
   const dataValue = {
     year,
@@ -48,7 +49,6 @@ export function GetCustomEvents(current) {
   const { data, isLoading, error, isValidating } = useSWR(get_all_events, url => fetcherPost(url, dataValue), options);
 
   useEffect(()=> { // esta función ayuda a que se de un trigger para traer de nuevo los eventos del mes, cada que cambia month
-    // mutate(getAllEvents);
     reRender();
   },[month]);
 
@@ -72,22 +72,24 @@ export function GetCustomEvents(current) {
 
 // ----------------------------------------------------------------------
 
-export async function createCustom(fecha, eventData) {
-  const fecha_inicio = dayjs(`${fecha} ${eventData.hora_inicio}`).format('YYYY/MM/D HH:mm:ss');
+export async function createCustom(eventData) {
+  let create = '';
+  const fecha_inicio = dayjs(`${eventData.newDate} ${eventData.hora_inicio}`).format('YYYY/MM/DD HH:mm:ss'); 
+  const fecha_final = dayjs(`${eventData.newDate} ${eventData.hora_final}`).format('YYYY/MM/DD HH:mm:ss');
 
     const dataValue = {
-        fecha,
+        fecha: eventData.newDate,
         titulo: eventData.title,
         hora_inicio: eventData.hora_inicio,
         hora_final:  eventData.hora_final,
         id_unico: eventData.id,
         id_usuario: datosUser.idUsuario,
         fecha_inicio,
-        fecha_final: `${fecha} ${eventData.hora_final}`,
-        id_especialista: datosUser.idUsuario
+        fecha_final,
+        id_especialista: datosUser.idUsuario,
     }
-
-    const create = fetcherPost(save_occupied, dataValue);
+    
+    create = fetcherPost(save_occupied, dataValue);
  
   return create;
 }
@@ -149,29 +151,71 @@ export async function cancelDate(eventId){
 
 // ----------------------------------------------------------------------
 
-export async function createAppointment(fecha, eventData){
+export async function createAppointment(eventData){
+  let create = '';
+  const fecha_inicio = dayjs(`${eventData.newDate} ${eventData.hora_inicio}`).format('YYYY/MM/D HH:mm:ss'); 
+  const fecha_final = dayjs(`${eventData.newDate} ${eventData.hora_final}`).format('YYYY/MM/D HH:mm:ss');
+
+  const start = dayjs(`${eventData.newDate} ${eventData.hora_inicio}`).format('YYYY/MM/DD HH:mm:ss'); // fecha a la que se movera
+  const now = dayjs(new Date()).format('YYYY/MM/DD HH:mm:ss');
 
   const data = {
-        fecha,
+        fecha: eventData.newDate,
         id_usuario: datosUser.idUsuario,
         id_paciente: eventData.usuario,
-        fecha_inicio: `${fecha} ${eventData.hora_inicio}`,
-        fecha_final: `${fecha} ${eventData.hora_final}`,
+        fecha_inicio,
+        fecha_final,
         creado_por: datosUser.idUsuario,
         titulo: eventData.title,
         modificado_por: datosUser.idUsuario
+  };
+
+  if(start > now){
+    create = fetcherPost(save_appointment, data);
+  }
+  else{
+    create = { result: false, msg: "No se puede crear en dias anteriores" };
   }
 
-    const create = fetcherPost(save_appointment, data);
+  return create;
+}
 
-    return create;
+// ----------------------------------------------------------------------
+
+export async function updateAppointment(eventData) {
+  let update = '';
+  
+  const start = dayjs(`${eventData.newDate} ${eventData.hora_inicio}`).format('YYYY/MM/DD HH:mm:ss'); // fecha a la que se movera
+  const end = dayjs(`${eventData.newDate} ${eventData.hora_final}`).format('YYYY/MM/DD HH:mm:ss'); // fecha a la que se movera
+  const now = dayjs(new Date()).format('YYYY/MM/DD HH:mm:ss');
+
+  const dataValue = {
+        hora_inicio: eventData.hora_inicio,
+        hora_final:  eventData.hora_final,
+        titulo: eventData.title,
+        id: eventData.id,
+        fecha: eventData.newDate,
+        id_usuario: datosUser.idUsuario,
+        fecha_inicio: start,
+        fecha_final: end,
+        start
+    }
+
+      if(start > now){
+        update = fetcherPost(update_appointment, dataValue);
+      }
+      else{
+        update = { result: false, msg: "No se pueden mover las fechas a un dia anterior o actual" }
+      }
+
+    return update;
 }
 
 // ----------------------------------------------------------------------
 
 export async function dropUpdate(args){
   let update = '';
-  const tipo = args.color === "green" ? "cita" : "ocupado"; // para identificar si es cita u horario ocupado, mediante el color de la etiqueta
+  const tipo = args.color === "purple" ? "ocupado" : "cita"; // para identificar si es cita u horario ocupado, mediante el color de la etiqueta
   const start = dayjs(args.start).format('YYYY/MM/DD HH:mm:ss'); // fecha a la que se movera
   const now = dayjs(new Date()).format('YYYY/MM/DD HH:mm:ss');
   const old_start = dayjs(args.oldStart).format('YYYY/MM/DD HH:mm:ss'); // fecha original del evento
@@ -186,7 +230,7 @@ export async function dropUpdate(args){
     old_start
   }
 
-  if(old_start > now){
+  if(old_start > now && args.color !== 'red'){
     if(start > now){
       if(tipo === "cita"){
         update = await fetcherPost(appointment_drop, data);
