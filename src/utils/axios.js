@@ -4,7 +4,7 @@ import { HOST, HOST_API } from 'src/config-global';
 
 // ----------------------------------------------------------------------
 
-const axiosInstance = axios.create({ baseURL: HOST });
+const axiosInstance = axios.create({ baseURL: HOST_API });
 axiosInstance.interceptors.response.use(
   (res) => res,
   (error) => Promise.reject((error.response && error.response.data) || 'Something went wrong')
@@ -51,51 +51,6 @@ export const fetcherPost = async (args, dataValue) => {
   
   return res.data;
 };
-
-export const fetcherGet = async (args) => {
-  const [url, config] = Array.isArray(args) ? args : [args];
-
-  const res = await axiosInstance.get(url, { ...config });
-    
-  return res.data;
-};
-
-export const fetcherPost = async (args, dataValue) => {
-  
-  const [url, config] = Array.isArray(args) ? args : [args];
-
-  const res = await axiosInstance.post(url, {dataValue},{
-    headers: {'Content-Type' : 'application/x-www-form-urlencoded'}},
-     { ...config });
-  
-  return res.data;
-};
-
-export const fetcherInsert = async (args) => {
-  const [url, data, config] = Array.isArray(args) ? args : [args];
- 
-  const res = await axiosInstance.post(url, {"dat": JSON.stringify(data)}, {
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    ...config,
-  });
-
-  return res.data;
-};
-
-export const fetcherUpdate = async (args) => {
-  const [url, data, config] = Array.isArray(args) ? args : [args];
-
-  const res = await axiosInstance.post(url, data, {
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    ...config,
-  });
-
-  return res.data;
-};
   
 // ----------------------------------------------------------------------
 
@@ -140,6 +95,7 @@ export const endpoints = {
   especialistas: {
     list: 'CalendarioController/getEspecialistaPorBeneficioYSede',
     modalities: 'CalendarioController/getModalidadesEspecialista',
+    contact: 'Usuario/getSpecialistContact'
   },
   calendario: {
     getAllEvents: 'calendarioController/getAllEvents',
@@ -152,7 +108,8 @@ export const endpoints = {
     occupiedDrop: 'calendarioController/occupiedDrop'
   },
   calendarioColaborador: {
-    getAppointmentsByUser: 'calendarioController/getAppointmentsByUser'
+    getAppointmentsByUser: 'calendarioController/getAppointmentsByUser',
+    createAppointment: 'calendarioController/getAppointmentsByUser'
   },
   reportes: {
     lista: '/reportesController/citas',

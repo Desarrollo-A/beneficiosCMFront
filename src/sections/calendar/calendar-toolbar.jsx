@@ -83,12 +83,8 @@ export default function CalendarToolbar({
 
         <Stack direction="row" alignItems="center" spacing={1}>
           <Button size="small" color="error" variant="contained" onClick={onToday}>
-            Today
+            Hoy
           </Button>
-
-          <IconButton onClick={onOpenFilters}>
-            <Iconify icon="ic:round-filter-list" />
-          </IconButton>
         </Stack>
 
         {loading && (
