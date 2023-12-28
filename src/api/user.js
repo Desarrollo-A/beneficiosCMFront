@@ -1,9 +1,11 @@
 import useSWR from 'swr';
 import { useMemo } from 'react';
+import { Base64 } from 'js-base64';
 
 import { fetcher, endpoints, fetcherGet, fetcherPost } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
+const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
 
 export function useGetUsers() {
   const URL = endpoints.user.list;
@@ -47,14 +49,16 @@ export function useGetAreas() {
 
 export function useGetNameUser() { // useGetLabels
   const URL = endpoints.user.names;
+  
 
-  const { data } = useSWR(URL, fetcherGet);
+  const { data, mutate } = useSWR(URL, url=> fetcherPost(url, datosUser.idUsuario));
 
   const memoizedValue = useMemo(
     () => ({
-      data: data?.data || []
+      data: data?.data || [],
+      usersMutate: mutate
     }),
-    [data?.data]
+    [data?.data, mutate]
   ); 
 
   return memoizedValue;

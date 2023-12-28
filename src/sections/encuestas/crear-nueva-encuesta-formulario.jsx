@@ -19,7 +19,8 @@ import { useBoolean } from 'src/hooks/use-boolean';
 
 import { endpoints } from 'src/utils/axios';
 
-import { useGetGeneral, useInsertGeneral } from 'src/api/general';
+import { useInsert } from  'src/api/encuestas';
+import { useGetGeneral } from 'src/api/general';
 
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFSelect} from 'src/components/hook-form';
@@ -34,7 +35,7 @@ export default function InvoiceNewEditForm({ currentInvoice }) {
 
   const { areasData } = useGetGeneral(endpoints.encuestas.getPuestos, "areasData");
 
-  const insertData = useInsertGeneral(endpoints.encuestas.encuestaCreate);
+  const insertData = useInsert(endpoints.encuestas.encuestaCreate);
 
   const router = useRouter();
 
@@ -78,9 +79,6 @@ export default function InvoiceNewEditForm({ currentInvoice }) {
   };
 
   const handleCreateAndSend = handleSubmit(async (data) => {
-    /* loadingSend.onTrue(); */
-
-    /* console.log(data); */
 
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -90,11 +88,11 @@ export default function InvoiceNewEditForm({ currentInvoice }) {
       const insert = await insertData(data);
       router.push(paths.dashboard.encuestas.crear);
 
-      if (insert.estatus===200) {
-        enqueueSnackbar(insert.mensaje, { variant: 'success' });
+      if (insert.estatus === true) {
+        enqueueSnackbar(insert.msj, { variant: 'success' });
         resetForm();
       } else {
-        enqueueSnackbar(insert.mensaje, { variant: 'error' });
+        enqueueSnackbar(insert.msj, { variant: 'error' });
       }
 
     } catch (error) {

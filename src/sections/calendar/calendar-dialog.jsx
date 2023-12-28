@@ -114,8 +114,7 @@ export default function CalendarDialog({
   const [infoContact, setInfoContact] = useState('');
 
   const { data: benefits } = useGetBenefits(datosUser.sede);
-  const { data: especialists } = useGetEspecialists(datosUser.sede, selectedValues.beneficio);
-  const { data: modalities } = useGetModalities(datosUser.sede, selectedValues.especialista);
+
   // const { data: infoContact } = useGetSpecialistContact(selectedValues?.especialista || '');
   // const { data: events, appointmentMutate } = useGetAppointmentsByUser(date);
 

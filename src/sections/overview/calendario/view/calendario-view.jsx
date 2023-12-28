@@ -40,7 +40,7 @@ export default function CalendarioView(){
     const smUp = useResponsive('up', 'sm');
     const settings = useSettingsContext();
     const [filters] = useState(defaultFilters);
-    const { data: names } = useGetNameUser();
+    const { data: names, usersMutate } = useGetNameUser();
     const [userData, setUserData] = useState('');
 
     const dateError =
@@ -158,8 +158,8 @@ export default function CalendarioView(){
           <Lista
               currentEvent={currentEvent}
               onClose={onCloseForm}
-              current={date}
               userData={userData}
+              usersMutate={usersMutate}
               selectedDate={selectedDate}
           />
                 
