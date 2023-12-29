@@ -99,7 +99,7 @@ export default function useCalendar() {
         setSelectedDate(arg.start);
       }
       else
-        enqueueSnackbar('No se puede agendar el mismo dia o anteriores', { variant: 'error' });
+        enqueueSnackbar('No se puede agendar en dias anteriores', { variant: 'error' });
       
       setSelectedRange({
         start: fTimestamp(arg.start),

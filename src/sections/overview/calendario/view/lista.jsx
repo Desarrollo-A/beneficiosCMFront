@@ -40,8 +40,9 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
     const [patient, setPatient] = useState({
         id: '',
         nombre: ''
-    });  
-    const disableInputs = currentEvent?.id && currentEvent?.estatus !== 1;
+    });
+    const pastCheck = currentEvent?.id && selectedDate < new Date(); // checar que cuando hay un id si la fecha es superior
+    const disableInputs = currentEvent?.id && currentEvent?.estatus !== 1 || pastCheck; // deshabilitar inputs
     
     const formSchema = yup.object().shape({
         title: yup.string().max(100).required('Se necesita el título').trim(), // maximo de caracteres para el titulo 100
@@ -73,7 +74,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
     }, [usersMutate]);
 
     const values = watch();
-    const dateError = checkDate(values.start, values.end, type); // se hace conversion a tiemestamp para cuando se tenga id
+    const dateError = checkDate(values.start, values.end, type, currentEvent?.type); // se hace conversion a tiemestamp para cuando se tenga id
     const selectedUser = userSelect(type, patient); // validacion si se selecciono paciente, solo al crear cita
 
     const onSubmit = handleSubmit(async (data) => {
@@ -92,14 +93,19 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
 
         try {
             if (!dateError && selectedUser) {
-                if (currentEvent?.id && currentEvent?.type === 'ocupado') {
-                    save = await updateCustom(eventData); // en caso de que se un evento se modifica
-                }
-                else if(currentEvent?.id && currentEvent?.type === 'cita'){
-                    save = await updateAppointment(eventData);
-                }
-                else {
-                    save = type === 'cancel' ? await createCustom(eventData) : await createAppointment(eventData); // si no hay id, se cancela una hora o se crea una cita
+
+                switch(currentEvent?.type){
+                    case 'cancel':
+                        save = await updateCustom(eventData);
+                        break;
+
+                    case 'date':
+                        save = await updateAppointment(eventData);
+                        break;
+                    
+                    default:
+                        save = type === 'cancel' ? await createCustom(eventData) : await createAppointment(eventData); // si no hay id, se cancela una hora o se crea una cita
+                        break;
                 }
 
                 if (save.result) {
@@ -143,7 +149,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
 
     const onCancel = useCallback(async () => { // funcion para cancelar citas
         try {
-            const resp = await cancelDate(`${currentEvent?.id}`);
+            const resp = await cancelDate(currentEvent);
 
             if (resp.result) {
                 enqueueSnackbar(resp.msg);
@@ -159,16 +165,16 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
             enqueueSnackbar("Ha ocurrido un error al cancelar", { variant: "error" });
             onClose();
         }
-    }, [currentEvent?.id, enqueueSnackbar, onClose]);
+    }, [currentEvent, enqueueSnackbar, onClose]);
 
     return (
         <FormProvider methods={methods} onSubmit={onSubmit}>
             <DialogContent sx={{ p: { xs: 1, md: 2 } }}>
                 <Stack direction="row" justifyContent='space-between' useFlexGap flexWrap="wrap" sx={{ p: { xs: 1, md: 2 } }}>
                     <Typography variant='h5' sx={{ display: "flex", alignItems: "center" }}>{currentEvent?.id ? 'EDITAR HORARIO' : 'AGREGAR HORARIO'}</Typography>
-                    {!!currentEvent?.id && currentEvent?.estatus === 1 && (
-                        <Tooltip title={currentEvent.type === 'cita' ? "Cancelar cita" : "Eliminar horario"}>
-                            <IconButton onClick={currentEvent.type === 'cita' ? onCancel : onDelete}>
+                    {!!currentEvent?.id && currentEvent?.estatus === 1 && !pastCheck && (
+                        <Tooltip title={currentEvent?.type === 'date' ? "Cancelar cita" : "Eliminar horario"}>
+                            <IconButton onClick={currentEvent?.type === 'date' ? onCancel : onDelete}>
                                 <Iconify icon="solar:trash-bin-trash-bold" />
                             </IconButton>
                         </Tooltip>
@@ -195,7 +201,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
                         <RHFAutocomplete
                             name = "usuario"
                             label = "Pacientes"
-                            value = {patient.nombre} // setPatientName(value?.label ? value?.label : ''); setPatienId(value?.value)
+                            value = {patient.nombre}
                             onChange={(_event, value) => {setPatient({id: value?.value, nombre: value?.label ? value?.label : ''});} }
                             options={userData.map((user) => ({label: user.nombre, value: user.idUsuario}))}
                         />
@@ -204,7 +210,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
                     <RHFTextField disabled={ disableInputs } name="title" label="Título" />
                 </Stack>
                 
-                    <Stack direction="row" sx={{ p: { xs: 1, md: 2 } }}>
+                    <Stack direction="row" justifyContent='space-between' sx={{ p: { xs: 1, md: 2 } }}>
                         <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
                             <Controller
                                 name="newDate"
@@ -217,7 +223,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
                                         onChange={
                                             (value) => {
                                                 field.onChange(value);
-                                                setTitulo(dayjs(value).format("dddd, DD MMMM YYYY") );
+                                                setTitulo(dayjs(value).format("dddd, DD MMMM YYYY") ); // al momento de cambiar el valor en el input, cambia el valor del titulo
                                             }
                                         }
                                     />
@@ -241,6 +247,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
                             />
                         }
                     />
+
                     <Controller
                         name="end"
                         render={({ field }) =>
@@ -262,27 +269,48 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
                         }
                     />
                 </Stack>
+                {currentEvent?.type === 'date' && 
+                    <Stack container>
+                        <Stack direction="row" alignItems='center' spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1}}>
+                            
+                            <Typography variant='h6'>Información del paciente</Typography>
+                        </Stack>
+                        
+                        <Stack direction="row" alignItems='center' spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1}}>
+                            <Iconify icon="mdi:account-circle-outline" />
+                            <Typography fontSize='90%'>{currentEvent?.nombre}</Typography>
+                        </Stack>
+                    
+                        <Stack direction="row" alignItems='center' spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1}}>
+                            <Iconify icon="mdi:phone" />
+                            <Typography fontSize='90%'>{currentEvent?.telPersonal}</Typography>
+                        </Stack>
+                    </Stack>
+                }
             </DialogContent>
 
             <DialogActions>
                 <Button variant='contained' color='error' onClick={onClose}>Cerrar</Button>
-                { currentEvent?.estatus === 1 || currentEvent?.estatus === '' ?  
-                    <LoadingButton type="submit" variant='contained' disabled={dateError} color='success'>Guardar</LoadingButton> : '' 
+                { currentEvent?.estatus === 1 && !pastCheck || currentEvent?.estatus === '' ?  
+                    <LoadingButton type="submit" variant='contained' disabled={dateError} color='success'>Guardar</LoadingButton> : ''
                 }
             </DialogActions>
         </FormProvider>
     )
 }
 
-function checkDate(start, end, type){
+function checkDate(start, end, type, eventType){
     let dateError = false;
-    
+
     const startStamp = dayjs(start).$d;
     const endStamp = dayjs(end).$d;
     const hour = Math.abs(startStamp - endStamp) / 36e5;
 
     if(start && end){
-        if(startStamp >= endStamp || type === "date" && hour !== 1){
+        if(startStamp >= endStamp){
+            dateError = true;
+        }
+        else if((eventType || type) === 'date' && hour !== 1){
             dateError = true;
         }
     }

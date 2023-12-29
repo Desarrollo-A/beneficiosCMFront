@@ -142,9 +142,15 @@ export async function deleteEvent(eventId) {
 
 // ----------------------------------------------------------------------
 
-export async function cancelDate(eventId){
+export async function cancelDate(currentEvent){
+  const startStamp = dayjs(currentEvent.start).format('YYYY/MM/DD HH:mm:ss');
 
-  const delDate = fetcherPost(cancel_appointment, eventId);
+  const data = {
+    id: currentEvent.id,
+    startStamp
+  };
+
+  const delDate = fetcherPost(cancel_appointment, data);
 
   return delDate;
 }
@@ -184,7 +190,6 @@ export async function createAppointment(eventData){
 
 export async function updateAppointment(eventData) {
   let update = '';
-  console.log(eventData);
   
   const start = dayjs(`${eventData.newDate} ${eventData.hora_inicio}`).format('YYYY/MM/DD HH:mm:ss'); // fecha a la que se movera
   const end = dayjs(`${eventData.newDate} ${eventData.hora_final}`).format('YYYY/MM/DD HH:mm:ss'); // fecha a la que se movera
@@ -217,10 +222,11 @@ export async function updateAppointment(eventData) {
 
 export async function dropUpdate(args){
   let update = '';
-  const tipo = args.color === "purple" ? "ocupado" : "cita"; // para identificar si es cita u horario ocupado, mediante el color de la etiqueta
+  const tipo = args.color === "purple" ? occupied_drop : appointment_drop; // para identificar si es cita u horario ocupado, mediante el color de la etiqueta
   const start = dayjs(args.start).format('YYYY/MM/DD HH:mm:ss'); // fecha a la que se movera
   const now = dayjs(new Date()).format('YYYY/MM/DD HH:mm:ss');
   const old_start = dayjs(args.oldStart).format('YYYY/MM/DD HH:mm:ss'); // fecha original del evento
+  const inactivo = args.color === 'red' || args.color === 'grey'; // distinsion mediante el color de las etiquetas
 
   const data = {
     id: args.id,
@@ -232,14 +238,8 @@ export async function dropUpdate(args){
     old_start
   }
 
-  if(old_start > now && args.color !== 'red'){
-    if(start > now){
-      if(tipo === "cita"){
-        update = await fetcherPost(appointment_drop, data);
-      }
-      else{
-        update = await fetcherPost(occupied_drop, data);
-      }
+  if(!inactivo){
+      update = await fetcherPost(tipo, data);
 
       if(update.result)
         enqueueSnackbar(update.msg);
@@ -247,14 +247,9 @@ export async function dropUpdate(args){
         enqueueSnackbar(update.msg, {variant: "error"});
         reRender(); // se utiliza el rerender aqui parta que pueda regresar el evento en caso de no quedar
       }
-    }
-    else{
-      enqueueSnackbar("No se pueden mover las fechas a un dia anterior o actual", { variant: "error" });
-      reRender();
-    }
   }
   else{
-    enqueueSnackbar("Las citas u horarios pasados no se pueden mover", {variant: "error"});
+    enqueueSnackbar("No se puede mover la cita", {variant: "error"});
     reRender();
   }
 }
