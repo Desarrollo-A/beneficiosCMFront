@@ -1,17 +1,17 @@
 import Calendar from '@fullcalendar/react'; // => request placed at the top
-import { useState, useEffect, useCallback } from 'react';
+import dayjs from 'dayjs';
 import listPlugin from '@fullcalendar/list';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import timelinePlugin from '@fullcalendar/timeline';
 import allLocales from '@fullcalendar/core/locales-all'
+import { useState, useEffect, useCallback } from 'react';
 import interactionPlugin from '@fullcalendar/interaction';
 
 import Card from '@mui/material/Card';
 import Dialog from '@mui/material/Dialog';
-import Container from '@mui/material/Container';
-import dayjs from 'dayjs';
 import { useTheme } from '@mui/material/styles';
+import Container from '@mui/material/Container';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
@@ -87,7 +87,6 @@ export default function CalendarioView(){
       }, [names]);
 
       const onEventUpdate = useCallback((arg) => {
-        console.log(isOld);
         if (arg.oldEvent.start < new Date || isOld){
           arg.revert();
         }

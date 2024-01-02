@@ -6,6 +6,7 @@ import { es } from 'date-fns/locale'
 import { useState, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import Dialog from '@mui/material/Dialog';
 
 import Stack from "@mui/system/Stack";
 import Button from "@mui/material/Button";
@@ -24,7 +25,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import uuidv4 from 'src/utils/uuidv4';
 import { fDate } from 'src/utils/format-time';
 
-import { reRender, cancelDate, deleteEvent, createCustom, updateCustom, createAppointment, updateAppointment } from 'src/api/calendar-specialist';
+import { reRender, deleteEvent, createCustom, updateCustom, createAppointment, cancelAppointment, updateAppointment } from 'src/api/calendar-specialist';
 
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
@@ -35,7 +36,17 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
     dayjs.locale('es') // valor para cambiar el idioma del dayjs
 
     const { enqueueSnackbar } = useSnackbar();
-    const [titulo, setTitulo] = useState(dayjs(selectedDate).format("dddd, DD MMMM YYYY"));
+    const [open, setOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+    const [dateTitle, setDateTitle] = useState(dayjs(selectedDate).format("dddd, DD MMMM YYYY"));
     const [type, setType] = useState('cancel'); // constante para el cambio entre cancelar hora y agendar cita
     const [patient, setPatient] = useState({
         id: '',
@@ -80,8 +91,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
     const onSubmit = handleSubmit(async (data) => {
         let save = '';
 
-        // se da el formato juntando la fecha elegida y la hora que se elige con los minutos
-        const eventData = {
+        const eventData = { // se da el formato juntando la fecha elegida y la hora que se elige con los minutos
             id: currentEvent?.id ? currentEvent?.id : uuidv4(),
             title: data?.title,
             hora_inicio: `${data.start.getHours()}:${data.start.getMinutes()}`,
@@ -139,17 +149,19 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
                 enqueueSnackbar(resp.msg, { variant: "error" });
             }
 
+            setOpen(false);
             onClose();
         } 
         catch (error) {
             enqueueSnackbar("Ha ocurrido un error al eliminar", { variant: "error" });
+            setOpen(false);
             onClose();
         }
     }, [currentEvent?.id, enqueueSnackbar, onClose]);
 
     const onCancel = useCallback(async () => { // funcion para cancelar citas
         try {
-            const resp = await cancelDate(currentEvent);
+            const resp = await cancelAppointment(currentEvent);
 
             if (resp.result) {
                 enqueueSnackbar(resp.msg);
@@ -159,22 +171,25 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
                 enqueueSnackbar(resp.msg, { variant: "error" });
             }
 
+            setOpen(false);
             onClose();
         } 
         catch (error) {
             enqueueSnackbar("Ha ocurrido un error al cancelar", { variant: "error" });
+            setOpen(false);
             onClose();
         }
     }, [currentEvent, enqueueSnackbar, onClose]);
 
     return (
+        <>
         <FormProvider methods={methods} onSubmit={onSubmit}>
             <DialogContent sx={{ p: { xs: 1, md: 2 } }}>
                 <Stack direction="row" justifyContent='space-between' useFlexGap flexWrap="wrap" sx={{ p: { xs: 1, md: 2 } }}>
-                    <Typography variant='h5' sx={{ display: "flex", alignItems: "center" }}>{currentEvent?.id ? 'EDITAR HORARIO' : 'AGREGAR HORARIO'}</Typography>
+                    <Typography variant='h5' sx={{ display: "flex", alignItems: "center" }}>{dialogTitle(currentEvent?.estatus)}</Typography>
                     {!!currentEvent?.id && currentEvent?.estatus === 1 && !pastCheck && (
                         <Tooltip title={currentEvent?.type === 'date' ? "Cancelar cita" : "Eliminar horario"}>
-                            <IconButton onClick={currentEvent?.type === 'date' ? onCancel : onDelete}>
+                            <IconButton onClick={handleClickOpen}>
                                 <Iconify icon="solar:trash-bin-trash-bold" />
                             </IconButton>
                         </Tooltip>
@@ -206,7 +221,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
                             options={userData.map((user) => ({label: user.nombre, value: user.idUsuario}))}
                         />
                     )}
-                    <Typography variant="subtitle1">{titulo}</Typography>
+                    <Typography variant="subtitle1">{dateTitle}</Typography>
                     <RHFTextField disabled={ disableInputs } name="title" label="Título" />
                 </Stack>
                 
@@ -223,7 +238,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
                                         onChange={
                                             (value) => {
                                                 field.onChange(value);
-                                                setTitulo(dayjs(value).format("dddd, DD MMMM YYYY") ); // al momento de cambiar el valor en el input, cambia el valor del titulo
+                                                setDateTitle(dayjs(value).format("dddd, DD MMMM YYYY") ); // al momento de cambiar el valor en el input, cambia el valor del titulo
                                             }
                                         }
                                     />
@@ -296,6 +311,27 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
                 }
             </DialogActions>
         </FormProvider>
+        
+
+        <Dialog // dialog de confirmación de eliminación
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description">
+        <DialogContent>
+            <Stack direction="row" justifyContent='space-between' useFlexGap flexWrap="wrap" sx={{ p: { xs: 1, md: 2 } }}>
+                <Typography>¡ATENCIÓN!</Typography>
+            </Stack>
+            <Typography>¿Seguro que quieres {currentEvent?.type === 'date' ? 'cancelar la cita' : 'eliminar el horario'}?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button variant='contained' color='error' onClick={handleClose}>Cerrar</Button>
+          <Button variant='contained' color='success' onClick={currentEvent?.type === 'date' ? onCancel : onDelete} autoFocus>
+            Aceptar
+          </Button>
+        </DialogActions>
+      </Dialog>
+      </>
     )
 }
 
@@ -331,6 +367,31 @@ function userSelect(type, patient){
     }
 
     return selectedUser;
+}
+
+function dialogTitle(estatus){ // función solo para mostrar el tipo de titulo en el dialog
+    if(estatus){
+        switch(estatus){
+
+            case 0:
+                return 'a'
+            case 1:
+                return 'Por asistir';
+            case 2:
+                return 'Cita cancelada';
+            case 3:
+                return 'Cita penalizada';
+            case 4:
+                return 'Finalizada';
+    
+            default:
+                return 'Información';
+        }
+    }
+    else{
+        return 'Agregar horario';
+    }
+    
 }
 
 Lista.propTypes = {
