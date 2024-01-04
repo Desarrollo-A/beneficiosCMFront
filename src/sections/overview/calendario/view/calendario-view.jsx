@@ -1,17 +1,18 @@
 import Calendar from '@fullcalendar/react'; // => request placed at the top
-import { useState, useEffect } from 'react';
+import dayjs from 'dayjs';
 import listPlugin from '@fullcalendar/list';
+import { enqueueSnackbar } from 'notistack';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import timelinePlugin from '@fullcalendar/timeline';
 import allLocales from '@fullcalendar/core/locales-all'
+import { useState, useEffect, useCallback } from 'react';
 import interactionPlugin from '@fullcalendar/interaction';
 
 import Card from '@mui/material/Card';
-import Stack from '@mui/material/Stack';
 import Dialog from '@mui/material/Dialog';
+import { useTheme } from '@mui/material/styles';
 import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
@@ -23,6 +24,7 @@ import { dropUpdate, GetCustomEvents } from 'src/api/calendar-specialist';
 import { useSettingsContext } from 'src/components/settings';
 
 import Lista from "./lista";
+import EventContent from './eventContent';
 import { StyledCalendar } from '../styles';
 import CalendarToolbar from '../calendar-tool';
 import { useEvent, useCalendar } from '../hooks';
@@ -42,6 +44,7 @@ export default function CalendarioView(){
     const [filters] = useState(defaultFilters);
     const { data: names, usersMutate } = useGetNameUser();
     const [userData, setUserData] = useState('');
+    const theme = useTheme();
 
     const dateError =
     filters.startDate && filters.endDate
@@ -62,6 +65,7 @@ export default function CalendarioView(){
         onChangeView,
         onClickEvent, 
         openForm,
+        openFormEvent,
         onCloseForm,
         //
         selectEventId,
@@ -83,89 +87,107 @@ export default function CalendarioView(){
           setUserData(names);
         }
       }, [names]);
+
+      const onEventUpdate = useCallback((arg) => {
+        const {estatus, fechaInicio} = arg.event.extendedProps;
+        const now = dayjs(new Date).format('YYYY-MM-DD HH:mm:ss');
+
+        if (fechaInicio < now || estatus !== 1){
+          enqueueSnackbar('No se puede mover el evento', {variant: 'error'});
+          arg.revert();
+        }
+        else{
+          onDropEvent(arg, dropUpdate);
+        }
+      }, [onDropEvent]);
+
+     const hours = {
+        start: dayjs(new Date).format('HH:mm'), /* Current Hour/Minute 24H format */
+        end: '17:00', // 5pm? set to whatever
+        daysOfWeek: [ 1, 2, 3, 4, 5, 6 ], // Monday - Thursday
+    }
+
+    const hours2 = {
+      start: dayjs(new Date).format('YYYY-MM-DD HH:mm:ss'), /* Current Hour/Minute 24H format */
+  }
       
-
     return(
-        <>
         <Container maxWidth={settings.themeStretch ? false : 'xl'}>
-            <Stack
-                direction= "row"
-                alignItems= "center"
-                justifyContent= "space-between"
-                sx= {{
-                    mb: { xs: 3, md: 5 }
+          <Card>
+            <StyledCalendar>
+              <CalendarToolbar
+                date={date}
+                view={view}
+                loading={eventsLoading}
+                onNextDate={onDateNext}
+                onPrevDate={onDatePrev}
+                onToday={onDateToday}
+                onChangeView={onChangeView}
+                />
+
+              <Calendar
+                weekends
+                editable
+                droppable
+                selectable
+                
+                eventConstraint={hours2}
+                businessHours={hours}
+                selectLongPressDelay={0}
+                LongPressDelay={0}
+                locales={allLocales} 
+                locale='es'
+                rerenderDelay={10}
+                allDayMaintainDuration
+                eventResizableFromStart
+                ref={calendarRef}
+                dayMaxEventRows={3}
+                eventDisplay="block"
+                events={dataFiltered}
+                headerToolbar = { false }
+                select={onSelectRange}
+                eventClick={onClickEvent}
+                height={ smUp ? 720 : 'auto' }
+                eventDrop={(arg) => {
+                  onEventUpdate(arg);
                 }}
-            >
-                <Typography variant='h4'>
-                    Prueba de calendario
-                </Typography>
-            </Stack>
-
-            <Card>
-                <StyledCalendar>
-                    <CalendarToolbar
-                     date={date}
-                     view={view}
-                     loading={eventsLoading}
-                     onNextDate={onDateNext}
-                     onPrevDate={onDatePrev}
-                     onToday={onDateToday}
-                     onChangeView={onChangeView}
-                    />
-
-                    <Calendar
-                     // hiddenDays={[ 0 ]}
-                     weekends
-                     editable
-                     droppable
-                     selectable
-                     selectLongPressDelay={0}
-                     LongPressDelay={0}
-                     locales={allLocales} 
-                     locale='es'
-                     rerenderDelay={10}
-                     allDayMaintainDuration
-                     eventResizableFromStart
-                     ref={calendarRef}
-                     dayMaxEventRows={3}
-                     eventDisplay="block"
-                     events={dataFiltered}
-                     headerToolbar = { false }
-                     select={onSelectRange}
-                     eventClick={onClickEvent}
-                     height={ smUp ? 720 : 'auto' }
-                     eventDrop={(arg) => {
-                      onDropEvent(arg, dropUpdate);
-                    }}
-                     plugins={[
-                         listPlugin,
-                         dayGridPlugin,
-                         timelinePlugin,
-                         timeGridPlugin,
-                         interactionPlugin,
-                       ]}
-                    />
-                </StyledCalendar>
-            </Card>
-        </Container>
-
-        <Dialog
+                plugins={[
+                    listPlugin,
+                    dayGridPlugin,
+                    timelinePlugin,
+                    timeGridPlugin,
+                    interactionPlugin,
+                  ]}
+              />
+            </StyledCalendar>
+          </Card>
+          
+          <Dialog
             fullWidth
             maxWidth='sm'
             open={openForm}
             onClose={onCloseForm}
-        >
-          <Lista
+            transitionDuration={{
+              enter: theme.transitions.duration.shortest,
+              exit: theme.transitions.duration.shortest - 1000,
+            }}
+          >
+            { currentEvent?.id 
+            ? <EventContent
               currentEvent={currentEvent}
+              onClose={onCloseForm}
+              selectedDate={selectedDate}
+              />
+            : <Lista
               onClose={onCloseForm}
               userData={userData}
               usersMutate={usersMutate}
               selectedDate={selectedDate}
-          />
-                
-        </Dialog>
-        
-        </>
+              />
+            }
+          </Dialog>
+
+        </Container>
     );
 }
 
