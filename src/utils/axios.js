@@ -116,6 +116,9 @@ export const endpoints = {
   calendarioColaborador: {
     getAppointmentsByUser: 'calendarioController/getAppointmentsByUser',
     createAppointment: 'calendarioController/getAppointmentsByUser',
+    getOficina: 'calendarioController/getOficinaByAtencion',
+    getAllEventsWithRange: 'calendarioController/getAllEventsWithRange',
+    getHorarioBeneficio: 'calendarioController/getHorarioBeneficio',
   },
   reportes: {
     lista: '/reportesController/citas',

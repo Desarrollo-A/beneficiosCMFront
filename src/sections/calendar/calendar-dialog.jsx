@@ -3,10 +3,10 @@ import dayjs from 'dayjs';
 import * as yup from 'yup';
 import { Base64 } from 'js-base64';
 import PropTypes from 'prop-types';
-import { es } from 'date-fns/locale';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useState, useEffect, useCallback, useRef } from 'react';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import { useRef, useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/system/Stack';
@@ -19,6 +19,7 @@ import InputLabel from '@mui/material/InputLabel';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
+import { esES } from '@mui/x-date-pickers/locales';
 import FormControl from '@mui/material/FormControl';
 import DialogTitle from '@mui/material/DialogTitle';
 import ToggleButton from '@mui/material/ToggleButton';
@@ -39,15 +40,18 @@ import uuidv4 from 'src/utils/uuidv4';
 import { fDate, fTimestamp } from 'src/utils/format-time';
 
 import {
-  /* reRender, */ cancelDate,
+  cancelDate,
+  getHorario,
   updateCustom,
+  getContactoQB,
+  getModalities,
+  getSpecialists,
   useGetBenefits,
   useGetModalities,
   createAppointment,
   useGetEspecialists,
-  getSpecialistContact,
-  getSpecialists,
-  getModalities,
+  getHorariosOcupados,
+  getOficinaByAtencion,
 } from 'src/api/calendar-colaborador';
 
 import Iconify from 'src/components/iconify';
@@ -57,44 +61,10 @@ import FormProvider from 'src/components/hook-form/form-provider';
 
 const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
 
-function getRandomNumber(min, max) {
-  return Math.round(Math.random() * (max - min) + min);
-}
-
-function fakeFetch(date, { signal }) {
-  return new Promise((resolve, reject) => {
-    const timeout = setTimeout(() => {
-      const daysInMonth = date.daysInMonth();
-      const daysToHighlight = [1, 2, 3].map(() => getRandomNumber(1, daysInMonth));
-
-      resolve({ daysToHighlight });
-    }, 500);
-
-    signal.onabort = () => {
-      clearTimeout(timeout);
-      reject(new DOMException('aborted', 'AbortError'));
-    };
-  });
-}
-
 dayjs.locale('es');
-const initialValue = dayjs('2023-12-25');
-
-function ServerDay(props) {
-  const { highlightedDays = [], day, outsideCurrentMonth, ...other } = props;
-
-  const isSelected = !props.outsideCurrentMonth && highlightedDays.indexOf(props.day.date()) >= 0;
-
-  return (
-    <Badge
-      key={props.day.toString()}
-      overlap="circular"
-      badgeContent={isSelected ? '✔️' : undefined}
-    >
-      <PickersDay {...other} outsideCurrentMonth={outsideCurrentMonth} day={day} />
-    </Badge>
-  );
-}
+dayjs.extend(isSameOrBefore);
+const initialValue = dayjs();
+const lastDayOfNextMonth = initialValue.add(2, 'month').startOf('month').subtract(1, 'day');
 
 export default function CalendarDialog({
   currentEvent,
@@ -112,11 +82,10 @@ export default function CalendarDialog({
   const [especialistas, setEspecialistas] = useState([]);
   const [modalidades, setModalidades] = useState([]);
   const [infoContact, setInfoContact] = useState('');
+  const [oficina, setOficina] = useState('');
+  const [titulo, setTitulo] = useState('');
 
   const { data: benefits } = useGetBenefits(datosUser.sede);
-
-  // const { data: infoContact } = useGetSpecialistContact(selectedValues?.especialista || '');
-  // const { data: events, appointmentMutate } = useGetAppointmentsByUser(date);
 
   const requestAbortController = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -125,7 +94,7 @@ export default function CalendarDialog({
   const { enqueueSnackbar } = useSnackbar();
 
   const formSchema = yup.object().shape({
-    title: yup.string().max(100).required('Se necesita el titulo').trim(),
+    title: !titulo ? yup.string().max(100).required('Se necesita el titulo').trim() : '',
     start: yup.date().required(),
     end: yup.date().required(),
   });
@@ -211,6 +180,8 @@ export default function CalendarDialog({
   }, [benefits]);
 
   const handleChange = async (input, value) => {
+    setInfoContact('');
+    setOficina('');
     if (input === 'beneficio') {
       setSelectedValues({
         beneficio: value,
@@ -219,28 +190,67 @@ export default function CalendarDialog({
       });
       const data = await getSpecialists(datosUser.sede, value);
       setEspecialistas(data?.data);
-      console.log('2nd fetch:', data);
+      // console.log('2nd fetch:', data);
     } else if (input === 'especialista') {
-      setSelectedValues({
-        ...selectedValues,
-        especialista: value,
-        modalidad: '',
-      });
-      const data = await getModalities(datosUser.sede, value);
-      setModalidades(data?.data);
-      console.log('2nd fetch:', data);
-      if (data?.data && data?.data.length === 1) {
-        console.log(data);
-        // setSelectedValues({
-        //   ...selectedValues,
-        //   modalidad: data.data[1].id,
-        // });
+      const modalitiesData = await getModalities(datosUser.sede, value);
+      setModalidades(modalitiesData?.data);
+      // console.log('DENTRO DEL IF', modalitiesData);
+      // console.log('-----------------------------------------------------------------');
+      // console.log('Validación 1: ', modalitiesData.data.length > 0);
+      // console.log('Validación 2: ', modalitiesData?.data.length === 1);
+      // console.log('Validación ---: ', modalitiesData?.data && modalitiesData?.data.length === 1);
+      // console.log('-----------------------------------------------------------------');
+      if (modalitiesData.data.length > 0 && modalitiesData?.data.length === 1) {
+        setSelectedValues({
+          ...selectedValues,
+          especialista: value,
+          modalidad: modalitiesData.data[0].tipoCita,
+        });
+        // console.log('BENEFICIO 158', selectedValues.beneficio === 158);
+        if (selectedValues.beneficio === 158) {
+          const data = await getContactoQB(value);
+          setInfoContact(data);
+          // console.log('Información de contacto: ', data);
+        } else {
+          // console.log(
+          //   'oficina',
+          //   datosUser.sede,
+          //   selectedValues.beneficio,
+          //   value,
+          //   modalitiesData.data[0].tipoCita
+          // );
+          const data = await getOficinaByAtencion(
+            datosUser.sede,
+            selectedValues.beneficio,
+            value,
+            modalitiesData.data[0].tipoCita
+          );
+          setOficina(data);
+          // // setModalidades(modalitiesData?.data);
+          // console.log('Oficina1: ', data);
+        }
+      } else {
+        setSelectedValues({
+          ...selectedValues,
+          especialista: value,
+          modalidad: '',
+        });
       }
+      const horarios = getHorariosDisponibles(value);
+      // console.log('HORARIOS', horarios);
     } else if (input === 'modalidad') {
       setSelectedValues({
         ...selectedValues,
         modalidad: value,
       });
+      const data = await getOficinaByAtencion(
+        datosUser.sede,
+        selectedValues.beneficio,
+        setSelectedValues.especialista,
+        value
+      );
+      setOficina(data);
+      // console.log('oficina2', data);
     } else if (input === 'all') {
       setSelectedValues({
         beneficio: value,
@@ -250,41 +260,58 @@ export default function CalendarDialog({
     }
   };
 
-  const fetchHighlightedDays = (date) => {
-    const controller = new AbortController();
-    fakeFetch(date, {
-      signal: controller.signal,
-    })
-      .then(({ daysToHighlight }) => {
-        setHighlightedDays(daysToHighlight);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        // ignore the error if it's caused by `controller.abort`
-        if (error.name !== 'AbortError') {
-          throw error;
-        }
-      });
+  const generarFechas = (fechaInicial, fechaFinal) => {
+    const resultado = [];
+    let fechaActual = dayjs(fechaInicial);
 
-    requestAbortController.current = controller;
-  };
-
-  useEffect(() => {
-    fetchHighlightedDays(initialValue);
-    // abort request on unmount
-    return () => requestAbortController.current?.abort();
-  }, []);
-
-  const handleMonthChange = (date) => {
-    if (requestAbortController.current) {
-      // make sure that you are aborting useless requests
-      // because it is possible to switch between months pretty quickly
-      requestAbortController.current.abort();
+    while (fechaActual.isSameOrBefore(fechaFinal, 'day')) {
+      resultado.push(fechaActual.format('YYYY-MM-DD'));
+      fechaActual = fechaActual.add(1, 'day');
     }
 
-    setIsLoading(true);
-    setHighlightedDays([]);
-    fetchHighlightedDays(date);
+    return resultado;
+  };
+
+  const getHorariosDisponibles = async (especialista) => {
+    // Consultamos el horario del especialista segun su beneficio.
+    const horarioACubrir = await getHorario(selectedValues.beneficio);
+    console.log('horarioACubrir', horarioACubrir);
+    if (!horarioACubrir) return; // En caso de que no halla horario detenemos el proceso.
+
+    // Teniendo en cuenta el dia actual, consultamos los dias restantes del mes actual y todos los dias del mes que sigue.
+    let diasProximos = generarFechas(initialValue, lastDayOfNextMonth);
+    console.log('Dias proximos', diasProximos);
+
+    // Le quitamos los registros del dia domingo y tambien sabados en el caso de que no lo trabaje el especialista.
+    console.log(
+      'Trabaja sabados 1:(49), 0(41)',
+      horarioACubrir.data[0].sabados,
+      !horarioACubrir.data[0].sabados
+    );
+    // diasProximos = diasProximos.filter((date) => {
+    //   if (horarioACubrir.data[0].sabados) {
+    //     return dayjs(date).day() !== 0;
+    //   }
+    //   return dayjs(date).day() !== 0 && dayjs(date).day() !== 6;
+    // });
+
+    diasProximos = diasProximos.filter((date) => {
+      const dayOfWeek = dayjs(date).day();
+      return dayOfWeek !== 0 && (horarioACubrir.data[0].sabados || dayOfWeek !== 6);
+    });
+
+    console.log('Restantes dias proximos', diasProximos);
+
+    //
+    // const horariosOcupados = await getHorariosOcupados(
+    //   especialista,
+    //   initialValue.format('YYYY-MM-DD'),
+    //   lastDayOfNextMonth.format('YYYY-MM-DD')
+    // );
+    // console.log('horariosOcupados', horariosOcupados);
+
+    // //
+    // const filteredDates = dates.filter(date => dayjs(date).day() !== 0);
   };
 
   const [dia, setDia] = useState(null);
@@ -295,6 +322,32 @@ export default function CalendarDialog({
     setDia(newDate);
   };
 
+  const isWeekend = (date) => {
+    const day = date.day();
+
+    return selectedValues.beneficio === 158 || selectedValues.beneficio === 686
+      ? day === 0
+      : day === 0 || day === 6; // Deshabilitar los sábados
+  };
+
+  const disabledDaysFromSQLServer = [
+    '25-01-2024', // 6 de enero
+    '14-02-2024', // 14 de febrero
+    '25-12-2024', // 25 de diciembre
+  ];
+
+  const shouldDisableDate = (date) => {
+    // Verificar si la fecha es un fin de semana
+    const isWeekendDay = isWeekend(date);
+
+    // Verificar si la fecha está en la lista de fechas deshabilitadas
+    const formattedDate = date.format('DD-MM-YYYY');
+    const isDisabledFromSQLServer = disabledDaysFromSQLServer.includes(formattedDate);
+
+    // Deshabilitar la fecha si es un fin de semana o está en la lista de fechas deshabilitadas
+    return isWeekendDay || isDisabledFromSQLServer;
+  };
+
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <DialogTitle sx={{ p: { xs: 1, md: 2 } }}>
@@ -302,11 +355,10 @@ export default function CalendarDialog({
           direction="row"
           justifyContent="space-between"
           useFlexGap
-          flexWrap="wrap"
           sx={{ p: { xs: 1, md: 2 } }}
         >
           <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center' }}>
-            {currentEvent?.id ? 'DATOS DE CITA' : 'AGENDAR CITA ' + JSON.stringify(selectedValues)}
+            {currentEvent?.id ? 'DATOS DE CITA' : `AGENDAR CITA ${JSON.stringify(selectedValues)}`}
           </Typography>
           {!!currentEvent?.id && (
             <Tooltip title="Cancelar cita">
@@ -322,7 +374,6 @@ export default function CalendarDialog({
         direction="row"
         justifyContent="space-between"
         useFlexGap
-        flexWrap="wrap"
       >
         {currentEvent?.id ? (
           <>
@@ -403,161 +454,121 @@ export default function CalendarDialog({
             </Stack>
           </>
         ) : (
-          <Grid container spacing={0.5}>
-            <Grid xs={6}>
+          <Grid sx={{ display: 'flex' }}>
+            <Grid sx={{ width: '100%' }}>
               <Box
                 sx={{
                   width: { xs: '100%', md: '100%' },
                   p: { xs: 1, md: 2 },
                   borderRight: 'lightgray solid',
+                  borderRightWidth:
+                    selectedValues.especialista && selectedValues.beneficio !== 158
+                      ? '2px' // Puedes ajustar el grosor según tus necesidades
+                      : '0',
                 }}
               >
                 <Stack spacing={3}>
                   <Typography variant="subtitle1">
-                    {currentEvent?.id
-                      ? dayjs(currentEvent.start).format('dddd, DD MMMM YYYY')
-                      : fechaTitulo}
+                    {dayjs().locale('es').format('dddd, DD MMMM YYYY')}
                   </Typography>
-                  <Box>
-                    <FormControl fullWidth sx={{ flex: 1 }}>
-                      <Stack
-                        direction="column"
-                        spacing={4}
-                        justifyContent="space-between"
-                        sx={{ p: { xs: 1, md: 2 } }}
+                  <Stack direction="column" spacing={3} justifyContent="space-between">
+                    <RHFTextField
+                      name="title"
+                      label="Título"
+                      value={titulo}
+                      onChange={(e) => setTitulo(e.target.value)}
+                    />
+                    <FormControl fullWidth>
+                      <InputLabel id="beneficio-input">Beneficio</InputLabel>
+                      <Select
+                        labelId="Beneficio"
+                        id="select-beneficio"
+                        label="Beneficio"
+                        name="beneficio"
+                        value={selectedValues.beneficio}
+                        onChange={(e) => handleChange('beneficio', e.target.value)}
+                        disabled={beneficios.length === 0}
                       >
-                        <FormControl fullWidth>
-                          <InputLabel id="beneficio-input">Beneficio</InputLabel>
-                          <Select
-                            labelId="Beneficio"
-                            id="select-beneficio"
-                            label="Beneficio"
-                            name="beneficio"
-                            value={selectedValues.beneficio}
-                            onChange={(e) => handleChange('beneficio', e.target.value)}
-                            disabled={beneficios.length === 0}
-                          >
-                            {beneficios.map((e, index) => (
-                              <MenuItem key={e.id} value={e.id}>
-                                {e.puesto.toUpperCase()}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                        <FormControl fullWidth>
-                          <InputLabel id="especialista-input">Especialista</InputLabel>
-                          <Select
-                            labelId="Especialista"
-                            id="select-especialista"
-                            label="Especialista"
-                            name="especialista"
-                            value={selectedValues.especialista}
-                            onChange={(e) => handleChange('especialista', e.target.value)}
-                            disabled={especialistas.length === 0}
-                          >
-                            {especialistas.map((e, index) => (
-                              <MenuItem key={e.id} value={e.id}>
-                                {e.especialista.toUpperCase()}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                        <FormControl fullWidth>
-                          <InputLabel id="modalidad-input">Modalidad</InputLabel>
-                          <Select
-                            labelId="Modalidad"
-                            id="select-modalidad"
-                            label="Modalidad"
-                            name="especialista"
-                            value={selectedValues.modalidad}
-                            onChange={(e) => handleChange('modalidad', e.target.value)}
-                            disabled={modalidades.length === 0}
-                          >
-                            {modalidades.map((e, index) => (
-                              <MenuItem key={e.tipoCita} value={e.tipoCita}>
-                                {e.modalidad.toUpperCase()}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      </Stack>
-                      {((selectedValues.modalidad && selectedValues.beneficio !== 158) ||
-                        currentEvent?.id) && (
-                        <>
-                          <Stack spacing={3} sx={{ p: { xs: 1, md: 2 } }}>
-                            <RHFTextField disabled={currentEvent?.id} name="title" label="Título" />
-                          </Stack>
-                          <Stack
-                            direction="row"
-                            spacing={1}
-                            justifyContent="space-between"
-                            sx={{ p: { xs: 1, md: 2 } }}
-                          >
-                            <Controller
-                              name="start"
-                              render={({ field }) => (
-                                <TimePicker
-                                  sx={{ width: '100%' }}
-                                  disabled={currentEvent?.id}
-                                  label="Hora de inicio"
-                                  defaultValue={
-                                    currentEvent?.id ? dayjs(currentEvent.start).$d : null
-                                  }
-                                  onChange={(value) => field.onChange(value)}
-                                />
-                              )}
-                            />
-                            <Controller
-                              name="end"
-                              render={({ field }) => (
-                                <TimePicker
-                                  sx={{ width: '100%' }}
-                                  disabled={currentEvent?.id}
-                                  label="Hora finalización"
-                                  slotProps={{
-                                    textField: {
-                                      error: dateError,
-                                      helperText:
-                                        dateError && 'La hora de fin no puede ser inferior o igual',
-                                    },
-                                  }}
-                                  defaultValue={
-                                    currentEvent?.id ? dayjs(currentEvent.end).$d : null
-                                  }
-                                  onChange={(value) => field.onChange(value)}
-                                />
-                              )}
-                            />
-                          </Stack>
-                        </>
-                      )}
-                      {selectedValues.modalidad && selectedValues.beneficio === 158 && (
-                        <Stack spacing={3} sx={{ p: { xs: 1, md: 2 } }}>
-                          Datos de contacto:{' '}
-                          {infoContact.result ? infoContact.data[0].correo : 'Cargando...'}
-                        </Stack>
-                      )}
+                        {beneficios.map((e, index) => (
+                          <MenuItem key={e.id} value={e.id}>
+                            {e.puesto.toUpperCase()}
+                          </MenuItem>
+                        ))}
+                      </Select>
                     </FormControl>
-                  </Box>
+                    <FormControl fullWidth>
+                      <InputLabel id="especialista-input">Especialista</InputLabel>
+                      <Select
+                        labelId="Especialista"
+                        id="select-especialista"
+                        label="Especialista"
+                        name="especialista"
+                        value={selectedValues.especialista}
+                        onChange={(e) => handleChange('especialista', e.target.value)}
+                        disabled={especialistas.length === 0}
+                      >
+                        {especialistas.map((e, index) => (
+                          <MenuItem key={e.id} value={e.id}>
+                            {e.especialista.toUpperCase()}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                    <FormControl fullWidth>
+                      <InputLabel id="modalidad-input">Modalidad</InputLabel>
+                      <Select
+                        labelId="Modalidad"
+                        id="select-modalidad"
+                        label="Modalidad"
+                        name="especialista"
+                        value={selectedValues.modalidad}
+                        onChange={(e) => handleChange('modalidad', e.target.value)}
+                        disabled={modalidades.length === 0}
+                      >
+                        {modalidades.map((e, index) => (
+                          <MenuItem key={e.tipoCita} value={e.tipoCita}>
+                            {e.modalidad.toUpperCase()}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Stack>
+                  {selectedValues.modalidad && selectedValues.beneficio === 158 && (
+                    <Stack>
+                      Contacte al especialista seleccionado para agendar una cita de Quantum
+                      Balance:
+                      <br />
+                      {infoContact.result ? infoContact.data[0].correo : ' Cargando...'}
+                    </Stack>
+                  )}
+                  {selectedValues.modalidad === 1 && selectedValues.beneficio !== 158 && (
+                    <Stack spacing={3} sx={{ p: { xs: 1, md: 2 } }}>
+                      Lugar de la cita:
+                      {oficina.result ? ` ${oficina.data[0].ubicación}` : ' Cargando...'}
+                    </Stack>
+                  )}
                 </Stack>
               </Box>
             </Grid>
-            <Grid xs={6}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <Grid
+              sx={{
+                width: '100%',
+                display:
+                  selectedValues.especialista && selectedValues.beneficio !== 158
+                    ? 'block'
+                    : 'none',
+              }}
+            >
+              <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
                 <DateCalendar
                   defaultValue={initialValue}
                   loading={isLoading}
-                  onMonthChange={handleMonthChange}
                   onChange={handleDateChange}
                   renderLoading={() => <DayCalendarSkeleton />}
-                  slots={{
-                    day: ServerDay,
-                  }}
-                  slotProps={{
-                    day: {
-                      highlightedDays,
-                    },
-                  }}
+                  minDate={initialValue}
+                  maxDate={lastDayOfNextMonth}
+                  shouldDisableDate={shouldDisableDate}
+                  views={['year', 'month', 'day']}
                 />
               </LocalizationProvider>
             </Grid>

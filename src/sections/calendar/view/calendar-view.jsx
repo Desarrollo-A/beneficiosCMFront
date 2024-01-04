@@ -103,9 +103,6 @@ export default function CalendarView() {
     selectedDate,
   } = useCalendar();
 
-  const { data: benefits } = useGetBenefits(datosUser.sede);
-  const { data: especialists } = useGetEspecialists(datosUser.sede, selectedValues.beneficio);
-  const { data: modalities } = useGetModalities(datosUser.sede, selectedValues.especialista);
   const {
     data: events,
     appointmentLoading: eventsLoading,
@@ -119,54 +116,6 @@ export default function CalendarView() {
     filters,
     dateError,
   });
-
-  useEffect(() => {
-    console.log('Beneficios', benefits);
-    if (benefits) {
-      setBeneficios(benefits);
-    }
-  }, [benefits]);
-
-  useEffect(() => {
-    console.log('Especialista', especialists);
-    if (especialists) {
-      setEspecialistas(especialists);
-    }
-  }, [especialists, beneficios]);
-
-  useEffect(() => {
-    console.log('Modalidades', modalities);
-    if (modalities) {
-      setModalidades(modalities);
-    }
-  }, [modalities]);
-
-  const handleChange = (input, value) => {
-    if (input === 'beneficio') {
-      setSelectedValues({
-        beneficio: value,
-        especialista: '',
-        modalidad: '',
-      });
-    } else if (input === 'especialista') {
-      setSelectedValues({
-        ...selectedValues,
-        especialista: value,
-        modalidad: '',
-      });
-    } else if (input === 'modalidad') {
-      setSelectedValues({
-        ...selectedValues,
-        modalidad: value,
-      });
-    } else if (input === 'all') {
-      setSelectedValues({
-        beneficio: value,
-        especialista: value,
-        modalidad: value,
-      });
-    }
-  };
 
   return (
     <>
@@ -240,12 +189,12 @@ export default function CalendarView() {
         onClose={dialog.onFalse}
         transitionDuration={{
           enter: theme.transitions.duration.shortest,
-          exit: theme.transitions.duration.shortest - 80,
+          exit: theme.transitions.duration.shortest - 1000,
         }}
       >
         <CalendarDialog
           currentEvent={currentEvent}
-          onClose={onCloseForm}
+          onClose={dialog.onFalse}
           selectedDate={selectedDate}
           appointmentMutate={appointmentMutate}
         />
@@ -257,7 +206,7 @@ export default function CalendarView() {
         onClose={onCloseForm}
         transitionDuration={{
           enter: theme.transitions.duration.shortest,
-          exit: theme.transitions.duration.shortest - 80,
+          exit: theme.transitions.duration.shortest - 1000,
         }}
       >
         <CalendarDialog

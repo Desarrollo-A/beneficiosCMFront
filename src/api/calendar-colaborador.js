@@ -124,11 +124,32 @@ export function getModalities(sede, especialista) {
   return modalities;
 }
 
-export function getSpecialistContact(especialista) {
+export function getHorario(beneficio) {
+  const URL_HORARIO = [endpoints.calendarioColaborador.getHorarioBeneficio];
+  const horario = fetcherPost(URL_HORARIO, { beneficio });
+
+  return horario;
+}
+
+export function getHorariosOcupados(idUsuario, fechaInicio, fechaFin) {
+  const URL_HORARIOS = [endpoints.calendarioColaborador.getAllEventsWithRange];
+  const horarios = fetcherPost(URL_HORARIOS, { idUsuario, fechaInicio, fechaFin });
+
+  return horarios;
+}
+
+export function getContactoQB(especialista) {
   const URL_CONTACT = [endpoints.especialistas.contact];
-  const infoContact = fetcherPost(URL_CONTACT, { especialista: especialista });
+  const infoContact = fetcherPost(URL_CONTACT, { especialista });
 
   return infoContact;
+}
+
+export function getOficinaByAtencion(sede, beneficio, especialista, modalidad) {
+  const URL_OFICINA = [endpoints.calendarioColaborador.getOficina];
+  const oficina = fetcherPost(URL_OFICINA, { sede, beneficio, especialista, modalidad });
+
+  return oficina;
 }
 
 export function useGetAppointmentsByUser(current) {
