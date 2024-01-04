@@ -1,6 +1,7 @@
 import Calendar from '@fullcalendar/react'; // => request placed at the top
 import dayjs from 'dayjs';
 import listPlugin from '@fullcalendar/list';
+import { enqueueSnackbar } from 'notistack';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import timelinePlugin from '@fullcalendar/timeline';
@@ -23,6 +24,7 @@ import { dropUpdate, GetCustomEvents } from 'src/api/calendar-specialist';
 import { useSettingsContext } from 'src/components/settings';
 
 import Lista from "./lista";
+import EventContent from './eventContent';
 import { StyledCalendar } from '../styles';
 import CalendarToolbar from '../calendar-tool';
 import { useEvent, useCalendar } from '../hooks';
@@ -43,7 +45,6 @@ export default function CalendarioView(){
     const { data: names, usersMutate } = useGetNameUser();
     const [userData, setUserData] = useState('');
     const theme = useTheme();
-    const [isOld, setIsOld] = useState(false);
 
     const dateError =
     filters.startDate && filters.endDate
@@ -64,6 +65,7 @@ export default function CalendarioView(){
         onChangeView,
         onClickEvent, 
         openForm,
+        openFormEvent,
         onCloseForm,
         //
         selectEventId,
@@ -87,13 +89,17 @@ export default function CalendarioView(){
       }, [names]);
 
       const onEventUpdate = useCallback((arg) => {
-        if (arg.oldEvent.start < new Date || isOld){
+        const {estatus, fechaInicio} = arg.event.extendedProps;
+        const now = dayjs(new Date).format('YYYY-MM-DD HH:mm:ss');
+
+        if (fechaInicio < now || estatus !== 1){
+          enqueueSnackbar('No se puede mover el evento', {variant: 'error'});
           arg.revert();
         }
         else{
           onDropEvent(arg, dropUpdate);
         }
-      }, [onDropEvent, isOld]);
+      }, [onDropEvent]);
 
      const hours = {
         start: dayjs(new Date).format('HH:mm'), /* Current Hour/Minute 24H format */
@@ -124,15 +130,7 @@ export default function CalendarioView(){
                 editable
                 droppable
                 selectable
-                eventDragStart={(arg) => {
-                  // Check if the event start time is in the past
-                  if (arg.event.start < new Date()) {
-                    setIsOld(true);
-                  }
-                  else{
-                    setIsOld(false);
-                  }
-                }}
+                
                 eventConstraint={hours2}
                 businessHours={hours}
                 selectLongPressDelay={0}
@@ -174,14 +172,21 @@ export default function CalendarioView(){
               exit: theme.transitions.duration.shortest - 1000,
             }}
           >
-            <Lista
+            { currentEvent?.id 
+            ? <EventContent
               currentEvent={currentEvent}
+              onClose={onCloseForm}
+              selectedDate={selectedDate}
+              />
+            : <Lista
               onClose={onCloseForm}
               userData={userData}
               usersMutate={usersMutate}
               selectedDate={selectedDate}
-            />
+              />
+            }
           </Dialog>
+
         </Container>
     );
 }

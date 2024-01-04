@@ -56,6 +56,8 @@ export function GetCustomEvents(current) {
     const events = data?.events?.map((event) => ({
       ...event,
       textColor: event?.color,
+      type: event?.type,
+      fechaInicio: event.start
     }));
     
     return {
@@ -74,8 +76,8 @@ export function GetCustomEvents(current) {
 
 export async function createCustom(eventData) {
   let create = '';
-  const fechaInicio = dayjs(`${eventData.newDate} ${eventData.hora_inicio}`).format('YYYY/MM/DD HH:mm:ss'); 
-  const fechaFinal = dayjs(`${eventData.newDate} ${eventData.hora_final}`).format('YYYY/MM/DD HH:mm:ss');
+  const fechaInicio = dayjs(`${eventData.fechaInicio} ${eventData.hora_inicio}`).format('YYYY/MM/DD HH:mm:ss'); 
+  const fechaFinal = dayjs(`${eventData.fechaFinal} ${eventData.hora_final}`).format('YYYY/MM/DD HH:mm:ss');
 
     const dataValue = {
         titulo: eventData.title,
@@ -139,8 +141,8 @@ export async function deleteEvent(eventId) {
 
 export async function createAppointment(eventData){
   let create = '';
-  const fechaInicio = dayjs(`${eventData.newDate} ${eventData.hora_inicio}`).format('YYYY/MM/D HH:mm:ss'); 
-  const fechaFinal = dayjs(`${eventData.newDate} ${eventData.hora_final}`).format('YYYY/MM/D HH:mm:ss');
+  const fechaInicio = dayjs(`${eventData.fechaInicio} ${eventData.hora_inicio}`).format('YYYY/MM/D HH:mm:ss'); 
+  const fechaFinal = dayjs(`${eventData.fechaFinal} ${eventData.hora_final}`).format('YYYY/MM/D HH:mm:ss');
 
   const start = dayjs(`${eventData.newDate} ${eventData.hora_inicio}`).format('YYYY/MM/DD HH:mm:ss'); // fecha a la que se movera
   const now = dayjs(new Date()).format('YYYY/MM/DD HH:mm:ss');
@@ -211,31 +213,26 @@ export async function cancelAppointment(currentEvent){
 // ----------------------------------------------------------------------
 
 export async function dropUpdate(args){
-  let update = '';
-  const tipo = args.color === "purple" ? occupied_drop : appointment_drop; // para identificar si es cita u horario ocupado, mediante el color de la etiqueta
+  let update = ''; 
+  const type = args.type === "date" ? appointment_drop : occupied_drop;
   const oldStart = dayjs(args.oldStart).format('YYYY/MM/DD HH:mm:ss'); // fecha original del evento
-  const inactivo = args.color === 'green' // distinsion mediante el color de las etiquetas
 
   const data = {
     id: args.id,
     fechaInicio: dayjs(args.start).format('YYYY/MM/DD HH:mm:ss'),
     fechaFinal: dayjs(args.end).format('YYYY/MM/DD HH:mm:ss'),
     idUsuario: datosUser.idUsuario,
-    oldStart
+    oldStart,
+    estatus: args.estatus
   }
+ 
+  update = await fetcherPost(type, data);
 
-  if(!inactivo){
-      update = await fetcherPost(tipo, data);
-
-      if(update.result)
-        enqueueSnackbar(update.msg);
-      else{
-        enqueueSnackbar(update.msg, {variant: "error"});
-        reRender(); // se utiliza el rerender aqui parta que pueda regresar el evento en caso de no quedar
-      }
-  }
+  if(update.result)
+    enqueueSnackbar(update.msg);
   else{
-    enqueueSnackbar("No se puede mover la cita", {variant: "error"});
-    reRender();
+    enqueueSnackbar(update.msg, {variant: "error"});
+    reRender(); // se utiliza el rerender aqui parta que pueda regresar el evento en caso de no quedar
   }
+
 }
