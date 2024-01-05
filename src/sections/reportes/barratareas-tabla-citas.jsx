@@ -44,8 +44,9 @@ export default function BarraTareasTabla({
   );
 
   const report = [ 
-    { value: 'Reporte General', label: 'Reporte General' },
-    { value: 'Reporte de faltas', label: 'Reporte de Faltas' },
+    { value: 'general', label: 'Reporte General' },
+    { value: 'faltas', label: 'Reporte de Faltas' },
+    { value: 'justificadas', label: 'Reporte de Justificiones' },
   ];
 
   const [currentStatus, setCurrentStatus] = useState(report[0].label);
@@ -101,7 +102,7 @@ export default function BarraTareasTabla({
             width: { xs: 1, md: 200 },
           }}
         >
-          <InputLabel>Area</InputLabel>
+          <InputLabel>Área</InputLabel>
 
           <Select
             multiple

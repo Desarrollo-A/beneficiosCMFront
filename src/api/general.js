@@ -12,11 +12,16 @@ const options = {
 
 export function usePostGeneral(dataValue, URL, nameData) {
   
-    const { data, isLoading, error, isValidating } = useSWR(URL, url => fetcherPost(url, dataValue), options);
+    const { data, isLoading, error, isValidating } = useSWR(URL, url => fetcherPost(url, dataValue));
 
     useEffect(() => {
       mutate(URL);
     }, [URL, dataValue]);
+
+    const refreshData = () => {
+      // Invalida la caché y fuerza una nueva solicitud
+      mutate([URL, dataValue]);
+    };
     
     const memoizedVal = useMemo(
       () => ({
@@ -28,7 +33,7 @@ export function usePostGeneral(dataValue, URL, nameData) {
       }),
       [data?.data, error, isLoading, isValidating, nameData]
     );
-    return memoizedVal;
+    return { ...memoizedVal, refreshData };
 }
 
 export function useGetGeneral(URL, nameData) {

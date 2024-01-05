@@ -1,5 +1,6 @@
 import JsPDF from 'jspdf';
 import Xlsx from 'json-as-xlsx';
+import { Base64 } from 'js-base64';
 import isEqual from 'lodash/isEqual';
 import autoTable from 'jspdf-autotable';
 import { useRef, useState, useEffect, useCallback } from 'react';
@@ -22,7 +23,7 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import uuidv4 from "src/utils/uuidv4";
 import { endpoints } from 'src/utils/axios';
 
-import { useGetGeneral } from 'src/api/general';
+import { useGetGeneral, usePostGeneral } from 'src/api/general';
 import { useGetReportes } from 'src/api/reportes';
 
 import Iconify from 'src/components/iconify';
@@ -55,7 +56,7 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 const doc = new JsPDF();
 
-function handleDownloadExcel(tableData, rol) {
+function handleDownloadExcel(datosTabla, rol) {
   
   let data = [];
 
@@ -64,18 +65,17 @@ function handleDownloadExcel(tableData, rol) {
       sheet: "Historial Reportes",
       columns: [
         { label: "ID Cita", value: "idCita" },
-        { label: "Especialista", value: "idEspecialista" },
-        { label: "Paciente", value: "idPaciente" },
+        { label: "Especialista", value: "especialista" },
+        { label: "Paciente", value: "paciente" },
         { label: "Oficina", value: "oficina" },
-        { label: "Departamento", value: "departamento" },
+        { label: "Departamento", value: "area" },
         { label: "Sede", value: "sede" },
         { label: "Sexo", value: "sexo" },
-        { label: "Motivo Consulta", value: "motivo" },
+        { label: "Motivo consulta", value: "titulo" },
         { label: "Estatus", value: "estatus" },
-        { label: "Fecha Inicio", value: "fechaInicio" },
-        { label: "Fecha Final", value: "fechaFinal" },
+        { label: "Horario cita", value: "horario" },
       ],
-      content: tableData,
+      content: datosTabla,
     },
   ];
 
@@ -87,7 +87,7 @@ function handleDownloadExcel(tableData, rol) {
       {
         sheet: "Historial Reportes",
         columns: arr,
-        content: tableData,
+        content: datosTabla,
       },
     ];
 
@@ -99,7 +99,7 @@ function handleDownloadExcel(tableData, rol) {
       {
         sheet: "Historial Reportes",
         columns: arr,
-        content: tableData,
+        content: datosTabla,
       },
     ];
 
@@ -117,20 +117,20 @@ function handleDownloadExcel(tableData, rol) {
   Xlsx(data, settings)
 }
 
-function handleDownloadPDF(tableData, header, rol) {
+function handleDownloadPDF(datosTabla, header, rol) {
 
   let data = [];
 
   if (rol === 1) {
-    data = tableData.map(item => ([item.idCita, item.idPaciente,
-    item.area, item.estatus, item.fechaInicio, item.fechaFinal]))
+    data = datosTabla.map(item => ([item.idCita, item.paciente,
+    item.oficina, item.area, item.sede, '', item.titulo, item.estatus, item.horario]))
   }
   else if (rol === 2) {
-    data = tableData.map(item => ([item.idCita, item.idEspecialista,
-    item.area, item.estatus, item.fechaInicio, item.fechaFinal]))
+    data = datosTabla.map(item => ([item.idCita, item.especialista,
+      item.oficina, item.area, item.sede, '', item.titulo, item.estatus, item.horario]))
   } else {
-    data = tableData.map(item => ([item.idCita, item.idEspecialista, item.idPaciente,
-    item.area, item.estatus, item.fechaInicio, item.fechaFinal]))
+    data = datosTabla.map(item => ([item.idCita, item.especialista, item.paciente,
+      item.oficina, item.area, item.sede, '', item.titulo, item.estatus, item.horario]))
   }
 
   autoTable(doc, {
@@ -142,9 +142,9 @@ function handleDownloadPDF(tableData, header, rol) {
 // ----------------------------------------------------------------------
 export default function HistorialReportesView() {
 
-  // const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+  const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
 
-  // console.log(datosUser.idRol)
+  // const rol = datosUser.idUsuario;
 
   const rol = 3;
 
@@ -152,20 +152,18 @@ export default function HistorialReportesView() {
 
   let header = [];
 
-  const headerBase = ["ID Cita", "Especialista", "Paciente", "Oficina", "Departamento", "Sede", "Sexo", "Motivo Consulta", "Estatus",
-    "Fecha Inicio", "Fecha Final"];
+  const headerBase = ["ID Cita", "Especialista", "Paciente", "Oficina", "Departamento", "Sede", "Sexo", "Motivo consulta", "Estatus",
+    "Horario cita"];
 
-  const [dataValue, setReportData] = useState('Reporte General');
+  const [dataValue, setReportData] = useState('general');
 
-  const { reportesData } = useGetReportes(dataValue);
+  const { reportesData } = usePostGeneral(dataValue, endpoints.reportes.lista, "reportesData");
 
   const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
 
   const [datosTabla, setDatosTabla] = useState([]);
 
   const [especialistas, setEspecialistas] = useState([]);
-
-  const [tableData, setTableData] = useState([]);
 
   const _rp = especialistas.flatMap((es) => (es.nombre));
 
@@ -189,8 +187,7 @@ export default function HistorialReportesView() {
     { id: '', label: 'Sexo' },
     { id: '', label: 'Motivo Consulta' },
     { id: '', label: 'Estatus' },
-    { id: '', label: 'Fecha Inicio' },
-    { id: '', label: 'Fecha Final' },
+    { id: '', label: 'Horario cita' },
     { id: '', width: 88 },
   ];
 
@@ -245,24 +242,24 @@ export default function HistorialReportesView() {
 
   const handleDeleteRow = useCallback(
     (id) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
-      setTableData(deleteRow);
+      const deleteRow = datosTabla.filter((row) => row.id !== id);
+      setDatosTabla(deleteRow);
 
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
-    [dataInPage.length, table, tableData]
+    [dataInPage.length, table, datosTabla]
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
-    setTableData(deleteRows);
+    const deleteRows = datosTabla.filter((row) => !table.selected.includes(row.id));
+    setDatosTabla(deleteRows);
 
     table.onUpdatePageDeleteRows({
-      totalRows: tableData.length,
+      totalRows: datosTabla.length,
       totalRowsInPage: dataInPage.length,
       totalRowsFiltered: dataFiltered.length,
     });
-  }, [dataFiltered.length, dataInPage.length, table, tableData]);
+  }, [dataFiltered.length, dataInPage.length, table, datosTabla]);
 
   const handleEditRow = useCallback(
     (id) => {
@@ -280,7 +277,7 @@ export default function HistorialReportesView() {
   const handleExcel = async e => {
     e.preventDefault();
     handleDownloadExcel(
-      tableData,
+      datosTabla,
       rol
     );
   }
@@ -288,7 +285,7 @@ export default function HistorialReportesView() {
   const handlePdf = async e => {
     e.preventDefault();
     handleDownloadPDF(
-      tableData,
+      datosTabla,
       header,
       rol
     );
@@ -387,7 +384,7 @@ export default function HistorialReportesView() {
                   order={table.order}
                   orderBy={table.orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={tableData.length}
+                  rowCount={datosTabla.length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
                 />
@@ -413,7 +410,7 @@ export default function HistorialReportesView() {
 
                   <TableEmptyRows
                     height={denseHeight}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
+                    emptyRows={emptyRows(table.page, table.rowsPerPage, datosTabla.length)}
                   />
 
                   <TableNoData notFound={notFound} />
@@ -477,10 +474,12 @@ function applyFilter({ inputData, comparator, filters }) {
     inputData = inputData.filter(
       (cita) =>
         cita.idCita.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        cita.estatus.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        cita.horario.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        cita.estatus.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
         cita.area.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        cita.idEspecialista.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        cita.idPaciente.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1
+        cita.especialista.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        cita.paciente.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        cita.oficina.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 
     );
   }
 

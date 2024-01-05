@@ -10,7 +10,7 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function FiltrosTabla({
+export default function UserTableFiltersResult({
   filters,
   onFilters,
   //
@@ -21,11 +21,6 @@ export default function FiltrosTabla({
 }) {
   const handleRemoveStatus = () => {
     onFilters('estatus', 'all');
-  };
-
-  const handleRemoveRole = (inputValue) => {
-    const newValue = filters.area.filter((item) => item !== inputValue);
-    onFilters('area', newValue);
   };
 
   return (
@@ -44,14 +39,6 @@ export default function FiltrosTabla({
           </Block>
         )}
 
-        {!!filters.area.length && (
-          <Block label="Área:">
-            {filters.area.map((item) => (
-              <Chip key={item} label={item} size="small" onDelete={() => handleRemoveRole(item)} />
-            ))}
-          </Block>
-        )}
-
         <Button
           color="error"
           onClick={onResetFilters}
@@ -64,7 +51,7 @@ export default function FiltrosTabla({
   );
 }
 
-FiltrosTabla.propTypes = {
+UserTableFiltersResult.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   onResetFilters: PropTypes.func,

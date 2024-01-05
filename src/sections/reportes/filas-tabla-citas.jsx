@@ -15,17 +15,11 @@ import UserQuickEditForm from './modal-editar-citas';
 // ----------------------------------------------------------------------
 
 export default function FilasTabla({ row, selected, rol, rel  }) {
-  const { idCita, idEspecialista, idPaciente, estatus, fechaInicio, fechaFinal, area, observaciones } = row;
+  const { idCita, especialista, oficina, area, sede, titulo, paciente, estatus, horario, observaciones } = row;
 
   const quickEdit = useBoolean();
 
-  const oficina = 1;
-
-  const sede = 'Querétaro';
-
   const sexo = 'Masculino';
-
-  const motivo = 'Alimentación';
 
   let espe = Boolean(true);
 
@@ -46,9 +40,9 @@ export default function FilasTabla({ row, selected, rol, rel  }) {
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{idCita}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }} style={{ display: espe ? '' : 'none' }}>{idEspecialista}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }} style={{ display: espe ? '' : 'none' }}>{especialista}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }} style={{ display: paci ? '' : 'none' }}>{idPaciente}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }} style={{ display: paci ? '' : 'none' }}>{paciente}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{oficina}</TableCell>
 
@@ -58,16 +52,17 @@ export default function FilasTabla({ row, selected, rol, rel  }) {
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{sexo}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{motivo}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{titulo}</TableCell>
 
         <TableCell>
           <Label
             variant="soft"
             color={
               (estatus === 'Asistencia' && 'success') ||
-              (estatus === 'Por asistir' && 'primary') ||
+              (estatus === 'Por asistir' && 'info') ||
               (estatus === 'Penalización' && 'warning') ||
               (estatus === 'Cancelada' && 'error') ||
+              (estatus === 'Justificado' && 'secondary') ||
               'default'
             }
           >
@@ -75,13 +70,11 @@ export default function FilasTabla({ row, selected, rol, rel  }) {
           </Label>
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fechaInicio}</TableCell>
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fechaFinal}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{horario}</TableCell>
 
         {estatus === 'Penalización' && observaciones === null && rol === 3 ? (
           <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }} >
-            <Tooltip title="Observación" placement="top" arrow>
+            <Tooltip title="Justificar" placement="top" arrow>
               <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>
                 <Iconify icon="material-symbols:comment-outline" />
               </IconButton>

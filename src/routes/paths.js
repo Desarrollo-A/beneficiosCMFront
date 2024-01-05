@@ -119,6 +119,8 @@ export const paths = {
       root: `${ROOTS.DASHBOARD}/encuestas`,
       contestar: `${ROOTS.DASHBOARD}/encuestas/contestar`,
       crear: `${ROOTS.DASHBOARD}/encuestas/crear`,
+      ver: `${ROOTS.DASHBOARD}/encuestas/ver`,
+      detalle: `${ROOTS.DASHBOARD}/encuestas/detalle`,
     },
     user: {
       root: `${ROOTS.DASHBOARD}/user`,
