@@ -75,12 +75,12 @@ export default function JwtRegisterView() {
 
   const validarNumEmpleado = () => {
     if(numEmpleado.trim() === ''){
-        console.log('Ingrasar numero de empleado valido');
+        console.log('Ingresar número de empleado válido');
     }else{
       // Conectar axios con CH
-      const datos = Base64.encode(JSON.stringify({numempleado : numEmpleado}));
+      const datos = Base64.encode(JSON.stringify({num_empleado : numEmpleado}));
 
-      instance.post('info_empleado', datos)
+      instance.post('data_colaborador_consultas', datos)
       .then(response=>{
         let datosResponse = Base64.decode(JSON.stringify(response.data.response));
         datosResponse = JSON.parse(datosResponse);
