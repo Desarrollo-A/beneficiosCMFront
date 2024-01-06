@@ -65,11 +65,11 @@ export default function CalendarioView(){
         onChangeView,
         onClickEvent, 
         openForm,
-        openFormEvent,
         onCloseForm,
         //
         selectEventId,
-        selectedDate
+        selectedDate,
+        selectedEnd
     } = useCalendar();
 
     const { events, eventsLoading} = GetCustomEvents(date);
@@ -88,7 +88,7 @@ export default function CalendarioView(){
         }
       }, [names]);
 
-      const onEventUpdate = useCallback((arg) => {
+      const onEventUpdate = useCallback((arg) => {// validacion de los eventos, verifica que no sea anterior a la fecha actual o estatus diferente a 1
         const {estatus, fechaInicio} = arg.event.extendedProps;
         const now = dayjs(new Date).format('YYYY-MM-DD HH:mm:ss');
 
@@ -101,15 +101,15 @@ export default function CalendarioView(){
         }
       }, [onDropEvent]);
 
-     const hours = {
-        start: dayjs(new Date).format('HH:mm'), /* Current Hour/Minute 24H format */
-        end: '17:00', // 5pm? set to whatever
-        daysOfWeek: [ 1, 2, 3, 4, 5, 6 ], // Monday - Thursday
+     const hours = { // horarios laborales
+        start: dayjs(new Date).format('HH:mm'),
+        end: '17:00', 
+        daysOfWeek: [ 1, 2, 3, 4, 5, 6 ], // excluye el dia domingo
     }
 
     const hours2 = {
-      start: dayjs(new Date).format('YYYY-MM-DD HH:mm:ss'), /* Current Hour/Minute 24H format */
-  }
+      start: dayjs(new Date).format('YYYY-MM-DD HH:mm:ss')
+    }
       
     return(
         <Container maxWidth={settings.themeStretch ? false : 'xl'}>
@@ -130,7 +130,6 @@ export default function CalendarioView(){
                 editable
                 droppable
                 selectable
-                
                 eventConstraint={hours2}
                 businessHours={hours}
                 selectLongPressDelay={0}
@@ -177,6 +176,7 @@ export default function CalendarioView(){
               currentEvent={currentEvent}
               onClose={onCloseForm}
               selectedDate={selectedDate}
+              selectedEnd={selectedEnd}
               />
             : <Lista
               onClose={onCloseForm}
@@ -186,7 +186,6 @@ export default function CalendarioView(){
               />
             }
           </Dialog>
-
         </Container>
     );
 }

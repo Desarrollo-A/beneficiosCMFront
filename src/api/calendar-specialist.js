@@ -98,8 +98,8 @@ export async function createCustom(eventData) {
 export async function updateCustom(eventData) {
   let update = '';
   
-  const start = dayjs(`${eventData.newDate} ${eventData.hora_inicio}`).format('YYYY/MM/DD HH:mm:ss'); // fecha a la que se movera
-  const end = dayjs(`${eventData.newDate} ${eventData.hora_final}`).format('YYYY/MM/DD HH:mm:ss');
+  const start = dayjs(`${eventData.fechaInicio} ${eventData.hora_inicio}`).format('YYYY/MM/DD HH:mm:ss'); // fecha a la que se movera
+  const end = dayjs(`${eventData.fechaFinal} ${eventData.hora_final}`).format('YYYY/MM/DD HH:mm:ss');
   const now = dayjs(new Date()).format('YYYY/MM/DD HH:mm:ss');
   const oldStart = dayjs(`${eventData.newDate} ${eventData.hora_inicio}`).format('YYYY/MM/DD HH:mm:ss'); // fecha original del evento
 
@@ -172,8 +172,8 @@ export async function createAppointment(eventData){
 export async function updateAppointment(eventData) {
   let update = '';
   
-  const start = dayjs(`${eventData.newDate} ${eventData.hora_inicio}`).format('YYYY/MM/DD HH:mm:ss'); // fecha a la que se movera
-  const end = dayjs(`${eventData.newDate} ${eventData.hora_final}`).format('YYYY/MM/DD HH:mm:ss'); // fecha a la que se movera
+  const start = dayjs(`${eventData.fechaInicio} ${eventData.hora_inicio}`).format('YYYY/MM/DD HH:mm:ss'); // fecha a la que se movera
+  const end = dayjs(`${eventData.fechaFinal} ${eventData.hora_final}`).format('YYYY/MM/DD HH:mm:ss'); // fecha a la que se movera
   const now = dayjs(new Date()).format('YYYY/MM/DD HH:mm:ss');
 
   const dataValue = {

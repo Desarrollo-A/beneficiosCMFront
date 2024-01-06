@@ -30,9 +30,9 @@ import { useSnackbar } from 'src/components/snackbar';
 import { RHFTextField } from 'src/components/hook-form';
 import FormProvider from 'src/components/hook-form/form-provider';
 
-export default function EventContent({ currentEvent, onClose, selectedDate }) {
+export default function EventContent({ currentEvent, onClose, selectedDate, selectedEnd }) {
     dayjs.locale('es') // valor para cambiar el idioma del dayjs
-
+    
     const { enqueueSnackbar } = useSnackbar();
     const [open, setOpen] = useState(false);
     const type = currentEvent?.type;
@@ -46,13 +46,16 @@ export default function EventContent({ currentEvent, onClose, selectedDate }) {
   };
 
     const [dateTitle, setDateTitle] = useState(dayjs(selectedDate).format("dddd, DD MMMM YYYY"));
-    const pastCheck = currentEvent?.id && selectedDate < new Date(); // checar que cuando hay un id si la fecha es superior
-    const disableInputs = currentEvent?.id && currentEvent?.estatus !== 1 || pastCheck; // deshabilitar inputs
+    const pastCheck = selectedDate < new Date(); // checar si la fecha del evento es inferior a la fecha actual
+    const disableInputs = currentEvent?.estatus !== 1 || pastCheck; // deshabilitar inputs
+    const allDay = dayjs(currentEvent?.start).format('YYYY/MM/DD') < dayjs(currentEvent?.end).format('YYYY/MM/DD');
+    const [defaultInicio, setDefaultInicio] = useState(selectedDate);
+    const [defaultFecha, setDefaultFecha] = useState(selectedEnd);
     
     const formSchema = yup.object().shape({
         title: yup.string().max(100).required('Se necesita el título').trim(), // maximo de caracteres para el titulo 100
-        start: yup.date().required(),
-        end: yup.date().required(),
+        start: !allDay ? yup.date().required() : '',
+        end: !allDay ? yup.date().required() : '',
     });
 
     const methods = useForm({
@@ -67,7 +70,8 @@ export default function EventContent({ currentEvent, onClose, selectedDate }) {
     } = methods;
 
     const values = watch();
-    const dateError = checkDate(values.start, values.end, currentEvent?.type); // se hace conversion a tiemestamp para cuando se tenga id
+    const hourError = checkHour(values.start, values.end, type, defaultInicio, defaultFecha);
+    const dateError = type === 'cancel' && values.fecha > defaultFecha; // validacion que la fecha final no sea menor a la fecha inicio
 
     const onSubmit = handleSubmit(async (data) => {
         let save = '';
@@ -75,15 +79,16 @@ export default function EventContent({ currentEvent, onClose, selectedDate }) {
         const eventData = { // se da el formato juntando la fecha elegida y la hora que se elige con los minutos
             id: currentEvent?.id ? currentEvent?.id : uuidv4(),
             title: data?.title,
-            hora_inicio: `${data.start.getHours()}:${data.start.getMinutes()}`,
-            hora_final: `${data.end.getHours()}:${data.end.getMinutes()}`,
-            newDate: fDate(data?.newDate),
+            hora_inicio: dayjs(data.start).format('HH:mm:ss'),
+            hora_final: dayjs(data.end).format('HH:mm:ss'),
+            fechaInicio: fDate(defaultInicio),
+            fechaFinal : type === 'date' ? fDate(defaultInicio) : fDate(defaultFecha),
             paciente: currentEvent?.idPaciente,
             estatus: currentEvent?.estatus
         };
 
         try {
-            if (!dateError) {
+            if (!dateError && !hourError) {
 
                 switch(type){
                     case 'cancel':
@@ -167,7 +172,7 @@ export default function EventContent({ currentEvent, onClose, selectedDate }) {
         <FormProvider methods={methods} onSubmit={onSubmit}>
             <DialogContent sx={{ p: { xs: 1, md: 2 } }}>
                 <Stack direction="row" justifyContent='space-between' useFlexGap flexWrap="wrap" sx={{ p: { xs: 1, md: 2 } }}>
-                    <Typography variant='h5' sx={{ display: "flex", alignItems: "center" }}>{dialogTitle(currentEvent?.estatus)}</Typography>
+                    <Typography variant='h5' sx={{ display: "flex", alignItems: "center" }}>{dialogTitle(currentEvent?.estatus, type)}</Typography>
                     {!!currentEvent?.id && currentEvent?.estatus === 1 && !pastCheck && (
                         <Tooltip title={currentEvent?.type === 'date' ? "Cancelar cita" : "Eliminar horario"}>
                             <IconButton onClick={handleClickOpen}>
@@ -181,26 +186,39 @@ export default function EventContent({ currentEvent, onClose, selectedDate }) {
                     <RHFTextField disabled={ disableInputs } name="title" label="Título" />
                 </Stack>
 
-                <Stack direction="row" justifyContent='space-between' sx={{ p: { xs: 1, md: 2 } }}>
-                    <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
-                        <Controller
-                            name="newDate"
-                            defaultValue={selectedDate}
-                            render={({ field }) =>
-                                <MobileDatePicker
-                                    label="Fecha"
-                                    sx={{width: '100%'}}
-                                    disabled={ disableInputs }
-                                    defaultValue={selectedDate}
-                                    onChange={
-                                        (value) => {
-                                            field.onChange(value);
-                                            setDateTitle(dayjs(value).format("dddd, DD MMMM YYYY") ); // al momento de cambiar el valor en el input, cambia el valor del titulo
-                                        }
+                <Stack direction="row" justifyContent='space-between' spacing={2} sx={{ p: { xs: 1, md: 2 } }}>
+                <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
+                        <MobileDatePicker
+                                label="Fecha inicial"
+                                disabled={ disableInputs }
+                                sx={{width: '100%'}}
+                                value={defaultInicio}
+                                onChange={
+                                    (value) => {
+                                        setDefaultInicio(value);
+                                        setDateTitle(dayjs(value).format("dddd, DD MMMM YYYY") ); // al momento de cambiar el valor en el input, cambia el valor del titulo
                                     }
-                                />
-                            }
+                                }
                         />
+                        
+                        {type === 'cancel' &&
+                        (<MobileDatePicker
+                            label="Fecha final"
+                            sx={{width: '100%'}}
+                            value={defaultFecha}
+                            slotProps={{
+                                textField: {
+                                    error: dateError,
+                                    helperText: dateError && 'Formato incorrecto',
+                                }
+                            }}
+                            onChange={
+                                (value) => {
+                                    setDefaultFecha(value);
+                                }
+                            }
+                        />)
+                        }
                     </LocalizationProvider>
                 </Stack>
 
@@ -229,8 +247,8 @@ export default function EventContent({ currentEvent, onClose, selectedDate }) {
                                 label="Hora finalización"
                                 slotProps={{
                                     textField: {
-                                        error: dateError,
-                                        helperText: dateError && 'Error en las horas seleccionadas',
+                                        error: hourError,
+                                        helperText: hourError && 'Error en las horas seleccionadas',
                                     }
                                 }}
                                 defaultValue={currentEvent?.id ? dayjs(currentEvent.end).$d : null}
@@ -265,7 +283,7 @@ export default function EventContent({ currentEvent, onClose, selectedDate }) {
             <DialogActions>
                 <Button variant='contained' color='error' onClick={onClose}>Cerrar</Button>
                 { currentEvent?.estatus === 1 && !pastCheck ?
-                    <LoadingButton type="submit" variant='contained' disabled={dateError} color='success'>Guardar</LoadingButton> : ''
+                    <LoadingButton type="submit" variant='contained' disabled={dateError || hourError} color='success'>Guardar</LoadingButton> : ''
                 }
             </DialogActions>
         </FormProvider>
@@ -277,7 +295,7 @@ export default function EventContent({ currentEvent, onClose, selectedDate }) {
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description">
         <DialogContent>
-            <Stack direction="row" justifyContent='space-between' useFlexGap flexWrap="wrap" sx={{ p: { xs: 1, md: 2 } }}>
+            <Stack direction="row" justifyContent='space-between' useFlexGap flexWrap="wrap" sx={{pt: { xs: 1, md: 2 }, pb: { xs: 1, md: 2 }}}>
                 <Typography>¡ATENCIÓN!</Typography>
             </Stack>
             <Typography>¿Seguro que quieres {currentEvent?.type === 'date' ? 'cancelar la cita' : 'eliminar el horario'}?</Typography>
@@ -293,33 +311,61 @@ export default function EventContent({ currentEvent, onClose, selectedDate }) {
     )
 }
 
-function checkDate(start, end, type, eventType){
-    let dateError = false;
+function checkHour(start, end, type, dateStart, dateEnd){
+    let validation = false;
 
     const startStamp = dayjs(start).$d;
     const endStamp = dayjs(end).$d;
-    const hour = Math.abs(startStamp - endStamp) / 36e5;
+    let hour = '';
 
-    if(start && end){
-        if(startStamp >= endStamp){
-            dateError = true;
-        }
-        else if((eventType || type) === 'date' && hour !== 1){
-            dateError = true;
-        }
+    dateStart = dayjs(dateStart).format('YYYY/MM/DD');
+    dateEnd = dayjs(dateEnd).format('YYYY/MM/DD');
+    const hourStart = dayjs(start).format('HH:mm:ss');
+    const hourEnd = dayjs(end).format('HH:mm:ss');
+
+    const selectedStart = dayjs(`${dateStart} ${hourStart}`).$d;
+    const selectedEnd = dayjs(`${dateEnd} ${hourEnd}`).$d;
+    
+
+    switch(type){
+        case 'date':
+            if(start && end){
+                hour = Math.abs(startStamp - endStamp) / 36e5;
+
+                if(startStamp >= endStamp){
+                    validation = true;
+                }
+                else if(type === 'date' && hour !== 1){
+                    validation = true;
+                }
+            }
+            break;
+        
+        case 'cancel':
+            if(start && end){
+                if(selectedStart >= selectedEnd){
+                    validation = true;
+                }
+            }
+            break;
+
+        default:
+            break;
     }
         
-    return dateError;
+    return validation;
 }
 
-function dialogTitle(estatus){ // función solo para mostrar el tipo de titulo en el dialog
-    if(estatus){
+
+function dialogTitle(estatus, type){ // función solo para mostrar el tipo de titulo en el dialog
         switch(estatus){
 
             case 0:
                 return 'a'
             case 1:
-                return 'Por asistir';
+                if(type === 'date')
+                    return 'Por asistir';
+                return 'Mis horarios';
             case 2:
                 return 'Cita cancelada';
             case 3:
@@ -330,14 +376,11 @@ function dialogTitle(estatus){ // función solo para mostrar el tipo de titulo e
             default:
                 return 'Información';
         }
-    }
-    else{
-        return 'Agregar horario';
-    }
 }
 
 EventContent.propTypes = {
     currentEvent: PropTypes.object,
     onClose: PropTypes.func,
-    selectedDate: PropTypes.instanceOf(Date)
+    selectedDate: PropTypes.instanceOf(Date),
+    selectedEnd: PropTypes.instanceOf(Date)
 };

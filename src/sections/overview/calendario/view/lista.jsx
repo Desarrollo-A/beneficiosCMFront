@@ -65,9 +65,9 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
     } = methods;
 
     const values = watch();
-    const hourError = checkDate(values.start, values.end, type, allDay);
+    const hourError = checkHour(values.start, values.end, type, allDay);
     const selectedUser = userSelect(type, patient); // validacion si se selecciono paciente, solo al crear cita
-    const dateError = allDay && values.fechaInicio > defaultFecha; // validacion que la fecha final no sea menor a la fecha inicio
+    const dateError = type === 'cancel' && values.fechaInicio > defaultFecha; // validacion que la fecha final no sea menor a la fecha inicio
 
     const onSubmit = handleSubmit(async (data) => {
         let save = '';
@@ -78,7 +78,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
             hora_inicio: !allDay ? `${data.start.getHours()}:${data.start.getMinutes()}` : defaultHour.horaInicio,
             hora_final: !allDay ? `${data.end.getHours()}:${data.end.getMinutes()}` : defaultHour.horaFinal,
             fechaInicio: fDate(data?.fechaInicio),
-            fechaFinal: fDate(defaultFecha),
+            fechaFinal: type === 'date' ? fDate(data?.fechaInicio) : fDate(defaultFecha),
             paciente: patient.id,
         };
 
@@ -161,6 +161,19 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
                             </ToggleButton>
                         </ToggleButtonGroup>
                 </Stack>
+                <Stack direction="row" justifyContent="space-between " sx={{ p: { xs: 1, md: 2 } }}>
+                    <Typography variant="subtitle1">{dateTitle}</Typography>
+                    {type === 'cancel' &&
+                        <FormControlLabel
+                        sx={{ mt:-0.85 }}
+                         control={
+                             <Checkbox onChange={(value) => handleChangeDay(value.target.checked)}/>
+                         }
+                         label="Ocupar dia(s)"
+                         labelPlacement="start"
+                        />
+                    }
+                </Stack>
                 <Stack spacing={3} sx={{ p: { xs: 1, md: 2 } }}>
                     {type === 'date' && (
                         <RHFAutocomplete
@@ -171,29 +184,17 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
                             options={userData.map((user) => ({label: user.nombre, value: user.idUsuario}))}
                         />
                     )}
-                    <Stack direction="row" justifyContent="space-between" >
-                    <Typography variant="subtitle1">{dateTitle}</Typography>
-                    {type === 'cancel' &&
-                        <FormControlLabel
-                         control={
-                             <Checkbox onChange={(value) => handleChangeDay(value.target.checked)}/>
-                         }
-                         label="Ocupar dia(s)"
-                         labelPlacement="start"
-                        />
-                    }
-                    </Stack>
                     <RHFTextField name="title" label="Título" />
                 </Stack>
 
-                <Stack direction="row" justifyContent='space-between' sx={{ p: { xs: 1, md: 2 } }}>
+                <Stack direction="row" justifyContent='space-between' spacing={2} sx={{ p: { xs: 1, md: 2 } }}>
                     <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
                         <Controller
                             name="fechaInicio"
                             defaultValue={selectedDate}
                             render={({ field }) =>
                                 <MobileDatePicker
-                                    label="Fecha"
+                                    label="Fecha inicial"
                                     sx={{width: '100%'}}
                                     defaultValue={selectedDate}
                                     onChange={
@@ -205,12 +206,31 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
                                 />
                             }
                         />
+                        {type === 'cancel' && 
+                        (<MobileDatePicker
+                            label="Fecha final"
+                            sx={{width: '100%'}}
+                            value={defaultFecha}
+                            slotProps={{
+                                textField: {
+                                    error: dateError,
+                                    helperText: dateError && 'Formato incorrecto',
+                                }
+                            }}
+                            onChange={
+                                (value) => {
+                                    setDefaultFecha(value);
+                                }
+                            }
+                        />)
+                        }
                     </LocalizationProvider>
+
+                    
                 </Stack>
 
-                { !allDay || type === 'date'
-                 ? (
-                <Stack direction="row" justifyContent='space-between' spacing={2} sx={{ p: { xs: 1, md: 2 } }}>
+                {!allDay &&
+                (<Stack direction="row" justifyContent='space-between' spacing={2} sx={{ p: { xs: 1, md: 2 } }}>
                     <Controller
                         name="start"
                         render={({ field }) =>
@@ -243,26 +263,6 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
                         }
                     />
                 </Stack>)
-                : ( <Stack direction="row" justifyContent='space-between' sx={{ p: { xs: 1, md: 2 } }}>
-                    <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
-                        <MobileDatePicker
-                            label="Fecha final"
-                            sx={{width: '100%'}}
-                            value={defaultFecha}
-                            slotProps={{
-                                textField: {
-                                    error: dateError,
-                                    helperText: dateError && 'Formato incorrecto',
-                                }
-                            }}
-                            onChange={
-                                (value) => {
-                                    setDefaultFecha(value);
-                                }
-                            }
-                        />
-                    </LocalizationProvider>
-                </Stack> ) 
                 }
             </DialogContent>
 
@@ -274,7 +274,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
     )
 }
 
-function checkDate(start, end, type, allDay){
+function checkHour(start, end, type, allDay){
     let dateError = false;
 
     const startStamp = dayjs(start).$d;
