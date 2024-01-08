@@ -1,16 +1,17 @@
 import { Base64 } from 'js-base64';
-import {useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import Calendar from '@fullcalendar/react'; // => request placed at the top
 import listPlugin from '@fullcalendar/list';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import timelinePlugin from '@fullcalendar/timeline';
-import allLocales from '@fullcalendar/core/locales-all'
+import allLocales from '@fullcalendar/core/locales-all';
 import interactionPlugin from '@fullcalendar/interaction';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
@@ -21,19 +22,20 @@ import Typography from '@mui/material/Typography';
 import DialogTitle from '@mui/material/DialogTitle';
 import FormControl from '@mui/material/FormControl';
 
+import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 
-// import Servicios from 'src/utils/servicios';
-import { endpoints } from 'src/utils/axios';
 import { fTimestamp } from 'src/utils/format-time';
-
-import { useGetGeneral } from 'src/api/general';
 
 import { useSettingsContext } from 'src/components/settings';
 import { CALENDAR_COLOR_OPTIONS } from 'src/_mock/_calendar';
-import { updateEvent, useGetEvents } from 'src/api/calendar';
 // import { dropUpdate, GetCustomEvents } from 'src/api/calendar-specialist';
-import { useGetBenefits, useGetModalities, useGetEspecialists, useGetAppointmentsByUser } from 'src/api/calendar-colaborador';
+import {
+  useGetBenefits,
+  useGetModalities,
+  useGetEspecialists,
+  useGetAppointmentsByUser,
+} from 'src/api/calendar-colaborador';
 
 import { StyledCalendar } from '../styles';
 import CalendarForm from '../calendar-form';
@@ -55,26 +57,12 @@ const defaultFilters = {
 const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
 
 export default function CalendarView() {
-
-  const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
-
-  const [espeData,  setEspeData] = useState();
-
   const theme = useTheme();
+  const dialog = useBoolean();
 
   const settings = useSettingsContext();
   const smUp = useResponsive('up', 'sm');
   const [filters] = useState(defaultFilters);
-
-  // const { events, eventsLoading } = useGetEvents();
-
-  const [beneficios, setBeneficios] = useState([]);
-  // const [beneficio, setBeneficio] = useState('');
-  const [especialistas, setEspecialistas] = useState([]);
-  // const [especialista, setEspecialista] = useState('');
-  const [modalidades, setModalidades] = useState([]);
-  // const [modalidad, setModalidad] = useState('');
-  const [day, setDay] = useState();
 
   const [selectedValues, setSelectedValues] = useState({
     beneficio: '',
@@ -87,29 +75,30 @@ export default function CalendarView() {
       ? filters.startDate.getTime() > filters.endDate.getTime()
       : false;
 
-    const {
-      calendarRef,
-      view,
-      date,
-      openForm,
-      onDatePrev,
-      onDateNext,
-      onDateToday,
-      onCloseForm,
-      onDropEvent,
-      onChangeView,
-      onSelectRange,
-      onClickEvent,
-      onResizeEvent,
-      onInitialView,
-      selectEventId,
-    } = useCalendar();
+  const {
+    calendarRef,
+    view,
+    date,
+    openForm,
+    onOpenForm,
+    onDatePrev,
+    onDateNext,
+    onDateToday,
+    onCloseForm,
+    onDropEvent,
+    onChangeView,
+    onSelectRange,
+    onClickEvent,
+    onResizeEvent,
+    selectEventId,
+    selectedDate,
+  } = useCalendar();
 
-  const { data: benefits } = useGetBenefits(datosUser.sede);
-  const { data: especialists } = useGetEspecialists(datosUser.sede, selectedValues.beneficio);
-  const { data: modalities } = useGetModalities(datosUser.sede, selectedValues.especialista);
-  const { data: events, appointmentLoading: eventsLoading } = useGetAppointmentsByUser(date);
-  // const { events, eventsLoading} = GetCustomEvents(date);
+  const {
+    data: events,
+    appointmentLoading: eventsLoading,
+    appointmentMutate,
+  } = useGetAppointmentsByUser(date);
 
   const currentEvent = useEvent(events, selectEventId, openForm);
 
@@ -119,123 +108,21 @@ export default function CalendarView() {
     dateError,
   });
 
-  useEffect(() => {
-    onInitialView();
-  }, [onInitialView]);
-
-  useEffect(() => {
-    console.log("Beneficios", benefits);
-    if (benefits) {
-      setBeneficios(benefits);
-    }
-  }, [benefits])
-
-  useEffect(() => {
-    console.log("Especialista", especialists);
-    if (especialists) {
-      setEspecialistas(especialists);
-    }
-  }, [especialists, beneficios])
-
-  useEffect(() => {
-    console.log("Modalidades", modalities);
-    if (modalities) {
-      setModalidades(modalities);
-    }
-  }, [modalities])
-
-  const handleChange = (input, value) => {
-    if (input === 'beneficio') {
-      setSelectedValues({
-        beneficio: value,
-        especialista: '',
-        modalidad: '',
-      });
-    } else if (input === 'especialista') {
-      setSelectedValues({
-        ...selectedValues,
-        especialista: value,
-        modalidad: '',
-      });
-    } else if (input === 'modalidad'){
-      setSelectedValues({
-        ...selectedValues,
-        modalidad: value,
-      });
-    }
-  };
-
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'xl'}>
         <Stack
-          direction="row"
           alignItems="center"
           justifyContent="space-between"
           sx={{
             mb: { xs: 3, md: 5 },
+            flexDirection: { sm: 'row', md: 'col' },
           }}
         >
           <Typography variant="h4">Calendar</Typography>
-          <Stack direction="row" minWidth="300" justifyContent="flex-end" spacing={0.5}>
-            <Box sx={{ minWidth: 200, flexDirection: 'row'}}>
-              <FormControl fullWidth>
-                <InputLabel id="beneficio-input">Beneficio</InputLabel>
-                <Select
-                  labelId="Beneficio"
-                  id="select-beneficio"
-                  label="Beneficio"
-                  value={selectedValues.beneficio}
-                  onChange={(e) => handleChange('beneficio', e.target.value)}
-                  disabled={beneficios.length === 0}
-                >
-                  {beneficios.map((e, index) => (
-                    <MenuItem key={e.id} value={e.id}>
-                      {e.puesto.toUpperCase()}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Box>
-            <Box sx={{ minWidth: 250, flexDirection: 'row'}}>
-              <FormControl fullWidth>
-                <InputLabel id="especialista-input">Especialista</InputLabel>
-                <Select
-                  labelId="Especialista"
-                  id="select-especialista"
-                  label="Especialista"
-                  value={selectedValues.especialista}
-                  onChange={(e) => handleChange('especialista', e.target.value)}
-                  disabled={especialistas.length === 0}
-                >
-                  {especialistas.map((e, index) => (
-                    <MenuItem key={e.id} value={e.id}>
-                      {e.especialista.toUpperCase()}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Box>
-            <Box sx={{ minWidth: 250, flexDirection: 'row'}}>
-              <FormControl fullWidth>
-                <InputLabel id="modalidad-input">Modalidad</InputLabel>
-                <Select
-                  labelId="Modalidad"
-                  id="select-modalidad"
-                  label="Modalidad"
-                  value={selectedValues.modalidad}
-                  onChange={(e) => handleChange('modalidad', e.target.value)}
-                  disabled={modalidades.length === 0}
-                >
-                  {modalidades.map((e, index) => (
-                    <MenuItem key={e.tipoCita} value={e.tipoCita}>
-                      {e.modalidad.toUpperCase()}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Box>
-          </Stack>
+          <Button color="inherit" variant="outlined" onClick={dialog.onTrue}>
+            Agendar nueva cita
+          </Button>
         </Stack>
 
         {/* Calendario */}
@@ -255,13 +142,13 @@ export default function CalendarView() {
               editable
               droppable
               selectable
-              locales={allLocales} 
-              locale='es'
+              locales={allLocales}
+              locale="es"
               rerenderDelay={10}
               allDayMaintainDuration
               eventResizableFromStart
               ref={calendarRef}
-              dateClick={(currentDate) => setDay(currentDate.date)}
+              // dateClick={(currentDate) => setDay(currentDate.date)}
               dayMaxEventRows={3}
               eventDisplay="block"
               events={dataFiltered}
@@ -286,40 +173,39 @@ export default function CalendarView() {
           </StyledCalendar>
         </Card>
       </Container>
-      {/* MODAL /}
-      
-      <Dialog
-          fullWidth
-          maxWidth='sm'
-          open={openForm}
-          onClose={onCloseForm}
-      >
-        <Lista 
-            currentEvent={currentEvent}
-            onClose={onCloseForm}
-            currentDay= {day}
-            current={date}
-            userData={userData}
-        />
-              
-      </Dialog>
-      {/*   */}
       <Dialog
         fullWidth
-        maxWidth="sm"
+        maxWidth="md"
+        open={dialog.value}
+        onClose={dialog.onFalse}
+        transitionDuration={{
+          enter: theme.transitions.duration.shortest,
+          exit: theme.transitions.duration.shortest - 1000,
+        }}
+      >
+        <CalendarDialog
+          currentEvent={currentEvent}
+          onClose={dialog.onFalse}
+          selectedDate={selectedDate}
+          appointmentMutate={appointmentMutate}
+        />
+      </Dialog>
+      <Dialog
+        fullWidth
+        maxWidth="xs"
         open={openForm}
         onClose={onCloseForm}
         transitionDuration={{
           enter: theme.transitions.duration.shortest,
-          exit: theme.transitions.duration.shortest - 80,
+          exit: theme.transitions.duration.shortest - 1000,
         }}
       >
         <CalendarDialog
           currentEvent={currentEvent}
           onClose={onCloseForm}
-          currentDay= {day}
-          current={date}
-          userData={{idUsuario: 1, nombre: 'LUIS ARTURO ALARCÓN BLANCO'}}
+          selectedDate={selectedDate}
+          especialista={selectedValues.especialista}
+          appointmentMutate={appointmentMutate}
         />
       </Dialog>
     </>
