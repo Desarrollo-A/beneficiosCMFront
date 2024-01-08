@@ -25,6 +25,8 @@ export default function useCalendar() {
 
   const[selectedDate, setSelectedDate] = useState();
 
+  const[selectedEnd, setSelectedEnd] = useState();
+
   const [view, setView] = useState(smUp ? 'dayGridMonth' : 'listWeek');
 
   const onOpenForm = useCallback(() => {
@@ -99,7 +101,7 @@ export default function useCalendar() {
         setSelectedDate(arg.start);
       }
       else
-        enqueueSnackbar('No se puede agendar el mismo dia o anteriores', { variant: 'error' });
+        enqueueSnackbar('No se puede agendar en dias anteriores', { variant: 'error' });
       
       setSelectedRange({
         start: fTimestamp(arg.start),
@@ -116,6 +118,7 @@ export default function useCalendar() {
       onOpenForm();
       setSelectEventId(event.id);
       setSelectedDate(event.start);
+      setSelectedEnd(event.end);
     },
     [onOpenForm]
   );
@@ -132,15 +135,17 @@ export default function useCalendar() {
   }, []);
 
   const onDropEvent = useCallback((arg, updateEvent) => {
-    const { event, oldEvent } = arg;
+    const { event } = arg;
     
     updateEvent({
       id: event.id,
       allDay: event.allDay,
       start: fTimestamp(event.start),
       end: fTimestamp(event.end),
-      oldStart: fTimestamp(oldEvent.start),
-      color: event.textColor
+      oldStart: event.extendedProps.fechaInicio,
+      color: event.textColor,
+      type: event.extendedProps.type,
+      estatus: event.extendedProps.estatus
     });
   }, []);
 
@@ -177,6 +182,7 @@ export default function useCalendar() {
     selectEventId,
     selectedRange,
     selectedDate,
+    selectedEnd,
     //
     onClickEventInFilters,
   };

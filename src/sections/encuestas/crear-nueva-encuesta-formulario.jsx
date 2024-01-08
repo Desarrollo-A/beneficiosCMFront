@@ -88,11 +88,11 @@ export default function InvoiceNewEditForm({ currentInvoice }) {
       const insert = await insertData(data);
       router.push(paths.dashboard.encuestas.crear);
 
-      if (insert.estatus===200) {
-        enqueueSnackbar(insert.mensaje, { variant: 'success' });
+      if (insert.estatus === true) {
+        enqueueSnackbar(insert.msj, { variant: 'success' });
         resetForm();
       } else {
-        enqueueSnackbar(insert.mensaje, { variant: 'error' });
+        enqueueSnackbar(insert.msj, { variant: 'error' });
       }
 
     } catch (error) {
