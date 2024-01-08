@@ -1,6 +1,7 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import { Base64 } from 'js-base64';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -20,7 +21,7 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { endpoints } from 'src/utils/axios';
 
 import { useInsert } from  'src/api/encuestas';
-import { useGetGeneral } from 'src/api/general';
+import { useGetGeneral, usePostGeneral } from 'src/api/general';
 
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFSelect} from 'src/components/hook-form';
@@ -31,9 +32,11 @@ import InvoiceNewEditDetails from './crear-nueva-ecuesta-detalles';
 
 export default function InvoiceNewEditForm({ currentInvoice }) {
 
+  const user = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+
   const { enqueueSnackbar } = useSnackbar();
 
-  const { areasData } = useGetGeneral(endpoints.encuestas.getPuestos, "areasData");
+  /* const { areasData } = useGetGeneral(endpoints.encuestas.getPuestos, "areasData"); */
 
   const insertData = useInsert(endpoints.encuestas.encuestaCreate);
 
@@ -42,26 +45,20 @@ export default function InvoiceNewEditForm({ currentInvoice }) {
   const loadingSend = useBoolean();
 
   const NewInvoiceSchema = Yup.object().shape({
-    area: Yup.mixed().nullable().required('Is required'),
+    /* area: Yup.mixed().nullable().required('Is required'), */
     items: Yup.mixed().nullable().required('Is required'),
   });
 
-/*   const defaultValues = useMemo(
+  const defaultValues = useMemo(
     () => ({
-      area:currentInvoice?.area || '',
-      items: currentInvoice?.items || [
-        {
-          pregunta: null,
-          respuesta: null,
-        },
-      ],
+      area:user.puesto,
     }),
-    [currentInvoice]
-  ); */
+    [user.puesto]
+  );
 
   const methods = useForm({
     resolver: yupResolver(NewInvoiceSchema),
-/*     defaultValues, */
+    defaultValues,
   });
 
   const {
@@ -113,7 +110,7 @@ export default function InvoiceNewEditForm({ currentInvoice }) {
         Preguntas:
       </Typography>
 
-      <Stack divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3}>
+      {/* <Stack divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3}>
 
       <RHFSelect
         name="area"
@@ -135,7 +132,7 @@ export default function InvoiceNewEditForm({ currentInvoice }) {
           </MenuItem>
         ))}
       </RHFSelect>
-      </Stack>
+      </Stack> */}
 
       <Divider sx={{ my: 3, borderStyle: 'dashed' }} />
 

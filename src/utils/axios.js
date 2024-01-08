@@ -43,6 +43,7 @@ export const fetcherGet = async (args) => {
 };
 
 export const fetcherPost = async (args, dataValue) => {
+
   const [url, config] = Array.isArray(args) ? args : [args];
 
   const res = await instance.post(
@@ -135,6 +136,9 @@ export const endpoints = {
     fechaCancelada: '/dashboardController/estatusFechaCancelada',
     fechaPenalizada: '/dashboardController/estatusFechaPenalizada',
     citasAnual: '/dashboardController/citasAnual',
+    getPregunta: '/dashboardController/getPregunta',
+    getRespuestas: '/dashboardController/getRespuestas',
+    getCountRespuestas: '/dashboardController/getCountRespuestas',
   },
   encuestas: {
     encuestaInsert: '/encuestasController/encuestaInsert',
@@ -146,8 +150,11 @@ export const endpoints = {
     getResp2: '/encuestasController/getResp2',
     getResp3: '/encuestasController/getResp3',
     getResp4: '/encuestasController/getResp4',
-    getEncNotificacion: '/encuestasController/getEncNotificacion',
-    getPuestos: '/encuestasController/getPuestos',
+    getEncNotificacion:'/encuestasController/getEncNotificacion',
+    getPuestos:'/encuestasController/getPuestos',
     getEcuestaValidacion: '/encuestasController/getEcuestaValidacion',
-  },
+    getEncuestasCreadas: '/encuestasController/getEncuestasCreadas',
+    updateEstatus:'/encuestasController/updateEstatus',
+    getEstatusUno:'/encuestasController/getEstatusUno',
+  }
 };

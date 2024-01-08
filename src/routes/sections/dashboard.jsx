@@ -15,6 +15,8 @@ const DashPage = lazy(() => import('src/pages/dashboard/dash'));
 // ENCUESTAS
 const EncuestasPage = lazy(() => import('src/pages/dashboard/encuestas/encuestas-view'))
 const CrearEncuestaPage = lazy(() => import('src/pages/dashboard/encuestas/crear-view'))
+const VerEncuestasPage = lazy(() => import('src/pages/dashboard/encuestas/ver-view'))
+const VerEncuestaDetallePage = lazy(() => import('src/pages/dashboard/encuestas/ver-detalle-view'))
 // ----------------------------------------------------------------------
 const OverviewEcommercePage = lazy(() => import('src/pages/dashboard/ecommerce'));
 const OverviewAnalyticsPage = lazy(() => import('src/pages/dashboard/analytics'));
@@ -99,6 +101,8 @@ export const dashboardRoutes = [
         children: [
           { path: 'contestar', element: <EncuestasPage /> },
           { path: 'crear', element: <CrearEncuestaPage /> },
+          { path: 'ver', element: <VerEncuestasPage /> },
+          { path: 'detalle', element: <VerEncuestaDetallePage/> },
         ],
       },
       { path: 'dash', element: <DashPage /> },
