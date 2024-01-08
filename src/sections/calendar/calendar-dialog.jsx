@@ -3,6 +3,8 @@ import dayjs from 'dayjs';
 import * as yup from 'yup';
 import { Base64 } from 'js-base64';
 import PropTypes from 'prop-types';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
@@ -62,8 +64,11 @@ import FormProvider from 'src/components/hook-form/form-provider';
 const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
 
 dayjs.locale('es');
+dayjs.extend(utc);
+dayjs.extend(timezone);
 dayjs.extend(isSameOrBefore);
-const initialValue = dayjs();
+
+const initialValue = dayjs().tz('America/Mexico_City');
 const lastDayOfNextMonth = initialValue.add(2, 'month').startOf('month').subtract(1, 'day');
 
 export default function CalendarDialog({
@@ -87,9 +92,7 @@ export default function CalendarDialog({
 
   const { data: benefits } = useGetBenefits(datosUser.sede);
 
-  const requestAbortController = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [highlightedDays, setHighlightedDays] = useState([1, 2, 15]);
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -283,42 +286,54 @@ export default function CalendarDialog({
     console.log('Dias proximos', diasProximos);
 
     // Le quitamos los registros del dia domingo y tambien sabados en el caso de que no lo trabaje el especialista.
-    console.log(
-      'Trabaja sabados 1:(49), 0(41)',
-      horarioACubrir.data[0].sabados,
-      !horarioACubrir.data[0].sabados
-    );
-    // diasProximos = diasProximos.filter((date) => {
-    //   if (horarioACubrir.data[0].sabados) {
-    //     return dayjs(date).day() !== 0;
-    //   }
-    //   return dayjs(date).day() !== 0 && dayjs(date).day() !== 6;
-    // });
+    console.log('Trabaja sabados', horarioACubrir.data[0].sabados);
 
     diasProximos = diasProximos.filter((date) => {
       const dayOfWeek = dayjs(date).day();
       return dayOfWeek !== 0 && (horarioACubrir.data[0].sabados || dayOfWeek !== 6);
     });
-
     console.log('Restantes dias proximos', diasProximos);
 
-    //
-    // const horariosOcupados = await getHorariosOcupados(
-    //   especialista,
-    //   initialValue.format('YYYY-MM-DD'),
-    //   lastDayOfNextMonth.format('YYYY-MM-DD')
-    // );
-    // console.log('horariosOcupados', horariosOcupados);
+    const horariosOcupados = await getHorariosOcupados(
+      especialista,
+      initialValue.format('YYYY-MM-DD'),
+      lastDayOfNextMonth.format('YYYY-MM-DD')
+    );
+    console.log('horariosOcupados', horariosOcupados?.data);
 
-    // //
-    // const filteredDates = dates.filter(date => dayjs(date).day() !== 0);
+    /* HASTA AQUI TODO BIEN -----------------------------  */
+
+    // Lógica para filtrar las fechas disponibles
+    const proceso1 = diasProximos.map((item) => {
+      const elemento = {};
+      elemento.fecha = item;
+      elemento.diaSemana = dayjs(item).day();
+      elemento.horaInicio =
+        horarioACubrir.data[0].sabados && elemento.diaSemana === 6
+          ? (elemento.horaInicio = horarioACubrir.data[0].horaInicioSabado)
+          : horarioACubrir.data[0].horaInicio;
+      elemento.horaFin =
+        horarioACubrir.data[0].sabados && elemento.diaSemana === 6
+          ? (elemento.horaFin = horarioACubrir.data[0].horaFinSabado)
+          : horarioACubrir.data[0].horaFin;
+
+      const inicio = dayjs(`${item} ${elemento.horaInicio}`);
+      const fin = dayjs(`${item} ${elemento.horaFin}`);
+      elemento.horas = fin.diff(inicio, 'hour');
+
+      return elemento;
+    });
+
+    console.log('Fechas disponibles', proceso1);
+
+    console.log('--------------------------------------------------------------------------------');
   };
 
-  const [dia, setDia] = useState(null);
+  const [dia, setDia] = useState(initialValue);
 
   const handleDateChange = (newDate) => {
     // Aquí puedes realizar las acciones necesarias con la nueva fecha seleccionada
-    console.log('Fecha seleccionada:', newDate);
+    console.log('HOOOOOOOOOOOOOOOOOOOOOOOOOY:', newDate);
     setDia(newDate);
   };
 
@@ -358,7 +373,11 @@ export default function CalendarDialog({
           sx={{ p: { xs: 1, md: 2 } }}
         >
           <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center' }}>
-            {currentEvent?.id ? 'DATOS DE CITA' : `AGENDAR CITA ${JSON.stringify(selectedValues)}`}
+            {currentEvent?.id
+              ? 'DATOS DE CITA'
+              : `AGENDAR CITAAAA ${lastDayOfNextMonth} ${dayjs(initialValue).format(
+                  'YYYY/MM/DD HH:mm:ss'
+                )}`}
           </Typography>
           {!!currentEvent?.id && (
             <Tooltip title="Cancelar cita">
@@ -561,7 +580,7 @@ export default function CalendarDialog({
             >
               <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
                 <DateCalendar
-                  defaultValue={initialValue}
+                  // defaultValue={dia}
                   loading={isLoading}
                   onChange={handleDateChange}
                   renderLoading={() => <DayCalendarSkeleton />}

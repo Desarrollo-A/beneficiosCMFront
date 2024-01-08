@@ -64,15 +64,6 @@ export default function CalendarView() {
   const smUp = useResponsive('up', 'sm');
   const [filters] = useState(defaultFilters);
 
-  // const { events, eventsLoading } = useGetEvents();
-
-  const [beneficios, setBeneficios] = useState([]);
-  // const [beneficio, setBeneficio] = useState('');
-  const [especialistas, setEspecialistas] = useState([]);
-  // const [especialista, setEspecialista] = useState('');
-  const [modalidades, setModalidades] = useState([]);
-  // const [modalidad, setModalidad] = useState('');
-
   const [selectedValues, setSelectedValues] = useState({
     beneficio: '',
     especialista: '',

@@ -25,6 +25,9 @@ const options = {
 
 const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
 
+export async function reRender() {
+  mutate(get_all_events);
+}
 // ----------------------------------------------------------------------
 
 export function useGetBenefits(sede) {
