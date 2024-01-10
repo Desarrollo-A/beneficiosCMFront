@@ -90,7 +90,11 @@ export const endpoints = {
     update: 'Usuario/updateUser',
     areas: 'Usuario/getAreas',
     batch: 'Usuario/insertBatchUsers',
-    names: 'Usuario/getNameUser'
+    names: 'Usuario/getNameUser',
+    puesto: '/generalController/getPuesto',
+    sede: '/generalController/getSede',
+    decodePass: '/Usuario/decodePass',
+    updatePass: '/Usuario/updatePass'
   },
   benefits: {
     list: 'CalendarioController/getBeneficiosPorSede' 

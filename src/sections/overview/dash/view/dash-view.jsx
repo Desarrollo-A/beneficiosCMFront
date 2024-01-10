@@ -2,13 +2,9 @@
 import { Base64 } from 'js-base64';
 import { useState, useEffect } from 'react';
 
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
 import Grid from '@mui/material/Unstable_Grid2';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
 
 import { endpoints } from 'src/utils/axios';
 
@@ -16,10 +12,10 @@ import { useGetGeneral, usePostGeneral } from 'src/api/general';
 
 import { useSettingsContext } from 'src/components/settings';
 
-import WidgetSumas from '../widget-sumas';
+/* import WidgetSumas from '../widget-sumas';
 import GraficaArea from '../grafica-area';
 import GraficaPastel from '../grafica-pastel';
-import GraficaBarras from '../grafica-barras';
+import GraficaBarras from '../grafica-barras'; */
 import EncuestaBarra from '../barra-encuesta';
 import EncuestaPorcentaje from '../porcentaje-encuesta';
 
@@ -31,7 +27,7 @@ export default function DashView() {
 
   const { preguntaData } = usePostGeneral(user.puesto, endpoints.dashboard.getPregunta, "preguntaData");
 
-  const pgDt =  preguntaData[0]?.respuestas;
+  const [pgDt, setPgDt] = useState('');
 
   const [dflt, setDflt] = useState('');
 
@@ -39,11 +35,25 @@ export default function DashView() {
 
   const [sn, setSn] = useState('');
 
+  const [idEncuesta, setIdEncuesta] = useState('');
+
   const [pregunta, setPregunta] = useState([]);
 
-  const { respData } =  usePostGeneral(dflt, endpoints.dashboard.getRespuestas, "respData");
+  const [paramRes, setParamRes] = useState([]);
+
+  const handleChangePg = (newPg) => {
+    setPregunta(newPg);
+  }
+
+  const handleChangeIdPg = (newIdPg) => {
+    setPg(newIdPg);
+  }
+
+  const [selectPg, setSelectPg] = useState('');
 
   const { respCountData } = usePostGeneral(dflt, endpoints.dashboard.getCountRespuestas, "respCountData");
+
+  const { respData } =  usePostGeneral(paramRes, endpoints.dashboard.getRespuestas, "respData");
 
   const respArray = respData.flatMap((i) => (
     JSON.parse(`[${i.respuestas.split(', ').flatMap(value => `"${value}"`).join(', ')}]`
@@ -60,42 +70,65 @@ export default function DashView() {
   });
 
   useEffect(() => {
+    if (preguntaData.length > 0){
+      setIdEncuesta(preguntaData[0]?.idEncuesta)
+    }
+  }, [preguntaData])
+
+  useEffect(() => {
     if (preguntaData && Array.isArray(pregunta) && pregunta.length === 0) {
+
       setDflt([{ idPregunta: preguntaData[0]?.idPregunta },
-        { respuestas: preguntaData[0]?.respuestas },
         { idEncuesta: preguntaData[0]?.idEncuesta },
+        { respuestas: preguntaData[0]?.respuestas },
         { pregunta: preguntaData[0]?.pregunta }]);
+
+      setParamRes([{ idPregunta: preguntaData[0]?.idPregunta },
+        { idEncuesta: preguntaData[0]?.idEncuesta },
+        { idArea: preguntaData[0]?.idArea }]);
+
+      setSelectPg(preguntaData[0]?.pregunta);
+
+      setPgDt(preguntaData[0]?.respuestas);
+
     }else if (preguntaData && Array.isArray(pregunta) && pregunta.length > 0){
+
       setDflt(pregunta);
+
+      setParamRes(pregunta)
+
+      setSelectPg(pregunta[3]?.pregunta);
+
+      setPgDt(respData[0]?.grupo);
+
     }else {
       alert("Error")
     }
-  }, [preguntaData, pregunta]);
+  }, [preguntaData, pregunta, respData]);
 
   useEffect(() => {
     if (preguntaData && Array.isArray(pregunta) && pregunta.length === 0) {
-      setPg(preguntaData[0]?.pregunta);
+      setPg(preguntaData[0]?.idPregunta);
     }else if (preguntaData && Array.isArray(pregunta) && pregunta.length > 0){
-      setPg(pregunta[3]?.pregunta);
+      setPg(pregunta[0]?.idPregunta);
     }else {
       alert("Error")
     }
   }, [preguntaData, pregunta]);
 
   useEffect(() => {
-    if (preguntaData && Array.isArray(pregunta) && pregunta.length === 0 && pgDt !== '3') {
+    if (preguntaData && Array.isArray(pregunta) && pregunta.length === 0 && pgDt !== "3") {
       setSn(0);
-    }else if (preguntaData && Array.isArray(pregunta) && pregunta.length === 0 && pgDt === '3'){
+    }else if (preguntaData && Array.isArray(pregunta) && pregunta.length === 0 && pgDt === "3"){
       setSn(1);
-    }else if (pregunta.length > 0 && pregunta[1].respuestas === '3'){
+    }else if (pregunta.length > 0 && pgDt === 3){
       setSn(1);
-    }else if (pregunta.length > 0 && pregunta[1].respuestas !== '3'){
+    }else if (pregunta.length > 0 && pgDt !== 3){
       setSn(0);
     }else {
       alert("Error")
     }
   }, [preguntaData, pregunta, pgDt, resultArray]);
-
 
   const _dt = {
       percent: (index) => percent[index],
@@ -145,6 +178,7 @@ export default function DashView() {
   const handleChangeYear = (newYear) => {
     setYearData(newYear);
   }
+  
 
   const desiredLength = 12;
 
@@ -216,7 +250,6 @@ export default function DashView() {
     <>
     {preguntaData.length > 0 ? (
 
-      
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
 
       <Typography
@@ -229,6 +262,49 @@ export default function DashView() {
       </Typography>
 
       <Grid container spacing={3}>
+
+        {sn === 0 ? (
+        <Grid xs={12} md={6} lg={12}>
+          <EncuestaBarra
+            idPregunta={pg} 
+            chart={{
+              categories: respArray,
+              series: [
+                {
+                  type: 'data',
+                  data: [
+                    {
+                      name: 'Total',
+                      data: resultArray,
+                    }
+                  ],
+                },
+              ],
+            }}
+            user={user}
+            handleChangePg={handleChangePg}
+            idEncuesta={idEncuesta}
+            idArea={user.puesto}
+            handleChangeIdPg={handleChangeIdPg}
+          />
+        </Grid>
+
+        ) : (
+
+        <Grid xs={12} md={6} lg={12}>
+          <EncuestaPorcentaje 
+          idPregunta={pg} 
+          data={_ecommerceSalesOverview} 
+          user={user} 
+          handleChangePg={handleChangePg}
+          selectPg={selectPg}
+          idEncuesta={idEncuesta}
+          idArea={user.puesto}
+          handleChangeIdPg={handleChangeIdPg}
+          />
+        </Grid>
+
+        )}
 
         {/* <Grid xs={12} md={4}>
           {usrCountData.flatMap((u) => (
@@ -280,8 +356,9 @@ export default function DashView() {
             count={ctCountData}
           />
         </Grid>
+        */}
 
-        <Grid xs={12} md={6} lg={12}>
+        {/* <Grid xs={12} md={6} lg={12}>
           <GraficaBarras
             title="Registro de Citas"
             chart={{
@@ -291,7 +368,7 @@ export default function DashView() {
             year={year}
             handleChangeYear={handleChangeYear}
           />
-        </Grid> */}
+        </Grid>  */}
 
         {/* {prgSnData.map((i) => (
           <Grid xs={12} md={6} lg={6}>
@@ -344,63 +421,6 @@ export default function DashView() {
             />
           </Grid>
         ))} */}
-
-        <FormControl
-          sx={{
-            flexShrink: 0,
-            width: { xs: 1, ml: 2, mt: 2 },
-          }}
-        >
-          <InputLabel>Pregunta</InputLabel>
-
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            label="Pregunta"
-            onChange={e => setPregunta(e.target.value)}
-          >
-            {preguntaData.map((i) => (
-              <MenuItem key={i.idPregunta} value=
-                {[
-                  { idPregunta: i.idPregunta },
-                  { respuestas: i.respuestas },
-                  { idEncuesta: i.idEncuesta },
-                  { pregunta: i.pregunta },
-                ]}>
-                {i.pregunta}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        {sn === 0 ? (
-        <Grid xs={12} md={6} lg={12}>
-          <EncuestaBarra
-            title={pg}
-            chart={{
-              categories: respArray,
-              series: [
-                {
-                  type: 'data',
-                  data: [
-                    {
-                      name: 'Total',
-                      data: resultArray,
-                    }
-                  ],
-                },
-              ],
-            }}
-          />
-        </Grid>
-
-        ) : (
-
-        <Grid xs={12} md={6} lg={12}>
-          <EncuestaPorcentaje title={pg} data={_ecommerceSalesOverview} />
-        </Grid>
-
-        )}
 
       </Grid>
     </Container>

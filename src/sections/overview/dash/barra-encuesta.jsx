@@ -4,14 +4,18 @@ import { useState, useCallback, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+import Stack from '@mui/material/Stack';
+import Select from '@mui/material/Select';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import ButtonBase from '@mui/material/ButtonBase';
 import CardHeader from '@mui/material/CardHeader';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
 
 import { endpoints } from 'src/utils/axios';
 
-import { useGetGeneral } from 'src/api/general';
+import { usePostGeneral } from 'src/api/general';
 
 import Iconify from 'src/components/iconify';
 import Chart, { useChart } from 'src/components/chart';
@@ -22,7 +26,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 function handleDownloadExcel(chart, title) {
 
   const respuestas = chart.categories
-  
+
   const resultados = chart.series[0].data[0].data;
 
   const data = [
@@ -45,9 +49,28 @@ function handleDownloadExcel(chart, title) {
 
 // ----------------------------------------------------------------------
 
-export default function EncuestaBarra({ title, subheader, chart, ...other }) {
+export default function EncuestaBarra({ title, subheader, chart, user, handleChangePg, selectPg, idEncuesta, idArea, idPregunta, handleChangeIdPg, ...other }) {
 
   const [seriesData, setSeriesData] = useState('data');
+
+  const { preguntaData } = usePostGeneral(user.puesto, endpoints.dashboard.getPregunta, "preguntaData");
+
+  const [pregunta, setPregunta] = useState(idPregunta);
+
+  const handleChangeSct = useCallback(
+    (e) => {
+      handleChangePg([
+        { idPregunta: e.target.value },
+        { idEncuesta },
+        { idArea },
+      ]);
+
+      handleChangeIdPg(e.target.value);
+
+      setPregunta(e.target.value);
+    },
+    [handleChangePg, idEncuesta, idArea, handleChangeIdPg]
+  );
 
   const { categories, colors, series, options } = chart;
 
@@ -89,27 +112,65 @@ export default function EncuestaBarra({ title, subheader, chart, ...other }) {
     );
   }
 
+  const [age, setAge] = useState('');
+
+  const handleChange = (event) => {
+    setAge(event.target.value);
+  };
+
   return (
     <>
       <Card {...other}>
 
-      <Tooltip title="Exportar XLS" placement="top" arrow>
+        <Stack
+          spacing={1}
+          alignItems={{ xs: 'flex-start', md: 'flex-start' }}
+          direction={{
+            xs: 'column',
+            md: 'row',
+          }}
+          sx={{
+            p: 1,
+            pr: { xs: 1, md: 1 },
+          }}
+        >
+
+          <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-label">Pregunta</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              label="Pregunta"
+              value={pregunta}
+              onChange={(e) => handleChangeSct(e)}
+            >
+              {preguntaData.map((i) => (
+                <MenuItem key={i.idPregunta} value= {i.idPregunta}>
+                  {i.pregunta}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+        </Stack>
+
+        <Tooltip title="Exportar XLS" placement="top" arrow>
           <MenuItem
             sx={{ width: 50, ml: 2, mt: 2 }}
             onClick={handleExcel}
           >
-            <Iconify 
-            icon="teenyicons:xls-outline"
-            width={24} />
+            <Iconify
+              icon="teenyicons:xls-outline"
+              width={24} />
           </MenuItem>
-      </Tooltip>
+        </Tooltip>
 
         <CardHeader
           title={title}
           subheader={subheader}
           action={
             <ButtonBase
-              style={{ display: 'none'}}
+              style={{ display: 'none' }}
               onClick={popover.onOpen}
               sx={{
                 pl: 1,
@@ -168,4 +229,11 @@ EncuestaBarra.propTypes = {
   title: PropTypes.string,
   year: PropTypes.number,
   handleChangeYear: PropTypes.func,
+  handleChangePg: PropTypes.func,
+  user: PropTypes.object,
+  selectPg: PropTypes.string,
+  idEncuesta: PropTypes.number,
+  idArea: PropTypes.number,
+  idPregunta: PropTypes.number,
+  handleChangeIdPg: PropTypes.func,
 };

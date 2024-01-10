@@ -67,13 +67,10 @@ export default function Header({ onOpenNav }) {
         justifyContent="flex-end"
         spacing={{ xs: 0.5, sm: 1 }}
       >
-        {/* <LanguagePopover /> */}
 
         <NotificationsPopover />
 
         {getData.length > 0 && <NotifiEncuesta data={getData} />}
-
-        {/* <ContactsPopover /> */}
 
         <SettingsButton />
 

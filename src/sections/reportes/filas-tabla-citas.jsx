@@ -15,11 +15,19 @@ import UserQuickEditForm from './modal-editar-citas';
 // ----------------------------------------------------------------------
 
 export default function FilasTabla({ row, selected, rol, rel  }) {
-  const { idCita, especialista, oficina, area, sede, titulo, paciente, estatus, horario, observaciones } = row;
+  const { idCita, especialista, oficina, area, sede, paciente, estatus, horario, observaciones, sexo, motivoCita } = row;
 
   const quickEdit = useBoolean();
 
-  const sexo = 'Masculino';
+  let sx = '';
+
+  if (sexo === 'Masculino') {
+    sx = 'H';
+  } else if (sexo === 'Femenino') {
+    sx = 'M';
+  }else if (sexo === null){
+    sx = '';
+  }
 
   let espe = Boolean(true);
 
@@ -50,9 +58,9 @@ export default function FilasTabla({ row, selected, rol, rel  }) {
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{sede}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{sexo}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{sx}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{titulo}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{motivoCita}</TableCell>
 
         <TableCell>
           <Label

@@ -39,6 +39,8 @@ export default function FormularioEncuesta({ idEncuesta }) {
 
   const validarData = usePost(array, endpoints.encuestas.getEcuestaValidacion, "validarData");
 
+  console.log(validarData);
+
   const { encuestaData } = usePostGeneral(idEncuesta, endpoints.encuestas.getEncuesta, "encuestaData");
 
   const { Resp1Data } = useGetGeneral(endpoints.encuestas.getResp1, "Resp1Data");
