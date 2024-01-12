@@ -150,6 +150,7 @@ export const endpoints = {
     getEcuestaValidacion: '/encuestasController/getEcuestaValidacion',
     getEncuestasCreadas: '/encuestasController/getEncuestasCreadas',
     updateEstatus:'/encuestasController/updateEstatus',
+    updateVigencia:'/encuestasController/updateVigencia',
     getEstatusUno:'/encuestasController/getEstatusUno',
   }
 };

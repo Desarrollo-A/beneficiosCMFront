@@ -112,11 +112,11 @@ export const paths = {
       calendario: `${ROOTS.DASHBOARD}/calendario`
     },
     reportes: {
-      root: `${ROOTS.DASHBOARD}/reportes`,
+      root: `${ROOTS.DASHBOARD}/reportes/historial`,
       historial: `${ROOTS.DASHBOARD}/reportes/historial`,
     },
     encuestas: {
-      root: `${ROOTS.DASHBOARD}/encuestas`,
+      root: `${ROOTS.DASHBOARD}/encuestas/ver`,
       contestar: `${ROOTS.DASHBOARD}/encuestas/contestar`,
       crear: `${ROOTS.DASHBOARD}/encuestas/crear`,
       ver: `${ROOTS.DASHBOARD}/encuestas/ver`,

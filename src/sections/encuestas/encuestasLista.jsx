@@ -31,6 +31,7 @@ const TABLE_HEAD = [
   { id: '', label: 'ID' },
   { id: '', label: 'FECHA CREACIÓN' },
   { id: '', label: 'ESTATUS' },
+  { id: '', label: 'DÍAS HABILES' },
   { id: '', label: '' },
 ];
 
