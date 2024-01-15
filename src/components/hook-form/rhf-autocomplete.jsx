@@ -16,6 +16,7 @@ export default function RHFAutocomplete({ name, label, placeholder, helperText, 
       render={({ field, fieldState: { error } }) => (
         <Autocomplete
           {...field}
+          freeSolo
           onChange={(event, newValue) => setValue(name, newValue, { shouldValidate: true })}
           renderInput={(params) => (
             <TextField

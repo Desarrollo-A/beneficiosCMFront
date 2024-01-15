@@ -4,7 +4,7 @@ import useSWR, { mutate } from 'swr';
 import { useMemo, useEffect } from 'react';
 import { enqueueSnackbar } from 'notistack';
 
-import { endpoints, fetcherGet, fetcherPost } from 'src/utils/axios';
+import { endpoints, fetcherPost } from 'src/utils/axios';
 
 // cadenas de url extraidas de lo que se encuentra en el axios
 const get_all_events = endpoints.calendario.getAllEvents;
@@ -14,16 +14,14 @@ const delete_occupied = endpoints.calendario.deleteOccupied;
 const cancel_appointment = endpoints.calendario.cancelAppointment;
 const save_appointment = endpoints.calendario.createAppointment;
 const update_on_drop = endpoints.calendario.updateOnDrop;
-const p1 = endpoints.calendarioColaborador.getAppointmentsByUser;
-
-const options = {
-  revalidateIfStale: false,
-  revalidateOnFocus: true,
-  revalidateOnReconnect: true,
-  refreshInterval: 0
-};
 
 const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+
+// ----------------------------------------------------------------------
+
+export async function reRender(){ // se separa la funcion del mutate unicamente para cuando se crea el evento (previsto en update)
+  mutate(get_all_events);
+}
 
 // ----------------------------------------------------------------------
 
@@ -126,42 +124,6 @@ export function useGetAppointmentsByUser(current) {
     },[data?.data, error, isLoading, isValidating, revalidate]
   );
 
-  return memoizedValue;
-}
-
-// ----------------------------------------------------------------------
-
-export function GetCustomEvents(current) {
-  const year = current.getFullYear();
-  const month = (current.getMonth() + 1); // para obtener el mes que se debe, ya que el default da 0
-  
-  const dataValue = {
-    year,
-    month,
-    idUsuario: datosUser.idUsuario
-  }
-
-  const { data, isLoading, error, isValidating } = useSWR(get_all_events, url => fetcherPost(url, dataValue), options);
-
-  useEffect(()=> {
-    reRender();
-  },[month]);
-
-  const memoizedValue = useMemo(() => {
-      const events = data?.events?.map((event) => ({
-        ...event,
-        textColor: event?.color ? event.color : 'red',
-      }));
-    
-    return {
-      events: events || [],
-      eventsLoading: isLoading,
-      eventsError: error,
-      eventsValidating: isValidating,
-      eventsEmpty: !isLoading && !data?.events?.length,
-    };
-  }, [data?.events, error, isLoading, isValidating]);
-  
   return memoizedValue;
 }
 
@@ -309,3 +271,10 @@ export async function dropUpdate(args){
 }
 
 // ----------------------------------------------------------------------
+
+export function getModalities(sede, especialista) {
+  const URL_MODALITIES = [endpoints.especialistas.modalities];
+  const modalities = fetcherPost(URL_MODALITIES, { sede, especialista });
+
+  return modalities;
+}

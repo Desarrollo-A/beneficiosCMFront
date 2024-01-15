@@ -107,7 +107,9 @@ export const endpoints = {
     cancelAppointment: 'calendarioController/cancelAppointment',
     createAppointment: 'calendarioController/createAppointment',
     appointmentDrop: 'calendarioController/appointmentDrop',
-    occupiedDrop: 'calendarioController/occupiedDrop'
+    occupiedDrop: 'calendarioController/occupiedDrop',
+    endAppointment: 'calendarioController/endAppointment',
+    getReasons: 'calendarioController/getReasons'
   },
   calendarioColaborador: {
     getAppointmentsByUser: 'calendarioController/getAppointmentsByUser'

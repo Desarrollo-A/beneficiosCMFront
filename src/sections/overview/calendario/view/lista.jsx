@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import * as yup from 'yup';
 import PropTypes from 'prop-types';
 import { es } from 'date-fns/locale'
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -25,32 +25,36 @@ import { fDate } from 'src/utils/format-time';
 
 import { reRender, createCustom, createAppointment } from 'src/api/calendar-specialist';
 
-import { useSnackbar } from 'src/components/snackbar';
+import { enqueueSnackbar } from 'src/components/snackbar';
 import FormProvider from 'src/components/hook-form/form-provider';
 import { RHFTextField, RHFAutocomplete } from 'src/components/hook-form';
 
-export default function Lista({ currentEvent, onClose, userData, selectedDate, usersMutate }) {
+export default function Lista({ currentEvent, onClose, userData, selectedDate, usersMutate, modalities }) {
     dayjs.locale('es') // valor para cambiar el idioma del dayjs
 
-    const { enqueueSnackbar } = useSnackbar();
     const [allDay, setAllDay] = useState(false);
     const defaultHour = {
         horaInicio: dayjs('0000/00/00 08:00:00').format('HH:mm:ss'),
         horaFinal: dayjs('0000/00/00 18:00:00').format('HH:mm:ss')
     };
     const [defaultFecha, setDefaultFecha] = useState(selectedDate);
-
+    const [defaultInicio, setDefaultInicio] = useState(selectedDate);
+    const [defaultEnd, setDefaultEnd] = useState(null);
     const [dateTitle, setDateTitle] = useState(dayjs(selectedDate).format("dddd, DD MMMM YYYY"));
     const [type, setType] = useState('cancel'); // constante para el cambio entre cancelar hora y agendar cita
     const [patient, setPatient] = useState({
         id: '',
-        nombre: ''
+        nombre: '',
+        idSede: ''
+    });
+    const [modalitie, setModalitie] = useState({
+        id: '',
+        idAtencionXSede: ''
     });
     
     const formSchema = yup.object().shape({
-        title: yup.string().max(100).required('Se necesita el título').trim(), // maximo de caracteres para el titulo 100
-        start: !allDay ? yup.date().required() : '',
-        end: !allDay ? yup.date().required() : ''
+        title: type === 'cancel' ? yup.string().max(100).required('Se necesita el título').trim() : '', // maximo de caracteres para el titulo 100
+        start: !allDay ? yup.date().required() : ''
     });
 
     const methods = useForm({
@@ -65,25 +69,58 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
     } = methods;
 
     const values = watch();
-    const hourError = checkHour(values.start, values.end, type, allDay);
+    const hourError = checkHour(values.start, defaultEnd, type, defaultInicio, defaultFecha, allDay);
     const selectedUser = userSelect(type, patient); // validacion si se selecciono paciente, solo al crear cita
-    const dateError = type === 'cancel' && values.fechaInicio > defaultFecha; // validacion que la fecha final no sea menor a la fecha inicio
+    const selectedModalitie = !!(type === 'date' && modalitie.id || type === 'cancel');
+    const dateError = type === 'cancel' && defaultInicio > defaultFecha; // validacion que la fecha final no sea menor a la fecha inicio
+    const endValidation = allDay ? !defaultEnd : defaultEnd;
+
+    const handleChangeType = useCallback((event, newType) => { // handle para el cambio entre ocupar una hora o hacer cita solo quantum balance
+        if (newType !== null) {
+            setType(newType);
+            setPatient({ id: '', nombre: '' });
+            setModalitie('');
+            setAllDay(false);
+            setDefaultFecha(selectedDate);
+            setDefaultEnd(null);
+        }
+
+        usersMutate();// Actualizar datos
+    }, [usersMutate, selectedDate]);
+
+    const handleChangeDay = useCallback((value) => {
+        if(!value){
+            setDefaultFecha(selectedDate);
+        }
+        setDefaultEnd(null);
+        setAllDay(value);
+    },[selectedDate]);
+    
+    const handleHourChange = useCallback((value) => {
+        const date = value ? (value.getTime() + 1 * 60 * 60 * 1000) : null; // se suma 1 hora a la fecha seleccionada en el primer input
+        
+        setDefaultEnd(date);
+    }, []);
+    
+    useEffect(() => {
+        
+    }, []);
 
     const onSubmit = handleSubmit(async (data) => {
         let save = '';
 
         const eventData = { // se da el formato juntando la fecha elegida y la hora que se elige con los minutos
             id: uuidv4(),
-            title: data?.title,
-            hora_inicio: !allDay ? `${data.start.getHours()}:${data.start.getMinutes()}` : defaultHour.horaInicio,
-            hora_final: !allDay ? `${data.end.getHours()}:${data.end.getMinutes()}` : defaultHour.horaFinal,
-            fechaInicio: fDate(data?.fechaInicio),
-            fechaFinal: type === 'date' ? fDate(data?.fechaInicio) : fDate(defaultFecha),
-            paciente: patient.id,
+            title: type === 'cancel' ? data?.title : `Cita con ${patient.nombre}`,
+            hora_inicio: !allDay ? dayjs(data?.start).format('HH:mm:ss') : defaultHour.horaInicio,
+            hora_final: !allDay ? dayjs(defaultEnd).format('HH:mm:ss') : defaultHour.horaFinal,
+            fechaInicio: fDate(defaultInicio),
+            fechaFinal: type === 'date' ? fDate(defaultInicio) : fDate(defaultFecha),
+            paciente: patient.id
         };
 
         try {
-            if (!dateError && selectedUser && !hourError) {
+            if (!dateError && selectedUser && !hourError.result && endValidation && selectedModalitie) {
 
                 switch(type){
                     case 'cancel':
@@ -118,29 +155,6 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
         }
     });
 
-    const handleChangeType = useCallback((event, newType) => { // handle para el cambio entre ocupar una hora o hacer cita solo quantum balance
-        if (newType !== null) {
-            setType(newType);
-            setPatient({
-                id: '',
-                nombre: ''
-            });
-            setAllDay(false);
-            setDefaultFecha(selectedDate);
-        }
-
-        usersMutate();// Actualizar datos
-    }, [usersMutate, selectedDate]);
-
-    const handleChangeDay = useCallback((value) => {
-        if(!value){
-            setDefaultFecha(selectedDate);
-        }
-
-        setAllDay(value);
-    },[selectedDate]);
-    
-
     return (
         <FormProvider methods={methods} onSubmit={onSubmit}>
             <DialogContent sx={{ p: { xs: 1, md: 2 } }}>
@@ -171,35 +185,46 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
                          }
                          label="Ocupar dia(s)"
                          labelPlacement="start"
+                         name='daySwitch'
                         />
                     }
                 </Stack>
-                <Stack spacing={3} sx={{ p: { xs: 1, md: 2 } }}>
-                    {type === 'date' && (
+                {type === 'date' && (
+                    <Stack spacing={3} sx={{ p: { xs: 1, md: 2 } }}>
                         <RHFAutocomplete
                             name = "usuario"
                             label = "Pacientes"
-                            value = {patient.nombre}
-                            onChange={(_event, value) => {setPatient({id: value?.value, nombre: value?.label ? value?.label : ''});} }
-                            options={userData.map((user) => ({label: user.nombre, value: user.idUsuario}))}
+                            value = ''
+                            onChange={(_event, value) => {setPatient({id: value?.value, nombre: value?.label, idSede: value?.idSede}) } }
+                            options={userData.map((user) => ({label: user.nombre, value: user.idUsuario,  idSede: user.idSede}))}
                         />
-                    )}
-                    <RHFTextField name="title" label="Título" />
+                    </Stack>
+                )}
+                <Stack spacing={3} sx={{ p: { xs: 1, md: 2 } }}>
+                    {type === 'date' ? (
+                            <RHFAutocomplete
+                                name = "tipoCita"
+                                label = "Tipo de cita"
+                                value = {modalitie.nombre}
+                                onChange={(_event, value) => { setModalitie({id: value?.label, idAtencionXSede: value?.value}) }}
+                                options={ modalities.map((mod) => ({label: mod.modalidad, value: mod.idAtencionXSede })) }
+                            />
+                    ) : (<RHFTextField name="title" label="Título" />)}
+                    
                 </Stack>
 
                 <Stack direction="row" justifyContent='space-between' spacing={2} sx={{ p: { xs: 1, md: 2 } }}>
                     <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
                         <Controller
                             name="fechaInicio"
-                            defaultValue={selectedDate}
                             render={({ field }) =>
                                 <MobileDatePicker
                                     label="Fecha inicial"
                                     sx={{width: '100%'}}
-                                    defaultValue={selectedDate}
+                                    value={defaultInicio}
                                     onChange={
                                         (value) => {
-                                            field.onChange(value);
+                                            setDefaultInicio(value);
                                             setDateTitle(dayjs(value).format("dddd, DD MMMM YYYY") ); // al momento de cambiar el valor en el input, cambia el valor del titulo
                                         }
                                     }
@@ -214,7 +239,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
                             slotProps={{
                                 textField: {
                                     error: dateError,
-                                    helperText: dateError && 'Formato incorrecto',
+                                    helperText: dateError && 'Error: Menor a la fecha Inicial'
                                 }
                             }}
                             onChange={
@@ -238,7 +263,10 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
                                 sx={{width:'100%'}}
                                 label="Hora de inicio"
                                 onChange={
-                                    (value) => field.onChange(value)
+                                    (value) => {
+                                        field.onChange(value);
+                                        handleHourChange(value);
+                                    }
                                 }
                             />
                         }
@@ -249,15 +277,17 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
                         render={({ field }) =>
                             <MobileTimePicker
                                 sx={{width:'100%'}}
-                                label="Hora finalización"
+                                label="Hora de finalización"
+                                value={defaultEnd}
+                                disabled = {type === 'date'}
                                 slotProps={{
                                     textField: {
-                                        error: hourError,
-                                        helperText: hourError && 'Error en las horas seleccionadas',
+                                        error: hourError.result,
+                                        helperText: hourError.result && hourError.msg,
                                     }
                                 }}
                                 onChange={
-                                    (value) => field.onChange(value)
+                                    (value) => setDefaultEnd(value)
                                 }
                             />
                         }
@@ -268,29 +298,56 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
 
             <DialogActions>
                 <Button variant='contained' color='error' onClick={onClose}>Cerrar</Button> 
-                <LoadingButton type="submit" variant='contained' disabled={dateError || hourError} color='success'>Guardar</LoadingButton>
+                <LoadingButton type="submit" variant='contained' disabled={dateError || hourError.result} color='success'>Guardar</LoadingButton>
             </DialogActions>
         </FormProvider>
     )
 }
 
-function checkHour(start, end, type, allDay){
-    let dateError = false;
+function checkHour(start, end, type, dateStart, dateEnd){
+    let validation = {result: false, msg: ''};
 
     const startStamp = dayjs(start).$d;
     const endStamp = dayjs(end).$d;
-    const hour = Math.abs(startStamp - endStamp) / 36e5;
+    let hour = '';
 
-    if(start && end && !allDay){
-        if(startStamp >= endStamp){
-            dateError = true;
-        }
-        else if(type === 'date' && hour !== 1){
-            dateError = true;
-        }
+    dateStart = dayjs(dateStart).format('YYYY/MM/DD');
+    dateEnd = dayjs(dateEnd).format('YYYY/MM/DD');
+    const hourStart = dayjs(start).format('HH:mm:ss');
+    const hourEnd = dayjs(end).format('HH:mm:ss');
+
+    const selectedStart = dayjs(`${dateStart} ${hourStart}`).$d;
+    const selectedEnd = dayjs(`${dateEnd} ${hourEnd}`).$d;
+    
+
+    switch(type){
+        case 'date':
+            if(start && end){
+                hour = Math.abs(startStamp - endStamp) / 36e5;
+
+                if(startStamp >= endStamp){
+                    validation = {result: true, msg: 'Error: hora de inicio mayor a la hora final'};
+                }
+                else if(type === 'date' && hour !== 1){
+                    validation = {result: true, msg: 'Error: No se puede agendar mas de una hora'};
+                }
+            }
+            break;
+        
+        case 'cancel':
+            if(start && end){
+                if(selectedStart >= selectedEnd){
+                    validation = {result: true, msg: 'Error: hora de inicio mayor a la hora final'};
+                }
+            }
+            break;
+
+        default:
+            enqueueSnackbar('Error en las validaciones', {variant: 'error'})
+            break;
     }
         
-    return dateError;
+    return validation;
 }
 
 function userSelect(type, patient){
@@ -303,10 +360,12 @@ function userSelect(type, patient){
     return selectedUser;
 }
 
+
 Lista.propTypes = {
     currentEvent: PropTypes.object,
     onClose: PropTypes.func,
     userData: PropTypes.any,
     usersMutate: PropTypes.func,
+    modalities: PropTypes.any,
     selectedDate: PropTypes.instanceOf(Date)
 };

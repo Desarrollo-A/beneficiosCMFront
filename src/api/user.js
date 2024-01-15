@@ -47,7 +47,7 @@ export function useGetAreas() {
   return memoizedValue;
 }
 
-export function useGetNameUser() { // useGetLabels
+export function useGetNameUser() { // funcion para traer los usuarios disponibles en select de cita QB.
   const URL = endpoints.user.names;
   
 
