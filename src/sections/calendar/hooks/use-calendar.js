@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+import { enqueueSnackbar } from 'notistack';
 import { useRef, useState, useCallback } from 'react';
 
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -21,10 +23,13 @@ export default function useCalendar() {
 
   const [selectedRange, setSelectedRange] = useState(null);
 
+  const [selectedDate, setSelectedDate] = useState();
+
   const [view, setView] = useState(smUp ? 'dayGridMonth' : 'listWeek');
 
   const onOpenForm = useCallback(() => {
     setOpenForm(true);
+    // setSelectedValues({ beneficio: '', especialista: '', modalidad: '' });
   }, []);
 
   const onCloseForm = useCallback(() => {
@@ -89,13 +94,13 @@ export default function useCalendar() {
 
         calendarApi.unselect();
       }
-      onOpenForm();
+
       setSelectedRange({
         start: fTimestamp(arg.start),
         end: fTimestamp(arg.end),
       });
     },
-    [calendarEl, onOpenForm]
+    [calendarEl]
   );
 
   const onClickEvent = useCallback(
@@ -104,6 +109,7 @@ export default function useCalendar() {
 
       onOpenForm();
       setSelectEventId(event.id);
+      setSelectedDate(event.start);
     },
     [onOpenForm]
   );
@@ -120,13 +126,15 @@ export default function useCalendar() {
   }, []);
 
   const onDropEvent = useCallback((arg, updateEvent) => {
-    const { event } = arg;
+    const { event, oldEvent } = arg;
 
     updateEvent({
       id: event.id,
       allDay: event.allDay,
       start: fTimestamp(event.start),
       end: fTimestamp(event.end),
+      oldStart: fTimestamp(oldEvent.start),
+      color: event.textColor,
     });
   }, []);
 
@@ -162,6 +170,7 @@ export default function useCalendar() {
     //
     selectEventId,
     selectedRange,
+    selectedDate,
     //
     onClickEventInFilters,
   };

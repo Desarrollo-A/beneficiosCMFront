@@ -7,12 +7,12 @@ import { useState, useCallback, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
-import Stack from "@mui/system/Stack";
-import Button from "@mui/material/Button";
+import Stack from '@mui/system/Stack';
+import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import ToggleButton from '@mui/material/ToggleButton';
-import DialogActions from "@mui/material/DialogActions";
+import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import { Checkbox, FormControlLabel } from '@mui/material';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
@@ -57,10 +57,9 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
         start: !allDay ? yup.date().required() : ''
     });
 
-    const methods = useForm({
-        resolver: yupResolver(formSchema),
-        defaultValues: currentEvent
-    });
+          case 'date':
+            save = await createAppointment(eventData);
+            break;
 
     const {
         reset,
@@ -350,14 +349,32 @@ function checkHour(start, end, type, dateStart, dateEnd){
     return validation;
 }
 
-function userSelect(type, patient){
-    let selectedUser = true;
+function checkDate(start, end, type, allDay) {
+  let dateError = false;
 
-    if (type === "date" && !patient.id) {
-        selectedUser = false;
-    } 
+  const startStamp = dayjs(start).$d;
+  const endStamp = dayjs(end).$d;
+  const hour = Math.abs(startStamp - endStamp) / 36e5;
 
-    return selectedUser;
+  if (start && end && !allDay) {
+    if (startStamp >= endStamp) {
+      dateError = true;
+    } else if (type === 'date' && hour !== 1) {
+      dateError = true;
+    }
+  }
+
+  return dateError;
+}
+
+function userSelect(type, patient) {
+  let selectedUser = true;
+
+  if (type === 'date' && !patient.id) {
+    selectedUser = false;
+  }
+
+  return selectedUser;
 }
 
 

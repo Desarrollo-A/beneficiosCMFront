@@ -6,10 +6,9 @@ const Servicios = () => {
     const context = useContext(contextGeneral);
     return {
         getInfoCliente: context.llamarServidor('loginController/usuarios'),
-        getServiciosDisponibles: context.llamarServidorRespuesta('CalendarioController/getBeneficiosDisponibles'),
         addRegistroEmpleado: context.llamarServidorRespuesta('loginController/addRegistroEmpleado'),
 
-/*
+        /*
         getInitialData: context.llamarServidor('Clientes/getInitialData'),
         addBlacklist: context.llamarServidorRespuesta('Clientes/addBlacklist'),
         guardarSolicitud: context.llamarServidorRespuesta('Solicitud/guardarSolicitud'),
@@ -38,11 +37,7 @@ const Servicios = () => {
         gastoAdmonC: context.llamarServidorRespuesta('CesionDerechos/gastoAdmonC'),
        
         // solicitudCancelacion: context.llamarServidorRespuesta('DCancelacion/solicitudCancelacion'),
-
-*/
-
-        
+        */ 
     }
-    
 }
 export default Servicios

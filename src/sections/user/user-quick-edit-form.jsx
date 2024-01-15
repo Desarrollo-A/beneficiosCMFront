@@ -36,6 +36,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose }) {
     state: Yup.string().required('State is required'),
     city: Yup.string().required('City is required'),
     role: Yup.string().required('Role is required'),
+    status: Yup.string().required('Status is required'),
   });
 
   const defaultValues = useMemo(

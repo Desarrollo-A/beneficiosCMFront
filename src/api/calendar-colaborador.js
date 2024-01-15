@@ -17,6 +17,9 @@ const update_on_drop = endpoints.calendario.updateOnDrop;
 
 const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
 
+export async function reRender() {
+  mutate(get_all_events);
+}
 // ----------------------------------------------------------------------
 
 export async function reRender(){ // se separa la funcion del mutate unicamente para cuando se crea el evento (previsto en update)
@@ -26,9 +29,15 @@ export async function reRender(){ // se separa la funcion del mutate unicamente 
 // ----------------------------------------------------------------------
 
 export function useGetBenefits(sede) {
-  const URL_BENEFITS = [endpoints.benefits.list]
-  const { data, mutate: revalidate, isLoading, error, isValidating } = useSWR(URL_BENEFITS, url => fetcherPost(url, {sede}));
-  
+  const URL_BENEFITS = [endpoints.benefits.list];
+  const {
+    data,
+    mutate: revalidate,
+    isLoading,
+    error,
+    isValidating,
+  } = useSWR(URL_BENEFITS, (url) => fetcherPost(url, { sede }));
+
   const memoizedValue = useMemo(
     () => ({
       data: data?.data || [],
@@ -44,13 +53,19 @@ export function useGetBenefits(sede) {
   return memoizedValue;
 }
 
-export function useGetEspecialists(sede, beneficio) {
+export function useGetEspecialists(area, sede, beneficio) {
   const URL_ESPECIALISTA = [endpoints.especialistas.list];
-  const { data, mutate: revalidate, isLoading, error, isValidating } = useSWR(URL_ESPECIALISTA, url =>  fetcherPost(url, {sede, beneficio}));
+  const {
+    data,
+    mutate: revalidate,
+    isLoading,
+    error,
+    isValidating,
+  } = useSWR(URL_ESPECIALISTA, (url) => fetcherPost(url, { sede, beneficio }));
 
-  useEffect(()=> {
+  useEffect(() => {
     revalidate();
-  },[beneficio, revalidate]);
+  }, [beneficio, revalidate]);
 
   const memoizedValue = useMemo(
     () => ({
@@ -67,14 +82,27 @@ export function useGetEspecialists(sede, beneficio) {
   return memoizedValue;
 }
 
-export function useGetModalities(sede, especialista) {
-  const URL_MODALITIES = [endpoints.especialistas.modalities]
-  const { data, mutate: revalidate, isLoading, error, isValidating } = useSWR(URL_MODALITIES, url => fetcherPost(url, {sede, especialista}));
+export function getSpecialists(sede, area, beneficio) {
+  const URL_ESPECIALISTA = [endpoints.especialistas.list];
+  const specialists = fetcherPost(URL_ESPECIALISTA, { sede, area, beneficio });
 
-  useEffect(()=> {
+  return specialists;
+}
+
+export function useGetModalities(sede, especialista) {
+  const URL_MODALITIES = [endpoints.especialistas.modalities];
+  const {
+    data,
+    mutate: revalidate,
+    isLoading,
+    error,
+    isValidating,
+  } = useSWR(URL_MODALITIES, (url) => fetcherPost(url, { sede, especialista }));
+
+  useEffect(() => {
     revalidate();
-  },[especialista, revalidate]);
-  
+  }, [especialista, revalidate]);
+
   const memoizedValue = useMemo(
     () => ({
       data: data?.data || [],
@@ -90,29 +118,98 @@ export function useGetModalities(sede, especialista) {
   return memoizedValue;
 }
 
-export function useGetAppointmentsByUser(current) { 
+export function getModalities(sede, especialista) {
+  const URL_MODALITIES = [endpoints.especialistas.modalities];
+  const modalities = fetcherPost(URL_MODALITIES, { sede, especialista });
+
+  return modalities;
+}
+
+export function getHorario(beneficio) {
+  const URL_HORARIO = [endpoints.calendarioColaborador.getHorarioBeneficio];
+  const horario = fetcherPost(URL_HORARIO, { beneficio });
+
+  return horario;
+}
+
+export function getHorariosOcupados(idUsuario, fechaInicio, fechaFin) {
+  const URL_HORARIOS = [endpoints.calendarioColaborador.getAllEventsWithRange];
+  const horarios = fetcherPost(URL_HORARIOS, { idUsuario, fechaInicio, fechaFin });
+
+  return horarios;
+}
+
+export function getContactoQB(especialista) {
+  const URL_CONTACT = [endpoints.especialistas.contact];
+  const infoContact = fetcherPost(URL_CONTACT, { especialista });
+
+  return infoContact;
+}
+
+export function getOficinaByAtencion(sede, beneficio, especialista, modalidad) {
+  const URL_OFICINA = [endpoints.calendarioColaborador.getOficina];
+  const oficina = fetcherPost(URL_OFICINA, { sede, beneficio, especialista, modalidad });
+
+  return oficina;
+}
+
+export function checaPrimeraCita(usuario, especialista) {
+  const URL_CITA = [endpoints.calendarioColaborador.isPrimeraCita];
+  const primeraCita = fetcherPost(URL_CITA, { usuario, especialista });
+
+  return primeraCita;
+}
+
+export function getCitasSinFinalizar(usuario) {
+  const URL_CITA = [endpoints.calendarioColaborador.getCitasSinFinalizar];
+  const cita = fetcherPost(URL_CITA, { usuario });
+
+  return cita;
+}
+
+export function getCitasFinalizadas(usuario, mes, año) {
+  const URL_CITA = [endpoints.calendarioColaborador.getCitasFinalizadas];
+  const cita = fetcherPost(URL_CITA, { usuario, mes, año });
+
+  return cita;
+}
+
+export function getAtencionXSede(especialista, sede, modalidad) {
+  const URL_AXS = [endpoints.calendarioColaborador.getAtencionPorSede];
+  const axs = fetcherPost(URL_AXS, { especialista, sede, modalidad });
+
+  return axs;
+}
+
+export function useGetAppointmentsByUser(current) {
   const URL_APPOINTMENTS = [endpoints.calendarioColaborador.getAppointmentsByUser];
   const year = current.getFullYear();
-  const month = (current.getMonth() + 1);
+  const month = current.getMonth() + 1;
 
   const dataValue = {
     year,
     month,
-    idUsuario: datosUser.idUsuario
-  }
+    idUsuario: datosUser.idUsuario,
+  };
 
-  const { data, mutate: revalidate, isLoading, error, isValidating } = useSWR(URL_APPOINTMENTS, url => fetcherPost(url, dataValue));
+  const {
+    data,
+    mutate: revalidate,
+    isLoading,
+    error,
+    isValidating,
+  } = useSWR(URL_APPOINTMENTS, (url) => fetcherPost(url, dataValue));
 
-  useEffect(()=> {
+  useEffect(() => {
     revalidate();
-  },[month, revalidate]);
+  }, [month, revalidate]);
 
   const memoizedValue = useMemo(() => {
     const events = data?.data?.map((event) => ({
       ...event,
       textColor: event?.color ? event.color : 'blue',
     }));
-    
+
     return {
       data: events || [],
       appointmentLoading: isLoading,
@@ -120,9 +217,48 @@ export function useGetAppointmentsByUser(current) {
       appointmentValidating: isValidating,
       appointmentEmpty: !isLoading && !data?.data?.length,
       appointmentMutate: revalidate,
-    }
-    },[data?.data, error, isLoading, isValidating, revalidate]
+    };
+  }, [data?.data, error, isLoading, isValidating, revalidate]);
+
+  return memoizedValue;
+}
+
+// ----------------------------------------------------------------------
+
+export function GetCustomEvents(current) {
+  const year = current.getFullYear();
+  const month = current.getMonth() + 1; // para obtener el mes que se debe, ya que el default da 0
+
+  const dataValue = {
+    year,
+    month,
+    idUsuario: datosUser.idUsuario,
+  };
+
+  const { data, isLoading, error, isValidating } = useSWR(
+    get_all_events,
+    (url) => fetcherPost(url, dataValue),
+    options
   );
+
+  useEffect(() => {
+    reRender();
+  }, [month]);
+
+  const memoizedValue = useMemo(() => {
+    const events = data?.events?.map((event) => ({
+      ...event,
+      textColor: event?.color ? event.color : 'red',
+    }));
+
+    return {
+      events: events || [],
+      eventsLoading: isLoading,
+      eventsError: error,
+      eventsValidating: isValidating,
+      eventsEmpty: !isLoading && !data?.events?.length,
+    };
+  }, [data?.events, error, isLoading, isValidating]);
 
   return memoizedValue;
 }
@@ -130,22 +266,21 @@ export function useGetAppointmentsByUser(current) {
 // ----------------------------------------------------------------------
 
 export async function createCustom(fecha, eventData) {
-
   const dataValue = {
-      fecha,
-      titulo: eventData.title,
-      hora_inicio: eventData.hora_inicio,
-      hora_final:  eventData.hora_final,
-      id_unico: eventData.id,
-      id_usuario: datosUser.idUsuario,
-      fecha_inicio: `${fecha} ${eventData.hora_inicio}`,
-      fecha_final: `${fecha} ${eventData.hora_final}`,
-      id_especialista: datosUser.idUsuario
-  }
+    fecha,
+    titulo: eventData.title,
+    hora_inicio: eventData.hora_inicio,
+    hora_final: eventData.hora_final,
+    id_unico: eventData.id,
+    id_usuario: datosUser.idUsuario,
+    fecha_inicio: `${fecha} ${eventData.hora_inicio}`,
+    fecha_final: `${fecha} ${eventData.hora_final}`,
+    id_especialista: datosUser.idUsuario,
+  };
 
   const create = fetcherPost(save_occupied, dataValue);
 
-return create;
+  return create;
 }
 
 // ----------------------------------------------------------------------
@@ -157,42 +292,37 @@ export async function updateCustom(eventData) {
   const oldStart = dayjs(eventData.occupied).format('YYYY/M/DD'); // fecha original del evento
 
   const dataValue = {
-        hora_inicio: eventData.hora_inicio,
-        hora_final:  eventData.hora_final,
-        titulo: eventData.title,
-        id_unico: eventData.id,
-        fecha_ocupado: eventData.newDate,
-        id_usuario: datosUser.idUsuario,
-        fecha_inicio: `${eventData.newDate} ${eventData.hora_inicio}`,
-        fecha_final: `${eventData.newDate} ${eventData.hora_final}`,
-        id_especialista: datosUser.idUsuario,
-        start,
-        oldStart
-    }
+    hora_inicio: eventData.hora_inicio,
+    hora_final: eventData.hora_final,
+    titulo: eventData.title,
+    id_unico: eventData.id,
+    fecha_ocupado: eventData.newDate,
+    id_usuario: datosUser.idUsuario,
+    fecha_inicio: `${eventData.newDate} ${eventData.hora_inicio}`,
+    fecha_final: `${eventData.newDate} ${eventData.hora_final}`,
+    id_especialista: datosUser.idUsuario,
+    start,
+    oldStart,
+  };
 
-    if(oldStart > now){
-      if(start > now){
-        update = fetcherPost(update_occupied, dataValue);
-      }
-      else{
-        update = { status: false, message: "No se pueden mover las fechas a un dia anterior o actual" }
-      }
+  if (oldStart > now) {
+    if (start > now) {
+      update = fetcherPost(update_occupied, dataValue);
+    } else {
+      update = {
+        status: false,
+        message: 'No se pueden mover las fechas a un dia anterior o actual',
+      };
     }
-    else{
-      update = { status: false, message: "Las citas u horarios pasados no se pueden mover" }
-    }
-    
-    // if(dayjs(eventData.newDate).format('YYYY/M/DD') > dayjs(new Date()).format('YYYY/M/DD'))
-    //   update = fetcherPost(updateOccupied, data);
-    // else
-    //   update = { status: false, message: "No se pueden mover las fechas a un dia anterior o actual" }
+  } else {
+    update = { status: false, message: 'Las citas u horarios pasados no se pueden mover' };
+  }
 
-    return update;
+  return update;
 }
 // ----------------------------------------------------------------------
 
 export async function deleteEvent(eventId) {
-
   const delEvent = fetcherPost(delete_occupied, eventId);
 
   return delEvent;
@@ -200,8 +330,7 @@ export async function deleteEvent(eventId) {
 
 // ----------------------------------------------------------------------
 
-export async function cancelDate(eventId){
-
+export async function cancelDate(eventId) {
   const delDate = fetcherPost(cancel_appointment, eventId);
 
   return delDate;
@@ -209,72 +338,21 @@ export async function cancelDate(eventId){
 
 // ----------------------------------------------------------------------
 
-export async function createAppointment(fecha, eventData){
+export async function createAppointment(fecha, eventData) {
+  // const URL = [endpoints.calendarioColaborador.createAppointment];
 
   const data = {
-        fecha,
-        id_usuario: datosUser.idUsuario,
-        id_paciente: eventData.usuario,
-        fecha_inicio: `${fecha} ${eventData.hora_inicio}`,
-        fecha_final: `${fecha} ${eventData.hora_final}`,
-        creado_por: datosUser.idUsuario,
-        observaciones: eventData.title,
-        modificado_por: datosUser.idUsuario
-  }
+    fecha,
+    id_usuario: eventData.usuario, // Especialista
+    id_paciente: datosUser.idUsuario, // Beneficiario aka paciente
+    fecha_inicio: `${fecha} ${eventData.hora_inicio}`,
+    fecha_final: `${fecha} ${eventData.hora_final}`,
+    creado_por: datosUser.idUsuario,
+    observaciones: eventData.title,
+    modificado_por: datosUser.idUsuario,
+  };
 
-    const create = fetcherPost(save_appointment, data);
+  const create = fetcherPost(save_appointment, data);
 
-    return create;
-}
-
-// ----------------------------------------------------------------------
-
-export async function dropUpdate(args){
-  let update = '';
-  const tipo = args.color === "green" ? "cita" : "ocupado"; // para identificar si es cita u horario ocupado, mediante el color de la etiqueta
-  const start = dayjs(args.start).format('YYYY/M/DD'); // fecha a la que se movera
-  const now = dayjs(new Date()).format('YYYY/M/DD');
-  const oldStart = dayjs(args.oldStart).format('YYYY/M/DD'); // fecha original del evento
-
-  const data = {
-    id: args.id,
-    fechaInicio: dayjs(args.start).format('YYYY/MM/DD HH:mm:ss'),
-    fechaFinal: dayjs(args.end).format('YYYY/MM/DD HH:mm:ss'),
-    idEspecialista: datosUser.idUsuario,
-    tipo,
-    start,
-    oldStart
-  }
-
-  if(oldStart > now){
-    if(start > now){
-      update = await fetcherPost(update_on_drop, data);
-
-      if(update.status)
-        enqueueSnackbar(update.message);
-      else{
-        enqueueSnackbar(update.message, {variant: "error"});
-        reRender(); // se utiliza el rerender aqui parta que pueda regresar el evento en caso de no quedar
-      }
-    }
-    else{
-      enqueueSnackbar("No se pueden mover las fechas a un dia anterior o actual", { variant: "error" });
-      reRender();
-    }
-  }
-  else{
-    enqueueSnackbar("Las citas u horarios pasados no se pueden mover", {variant: "error"});
-    reRender();
-  }
-  
-  return update;
-}
-
-// ----------------------------------------------------------------------
-
-export function getModalities(sede, especialista) {
-  const URL_MODALITIES = [endpoints.especialistas.modalities];
-  const modalities = fetcherPost(URL_MODALITIES, { sede, especialista });
-
-  return modalities;
+  return create;
 }
