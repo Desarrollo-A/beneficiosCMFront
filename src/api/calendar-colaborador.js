@@ -4,7 +4,7 @@ import useSWR, { mutate } from 'swr';
 import { useMemo, useEffect } from 'react';
 import { enqueueSnackbar } from 'notistack';
 
-import { endpoints, fetcherGet, fetcherPost } from 'src/utils/axios';
+import { endpoints, fetcherPost } from 'src/utils/axios';
 
 // cadenas de url extraidas de lo que se encuentra en el axios
 const get_all_events = endpoints.calendario.getAllEvents;
@@ -14,20 +14,13 @@ const delete_occupied = endpoints.calendario.deleteOccupied;
 const cancel_appointment = endpoints.calendario.cancelAppointment;
 const save_appointment = endpoints.calendario.createAppointment;
 const update_on_drop = endpoints.calendario.updateOnDrop;
-const p1 = endpoints.calendarioColaborador.getAppointmentsByUser;
-
-const options = {
-  revalidateIfStale: false,
-  revalidateOnFocus: true,
-  revalidateOnReconnect: true,
-  refreshInterval: 0,
-};
 
 const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
 
 export async function reRender() {
   mutate(get_all_events);
 }
+
 // ----------------------------------------------------------------------
 
 export function useGetBenefits(sede) {
@@ -55,7 +48,7 @@ export function useGetBenefits(sede) {
   return memoizedValue;
 }
 
-export function useGetEspecialists(sede, beneficio) {
+export function useGetEspecialists(area, sede, beneficio) {
   const URL_ESPECIALISTA = [endpoints.especialistas.list];
   const {
     data,
@@ -84,9 +77,9 @@ export function useGetEspecialists(sede, beneficio) {
   return memoizedValue;
 }
 
-export function getSpecialists(sede, beneficio) {
+export function getSpecialists(sede, area, beneficio) {
   const URL_ESPECIALISTA = [endpoints.especialistas.list];
-  const specialists = fetcherPost(URL_ESPECIALISTA, { sede, beneficio });
+  const specialists = fetcherPost(URL_ESPECIALISTA, { sede, area, beneficio });
 
   return specialists;
 }
@@ -155,6 +148,34 @@ export function getOficinaByAtencion(sede, beneficio, especialista, modalidad) {
   return oficina;
 }
 
+export function checaPrimeraCita(usuario, especialista) {
+  const URL_CITA = [endpoints.calendarioColaborador.isPrimeraCita];
+  const primeraCita = fetcherPost(URL_CITA, { usuario, especialista });
+
+  return primeraCita;
+}
+
+export function getCitasSinFinalizar(usuario) {
+  const URL_CITA = [endpoints.calendarioColaborador.getCitasSinFinalizar];
+  const cita = fetcherPost(URL_CITA, { usuario });
+
+  return cita;
+}
+
+export function getCitasFinalizadas(usuario, mes, año) {
+  const URL_CITA = [endpoints.calendarioColaborador.getCitasFinalizadas];
+  const cita = fetcherPost(URL_CITA, { usuario, mes, año });
+
+  return cita;
+}
+
+export function getAtencionXSede(especialista, sede, modalidad) {
+  const URL_AXS = [endpoints.calendarioColaborador.getAtencionPorSede];
+  const axs = fetcherPost(URL_AXS, { especialista, sede, modalidad });
+
+  return axs;
+}
+
 export function useGetAppointmentsByUser(current) {
   const URL_APPOINTMENTS = [endpoints.calendarioColaborador.getAppointmentsByUser];
   const year = current.getFullYear();
@@ -211,8 +232,7 @@ export function GetCustomEvents(current) {
 
   const { data, isLoading, error, isValidating } = useSWR(
     get_all_events,
-    (url) => fetcherPost(url, dataValue),
-    options
+    (url) => fetcherPost(url, dataValue)
   );
 
   useEffect(() => {
@@ -330,47 +350,3 @@ export async function createAppointment(fecha, eventData) {
 
   return create;
 }
-
-// ----------------------------------------------------------------------
-
-export async function dropUpdate(args) {
-  let update = '';
-  const tipo = args.color === 'green' ? 'cita' : 'ocupado'; // para identificar si es cita u horario ocupado, mediante el color de la etiqueta
-  const start = dayjs(args.start).format('YYYY/M/DD'); // fecha a la que se movera
-  const now = dayjs(new Date()).format('YYYY/M/DD');
-  const oldStart = dayjs(args.oldStart).format('YYYY/M/DD'); // fecha original del evento
-
-  const data = {
-    id: args.id,
-    fechaInicio: dayjs(args.start).format('YYYY/MM/DD HH:mm:ss'),
-    fechaFinal: dayjs(args.end).format('YYYY/MM/DD HH:mm:ss'),
-    idEspecialista: datosUser.idUsuario,
-    tipo,
-    start,
-    oldStart,
-  };
-
-  if (oldStart > now) {
-    if (start > now) {
-      update = await fetcherPost(update_on_drop, data);
-
-      if (update.status) enqueueSnackbar(update.message);
-      else {
-        enqueueSnackbar(update.message, { variant: 'error' });
-        reRender(); // se utiliza el rerender aqui parta que pueda regresar el evento en caso de no quedar
-      }
-    } else {
-      enqueueSnackbar('No se pueden mover las fechas a un dia anterior o actual', {
-        variant: 'error',
-      });
-      reRender();
-    }
-  } else {
-    enqueueSnackbar('Las citas u horarios pasados no se pueden mover', { variant: 'error' });
-    reRender();
-  }
-
-  return update;
-}
-
-// ----------------------------------------------------------------------

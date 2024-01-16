@@ -19,7 +19,7 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import { fTimestamp } from 'src/utils/format-time';
 
 import { useGetNameUser } from 'src/api/user';
-import { dropUpdate, GetCustomEvents } from 'src/api/calendar-specialist';
+import { dropUpdate, useGetMotivos, GetCustomEvents } from 'src/api/calendar-specialist';
 
 import { useSettingsContext } from 'src/components/settings';
 
@@ -37,13 +37,13 @@ const defaultFilters = {
   };
 
 // ----------------------------------------------------------------------
-
 export default function CalendarioView(){
     const smUp = useResponsive('up', 'sm');
     const settings = useSettingsContext();
     const [filters] = useState(defaultFilters);
     const { data: names, usersMutate } = useGetNameUser();
     const [userData, setUserData] = useState('');
+    const {data: reasons} = useGetMotivos('');
     const theme = useTheme();
 
     const dateError =
@@ -92,7 +92,7 @@ export default function CalendarioView(){
         const {estatus, fechaInicio} = arg.event.extendedProps;
         const now = dayjs(new Date).format('YYYY-MM-DD HH:mm:ss');
 
-        if (fechaInicio < now || estatus !== 1){
+        if (fechaInicio < now || estatus !== 1 && estatus !== 6){
           enqueueSnackbar('No se puede mover el evento', {variant: 'error'});
           arg.revert();
         }
@@ -133,7 +133,6 @@ export default function CalendarioView(){
                 eventConstraint={hours2}
                 businessHours={hours}
                 selectLongPressDelay={0}
-                LongPressDelay={0}
                 locales={allLocales} 
                 locale='es'
                 rerenderDelay={10}
@@ -165,7 +164,6 @@ export default function CalendarioView(){
             fullWidth
             maxWidth='sm'
             open={openForm}
-            onClose={onCloseForm}
             transitionDuration={{
               enter: theme.transitions.duration.shortest,
               exit: theme.transitions.duration.shortest - 1000,
@@ -177,6 +175,7 @@ export default function CalendarioView(){
               onClose={onCloseForm}
               selectedDate={selectedDate}
               selectedEnd={selectedEnd}
+              reasons={reasons}
               />
             : <Lista
               onClose={onCloseForm}

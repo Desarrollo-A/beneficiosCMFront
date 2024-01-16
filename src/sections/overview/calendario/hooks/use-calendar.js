@@ -145,7 +145,8 @@ export default function useCalendar() {
       oldStart: event.extendedProps.fechaInicio,
       color: event.textColor,
       type: event.extendedProps.type,
-      estatus: event.extendedProps.estatus
+      estatus: event.extendedProps.estatus,
+      idPaciente: event.extendedProps.idPaciente
     });
   }, []);
 

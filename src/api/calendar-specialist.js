@@ -18,6 +18,9 @@ const cancel_appointment = endpoints.calendario.cancelAppointment;
 const create_appointment = endpoints.calendario.createAppointment;
 const appointment_drop = endpoints.calendario.appointmentDrop;
 const occupied_drop = endpoints.calendario.occupiedDrop;
+const end_appointment = endpoints.calendario.endAppointment;
+const get_reasons = endpoints.calendario.getReasons;
+const get_pending_end = endpoints.calendario.getPendingEnd;
 
 const options = {
   revalidateIfStale: false,
@@ -154,7 +157,8 @@ export async function createAppointment(eventData){
         fechaFinal,
         creadoPor: datosUser.idUsuario,
         titulo: eventData.title,
-        modificadoPor: datosUser.idUsuario
+        modificadoPor: datosUser.idUsuario,
+        idCatalogo: eventData.idCatalogo
   };
 
   if(start > now){
@@ -197,12 +201,14 @@ export async function updateAppointment(eventData) {
 
 // ----------------------------------------------------------------------
 
-export async function cancelAppointment(currentEvent){
+export async function cancelAppointment(currentEvent, cancelType){
   const startStamp = dayjs(currentEvent.start).format('YYYY/MM/DD HH:mm:ss');
 
   const data = {
-    id: currentEvent.id,
-    startStamp
+    idCita: currentEvent.id,
+    startStamp,
+    estatus: currentEvent.estatus,
+    tipo: cancelType
   };
 
   const delDate = fetcherPost(cancel_appointment, data);
@@ -222,6 +228,7 @@ export async function dropUpdate(args){
     fechaInicio: dayjs(args.start).format('YYYY/MM/DD HH:mm:ss'),
     fechaFinal: dayjs(args.end).format('YYYY/MM/DD HH:mm:ss'),
     idUsuario: datosUser.idUsuario,
+    idPaciente: args.idPaciente,
     oldStart,
     estatus: args.estatus
   }
@@ -235,4 +242,40 @@ export async function dropUpdate(args){
     reRender(); // se utiliza el rerender aqui parta que pueda regresar el evento en caso de no quedar
   }
 
+}
+// ----------------------------------------------------------------------
+
+export async function endAppointment(id, reason){
+  const data = {
+    idCita: id,
+    reason,
+    idUsuario: datosUser.idUsuario
+  }
+
+  const update = fetcherPost(end_appointment, data);
+
+  return update;
+}
+
+// ----------------------------------------------------------------------
+
+export function useGetMotivos(){
+  const data  = useSWR(get_reasons, url => fetcherPost(url, datosUser.idPuesto, {revalidateOnFocus: false, revalidateOnReconnect: true, refreshWhenHidden: false}));
+
+  const memoizedValue = useMemo(() =>({
+    data: data?.data || []
+  }), [data?.data]);
+  
+  return memoizedValue;
+}
+
+
+export function useGetPending(){
+  const data = useSWR(get_pending_end, url => fetcherPost(url, datosUser.idUsuario, { revalidateOnFocus: true, revalidateOnReconnect: true, refreshWhenHidden: false }));
+
+  const momoizedValue = useMemo(() => ({
+    data: data?.data
+  }), [data?.data]);
+
+  return momoizedValue;
 }

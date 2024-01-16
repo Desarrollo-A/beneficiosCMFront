@@ -30,12 +30,7 @@ import { fTimestamp } from 'src/utils/format-time';
 import { useSettingsContext } from 'src/components/settings';
 import { CALENDAR_COLOR_OPTIONS } from 'src/_mock/_calendar';
 // import { dropUpdate, GetCustomEvents } from 'src/api/calendar-specialist';
-import {
-  useGetBenefits,
-  useGetModalities,
-  useGetEspecialists,
-  useGetAppointmentsByUser,
-} from 'src/api/calendar-colaborador';
+import { useGetAppointmentsByUser } from 'src/api/calendar-colaborador';
 
 import { StyledCalendar } from '../styles';
 import CalendarForm from '../calendar-form';
