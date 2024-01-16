@@ -4,8 +4,8 @@ import * as yup from 'yup';
 import { Base64 } from 'js-base64';
 import PropTypes from 'prop-types';
 import utc from 'dayjs/plugin/utc';
+import { useForm } from 'react-hook-form';
 import timezone from 'dayjs/plugin/timezone';
-import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import { useRef, useState, useEffect, useCallback } from 'react';
@@ -42,6 +42,7 @@ import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
 import { fTimestamp } from 'src/utils/format-time';
 
 import {
+  crearCita,
   cancelDate,
   getHorario,
   getContactoQB,
@@ -50,7 +51,6 @@ import {
   useGetBenefits,
   getAtencionXSede,
   checaPrimeraCita,
-  createAppointment,
   getCitasFinalizadas,
   getHorariosOcupados,
   getCitasSinFinalizar,
@@ -106,7 +106,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     defaultValues: currentEvent,
   });
 
-  const { reset, watch, handleSubmit } = methods;
+  const { watch, handleSubmit } = methods;
 
   const fechaTitulo = dayjs(selectedDate).format('dddd, DD MMMM YYYY');
 
@@ -125,9 +125,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     console.log('Valores seleccionados', selectedValues);
 
     const ahora = new Date();
-    const fechaActual = dayjs(
-      ahora.toLocaleDateString('es-MX', { timeZone: 'America/Mexico_City' })
-    ).format('YYYY-DD-MM');
+    const fechaActual = dayjs(ahora).format('YYYY-MM-DD');
 
     const año = horarioSeleccionado.substring(0, 4);
     const mes = horarioSeleccionado.substring(5, 7);
@@ -143,6 +141,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       });
     }
 
+    console.log('FECHA', fechaActual);
     // Validamos la antiguedad: Mandamos fechaIngreso, fechaDeHoy, isPracticante, idBeneficio.
     const tieneAntiguedad = validarAntiguedad(
       datosUser.fechaIngreso,
@@ -150,6 +149,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       isPracticante,
       selectedValues.beneficio
     );
+    console.log('ANTIGUEDAD', tieneAntiguedad);
 
     if (!tieneAntiguedad) {
       onClose();
@@ -173,7 +173,20 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     // Si tiene citas, esto para determinar si es usuario nuevo
     if (tieneCitas.result === false) {
       // AGENDAR
-      console.log('AGENDO Y AQUI TERMINA MI PROCESO');
+      const agendarCita = await crearCita(
+        `CITA ${datosUser.nombre} ${año}-${mes}-${dia}`,
+        selectedValues.especialista,
+        datosUser.idUsuario,
+        '',
+        horarioSeleccionado,
+        1,
+        idAtencionPorSede,
+        1,
+        datosUser.idUsuario,
+        datosUser.idUsuario
+      );
+      // titulo, idEspecialista, idPaciente, observaciones, fechaInicio, tipoCita, idAtencionXSede, estatusCita, creadoPor, modificadoPor
+      console.log('AGENDO Y AQUI TERMINA MI PROCESO', agendarCita);
       return true;
     }
 
@@ -192,7 +205,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       });
     }
 
-    const citasFinalizadas = await getCitasFinalizadas(datosUser.idUsuario);
+    const citasFinalizadas = await getCitasFinalizadas(datosUser.idUsuario, mes, año);
     console.log('CitasFinalizadas', citasFinalizadas);
 
     if (citasFinalizadas.result === true && citasFinalizadas?.data.length >= 2) {
@@ -202,54 +215,25 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       );
     }
 
-    // Agendar cita
+    // AGENDAR
+    // const agendarCita = await crearCita();
+    // titulo, idEspecialista, idPaciente, observaciones, fechaInicio, tipoCita, idAtencionXSede, estatusCita, creadoPor, modificadoPor
 
-    // const hacerRegistro = await getCitasFinalizadas(datosUser.idUsuario);
-    // console.log('Resultado de registro de cita', hacerRegistro);
-
-    // Comenzar con todas las validaciones
-
-    // if (!especialista) return enqueueSnackbar("Seleccione el especialista", {variant: 'error'});
-    // const eventData = {
-    //   id: currentEvent?.id ? currentEvent?.id : uuidv4(),
-    //   title: data?.title,
-    //   start: currentEvent?.id
-    //     ? `${fDate(data?.newData)} ${data.start.getHours()}:${data.start.getMinutes()}`
-    //     : dayjs(`${fecha} ${data.start.getHours()}:${data.start.getMinutes()}`).format(
-    //         'YYYY-MM-DD HH:mm'
-    //       ),
-    //   end: currentEvent?.id
-    //     ? `${fDate(data?.newData)} ${data.end.getHours()}:${data.end.getMinutes()}`
-    //     : dayjs(`${fecha} ${data.end.getHours()}:${data.end.getMinutes()}`).format(
-    //         'YYYY-MM-DD HH:mm'
-    //       ),
-    //   hora_inicio: `${data.start.getHours()}:${data.start.getMinutes()}`,
-    //   hora_final: `${data.end.getHours()}:${data.end.getMinutes()}`,
-    //   occupied: currentEvent?.id ? currentEvent.occupied : fecha,
-    //   newDate: fDate(data?.newDate),
-    //   beneficio: selectedValues.beneficio,
-    //   usuario: selectedValues.especialista,
-    //   modalidad: selectedValues.modalidad,
-    // };
-
-    // try {
-    //   if (!dateError) {
-    //     const save = currentEvent?.id
-    //       ? await updateCustom(eventData)
-    //       : await createAppointment(fecha, eventData);
-    //     if (save.result) {
-    //       enqueueSnackbar(save.msg);
-    //       appointmentMutate(); // ayuda a que se haga un mutate en caso que sea true el resultado
-    //       reset();
-    //       onClose();
-    //     } else {
-    //       enqueueSnackbar(save.msg, { variant: 'error' });
-    //     }
-    //   }
-    // } catch (error) {
-    //   enqueueSnackbar('Ha ocurrido un error al guardar');
-    // }
-    return false; // Quitar
+    const agendarCita = await crearCita(
+      `CITA ${datosUser.nombre} ${año}-${mes}-${dia}`,
+      selectedValues.especialista,
+      datosUser.idUsuario,
+      '',
+      horarioSeleccionado,
+      2,
+      idAtencionPorSede,
+      1,
+      datosUser.idUsuario,
+      datosUser.idUsuario
+    );
+    // titulo, idEspecialista, idPaciente, observaciones, fechaInicio, tipoCita, idAtencionXSede, estatusCita, creadoPor, modificadoPor
+    console.log('AGENDO Y AQUI TERMINA MI PROCESO', agendarCita);
+    return false;
   });
 
   const onCancel = useCallback(async () => {
@@ -561,9 +545,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     // console.log('Solo registros del día', arregloFiltrado);
 
     // Vuelvo a filtrar los registros que esten dentro del horario disponible.
-    const fechaActual = dayjs(
-      ahora.toLocaleDateString('es-MX', { timeZone: 'America/Mexico_City' })
-    ).format('YYYY-DD-MM');
+    const fechaActual = dayjs(ahora).format('YYYY-MM-DD');
 
     // Valido si selecciono el dia de hoy para quitar horarios no permitidos.
     if (diaSeleccionado === fechaActual) {
@@ -627,27 +609,30 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     window.open(whatsappLink, '_blank');
   };
 
-  const validarAntiguedad = (fechaIngreso, FechaHoy, isPracticante, beneficio) => {
+  const validarAntiguedad = (fechaIngreso, fechaHoy, isPracticante, beneficio) => {
     // Convierte las fechas a objetos de tipo Date
     const ingreso = new Date(fechaIngreso);
-    const hoy = new Date(FechaHoy);
+    const hoy = new Date(fechaHoy);
 
     // Calcula la diferencia en milisegundos
     const diferenciaMilisegundos = hoy - ingreso;
+    console.log('1', diferenciaMilisegundos, hoy, ingreso, fechaHoy, fechaIngreso);
 
     // Calcula la diferencia en años, meses y días
     const milisegundosEnUnDia = 24 * 60 * 60 * 1000; // Milisegundos en un día
     const milisegundosEnUnAnio = milisegundosEnUnDia * 365.25; // Milisegundos en un año, considerando años bisiestos
+    console.log('2', milisegundosEnUnDia, milisegundosEnUnAnio);
 
+    const diferenciaAnios = Math.floor(diferenciaMilisegundos / milisegundosEnUnAnio);
     const diferenciaMeses = Math.floor(
       (diferenciaMilisegundos % milisegundosEnUnAnio) / (milisegundosEnUnDia * 30.44)
     );
-
+    console.log('MESES CONTRATADO:', diferenciaMeses, beneficio, isPracticante);
     // Compara la diferencia de meses beneficio, y  puesto.
     if (
-      (beneficio !== 158 && diferenciaMeses >= 3) ||
-      (!isPracticante && beneficio === 158 && diferenciaMeses >= 2) ||
-      (isPracticante && beneficio === 158 && diferenciaMeses >= 1)
+      (beneficio !== 158 && (diferenciaMeses >= 3 || diferenciaAnios > 0)) ||
+      (!isPracticante && beneficio === 158 && (diferenciaMeses >= 2 || diferenciaAnios > 0)) ||
+      (isPracticante && beneficio === 158 && (diferenciaMeses >= 1 || diferenciaAnios > 0))
     ) {
       return true;
     }

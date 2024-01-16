@@ -113,19 +113,19 @@ export const endpoints = {
     appointmentDrop: 'calendarioController/appointmentDrop',
     occupiedDrop: 'calendarioController/occupiedDrop',
     endAppointment: 'calendarioController/endAppointment',
-    getReasons: 'calendarioController/getReasons'
+    getReasons: 'calendarioController/getReasons',
   },
   calendarioColaborador: {
     isPrimeraCita: 'calendarioController/isPrimeraCita',
     getOficina: 'calendarioController/getOficinaByAtencion',
     getCitasExtras: 'calendarioController/getCitasExtrasUsuario',
     getHorarioBeneficio: 'calendarioController/getHorarioBeneficio',
-    createAppointment: 'calendarioController/getAppointmentsByUser',
     getAllEventsWithRange: 'calendarioController/getAllEventsWithRange',
     getAppointmentsByUser: 'calendarioController/getAppointmentsByUser',
     getCitasFinalizadas: 'calendarioController/getCitasFinalizadasUsuario',
     getCitasSinFinalizar: 'calendarioController/getCitasSinFinalizarUsuario',
     getAtencionPorSede: 'calendarioController/getAtencionPorSede',
+    createAppointment: 'calendarioController/createAppointmentByColaborator',
   },
   reportes: {
     lista: '/reportesController/citas',

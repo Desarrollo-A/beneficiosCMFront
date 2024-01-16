@@ -20,11 +20,6 @@ const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken')
 export async function reRender() {
   mutate(get_all_events);
 }
-// ----------------------------------------------------------------------
-
-export async function reRender(){ // se separa la funcion del mutate unicamente para cuando se crea el evento (previsto en update)
-  mutate(get_all_events);
-}
 
 // ----------------------------------------------------------------------
 
@@ -160,16 +155,16 @@ export function checaPrimeraCita(usuario, especialista) {
   return primeraCita;
 }
 
-export function getCitasSinFinalizar(usuario) {
+export function getCitasSinFinalizar(usuario, beneficio) {
   const URL_CITA = [endpoints.calendarioColaborador.getCitasSinFinalizar];
-  const cita = fetcherPost(URL_CITA, { usuario });
+  const cita = fetcherPost(URL_CITA, { usuario, beneficio });
 
   return cita;
 }
 
 export function getCitasFinalizadas(usuario, mes, año) {
   const URL_CITA = [endpoints.calendarioColaborador.getCitasFinalizadas];
-  const cita = fetcherPost(URL_CITA, { usuario, mes, año });
+  const cita = fetcherPost(URL_CITA, { usuario, mes, anio: año });
 
   return cita;
 }
@@ -177,6 +172,35 @@ export function getCitasFinalizadas(usuario, mes, año) {
 export function getAtencionXSede(especialista, sede, modalidad) {
   const URL_AXS = [endpoints.calendarioColaborador.getAtencionPorSede];
   const axs = fetcherPost(URL_AXS, { especialista, sede, modalidad });
+
+  return axs;
+}
+
+export function crearCita(
+  titulo,
+  idEspecialista,
+  idPaciente,
+  observaciones,
+  fechaInicio,
+  tipoCita,
+  idAtencionXSede,
+  estatusCita,
+  creadoPor,
+  modificadoPor
+) {
+  const URL_CITA = [endpoints.calendarioColaborador.createAppointment];
+  const axs = fetcherPost(URL_CITA, {
+    titulo,
+    idEspecialista,
+    idPaciente,
+    observaciones,
+    fechaInicio,
+    tipoCita,
+    idAtencionXSede,
+    estatusCita,
+    creadoPor,
+    modificadoPor,
+  });
 
   return axs;
 }
@@ -235,10 +259,8 @@ export function GetCustomEvents(current) {
     idUsuario: datosUser.idUsuario,
   };
 
-  const { data, isLoading, error, isValidating } = useSWR(
-    get_all_events,
-    (url) => fetcherPost(url, dataValue),
-    options
+  const { data, isLoading, error, isValidating } = useSWR(get_all_events, (url) =>
+    fetcherPost(url, dataValue)
   );
 
   useEffect(() => {
