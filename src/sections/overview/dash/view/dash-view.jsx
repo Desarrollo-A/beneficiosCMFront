@@ -23,9 +23,15 @@ import EncuestaPorcentaje from '../porcentaje-encuesta';
 
 export default function DashView() {
 
+  /* const { email } = useGetGeneral(endpoints.encuestas.sendMail, "email");
+
+  console.log(email); */
+
   const user = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
 
   const { preguntaData } = usePostGeneral(user.puesto, endpoints.dashboard.getPregunta, "preguntaData");
+
+  const { encValidData } = usePostGeneral(user.puesto, endpoints.encuestas.getValidEncContestada, "encValidData");
 
   const [pgDt, setPgDt] = useState('');
 
@@ -53,11 +59,11 @@ export default function DashView() {
 
   const { respCountData } = usePostGeneral(dflt, endpoints.dashboard.getCountRespuestas, "respCountData");
 
-  const { respData } =  usePostGeneral(paramRes, endpoints.dashboard.getRespuestas, "respData");
+  const { respData } = usePostGeneral(paramRes, endpoints.dashboard.getRespuestas, "respData");
 
   const respArray = respData.flatMap((i) => (
     JSON.parse(`[${i.respuestas.split(', ').flatMap(value => `"${value}"`).join(', ')}]`
-  )));
+    )));
 
   const resultArray = respArray.map((respuesta) => {
     const matchingObj = respCountData.find((obj) => obj.respuesta === respuesta);
@@ -70,48 +76,52 @@ export default function DashView() {
   });
 
   useEffect(() => {
-    if (preguntaData.length > 0){
+    if (preguntaData.length > 0) {
       setIdEncuesta(preguntaData[0]?.idEncuesta)
     }
   }, [preguntaData])
 
   useEffect(() => {
-    if (preguntaData && Array.isArray(pregunta) && pregunta.length === 0) {
 
-      setDflt([{ idPregunta: preguntaData[0]?.idPregunta },
+    if (encValidData === true) {
+
+      if (preguntaData && Array.isArray(pregunta) && pregunta.length === 0) {
+
+        setDflt([{ idPregunta: preguntaData[0]?.idPregunta },
         { idEncuesta: preguntaData[0]?.idEncuesta },
         { respuestas: preguntaData[0]?.respuestas },
         { pregunta: preguntaData[0]?.pregunta }]);
 
-      setParamRes([{ idPregunta: preguntaData[0]?.idPregunta },
+        setParamRes([{ idPregunta: preguntaData[0]?.idPregunta },
         { idEncuesta: preguntaData[0]?.idEncuesta },
         { idArea: preguntaData[0]?.idArea }]);
 
-      setSelectPg(preguntaData[0]?.pregunta);
+        setSelectPg(preguntaData[0]?.pregunta);
 
-      setPgDt(preguntaData[0]?.respuestas);
+        setPgDt(preguntaData[0]?.respuestas);
 
-    }else if (preguntaData && Array.isArray(pregunta) && pregunta.length > 0){
+      } else if (preguntaData && Array.isArray(pregunta) && pregunta.length > 0) {
 
-      setDflt(pregunta);
+        setDflt(pregunta);
 
-      setParamRes(pregunta)
+        setParamRes(pregunta)
 
-      setSelectPg(pregunta[3]?.pregunta);
+        setSelectPg(pregunta[3]?.pregunta);
 
-      setPgDt(respData[0]?.grupo);
+        setPgDt(respData[0]?.grupo);
 
-    }else {
-      alert("Error")
+      } else {
+        alert("Error")
+      }
     }
-  }, [preguntaData, pregunta, respData]);
+  }, [preguntaData, pregunta, respData, encValidData]);
 
   useEffect(() => {
     if (preguntaData && Array.isArray(pregunta) && pregunta.length === 0) {
       setPg(preguntaData[0]?.idPregunta);
-    }else if (preguntaData && Array.isArray(pregunta) && pregunta.length > 0){
+    } else if (preguntaData && Array.isArray(pregunta) && pregunta.length > 0) {
       setPg(pregunta[0]?.idPregunta);
-    }else {
+    } else {
       alert("Error")
     }
   }, [preguntaData, pregunta]);
@@ -119,19 +129,19 @@ export default function DashView() {
   useEffect(() => {
     if (preguntaData && Array.isArray(pregunta) && pregunta.length === 0 && pgDt !== "3") {
       setSn(0);
-    }else if (preguntaData && Array.isArray(pregunta) && pregunta.length === 0 && pgDt === "3"){
+    } else if (preguntaData && Array.isArray(pregunta) && pregunta.length === 0 && pgDt === "3") {
       setSn(1);
-    }else if (pregunta.length > 0 && pgDt === 3){
+    } else if (pregunta.length > 0 && pgDt === 3) {
       setSn(1);
-    }else if (pregunta.length > 0 && pgDt !== 3){
+    } else if (pregunta.length > 0 && pgDt !== 3) {
       setSn(0);
-    }else {
+    } else {
       alert("Error")
     }
   }, [preguntaData, pregunta, pgDt, resultArray]);
 
   const _dt = {
-      percent: (index) => percent[index],
+    percent: (index) => percent[index],
   }
 
   const _ecommerceSalesOverview = ['No', 'Si'].map(
@@ -140,7 +150,7 @@ export default function DashView() {
       value: _dt.percent(index),
     })
   );
-  
+
   const d = new Date();
 
   const year = d.getFullYear();
@@ -178,7 +188,7 @@ export default function DashView() {
   const handleChangeYear = (newYear) => {
     setYearData(newYear);
   }
-  
+
 
   const desiredLength = 12;
 
@@ -248,65 +258,65 @@ export default function DashView() {
 
   return (
     <>
-    {preguntaData.length > 0 ? (
+      {encValidData === true ? (
 
-    <Container maxWidth={settings.themeStretch ? false : 'xl'}>
+        <Container maxWidth={settings.themeStretch ? false : 'xl'}>
 
-      <Typography
-        variant="h4"
-        sx={{
-          mb: { xs: 3, md: 5 },
-        }}
-      >
-        Dashboard
-      </Typography>
-
-      <Grid container spacing={3}>
-
-        {sn === 0 ? (
-        <Grid xs={12} md={6} lg={12}>
-          <EncuestaBarra
-            idPregunta={pg} 
-            chart={{
-              categories: respArray,
-              series: [
-                {
-                  type: 'data',
-                  data: [
-                    {
-                      name: 'Total',
-                      data: resultArray,
-                    }
-                  ],
-                },
-              ],
+          <Typography
+            variant="h4"
+            sx={{
+              mb: { xs: 3, md: 5 },
             }}
-            user={user}
-            handleChangePg={handleChangePg}
-            idEncuesta={idEncuesta}
-            idArea={user.puesto}
-            handleChangeIdPg={handleChangeIdPg}
-          />
-        </Grid>
+          >
+            Dashboard
+          </Typography>
 
-        ) : (
+          <Grid container spacing={3}>
 
-        <Grid xs={12} md={6} lg={12}>
-          <EncuestaPorcentaje 
-          idPregunta={pg} 
-          data={_ecommerceSalesOverview} 
-          user={user} 
-          handleChangePg={handleChangePg}
-          selectPg={selectPg}
-          idEncuesta={idEncuesta}
-          idArea={user.puesto}
-          handleChangeIdPg={handleChangeIdPg}
-          />
-        </Grid>
+            {sn === 0 ? (
+              <Grid xs={12} md={6} lg={12}>
+                <EncuestaBarra
+                  idPregunta={pg}
+                  chart={{
+                    categories: respArray,
+                    series: [
+                      {
+                        type: 'data',
+                        data: [
+                          {
+                            name: 'Total',
+                            data: resultArray,
+                          }
+                        ],
+                      },
+                    ],
+                  }}
+                  user={user}
+                  handleChangePg={handleChangePg}
+                  idEncuesta={idEncuesta}
+                  idArea={user.puesto}
+                  handleChangeIdPg={handleChangeIdPg}
+                />
+              </Grid>
 
-        )}
+            ) : (
 
-        {/* <Grid xs={12} md={4}>
+              <Grid xs={12} md={6} lg={12}>
+                <EncuestaPorcentaje
+                  idPregunta={pg}
+                  data={_ecommerceSalesOverview}
+                  user={user}
+                  handleChangePg={handleChangePg}
+                  selectPg={selectPg}
+                  idEncuesta={idEncuesta}
+                  idArea={user.puesto}
+                  handleChangeIdPg={handleChangeIdPg}
+                />
+              </Grid>
+
+            )}
+
+            {/* <Grid xs={12} md={4}>
           {usrCountData.flatMap((u) => (
             <WidgetSumas
               key={`route_${uuidv4()}`}
@@ -358,7 +368,7 @@ export default function DashView() {
         </Grid>
         */}
 
-        {/* <Grid xs={12} md={6} lg={12}>
+            {/* <Grid xs={12} md={6} lg={12}>
           <GraficaBarras
             title="Registro de Citas"
             chart={{
@@ -370,7 +380,7 @@ export default function DashView() {
           />
         </Grid>  */}
 
-        {/* {prgSnData.map((i) => (
+            {/* {prgSnData.map((i) => (
           <Grid xs={12} md={6} lg={6}>
 
             <EncuestaPorcentaje
@@ -385,7 +395,7 @@ export default function DashView() {
           </Grid>
         ))} */}
 
-        {/*   {prgSnData.map((i) => (
+            {/*   {prgSnData.map((i) => (
           <Grid xs={12} md={6} lg={6}>
             <EcommerceSaleByGender
               title={i.pregunta}
@@ -400,7 +410,7 @@ export default function DashView() {
           </Grid>
         ))} */}
 
-        {/* {prgData.map((i) => (
+            {/* {prgData.map((i) => (
           <Grid xs={12} md={6} lg={12}>
             <EncuestaBarra
               title={i.pregunta}
@@ -422,17 +432,17 @@ export default function DashView() {
           </Grid>
         ))} */}
 
-      </Grid>
-    </Container>
-    
-    ) : (
+          </Grid>
+        </Container>
 
-    <Typography variant="subtitle2">
-        Sin registros
-    </Typography>
+      ) : (
 
-    )}
+        <Typography variant="subtitle2">
+          Sin registros
+        </Typography>
 
-</>
+      )}
+
+    </>
   );
 }

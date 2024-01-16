@@ -152,5 +152,7 @@ export const endpoints = {
     updateEstatus:'/encuestasController/updateEstatus',
     updateVigencia:'/encuestasController/updateVigencia',
     getEstatusUno:'/encuestasController/getEstatusUno',
+    getValidEncContestada: '/encuestasController/getValidEncContestada',
+    sendMail:'/encuestasController/sendMail',
   }
 };
