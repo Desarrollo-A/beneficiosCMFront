@@ -112,11 +112,11 @@ export const paths = {
       calendario: `${ROOTS.DASHBOARD}/calendario`
     },
     reportes: {
-      root: `${ROOTS.DASHBOARD}/reportes`,
+      root: `${ROOTS.DASHBOARD}/reportes/historial`,
       historial: `${ROOTS.DASHBOARD}/reportes/historial`,
     },
     encuestas: {
-      root: `${ROOTS.DASHBOARD}/encuestas`,
+      root: `${ROOTS.DASHBOARD}/encuestas/ver`,
       contestar: `${ROOTS.DASHBOARD}/encuestas/contestar`,
       crear: `${ROOTS.DASHBOARD}/encuestas/crear`,
       ver: `${ROOTS.DASHBOARD}/encuestas/ver`,
@@ -127,7 +127,6 @@ export const paths = {
       new: `${ROOTS.DASHBOARD}/user/new`,
       list: `${ROOTS.DASHBOARD}/user/list`,
       cards: `${ROOTS.DASHBOARD}/user/cards`,
-      profile: `${ROOTS.DASHBOARD}/user/profile`,
       account: `${ROOTS.DASHBOARD}/user/account`,
       edit: (id) => `${ROOTS.DASHBOARD}/user/${id}/edit`,
       demo: {
@@ -194,6 +193,7 @@ export const paths = {
     usuarios: {
       root: `${ROOTS.DASHBOARD}/usuarios`,
       new: `${ROOTS.DASHBOARD}/usuarios/new`,
+      perfil: `${ROOTS.DASHBOARD}/usuarios/perfil`,
     },
   },
 };

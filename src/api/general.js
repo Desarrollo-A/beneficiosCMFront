@@ -17,21 +17,21 @@ export function usePostGeneral(dataValue, URL, nameData) {
     options
   );
 
-  useEffect(() => {
-    mutate(URL);
-  }, [URL, dataValue]);
-
-  const memoizedVal = useMemo(
-    () => ({
-      [nameData]: data?.data || [],
-      dataLoading: isLoading,
-      dataError: error,
-      dataValidating: isValidating,
-      dataEmpty: !isLoading && !data?.data.length,
-    }),
-    [data?.data, error, isLoading, isValidating, nameData]
-  );
-  return memoizedVal;
+    useEffect(() => {
+      mutate(URL);
+    }, [URL, dataValue]);
+    
+    const memoizedVal = useMemo(
+      () => ({
+        [nameData]: data?.data || [],
+        dataLoading: isLoading,
+        dataError: error,
+        dataValidating: isValidating,
+        dataEmpty: !isLoading && !data?.data.length,
+      }),
+      [data?.data, error, isLoading, isValidating, nameData]
+    );
+    return { ...memoizedVal };
 }
 
 export function useGetGeneral(URL, nameData) {

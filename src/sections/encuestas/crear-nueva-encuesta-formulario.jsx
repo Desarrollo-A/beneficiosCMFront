@@ -1,4 +1,6 @@
 import * as Yup from 'yup';
+import { mutate } from 'swr';
+import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import { Base64 } from 'js-base64';
 import { useMemo, useState } from 'react';
@@ -8,8 +10,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
-import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 
@@ -20,11 +22,11 @@ import { useBoolean } from 'src/hooks/use-boolean';
 
 import { endpoints } from 'src/utils/axios';
 
-import { useInsert } from  'src/api/encuestas';
-import { useGetGeneral, usePostGeneral } from 'src/api/general';
+import { useInsert } from 'src/api/encuestas';
 
+import FormProvider from 'src/components/hook-form';
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, { RHFSelect} from 'src/components/hook-form';
+import { ConfirmDialog } from 'src/components/custom-dialog';
 
 import InvoiceNewEditDetails from './crear-nueva-ecuesta-detalles';
 
@@ -35,8 +37,6 @@ export default function InvoiceNewEditForm({ currentInvoice }) {
   const user = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
 
   const { enqueueSnackbar } = useSnackbar();
-
-  /* const { areasData } = useGetGeneral(endpoints.encuestas.getPuestos, "areasData"); */
 
   const insertData = useInsert(endpoints.encuestas.encuestaCreate);
 
@@ -51,7 +51,7 @@ export default function InvoiceNewEditForm({ currentInvoice }) {
 
   const defaultValues = useMemo(
     () => ({
-      area:user.puesto,
+      area: user.puesto
     }),
     [user.puesto]
   );
@@ -75,85 +75,129 @@ export default function InvoiceNewEditForm({ currentInvoice }) {
     setFormKey((prevKey) => prevKey + 1);
   };
 
-  const handleCreateAndSend = handleSubmit(async (data) => {
+  const handleCreateAndSend = handleSubmit(async (data, est) => {
 
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      
-      loadingSend.onFalse();
+    const estatus = {estatus: est}
 
-      const insert = await insertData(data);
-      router.push(paths.dashboard.encuestas.crear);
+    const dataValue = {
+      ...estatus,
+      ...data
+    };
 
-      if (insert.estatus === true) {
-        enqueueSnackbar(insert.msj, { variant: 'success' });
-        resetForm();
-      } else {
-        enqueueSnackbar(insert.msj, { variant: 'error' });
+    if (!isEmpty(dataValue.items)) {
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        loadingSend.onFalse();
+
+        const insert = await insertData(dataValue);
+
+        if (insert.estatus === true) {
+          enqueueSnackbar(insert.msj, { variant: 'success' });
+          resetForm();
+
+          router.push(paths.dashboard.encuestas.ver);
+          mutate(endpoints.encuestas.encuestaMinima);
+          mutate(endpoints.encuestas.getEncNotificacion);
+          mutate(endpoints.encuestas.getEstatusUno);
+
+        } else {
+          enqueueSnackbar(insert.msj, { variant: 'error' });
+        }
+
+      } catch (error) {
+        console.error(error);
+        loadingSend.onFalse();
       }
 
-    } catch (error) {
-      console.error(error);
-      loadingSend.onFalse();
+    } else {
+      enqueueSnackbar("Faltan Datos", { variant: 'error' });
     }
-    
+
   });
+
+  const confirm = useBoolean();
 
   return (
     <FormProvider methods={methods} key={formKey}>
 
       <Card>
 
-      <Box sx={{ p: 3 }}>
+        <Box sx={{ p: 3 }}>
 
-      <Typography variant="h6" sx={{ color: 'text.disabled', mb: 3 }}>
-        Preguntas:
-      </Typography>
+          <Typography variant="h6" sx={{ color: 'text.disabled', mb: 3 }}>
+            Preguntas:
+          </Typography>
 
-      {/* <Stack divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3}>
+          {/* <Stack divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3}>
 
-      <RHFSelect
-        name="area"
-        size="small"
-        label="Área"
-        InputLabelProps={{ shrink: true }}
-        sx={{
-          maxWidth: { md: 160 },
-        }}
-      >
-        <Divider sx={{ borderStyle: 'dashed' }} />
+            <RHFSelect
+              name="area"
+              size="small"
+              label="Área"
+              InputLabelProps={{ shrink: true }}
+              sx={{
+                maxWidth: { md: 160 },
+              }}
+            >
+              <Divider sx={{ borderStyle: 'dashed' }} />
 
-        {areasData.map((res) => (
-          <MenuItem
-            key={res.idPuesto}
-            value={res.idPuesto}
-          >
-            {res.puesto}
-          </MenuItem>
-        ))}
-      </RHFSelect>
-      </Stack> */}
+              {areasData.map((res) => (
+                <MenuItem
+                  key={res.idPuesto}
+                  value={res.idPuesto}
+                >
+                  {res.puesto}
+                </MenuItem>
+              ))}
+            </RHFSelect>
+            </Stack> */}
 
-      <Divider sx={{ my: 3, borderStyle: 'dashed' }} />
+          <Divider sx={{ my: 3, borderStyle: 'dashed' }} />
 
-      </Box>
+        </Box>
 
         <InvoiceNewEditDetails />
 
       </Card>
 
-      <Stack justifyContent="flex-end" direction="row" spacing={2} sx={{ mt: 3 }}>
+        <Stack justifyContent="flex-end" direction="row" spacing={2} sx={{ mt: 3 }}>
 
-        <LoadingButton
-          size="large"
-          variant="contained"
-          loading={loadingSend.value && isSubmitting}
-          onClick={handleCreateAndSend}
-        >
-          Crear
-        </LoadingButton>
-      </Stack>
-    </FormProvider>
+          <LoadingButton
+            size="large"
+            variant="contained"
+            loading={loadingSend.value && isSubmitting}
+            onClick={() => {
+              confirm.onTrue();
+            }}
+          >
+            Crear
+          </LoadingButton>
+        </Stack>
+
+      <ConfirmDialog
+        open={confirm.value}
+        onClose={confirm.onFalse}
+        title="¿Deseas activar la encuesta?"
+        action={
+          <>
+          <Button variant="contained" onClick={() => {
+            handleCreateAndSend(1);
+            confirm.onFalse();
+          }}>
+            Si
+          </Button>
+          <Button variant="contained" onClick={() => {
+            confirm.onFalse();
+            handleCreateAndSend(0);
+          }}>
+            No
+          </Button>
+          </>
+        }
+      />
+
+    </FormProvider >
   );
 }
 

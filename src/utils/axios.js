@@ -94,6 +94,10 @@ export const endpoints = {
     areas: 'Usuario/getAreas',
     batch: 'Usuario/insertBatchUsers',
     names: 'Usuario/getNameUser',
+    puesto: '/generalController/getPuesto',
+    sede: '/generalController/getSede',
+    decodePass: '/Usuario/decodePass',
+    updatePass: '/Usuario/updatePass'
   },
   benefits: {
     list: 'CalendarioController/getBeneficiosPorSede',
@@ -155,6 +159,7 @@ export const endpoints = {
     getEcuestaValidacion: '/encuestasController/getEcuestaValidacion',
     getEncuestasCreadas: '/encuestasController/getEncuestasCreadas',
     updateEstatus:'/encuestasController/updateEstatus',
+    updateVigencia:'/encuestasController/updateVigencia',
     getEstatusUno:'/encuestasController/getEstatusUno',
   }
 };
