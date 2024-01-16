@@ -1,4 +1,4 @@
-import { Base64 } from 'js-base64';
+import { useLocation } from 'react-router-dom';
 
 import Container from '@mui/material/Container';
 
@@ -7,15 +7,17 @@ import { paths } from 'src/routes/paths';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
-import InvoiceNewEditForm from '../crear-nueva-encuesta-formulario';
-
+import DetalleEncuesta from '../encuesta-detalle';
 
 // ----------------------------------------------------------------------
 
-export default function InvoiceCreateView() {
+export default function VerEncuestaDetalleView() {
   const settings = useSettingsContext();
 
-  /* const user = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2])); */
+  const location = useLocation();
+
+  const searchParams = new URLSearchParams(location.search);
+  const idEncuesta = searchParams.get('idEncuesta');
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -23,23 +25,23 @@ export default function InvoiceCreateView() {
         heading="Encuesta"
         links={[
           {
-            name: 'Encuestas',
-            href: paths.dashboard.root,
+             name: 'Encuesta',
+            /* href: paths.dashboard.root, */
           },
           {
-            name: 'Crear encuesta',
-            href: paths.dashboard.invoice.root,
+            name: 'Listado de encuestas',
+            href: paths.dashboard.encuestas.ver,
           },
-         /*  {
-            name: 'New Invoice',
-          }, */
+          { name: 'Detalle' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
       />
 
-      <InvoiceNewEditForm />
+      <DetalleEncuesta 
+        idEncuesta={idEncuesta}
+      />
     </Container>
   );
 }

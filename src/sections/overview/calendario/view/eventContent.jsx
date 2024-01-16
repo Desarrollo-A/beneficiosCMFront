@@ -17,10 +17,10 @@ import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import { Chip, MenuItem, Autocomplete, FormControl, Box, InputLabel, Select } from '@mui/material';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { Box, Chip, Select, MenuItem, InputLabel, FormControl, Autocomplete,  } from '@mui/material';
 
 import uuidv4 from 'src/utils/uuidv4';
 import { fDate } from 'src/utils/format-time';
@@ -36,8 +36,8 @@ import {
 
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
+import { RHFTextField } from 'src/components/hook-form';
 import FormProvider from 'src/components/hook-form/form-provider';
-import { RHFSelect, RHFTextField } from 'src/components/hook-form';
 
 export default function EventContent({
   currentEvent,
@@ -99,9 +99,7 @@ export default function EventContent({
 
   const values = watch();
   const hourError = checkHour(values.start, defaultEnd, type, defaultInicio, defaultFecha);
-  const dateError =
-    type === 'cancel' &&
-    dayjs(defaultInicio).format('YYYY/MM/DD') > dayjs(defaultFecha).format('YYYY/MM/DD'); // validacion que la fecha final no sea menor a la fecha inicio, unicamente año/mes/dia
+  const dateError = type === 'cancel' && dayjs(defaultInicio).format('YYYY/MM/DD') > dayjs(defaultFecha).format('YYYY/MM/DD'); // validacion que la fecha final no sea menor a la fecha inicio, unicamente año/mes/dia
   const selectedReason = type === 'date' && (reason.length > 0 || cancelType);
 
   const onSubmit = handleSubmit(async (data) => {
@@ -427,10 +425,10 @@ export default function EventContent({
             </Typography>
           </Stack>
 
-          <Typography>¿Seguro que quieres finalizar la cita?</Typography>
+          <Typography>¿Seguro que quieres eliminar el horario?</Typography>
         </DialogContent>
         <DialogActions>
-            <Button variant="contained" color="error" onClick={handleClose2}>
+            <Button variant="contained" color="error" onClick={handleClose}>
               Cerrar
             </Button>
             <LoadingButton

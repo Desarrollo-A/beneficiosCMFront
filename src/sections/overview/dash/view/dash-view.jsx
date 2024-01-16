@@ -1,25 +1,146 @@
-import { useState } from 'react';
+
+import { Base64 } from 'js-base64';
+import { useState, useEffect } from 'react';
 
 import Grid from '@mui/material/Unstable_Grid2';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 
-import uuidv4 from "src/utils/uuidv4";
 import { endpoints } from 'src/utils/axios';
 
 import { useGetGeneral, usePostGeneral } from 'src/api/general';
 
 import { useSettingsContext } from 'src/components/settings';
 
-import WidgetSumas from '../widget-sumas';
+/* import WidgetSumas from '../widget-sumas';
 import GraficaArea from '../grafica-area';
 import GraficaPastel from '../grafica-pastel';
-import GraficaBarras from '../grafica-barras';
+import GraficaBarras from '../grafica-barras'; */
+import EncuestaBarra from '../barra-encuesta';
+import EncuestaPorcentaje from '../porcentaje-encuesta';
 
 // ----------------------------------------------------------------------
 
 export default function DashView() {
 
+  const user = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+
+  const { preguntaData } = usePostGeneral(user.puesto, endpoints.dashboard.getPregunta, "preguntaData");
+
+  const [pgDt, setPgDt] = useState('');
+
+  const [dflt, setDflt] = useState('');
+
+  const [pg, setPg] = useState('');
+
+  const [sn, setSn] = useState('');
+
+  const [idEncuesta, setIdEncuesta] = useState('');
+
+  const [pregunta, setPregunta] = useState([]);
+
+  const [paramRes, setParamRes] = useState([]);
+
+  const handleChangePg = (newPg) => {
+    setPregunta(newPg);
+  }
+
+  const handleChangeIdPg = (newIdPg) => {
+    setPg(newIdPg);
+  }
+
+  const [selectPg, setSelectPg] = useState('');
+
+  const { respCountData } = usePostGeneral(dflt, endpoints.dashboard.getCountRespuestas, "respCountData");
+
+  const { respData } =  usePostGeneral(paramRes, endpoints.dashboard.getRespuestas, "respData");
+
+  const respArray = respData.flatMap((i) => (
+    JSON.parse(`[${i.respuestas.split(', ').flatMap(value => `"${value}"`).join(', ')}]`
+  )));
+
+  const resultArray = respArray.map((respuesta) => {
+    const matchingObj = respCountData.find((obj) => obj.respuesta === respuesta);
+    return matchingObj ? matchingObj.cantidad : 0;
+  });
+
+  const percent = respArray.map((respuesta) => {
+    const matchingObj = respCountData.find((obj) => obj.respuesta === respuesta);
+    return matchingObj ? matchingObj.porcentaje : 0;
+  });
+
+  useEffect(() => {
+    if (preguntaData.length > 0){
+      setIdEncuesta(preguntaData[0]?.idEncuesta)
+    }
+  }, [preguntaData])
+
+  useEffect(() => {
+    if (preguntaData && Array.isArray(pregunta) && pregunta.length === 0) {
+
+      setDflt([{ idPregunta: preguntaData[0]?.idPregunta },
+        { idEncuesta: preguntaData[0]?.idEncuesta },
+        { respuestas: preguntaData[0]?.respuestas },
+        { pregunta: preguntaData[0]?.pregunta }]);
+
+      setParamRes([{ idPregunta: preguntaData[0]?.idPregunta },
+        { idEncuesta: preguntaData[0]?.idEncuesta },
+        { idArea: preguntaData[0]?.idArea }]);
+
+      setSelectPg(preguntaData[0]?.pregunta);
+
+      setPgDt(preguntaData[0]?.respuestas);
+
+    }else if (preguntaData && Array.isArray(pregunta) && pregunta.length > 0){
+
+      setDflt(pregunta);
+
+      setParamRes(pregunta)
+
+      setSelectPg(pregunta[3]?.pregunta);
+
+      setPgDt(respData[0]?.grupo);
+
+    }else {
+      alert("Error")
+    }
+  }, [preguntaData, pregunta, respData]);
+
+  useEffect(() => {
+    if (preguntaData && Array.isArray(pregunta) && pregunta.length === 0) {
+      setPg(preguntaData[0]?.idPregunta);
+    }else if (preguntaData && Array.isArray(pregunta) && pregunta.length > 0){
+      setPg(pregunta[0]?.idPregunta);
+    }else {
+      alert("Error")
+    }
+  }, [preguntaData, pregunta]);
+
+  useEffect(() => {
+    if (preguntaData && Array.isArray(pregunta) && pregunta.length === 0 && pgDt !== "3") {
+      setSn(0);
+    }else if (preguntaData && Array.isArray(pregunta) && pregunta.length === 0 && pgDt === "3"){
+      setSn(1);
+    }else if (pregunta.length > 0 && pgDt === 3){
+      setSn(1);
+    }else if (pregunta.length > 0 && pgDt !== 3){
+      setSn(0);
+    }else {
+      alert("Error")
+    }
+  }, [preguntaData, pregunta, pgDt, resultArray]);
+
+  const _dt = {
+      percent: (index) => percent[index],
+  }
+
+  const _ecommerceSalesOverview = ['No', 'Si'].map(
+    (label, index) => ({
+      label,
+      value: _dt.percent(index),
+    })
+  );
+  
   const d = new Date();
 
   const year = d.getFullYear();
@@ -57,6 +178,7 @@ export default function DashView() {
   const handleChangeYear = (newYear) => {
     setYearData(newYear);
   }
+  
 
   const desiredLength = 12;
 
@@ -125,6 +247,9 @@ export default function DashView() {
   }
 
   return (
+    <>
+    {preguntaData.length > 0 ? (
+
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
 
       <Typography
@@ -138,7 +263,50 @@ export default function DashView() {
 
       <Grid container spacing={3}>
 
-        <Grid xs={12} md={4}>
+        {sn === 0 ? (
+        <Grid xs={12} md={6} lg={12}>
+          <EncuestaBarra
+            idPregunta={pg} 
+            chart={{
+              categories: respArray,
+              series: [
+                {
+                  type: 'data',
+                  data: [
+                    {
+                      name: 'Total',
+                      data: resultArray,
+                    }
+                  ],
+                },
+              ],
+            }}
+            user={user}
+            handleChangePg={handleChangePg}
+            idEncuesta={idEncuesta}
+            idArea={user.puesto}
+            handleChangeIdPg={handleChangeIdPg}
+          />
+        </Grid>
+
+        ) : (
+
+        <Grid xs={12} md={6} lg={12}>
+          <EncuestaPorcentaje 
+          idPregunta={pg} 
+          data={_ecommerceSalesOverview} 
+          user={user} 
+          handleChangePg={handleChangePg}
+          selectPg={selectPg}
+          idEncuesta={idEncuesta}
+          idArea={user.puesto}
+          handleChangeIdPg={handleChangeIdPg}
+          />
+        </Grid>
+
+        )}
+
+        {/* <Grid xs={12} md={4}>
           {usrCountData.flatMap((u) => (
             <WidgetSumas
               key={`route_${uuidv4()}`}
@@ -188,8 +356,9 @@ export default function DashView() {
             count={ctCountData}
           />
         </Grid>
+        */}
 
-        <Grid xs={12} md={6} lg={12}>
+        {/* <Grid xs={12} md={6} lg={12}>
           <GraficaBarras
             title="Registro de Citas"
             chart={{
@@ -199,9 +368,71 @@ export default function DashView() {
             year={year}
             handleChangeYear={handleChangeYear}
           />
-        </Grid>
+        </Grid>  */}
+
+        {/* {prgSnData.map((i) => (
+          <Grid xs={12} md={6} lg={6}>
+
+            <EncuestaPorcentaje
+              title={i.pregunta}
+              chart={{
+                series: [
+                  { label: 'Si', value: 3 },
+                  { label: 'No', value: 7 },
+                ],
+              }}
+            />
+          </Grid>
+        ))} */}
+
+        {/*   {prgSnData.map((i) => (
+          <Grid xs={12} md={6} lg={6}>
+            <EcommerceSaleByGender
+              title={i.pregunta}
+              total={20}
+              chart={{
+                series: [
+                  { label: 'Si', value: 66 },
+                  { label: 'No', value: 33 },
+                ],
+              }}
+            />
+          </Grid>
+        ))} */}
+
+        {/* {prgData.map((i) => (
+          <Grid xs={12} md={6} lg={12}>
+            <EncuestaBarra
+              title={i.pregunta}
+              chart={{
+                categories: JSON.parse(`[${i.respuestas.split(', ').map(value => `"${value}"`).join(', ')}]`),
+                series: [
+                  {
+                    type: 'data',
+                    data: [
+                      {
+                        name: 'Total',
+                        data: [76, 42, 29, 0, 27],
+                      }
+                    ],
+                  },
+                ],
+              }}
+            />
+          </Grid>
+        ))} */}
 
       </Grid>
     </Container>
+    
+    ) : (
+
+    <Typography variant="subtitle2">
+        Sin registros
+    </Typography>
+
+    )}
+
+</>
   );
 }

@@ -93,6 +93,10 @@ export const endpoints = {
     areas: 'Usuario/getAreas',
     batch: 'Usuario/insertBatchUsers',
     names: 'Usuario/getNameUser',
+    puesto: '/generalController/getPuesto',
+    sede: '/generalController/getSede',
+    decodePass: '/Usuario/decodePass',
+    updatePass: '/Usuario/updatePass',
   },
   benefits: {
     list: 'CalendarioController/getBeneficiosPorSede',
@@ -114,6 +118,7 @@ export const endpoints = {
     occupiedDrop: 'calendarioController/occupiedDrop',
     endAppointment: 'calendarioController/endAppointment',
     getReasons: 'calendarioController/getReasons',
+    getPendingEnd: 'calendarioController/getPendingEnd',
   },
   calendarioColaborador: {
     isPrimeraCita: 'calendarioController/isPrimeraCita',
@@ -142,6 +147,9 @@ export const endpoints = {
     fechaCancelada: '/dashboardController/estatusFechaCancelada',
     fechaPenalizada: '/dashboardController/estatusFechaPenalizada',
     citasAnual: '/dashboardController/citasAnual',
+    getPregunta: '/dashboardController/getPregunta',
+    getRespuestas: '/dashboardController/getRespuestas',
+    getCountRespuestas: '/dashboardController/getCountRespuestas',
   },
   encuestas: {
     encuestaInsert: '/encuestasController/encuestaInsert',
@@ -156,5 +164,9 @@ export const endpoints = {
     getEncNotificacion: '/encuestasController/getEncNotificacion',
     getPuestos: '/encuestasController/getPuestos',
     getEcuestaValidacion: '/encuestasController/getEcuestaValidacion',
+    getEncuestasCreadas: '/encuestasController/getEncuestasCreadas',
+    updateEstatus: '/encuestasController/updateEstatus',
+    updateVigencia: '/encuestasController/updateVigencia',
+    getEstatusUno: '/encuestasController/getEstatusUno',
   },
 };

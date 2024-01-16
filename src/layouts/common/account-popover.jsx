@@ -9,6 +9,8 @@ import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 
+import { Base64 } from 'js-base64';
+
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
@@ -16,6 +18,7 @@ import { useMockedUser } from 'src/hooks/use-mocked-user';
 
 import { useAuthContext } from 'src/auth/hooks';
 
+import Iconify from 'src/components/iconify';
 import { varHover } from 'src/components/animate';
 import { useSnackbar } from 'src/components/snackbar';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
@@ -24,16 +27,8 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 const OPTIONS = [
   {
-    label: 'Home',
-    linkTo: '/',
-  },
-  {
-    label: 'Profile',
-    linkTo: paths.dashboard.user.profile,
-  },
-  {
-    label: 'Settings',
-    linkTo: paths.dashboard.user.account,
+    label: 'Perfil',
+    linkTo: paths.dashboard.usuarios.perfil,
   },
 ];
 
@@ -41,6 +36,8 @@ const OPTIONS = [
 
 export default function AccountPopover() {
   const router = useRouter();
+
+  const userData = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
 
   const { user } = useMockedUser();
 
@@ -74,37 +71,18 @@ export default function AccountPopover() {
         whileHover="hover"
         variants={varHover(1.05)}
         onClick={popover.onOpen}
-        sx={{
-          width: 40,
-          height: 40,
-          background: (theme) => alpha(theme.palette.grey[500], 0.08),
-          ...(popover.open && {
-            background: (theme) =>
-              `linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${theme.palette.primary.main} 100%)`,
-          }),
-        }}
       >
-        <Avatar
-          src={user?.photoURL}
-          alt={user?.displayName}
-          sx={{
-            width: 36,
-            height: 36,
-            border: (theme) => `solid 2px ${theme.palette.background.default}`,
-          }}
-        >
-          {user?.displayName.charAt(0).toUpperCase()}
-        </Avatar>
+       <Iconify icon="solar:user-bold-duotone" width={24} />
       </IconButton>
 
       <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 200, p: 0 }}>
         <Box sx={{ p: 2, pb: 1.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {user?.displayName}
+            {userData.idUsuario}{' '}{userData.nombre}
           </Typography>
 
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {user?.email}
+            {userData.correo}
           </Typography>
         </Box>
 
@@ -124,7 +102,7 @@ export default function AccountPopover() {
           onClick={handleLogout}
           sx={{ m: 1, fontWeight: 'fontWeightBold', color: 'error.main' }}
         >
-          Logout
+          Cerrar sesión
         </MenuItem>
       </CustomPopover>
     </>

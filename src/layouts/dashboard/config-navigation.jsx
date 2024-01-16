@@ -78,7 +78,7 @@ export function useNavData() {
             path: paths.dashboard.encuestas.root,
             icon: ICONS.blog,
             children: [
-              /* { title: t('contestar'), path: paths.dashboard.encuestas.contestar }, */
+              { title: t('ver'), path: paths.dashboard.encuestas.ver },
               { title: t('crear'), path: paths.dashboard.encuestas.crear },
             ],
           }
@@ -94,11 +94,6 @@ export function useNavData() {
             path: paths.dashboard.general.dash,
             icon: ICONS.analytics,
           },
-/*           {
-            title: t('encuestas'),
-            path: paths.dashboard.general.encuestas,
-            icon: ICONS.blog,
-          }, */
           {
             title: t('app'),
             path: paths.dashboard.root,
@@ -148,7 +143,6 @@ export function useNavData() {
             path: paths.dashboard.user.root,
             icon: ICONS.user,
             children: [
-              { title: t('profile'), path: paths.dashboard.user.root },
               { title: t('cards'), path: paths.dashboard.user.cards },
               { title: t('list'), path: paths.dashboard.user.list },
               { title: t('create'), path: paths.dashboard.user.new },
@@ -241,11 +235,12 @@ export function useNavData() {
 
            // Usuarios batch
            {
-            title: t('user'),
+            title: t('Usuarios'),
             path: paths.dashboard.usuarios.root,
             icon: ICONS.user,
             children: [
               { title: t('list'), path: paths.dashboard.usuarios.new },
+              { title: t('perfil'), path: paths.dashboard.usuarios.perfil },
             ],
           },
           
