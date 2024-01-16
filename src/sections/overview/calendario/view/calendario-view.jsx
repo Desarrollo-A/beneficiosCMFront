@@ -1,6 +1,5 @@
 import Calendar from '@fullcalendar/react'; // => request placed at the top
 import dayjs from 'dayjs';
-import { Base64 } from 'js-base64';
 import listPlugin from '@fullcalendar/list';
 import { enqueueSnackbar } from 'notistack';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -20,7 +19,6 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import { fTimestamp } from 'src/utils/format-time';
 
 import { useGetNameUser } from 'src/api/user';
-import { useGetModalities } from 'src/api/calendar-colaborador';
 import { dropUpdate, useGetMotivos, GetCustomEvents } from 'src/api/calendar-specialist';
 
 import { useSettingsContext } from 'src/components/settings';
@@ -38,8 +36,6 @@ const defaultFilters = {
     endDate: null,
   };
 
-  const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
-
 // ----------------------------------------------------------------------
 export default function CalendarioView(){
     const smUp = useResponsive('up', 'sm');
@@ -48,7 +44,6 @@ export default function CalendarioView(){
     const { data: names, usersMutate } = useGetNameUser();
     const [userData, setUserData] = useState('');
     const {data: reasons} = useGetMotivos('');
-    const { data: modalities } = useGetModalities(datosUser.idSede, datosUser.idUsuario);
     const theme = useTheme();
 
     const dateError =
@@ -187,7 +182,6 @@ export default function CalendarioView(){
               userData={userData}
               usersMutate={usersMutate}
               selectedDate={selectedDate}
-              modalities={modalities}
               />
             }
           </Dialog>

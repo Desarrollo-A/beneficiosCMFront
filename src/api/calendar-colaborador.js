@@ -20,11 +20,6 @@ const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken')
 export async function reRender() {
   mutate(get_all_events);
 }
-// ----------------------------------------------------------------------
-
-export async function reRender(){ // se separa la funcion del mutate unicamente para cuando se crea el evento (previsto en update)
-  mutate(get_all_events);
-}
 
 // ----------------------------------------------------------------------
 
@@ -237,8 +232,7 @@ export function GetCustomEvents(current) {
 
   const { data, isLoading, error, isValidating } = useSWR(
     get_all_events,
-    (url) => fetcherPost(url, dataValue),
-    options
+    (url) => fetcherPost(url, dataValue)
   );
 
   useEffect(() => {

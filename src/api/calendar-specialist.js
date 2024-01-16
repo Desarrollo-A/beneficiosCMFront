@@ -20,6 +20,7 @@ const appointment_drop = endpoints.calendario.appointmentDrop;
 const occupied_drop = endpoints.calendario.occupiedDrop;
 const end_appointment = endpoints.calendario.endAppointment;
 const get_reasons = endpoints.calendario.getReasons;
+const get_pending_end = endpoints.calendario.getPendingEnd;
 
 const options = {
   revalidateIfStale: false,
@@ -259,11 +260,22 @@ export async function endAppointment(id, reason){
 // ----------------------------------------------------------------------
 
 export function useGetMotivos(){
-  const data  = useSWR(get_reasons, url => fetcherPost(url, datosUser.puesto, {revalidateOnFocus: false, revalidateOnReconnect: true, refreshWhenHidden: false}));
+  const data  = useSWR(get_reasons, url => fetcherPost(url, datosUser.idPuesto, {revalidateOnFocus: false, revalidateOnReconnect: true, refreshWhenHidden: false}));
 
   const memoizedValue = useMemo(() =>({
     data: data?.data || []
   }), [data?.data]);
   
   return memoizedValue;
+}
+
+
+export function useGetPending(){
+  const data = useSWR(get_pending_end, url => fetcherPost(url, datosUser.idUsuario, { revalidateOnFocus: true, revalidateOnReconnect: true, refreshWhenHidden: false }));
+
+  const momoizedValue = useMemo(() => ({
+    data: data?.data
+  }), [data?.data]);
+
+  return momoizedValue;
 }
