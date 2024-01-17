@@ -2,7 +2,6 @@ import dayjs from 'dayjs';
 import { Base64 } from 'js-base64';
 import useSWR, { mutate } from 'swr';
 import { useMemo, useEffect } from 'react';
-import { enqueueSnackbar } from 'notistack';
 
 import { endpoints, fetcherPost } from 'src/utils/axios';
 
@@ -13,7 +12,6 @@ const update_occupied = endpoints.calendario.updateOccupied;
 const delete_occupied = endpoints.calendario.deleteOccupied;
 const cancel_appointment = endpoints.calendario.cancelAppointment;
 const save_appointment = endpoints.calendario.createAppointment;
-const update_on_drop = endpoints.calendario.updateOnDrop;
 
 const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
 

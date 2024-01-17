@@ -49,7 +49,6 @@ const defaultFilters = {
 };
 
 // ----------------------------------------------------------------------
-const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
 
 export default function CalendarView() {
   const theme = useTheme();
@@ -58,12 +57,6 @@ export default function CalendarView() {
   const settings = useSettingsContext();
   const smUp = useResponsive('up', 'sm');
   const [filters] = useState(defaultFilters);
-
-  const [selectedValues, setSelectedValues] = useState({
-    beneficio: '',
-    especialista: '',
-    modalidad: '',
-  });
 
   const dateError =
     filters.startDate && filters.endDate
@@ -80,7 +73,6 @@ export default function CalendarView() {
     onDateNext,
     onDateToday,
     onCloseForm,
-    onDropEvent,
     onChangeView,
     onSelectRange,
     onClickEvent,
@@ -199,7 +191,6 @@ export default function CalendarView() {
           currentEvent={currentEvent}
           onClose={onCloseForm}
           selectedDate={selectedDate}
-          especialista={selectedValues.especialista}
           appointmentMutate={appointmentMutate}
         />
       </Dialog>

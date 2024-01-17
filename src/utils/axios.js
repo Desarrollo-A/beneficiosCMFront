@@ -131,6 +131,7 @@ export const endpoints = {
     getCitasSinFinalizar: 'calendarioController/getCitasSinFinalizarUsuario',
     getAtencionPorSede: 'calendarioController/getAtencionPorSede',
     createAppointment: 'calendarioController/createAppointmentByColaborator',
+    registrarDetallePago: 'calendarioController/registrarTransaccionPago',
   },
   reportes: {
     lista: '/reportesController/citas',

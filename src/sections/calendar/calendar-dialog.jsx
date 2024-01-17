@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form';
 import timezone from 'dayjs/plugin/timezone';
 import { yupResolver } from '@hookform/resolvers/yup';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
-import { useRef, useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/system/Stack';
@@ -21,24 +21,17 @@ import InputLabel from '@mui/material/InputLabel';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { esES } from '@mui/x-date-pickers/locales';
 import FormControl from '@mui/material/FormControl';
 import DialogTitle from '@mui/material/DialogTitle';
-import ToggleButton from '@mui/material/ToggleButton';
-import { MobileDatePicker } from '@mui/x-date-pickers';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import FormHelperText from '@mui/material/FormHelperText';
-import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-/*********************************** */
-import Badge from '@mui/material/Badge';
-import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
+import uuidv4 from 'src/utils/uuidv4';
 import { fTimestamp } from 'src/utils/format-time';
 
 import {
@@ -59,7 +52,6 @@ import {
 
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
-import { RHFTextField } from 'src/components/hook-form';
 import FormProvider from 'src/components/hook-form/form-provider';
 
 dayjs.locale('es');
@@ -132,28 +124,21 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const dia = horarioSeleccionado.substring(8, 10);
     console.log('Año', año, ' y mes;', mes, ' dia', dia);
 
-    const isPracticante = datosUser.puesto.toLowerCase() === 'practicante';
-    console.log('Practicante?', isPracticante);
-
     if (datosUser.fechaIngreso > fechaActual) {
-      return enqueueSnackbar('¡Surgio un problema con la antiguedad del colaborador!', {
+      return enqueueSnackbar('¡Surgio un problema con la antigüedad del colaborador!', {
         variant: 'error',
       });
     }
 
-    console.log('FECHA', fechaActual);
+    // console.log('FECHA', fechaActual);
     // Validamos la antiguedad: Mandamos fechaIngreso, fechaDeHoy, isPracticante, idBeneficio.
-    const tieneAntiguedad = validarAntiguedad(
-      datosUser.fechaIngreso,
-      fechaActual,
-      isPracticante,
-      selectedValues.beneficio
-    );
-    console.log('ANTIGUEDAD', tieneAntiguedad);
+    const tieneAntiguedad = validarAntiguedad(datosUser.fechaIngreso, fechaActual);
+    // console.log('ANTIGUEDAD', tieneAntiguedad);
 
-    if (!tieneAntiguedad) {
+    if (!tieneAntiguedad && datosUser.idArea !== 25) {
+      // 25 Es ventas :)
       onClose();
-      return enqueueSnackbar('¡No cuentas con la antiguedad suficiente para agendar una cita!', {
+      return enqueueSnackbar('¡No cuentas con la antigüedad suficiente para agendar una cita!', {
         variant: 'error',
       });
     }
@@ -164,6 +149,11 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       datosUser.idSede,
       selectedValues.modalidad
     );
+    if (!idAtencionPorSede.result) {
+      return enqueueSnackbar('¡Surgió un error al intentar agendar la cita!', {
+        variant: 'error',
+      });
+    }
     // console.log('Este es mi idAtencionXSede', idAtencionPorSede.data.idAtencionXSede);
 
     // Checo si tiene citas para saber si es nuevo Paciente o no.
@@ -180,7 +170,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         '',
         horarioSeleccionado,
         1,
-        idAtencionPorSede,
+        idAtencionPorSede.data[0].idAtencionXSede,
         1,
         datosUser.idUsuario,
         datosUser.idUsuario
@@ -216,8 +206,16 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     }
 
     // AGENDAR
-    // const agendarCita = await crearCita();
-    // titulo, idEspecialista, idPaciente, observaciones, fechaInicio, tipoCita, idAtencionXSede, estatusCita, creadoPor, modificadoPor
+    // if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
+    //   // Preview de la cita
+
+    //   const pepe = uuidv4();
+    //   console.log(pepe)
+    // } else {
+    //   const pepe = uuidv4();
+    //   console.log(pepe)
+    //   // Hacer el cobro e insert de folio
+    // }
 
     const agendarCita = await crearCita(
       `CITA ${datosUser.nombre} ${año}-${mes}-${dia}`,
@@ -226,14 +224,25 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       '',
       horarioSeleccionado,
       2,
-      idAtencionPorSede,
+      idAtencionPorSede.data[0].idAtencionXSede,
       1,
       datosUser.idUsuario,
       datosUser.idUsuario
     );
+
     // titulo, idEspecialista, idPaciente, observaciones, fechaInicio, tipoCita, idAtencionXSede, estatusCita, creadoPor, modificadoPor
-    console.log('AGENDO Y AQUI TERMINA MI PROCESO', agendarCita);
-    return false;
+    // console.log('AGENDO Y AQUI TERMINA MI PROCESO', agendarCita);
+    if (agendarCita.result) {
+      onClose();
+      return enqueueSnackbar('¡Se ha agendado la cita con exito!', {
+        variant: 'success',
+      });
+    }
+
+    enqueueSnackbar('¡Ha surgido un error al intentar agendar la cita!', {
+      variant: 'error',
+    });
+    return onClose();
   });
 
   const onCancel = useCallback(async () => {
@@ -511,10 +520,34 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     // console.log('Dias dispoibles', diasDisponibles);
 
     const diasOcupadosFiltro = filtradoDias(diasProximos, diasDisponibles);
+    console.log('Resultado de dias ocupados', diasOcupadosFiltro);
 
-    // console.log('DIAS A BLOQUEAR CALENDAR', diasOcupadosFiltro);
+    const año = new Date().getFullYear();
 
-    setDiasOcupados(diasOcupadosFiltro);
+    // Dias festivos
+    const diasFestivos = [
+      `${año}-01-01`,
+      `${año}-02-05`,
+      `${año}-03-21`,
+      `${año}-05-01`,
+      `${año}-09-16`,
+      `${año}-11-20`,
+      `${año}-12-01`,
+      `${año}-03-21`,
+      `${año + 1}-01-01`,
+      `${año + 1}-02-05`,
+      `${año + 1}-03-21`,
+      `${año + 1}-05-01`,
+      `${año + 1}-09-16`,
+      `${año + 1}-11-20`,
+      `${año + 1}-12-01`,
+      `${año + 1}-03-21`,
+    ];
+
+    const diasADeshabilitar = new Set([...diasOcupadosFiltro, ...diasFestivos]);
+    // console.log('Dias a deshabilitar en calendar', [...diasADeshabilitar]);
+
+    setDiasOcupados([...diasADeshabilitar]);
     setIsLoading(false);
   };
 
@@ -609,31 +642,25 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     window.open(whatsappLink, '_blank');
   };
 
-  const validarAntiguedad = (fechaIngreso, fechaHoy, isPracticante, beneficio) => {
+  const validarAntiguedad = (fechaIngreso, fechaHoy) => {
     // Convierte las fechas a objetos de tipo Date
     const ingreso = new Date(fechaIngreso);
     const hoy = new Date(fechaHoy);
 
     // Calcula la diferencia en milisegundos
     const diferenciaMilisegundos = hoy - ingreso;
-    console.log('1', diferenciaMilisegundos, hoy, ingreso, fechaHoy, fechaIngreso);
 
     // Calcula la diferencia en años, meses y días
     const milisegundosEnUnDia = 24 * 60 * 60 * 1000; // Milisegundos en un día
     const milisegundosEnUnAnio = milisegundosEnUnDia * 365.25; // Milisegundos en un año, considerando años bisiestos
-    console.log('2', milisegundosEnUnDia, milisegundosEnUnAnio);
 
     const diferenciaAnios = Math.floor(diferenciaMilisegundos / milisegundosEnUnAnio);
     const diferenciaMeses = Math.floor(
       (diferenciaMilisegundos % milisegundosEnUnAnio) / (milisegundosEnUnDia * 30.44)
     );
-    console.log('MESES CONTRATADO:', diferenciaMeses, beneficio, isPracticante);
+    console.log('MESES CONTRATADO:', diferenciaMeses);
     // Compara la diferencia de meses beneficio, y  puesto.
-    if (
-      (beneficio !== 158 && (diferenciaMeses >= 3 || diferenciaAnios > 0)) ||
-      (!isPracticante && beneficio === 158 && (diferenciaMeses >= 2 || diferenciaAnios > 0)) ||
-      (isPracticante && beneficio === 158 && (diferenciaMeses >= 1 || diferenciaAnios > 0))
-    ) {
+    if (diferenciaMeses >= 3 || diferenciaAnios > 0) {
       return true;
     }
     return false;
@@ -650,7 +677,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       <DialogTitle sx={{ p: { xs: 1, md: 2 } }}>
         <Stack direction="row" justifycontent="space-between" sx={{ p: { xs: 1, md: 2 } }}>
           <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center' }}>
-            {currentEvent?.id ? 'DATOS DE CITA' : 'AGENDAR CITA' + JSON.stringify(selectedValues)}
+            {currentEvent?.id ? 'DATOS DE CITA' : 'AGENDAR CITA'}
           </Typography>
           {!!currentEvent?.id && (
             <Tooltip title="Cancelar cita">
