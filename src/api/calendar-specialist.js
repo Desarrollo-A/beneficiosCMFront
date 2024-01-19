@@ -205,7 +205,7 @@ export async function cancelAppointment(currentEvent, cancelType){
   const startStamp = dayjs(currentEvent.start).format('YYYY/MM/DD HH:mm:ss');
 
   const data = {
-    idCita: currentEvent.id,
+    idCita: currentEvent.idCita,
     startStamp,
     estatus: currentEvent.estatus,
     tipo: cancelType

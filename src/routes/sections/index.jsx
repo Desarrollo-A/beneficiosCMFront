@@ -28,7 +28,7 @@ export default function Router() {
 
     // SET INDEX PAGE WITH HOME PAGE
     {
-      path: '/',
+      path: '/beneficiosCM/',
       element: (
         <AuthClassicLayout>
           <JwtLoginPage />

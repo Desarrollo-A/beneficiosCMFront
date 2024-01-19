@@ -1,29 +1,32 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { enqueueSnackbar } from 'notistack';
 import { Dialog, DialogContent  } from '@material-ui/core';
 
+import { LoadingButton } from '@mui/lab';
 import { Stack, Button, Typography, DialogActions, ListItem, Select, InputLabel, ListItemText, IconButton, Box, FormControl, MenuItem, Autocomplete, TextField, Chip } from '@mui/material';
+
+import { reRender } from 'src/api/calendar-colaborador';
+import { cancelAppointment, endAppointment, useGetMotivos, useGetPending } from 'src/api/calendar-specialist';
+
+import Iconify from 'src/components/iconify';
+import { List } from 'src/components/organizational-chart/organizational-chart';
 
 import { OverviewAppView } from 'src/sections/overview/app/view';
 
-import { cancelAppointment, endAppointment, useGetMotivos, useGetPending } from 'src/api/calendar-specialist';
-import { List } from 'src/components/organizational-chart/organizational-chart';
-import Iconify from 'src/components/iconify';
-import { LoadingButton } from '@mui/lab';
-import { enqueueSnackbar } from 'notistack';
-import { reRender } from 'src/api/calendar-colaborador';
 
 // ----------------------------------------------------------------------
 
 export default function OverviewAppPage() {
   const [open, setOpen] = useState(true);
   const [open2, setOpen2] = useState(false);
-  const { data: pendings } = useGetPending(''); // traer todas las citas sin finalzar que sean anterior a la fecha actual
+  const { data: pendings } = useGetPending([]); // traer todas las citas sin finalzar que sean anterior a la fecha actual
   const [assist, setAssist] = useState('');
   const [reason, setReason] = useState([]);
   const [cancelType, setCancelType] = useState('');
   const {data: reasons} = useGetMotivos('');
-  // const selectedReason = type === 'date' && (reason.length > 0 || cancelType);
+  const [selectEvent, setSelectEvent] = useState('');
+  const selectedReason = (reason.length > 0 || cancelType);
 
   const onClose = () => {
     setOpen(false);
@@ -31,10 +34,13 @@ export default function OverviewAppPage() {
 
   const handleClose2 = () => {
     setOpen2(false);
+    setReason([]);
+    setCancelType('');
   };
 
-  const handleEnd = (idCita) => {
+  function handleEnd(event) {
     setOpen2(true);
+    setSelectEvent(event);
   }
 
   const handleCancel = (event) => {
@@ -54,7 +60,7 @@ export default function OverviewAppPage() {
         <ListItem
           key={pending.idCita}
           secondaryAction={
-            <IconButton onClick={() => handleEnd(pending.idCita)}>
+            <IconButton onClick={() => handleEnd(pending)}>
               <Iconify icon="solar:archive-minimalistic-bold" />
             </IconButton>
           }
@@ -67,51 +73,52 @@ export default function OverviewAppPage() {
     return items;
   };
 
-  // const endSubmit = async () => {
-  //   switch (assist) {
-  //     case 0:
-  //       try {
-  //         const resp = await cancelAppointment(currentEvent, cancelType);
+  const endSubmit = async () => {
+    switch (assist) {
+      case 0:
+        try {
+          const resp = await cancelAppointment(selectEvent, cancelType);
 
-  //         if (resp.result) {
-  //           enqueueSnackbar(resp.msg);
-  //         } else {
-  //           enqueueSnackbar(resp.msg, { variant: 'error' });
-  //         }
+          if (resp.result) {
+            enqueueSnackbar(resp.msg);
+            handleClose2();
+          } else {
+            enqueueSnackbar(resp.msg, { variant: 'error' });
+          }
 
-  //         setOpen(false);
-  //         onClose();
-  //       } catch (error) {
-  //         enqueueSnackbar('Ha ocurrido un error al cancelar', { variant: 'error' });
-  //         setOpen(false);
-  //         onClose();
-  //       }
-  //       break;
+          setOpen(false);
+          onClose();
+        } catch (error) {
+          enqueueSnackbar('Ha ocurrido un error al cancelar', { variant: 'error' });
+          setOpen(false);
+          onClose();
+        }
+        break;
 
-  //     case 1:
-  //       try {
-  //         const resp = await endAppointment(currentEvent?.id, reason);
+      case 1:
+        try {
+          const resp = await endAppointment(selectEvent.idCita, reason);
 
-  //         if (resp.result) {
-  //           enqueueSnackbar(resp.msg);
-  //           reRender();
-  //         } else {
-  //           enqueueSnackbar(resp.msg, { variant: 'error' });
-  //         }
+          if (resp.result) {
+            enqueueSnackbar(resp.msg);
+            handleClose2();
+          } else {
+            enqueueSnackbar(resp.msg, { variant: 'error' });
+          }
 
-  //         setOpen(false);
-  //         onClose();
-  //       } catch (error) {
-  //         enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
-  //         setOpen2(false);
-  //         onClose();
-  //       }
-  //       break;
+          setOpen(false);
+          onClose();
+        } catch (error) {
+          enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
+          setOpen2(false);
+          onClose();
+        }
+        break;
 
-  //     default:
-  //       break;
-  //   }
-  // };
+      default:
+        break;
+    }
+  };
 
   return (
     <>
@@ -121,6 +128,7 @@ export default function OverviewAppPage() {
 
       <OverviewAppView />
 
+      {pendings?.length > 0 &&
       <Dialog open={open} fullWidth maxWidth="sm">
         <DialogContent>
           <Stack
@@ -145,10 +153,12 @@ export default function OverviewAppPage() {
           </Button>
         </DialogActions>
       </Dialog>
-
+      }
+      
       <Dialog // dialog de confirmación de finalización
         open={open2}
         fullWidth
+        disableEnforceFocus
         maxWidth="sm"
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
@@ -245,9 +255,9 @@ export default function OverviewAppPage() {
           <LoadingButton
             type="submit"
             variant="contained"
-            // disabled={!selectedReason}
+            disabled={!selectedReason}
             color="success"
-            // onClick={endSubmit}
+            onClick={endSubmit}
             autoFocus
           >
             Aceptar
