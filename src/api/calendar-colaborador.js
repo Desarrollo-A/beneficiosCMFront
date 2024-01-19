@@ -112,66 +112,73 @@ export function useGetModalities(sede, especialista) {
 }
 
 export function getModalities(sede, especialista) {
-  const URL_MODALITIES = [endpoints.especialistas.modalities];
-  const modalities = fetcherPost(URL_MODALITIES, { sede, especialista });
+  const URL = [endpoints.especialistas.modalities];
+  const modalities = fetcherPost(URL, { sede, especialista });
 
   return modalities;
 }
 
 export function getHorario(beneficio) {
-  const URL_HORARIO = [endpoints.calendarioColaborador.getHorarioBeneficio];
-  const horario = fetcherPost(URL_HORARIO, { beneficio });
+  const URL = [endpoints.calendarioColaborador.getHorarioBeneficio];
+  const horario = fetcherPost(URL, { beneficio });
 
   return horario;
 }
 
-export function getHorariosOcupados(idUsuario, fechaInicio, fechaFin) {
-  const URL_HORARIOS = [endpoints.calendarioColaborador.getAllEventsWithRange];
-  const horarios = fetcherPost(URL_HORARIOS, { idUsuario, fechaInicio, fechaFin });
+export function getHorariosOcupados(especialista, usuario, fechaInicio, fechaFin) {
+  const URL = [endpoints.calendarioColaborador.getAllEventsWithRange];
+  const horarios = fetcherPost(URL, { especialista, usuario, fechaInicio, fechaFin });
 
   return horarios;
 }
 
 export function getContactoQB(especialista) {
-  const URL_CONTACT = [endpoints.especialistas.contact];
-  const infoContact = fetcherPost(URL_CONTACT, { especialista });
+  const URL = [endpoints.especialistas.contact];
+  const infoContact = fetcherPost(URL, { especialista });
 
   return infoContact;
 }
 
 export function getOficinaByAtencion(sede, beneficio, especialista, modalidad) {
-  const URL_OFICINA = [endpoints.calendarioColaborador.getOficina];
-  const oficina = fetcherPost(URL_OFICINA, { sede, beneficio, especialista, modalidad });
+  const URL = [endpoints.calendarioColaborador.getOficina];
+  const oficina = fetcherPost(URL, { sede, beneficio, especialista, modalidad });
 
   return oficina;
 }
 
 export function checaPrimeraCita(usuario, especialista) {
-  const URL_CITA = [endpoints.calendarioColaborador.isPrimeraCita];
-  const primeraCita = fetcherPost(URL_CITA, { usuario, especialista });
+  const URL = [endpoints.calendarioColaborador.isPrimeraCita];
+  const primeraCita = fetcherPost(URL, { usuario, especialista });
 
   return primeraCita;
 }
 
 export function getCitasSinFinalizar(usuario, beneficio) {
-  const URL_CITA = [endpoints.calendarioColaborador.getCitasSinFinalizar];
-  const cita = fetcherPost(URL_CITA, { usuario, beneficio });
+  const URL = [endpoints.calendarioColaborador.getCitasSinFinalizar];
+  const cita = fetcherPost(URL, { usuario, beneficio });
 
   return cita;
 }
 
 export function getCitasFinalizadas(usuario, mes, año) {
-  const URL_CITA = [endpoints.calendarioColaborador.getCitasFinalizadas];
-  const cita = fetcherPost(URL_CITA, { usuario, mes, anio: año });
+  const URL = [endpoints.calendarioColaborador.getCitasFinalizadas];
+  const cita = fetcherPost(URL, { usuario, mes, anio: año });
 
   return cita;
 }
 
 export function getAtencionXSede(especialista, sede, modalidad) {
-  const URL_AXS = [endpoints.calendarioColaborador.getAtencionPorSede];
-  const axs = fetcherPost(URL_AXS, { especialista, sede, modalidad });
+  const URL = [endpoints.calendarioColaborador.getAtencionPorSede];
+  const axs = fetcherPost(URL, { especialista, sede, modalidad });
 
   return axs;
+}
+
+export function registrarDetalleDePago(usuario, folio, concepto, cantidad, metodoPago) {
+  const URL = [endpoints.calendarioColaborador.registrarDetallePago];
+  const detalle = fetcherPost(URL, { usuario, folio, concepto, cantidad, metodoPago });
+
+  return detalle;
 }
 
 export function crearCita(
@@ -184,7 +191,8 @@ export function crearCita(
   idAtencionXSede,
   estatusCita,
   creadoPor,
-  modificadoPor
+  modificadoPor,
+  detallePago
 ) {
   const URL_CITA = [endpoints.calendarioColaborador.createAppointment];
   const axs = fetcherPost(URL_CITA, {
@@ -198,6 +206,7 @@ export function crearCita(
     estatusCita,
     creadoPor,
     modificadoPor,
+    detallePago,
   });
 
   return axs;

@@ -135,7 +135,6 @@ export default function CalendarView() {
               allDayMaintainDuration
               eventResizableFromStart
               ref={calendarRef}
-              // dateClick={(currentDate) => setDay(currentDate.date)}
               dayMaxEventRows={3}
               eventDisplay="block"
               events={dataFiltered}
@@ -143,12 +142,6 @@ export default function CalendarView() {
               select={onSelectRange}
               eventClick={onClickEvent}
               height={smUp ? 720 : 'auto'}
-              // eventDrop={(arg) => {
-              //   onDropEvent(arg, updateEvent);
-              // }}
-              // eventResize={(arg) => {
-              //   onResizeEvent(arg, updateEvent);
-              // }}
               plugins={[
                 listPlugin,
                 dayGridPlugin,
@@ -164,7 +157,6 @@ export default function CalendarView() {
         fullWidth
         maxWidth="md"
         open={dialog.value}
-        onClose={dialog.onFalse}
         transitionDuration={{
           enter: theme.transitions.duration.shortest,
           exit: theme.transitions.duration.shortest - 1000,
@@ -181,7 +173,6 @@ export default function CalendarView() {
         fullWidth
         maxWidth="xs"
         open={openForm}
-        onClose={onCloseForm}
         transitionDuration={{
           enter: theme.transitions.duration.shortest,
           exit: theme.transitions.duration.shortest - 1000,
