@@ -22,7 +22,7 @@ export default function AccountGeneral() {
 
   const { puestoData } = usePostGeneral(datosUser.idUsuario, endpoints.user.puesto, "puestoData");
 
-  const { sedeData } = usePostGeneral(datosUser.sede, endpoints.user.sede, "sedeData");
+  const { sedeData } = usePostGeneral(datosUser.idSede, endpoints.user.sede, "sedeData");
 
   const methods = useForm({
   });
@@ -43,17 +43,16 @@ export default function AccountGeneral() {
               }}
             >
               
-              <RHFTextField name="nombre" label="Nombre" defaultValue={datosUser.nombre} disabled/>
-              <RHFTextField name="numEmpleado" label="Número de empleado" defaultValue={datosUser.numEmpleado} disabled/>
-              <RHFTextField name="correo" label="Correo" defaultValue={datosUser.correo} disabled/>
-              <RHFTextField name="telPersonal" label="Teléfono" defaultValue={datosUser.telPersonal} disabled/>
-
+              <RHFTextField name="nombre" label="Nombre" value={datosUser?.nombre} disabled/>
+              <RHFTextField name="numEmpleado" label="Número de empleado" value={datosUser?.numEmpleado} disabled/>
+              <RHFTextField name="correo" label="Correo" value={datosUser?.correo} disabled/>
+              <RHFTextField name="telPersonal" label="Teléfono" value={datosUser?.telPersonal} disabled/>
               {puestoData.flatMap((u) => (
-              <RHFTextField name="puesto" label="Puesto" defaultValue={u.puesto} disabled/>
+              <RHFTextField name="puesto" label="Puesto" value={u?.puesto} disabled/>
               ))}
 
               {sedeData.flatMap((u) => (
-              <RHFTextField name="sede" label="Sede" defaultValue={u.sede} disabled/>
+              <RHFTextField name="sede" label="Sede" value={u.sede} disabled/>
               ))}
 
             </Box>
