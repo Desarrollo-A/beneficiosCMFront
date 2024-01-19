@@ -7,7 +7,7 @@ import { Dialog, DialogContent  } from '@material-ui/core';
 import { LoadingButton } from '@mui/lab';
 import { Box, Chip, Stack, Button,Select, ListItem, MenuItem, TextField, Typography, InputLabel, IconButton, FormControl, ListItemText, Autocomplete, DialogActions } from '@mui/material';
 
-import { useGetMotivos, useGetPending, endAppointment, cancelAppointment, reRender } from 'src/api/calendar-specialist';
+import { reRender, useGetMotivos, useGetPending, endAppointment, cancelAppointment } from 'src/api/calendar-specialist';
 
 import Iconify from 'src/components/iconify';
 
