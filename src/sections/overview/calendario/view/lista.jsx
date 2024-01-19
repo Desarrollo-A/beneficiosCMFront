@@ -123,7 +123,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
       hora_final: !allDay ? dayjs(defaultEnd).format('HH:mm:ss') : defaultHour.horaFinal,
       fechaInicio: fDate(defaultInicio),
       fechaFinal: type === 'date' ? fDate(defaultInicio) : fDate(defaultFecha),
-      paciente: patient.idUsuario,
+      paciente: patient,
     };
 
     if (dateError || !selectedUser || hourError.result || !endValidation || !selectedModalitie) {
@@ -133,28 +133,22 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
     if (type === 'date') {
       const ahora = new Date();
       const fechaActual = dayjs(ahora).format('YYYY-MM-DD');
-      const isPracticante = patient.nombrePuesto.toLowerCase() === 'practicante';
-  
-      if (patient.fechaIngreso > fechaActual) {
-        return enqueueSnackbar('¡Surgio un problema con la antiguedad del colaborador!', {
-          variant: 'error',
-        });
-      }
-  
-      // Validamos la antiguedad: Mandamos fechaIngreso, fechaDeHoy, isPracticante, idBeneficio.
-      const tieneAntiguedad = validarAntiguedad(
-        patient.fechaIngreso,
-        fechaActual,
-        isPracticante,
-        datosUser.idPuesto
-      );
 
-      if (!tieneAntiguedad) {
-        // onClose();
-        return enqueueSnackbar('¡No cuentas con la antiguedad suficiente para agendar una cita!', {
-          variant: 'error',
-        });
-      }
+    if (patient.fechaIngreso > fechaActual) {
+      return enqueueSnackbar('¡Surgio un problema con la antigüedad del colaborador!', {
+        variant: 'error',
+      });
+    }
+
+    // Validamos la antiguedad: Mandamos fechaIngreso, fechaDeHoy, isPracticante, idBeneficio.
+    const tieneAntiguedad = validarAntiguedad(patient.fechaIngreso, fechaActual);
+
+    if (!tieneAntiguedad && datosUser.idArea !== 25) { // 25 es de ventas
+      onClose();
+      return enqueueSnackbar('¡El paciente no cuenta con la antigüedad requerida!', {
+        variant: 'error',
+      });
+    }
     }
 
     switch (type) {
@@ -163,7 +157,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
         break;
 
       case 'date':
-        save = await createAppointment(eventData);
+        save = await createAppointment(eventData, modalitie);
         break;
 
       default:
@@ -202,7 +196,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
     setModalitie({ id: value?.label, idAtencionXSede: value?.value });
   };
 
-  const validarAntiguedad = (fechaIngreso, fechaHoy, isPracticante, beneficio) => {
+  const validarAntiguedad = (fechaIngreso, fechaHoy) => {
     // Convierte las fechas a objetos de tipo Date
     const ingreso = new Date(fechaIngreso);
     const hoy = new Date(fechaHoy);
@@ -218,12 +212,9 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
     const diferenciaMeses = Math.floor(
       (diferenciaMilisegundos % milisegundosEnUnAnio) / (milisegundosEnUnDia * 30.44)
     );
+   
     // Compara la diferencia de meses beneficio, y  puesto.
-    if (
-      (beneficio !== 158 && (diferenciaMeses >= 3 || diferenciaAnios > 0)) ||
-      (!isPracticante && beneficio === 158 && (diferenciaMeses >= 2 || diferenciaAnios > 0)) ||
-      (isPracticante && beneficio === 158 && (diferenciaMeses >= 1 || diferenciaAnios > 0))
-    ) {
+    if (diferenciaMeses >= 3 || diferenciaAnios > 0) {
       return true;
     }
     return false;
