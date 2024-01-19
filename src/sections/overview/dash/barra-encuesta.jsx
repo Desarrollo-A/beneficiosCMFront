@@ -53,7 +53,7 @@ export default function EncuestaBarra({ title, subheader, chart, user, handleCha
 
   const [seriesData, setSeriesData] = useState('data');
 
-  const { preguntaData } = usePostGeneral(user.puesto, endpoints.dashboard.getPregunta, "preguntaData");
+  const { preguntaData } = usePostGeneral(user.idPuesto, endpoints.dashboard.getPregunta, "preguntaData");
 
   const [pregunta, setPregunta] = useState(idPregunta);
 

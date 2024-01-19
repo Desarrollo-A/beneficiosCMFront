@@ -20,9 +20,9 @@ export default function VerEncuestasView() {
 
   const user = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
 
-  const { getData } = usePostGeneral(user.puesto, endpoints.encuestas.getEncuestasCreadas, "getData");
+  const { getData } = usePostGeneral(user.idPuesto, endpoints.encuestas.getEncuestasCreadas, "getData");
 
-  const { EstatusData } = usePostGeneral(user.puesto, endpoints.encuestas.getEstatusUno, "EstatusData");
+  const { EstatusData } = usePostGeneral(user.idPuesto, endpoints.encuestas.getEstatusUno, "EstatusData");
 
   return (
     
