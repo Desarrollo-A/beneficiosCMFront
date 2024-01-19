@@ -43,7 +43,6 @@ export const fetcherGet = async (args) => {
 };
 
 export const fetcherPost = async (args, dataValue) => {
-
   const [url, config] = Array.isArray(args) ? args : [args];
 
   const res = await instance.post(
@@ -97,7 +96,7 @@ export const endpoints = {
     puesto: '/generalController/getPuesto',
     sede: '/generalController/getSede',
     decodePass: '/Usuario/decodePass',
-    updatePass: '/Usuario/updatePass'
+    updatePass: '/Usuario/updatePass',
   },
   benefits: {
     list: 'CalendarioController/getBeneficiosPorSede',
@@ -127,12 +126,13 @@ export const endpoints = {
     getOficina: 'calendarioController/getOficinaByAtencion',
     getCitasExtras: 'calendarioController/getCitasExtrasUsuario',
     getHorarioBeneficio: 'calendarioController/getHorarioBeneficio',
-    createAppointment: 'calendarioController/getAppointmentsByUser',
     getAllEventsWithRange: 'calendarioController/getAllEventsWithRange',
     getAppointmentsByUser: 'calendarioController/getAppointmentsByUser',
     getCitasFinalizadas: 'calendarioController/getCitasFinalizadasUsuario',
     getCitasSinFinalizar: 'calendarioController/getCitasSinFinalizarUsuario',
     getAtencionPorSede: 'calendarioController/getAtencionPorSede',
+    createAppointment: 'calendarioController/createAppointmentByColaborator',
+    registrarDetallePago: 'calendarioController/registrarTransaccionPago',
   },
   reportes: {
     lista: '/reportesController/citas',
@@ -168,8 +168,8 @@ export const endpoints = {
     getResp2: '/encuestasController/getResp2',
     getResp3: '/encuestasController/getResp3',
     getResp4: '/encuestasController/getResp4',
-    getEncNotificacion:'/encuestasController/getEncNotificacion',
-    getPuestos:'/encuestasController/getPuestos',
+    getEncNotificacion: '/encuestasController/getEncNotificacion',
+    getPuestos: '/encuestasController/getPuestos',
     getEcuestaValidacion: '/encuestasController/getEcuestaValidacion',
     getEncuestasCreadas: '/encuestasController/getEncuestasCreadas',
     updateEstatus:'/encuestasController/updateEstatus',
