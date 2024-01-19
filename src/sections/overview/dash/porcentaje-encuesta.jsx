@@ -21,7 +21,7 @@ import { fPercent, fCurrency } from 'src/utils/format-number';
 
 export default function EncuestaPorcentaje({ title, subheader, data, user, handleChangePg, selectPg, idEncuesta, idArea, idPregunta, handleChangeIdPg, ...other }) {
 
-  const { preguntaData } = usePostGeneral(user.puesto, endpoints.dashboard.getPregunta, "preguntaData");
+  const { preguntaData } = usePostGeneral(user.idPuesto, endpoints.dashboard.getPregunta, "preguntaData");
 
   const [pregunta, setPregunta] = useState(idPregunta);
 

@@ -1,4 +1,3 @@
-
 import { Base64 } from 'js-base64';
 import { useState, useEffect } from 'react';
 
@@ -44,7 +43,7 @@ export default function DashView() {
     puestos = 158;
   } else {
     idDt = user.idUsuario;
-    puestos = user.puesto;
+    puestos = user.idPuesto;
   }
 
   function formatDate(date) {
@@ -332,7 +331,7 @@ export default function DashView() {
           {pacientesData.map((i) => (
             <Grid xs={12} sm={6} md={3}>
               <WidgetConteo
-                title={rol !== 2 ? 'Total citas' : 'Total pacientes'}
+                title={rol === '2' ? 'Total citas' : 'Total pacientes'}
                 total={i.pacientes}
                 color="info"
                 icon={<img alt="icon" src="/assets/icons/glass/usuario.png" />}
@@ -410,7 +409,7 @@ export default function DashView() {
                     user={user}
                     handleChangePg={handleChangePg}
                     idEncuesta={idEncuesta}
-                    idArea={user.puesto}
+                    idArea={areas}
                     handleChangeIdPg={handleChangeIdPg}
                   />
                 </Grid>
@@ -425,7 +424,7 @@ export default function DashView() {
                     handleChangePg={handleChangePg}
                     selectPg={selectPg}
                     idEncuesta={idEncuesta}
-                    idArea={user.puesto}
+                    idArea={areas}
                     handleChangeIdPg={handleChangeIdPg}
                   />
                 </Grid>
@@ -444,8 +443,6 @@ export default function DashView() {
         </Grid>
 
       </Container>
-
-
 
       {/* <Grid xs={12} md={6} lg={12}>
           <GraficaBarras
