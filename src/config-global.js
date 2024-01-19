@@ -5,7 +5,6 @@ import { paths } from 'src/routes/paths';
 
 export const HOST = import.meta.env.VITE_HOST;
 export const HOST_API =  import.meta.env.VITE_HOST_API;
-export const HOST_API_SERVICIOS = import.meta.env.VITE_HOST_SERVICIOS;
 export const ASSETS_API = import.meta.env.VITE_ASSETS_API;
 
 export const FIREBASE_API = {

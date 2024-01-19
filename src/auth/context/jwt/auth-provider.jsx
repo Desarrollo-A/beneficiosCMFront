@@ -20,7 +20,6 @@ const initialState = {
 };
 
 const reducer = (state, action) => {
-  
   if (action.type === 'INITIAL') {
     return {
       loading: false,
@@ -55,15 +54,14 @@ const STORAGE_KEY = 'accessToken';
 export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const initialize = useCallback(async () => {
-    
     try {
       const accessToken = sessionStorage.getItem(STORAGE_KEY);
       if (accessToken && isValidToken(accessToken)) {
         setSession(accessToken);
-        
-        const dataPost = JSON.stringify({token : accessToken});
-        const response = await instance.post(endpoints.auth.me2,dataPost);
-        const { user } = response.data
+
+        const dataPost = JSON.stringify({ token: accessToken });
+        const response = await instance.post(endpoints.auth.me2, dataPost);
+        const { user } = response.data;
 
         dispatch({
           type: 'INITIAL',
@@ -96,16 +94,16 @@ export function AuthProvider({ children }) {
     initialize();
   }, [initialize]);
 
-  // LOGIN 
+  // LOGIN
   const login = useCallback(async (numempleado, password) => {
     const data = JSON.stringify({ numempleado, password });
-    
+
     const response = await instance.post(endpoints.auth.login, data);
 
-    if(response.data.result === 1){
+    if (response.data.result === 1) {
       const { accessToken, user } = response.data;
       setSession(accessToken);
-  
+
       dispatch({
         type: 'LOGIN',
         payload: {
@@ -115,19 +113,21 @@ export function AuthProvider({ children }) {
           },
         },
       });
-
-    }else{
-        return {result : 0, message:'El usuario y/o contraseña no son correctos'};
+    } else {
+      return { result: 0, message: 'El usuario y/o contraseña no son correctos' };
     }
   }, []);
 
   // REGISTER
   const register = useCallback(async (numEmpleado) => {
     const data = {
-      numEmpleado
+      numEmpleado,
     };
 
-    const response = await axios.post('https://prueba.gphsis.com/RHCV/index.php/WS/info_empleado', data);
+    const response = await axios.post(
+      'https://prueba.gphsis.com/RHCV/index.php/WS/info_empleado',
+      data
+    );
 
     const { accessToken, user } = response.data;
 
@@ -147,6 +147,7 @@ export function AuthProvider({ children }) {
   // LOGOUT
   const logout = useCallback(async () => {
     setSession(null);
+
     const response = await instance.post(endpoints.auth.logout);
     dispatch({
       type: 'LOGOUT',

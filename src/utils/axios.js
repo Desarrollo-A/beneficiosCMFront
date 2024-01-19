@@ -17,7 +17,7 @@ instance.interceptors.response.use(
   (res) => res,
   (error) => Promise.reject((error.response && error.response.data) || 'Something went wrong')
 );
-export {instance};
+export { instance };
 
 // ----------------------------------------------------------------------
 
@@ -38,7 +38,7 @@ export const fetcherGet = async (args) => {
   const [url, config] = Array.isArray(args) ? args : [args];
 
   const res = await instance.get(url, { ...config });
-  
+
   return res.data;
 };
 
@@ -46,15 +46,18 @@ export const fetcherPost = async (args, dataValue) => {
 
   const [url, config] = Array.isArray(args) ? args : [args];
 
-  const res = await instance.post(url, {dataValue},{
-    headers: {'Content-Type' : 'application/x-www-form-urlencoded'}},
-     { ...config });
-  
+  const res = await instance.post(
+    url,
+    { dataValue },
+    {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    },
+    { ...config }
+  );
+
   return res.data;
 };
 
-
-  
 // ----------------------------------------------------------------------
 
 export const endpoints = {
@@ -97,24 +100,38 @@ export const endpoints = {
     updatePass: '/Usuario/updatePass'
   },
   benefits: {
-    list: 'CalendarioController/getBeneficiosPorSede' 
+    list: 'CalendarioController/getBeneficiosPorSede',
   },
   especialistas: {
     list: 'CalendarioController/getEspecialistaPorBeneficioYSede',
     modalities: 'CalendarioController/getModalidadesEspecialista',
+    contact: 'Usuario/getSpecialistContact',
   },
   calendario: {
     getAllEvents: 'calendarioController/getAllEvents',
     saveOccupied: 'calendarioController/saveOccupied',
     updateOccupied: 'calendarioController/updateOccupied',
+    updateAppointment: 'calendarioController/updateAppointment',
     deleteOccupied: 'calendarioController/deleteOccupied',
     cancelAppointment: 'calendarioController/cancelAppointment',
     createAppointment: 'calendarioController/createAppointment',
     appointmentDrop: 'calendarioController/appointmentDrop',
-    occupiedDrop: 'calendarioController/occupiedDrop'
+    occupiedDrop: 'calendarioController/occupiedDrop',
+    endAppointment: 'calendarioController/endAppointment',
+    getReasons: 'calendarioController/getReasons',
+    getPendingEnd: 'calendarioController/getPendingEnd'
   },
   calendarioColaborador: {
-    getAppointmentsByUser: 'calendarioController/getAppointmentsByUser'
+    isPrimeraCita: 'calendarioController/isPrimeraCita',
+    getOficina: 'calendarioController/getOficinaByAtencion',
+    getCitasExtras: 'calendarioController/getCitasExtrasUsuario',
+    getHorarioBeneficio: 'calendarioController/getHorarioBeneficio',
+    createAppointment: 'calendarioController/getAppointmentsByUser',
+    getAllEventsWithRange: 'calendarioController/getAllEventsWithRange',
+    getAppointmentsByUser: 'calendarioController/getAppointmentsByUser',
+    getCitasFinalizadas: 'calendarioController/getCitasFinalizadasUsuario',
+    getCitasSinFinalizar: 'calendarioController/getCitasSinFinalizarUsuario',
+    getAtencionPorSede: 'calendarioController/getAtencionPorSede',
   },
   reportes: {
     lista: '/reportesController/citas',

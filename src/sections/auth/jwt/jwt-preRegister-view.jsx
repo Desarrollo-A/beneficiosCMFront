@@ -91,13 +91,12 @@ const servicios = Servicios();
       params:temDatos
     }
     );
-    console.log(datosEmpleado);
   });
 
   return (
     
       <FormProvider methods={methods} onSubmit={onSubmit}>
-        <DialogTitle>Registro de usuario</DialogTitle>
+        <DialogTitle>Registro de usuario {JSON.stringify(datosEmpleado)}</DialogTitle>
 
         <DialogContent>
           <Alert variant="outlined" severity="info" sx={{ mb: 3 }}>
@@ -113,13 +112,13 @@ const servicios = Servicios();
               sm: 'repeat(2, 1fr)',
             }}
           >
-
             <RHFTextField name="numEmpleado" value={datosEmpleado.num_empleado} disabled label="Número de empleado" />
             <RHFTextField name="name"  value={datosEmpleado.nombre_completo}  label="Nombre completo" />
             <RHFTextField name="email" value={datosEmpleado.email_empresarial} disabled label="Correo empresarial" />
             <RHFTextField name="telPersonal" value={datosEmpleado.tel_personal} disabled  label="Teléfono personal" />
             <RHFTextField name="telOficina" value={datosEmpleado.tel_oficina} disabled label="Teléfono oficina" />
             <RHFTextField name="puesto" value={datosEmpleado.puesto} disabled label="Puesto" />
+            <RHFTextField name="idPuesto" value={datosEmpleado.idPuesto} disabled label="Puesto" />
             <RHFTextField name="area" value={datosEmpleado.area} disabled label="Área" />
             <RHFTextField name="nom_oficina" value={datosEmpleado.nom_oficina} disabled label="Oficina" />
             <RHFTextField name="sede" value={datosEmpleado.sede} disabled label="Sede" />
@@ -141,10 +140,6 @@ const servicios = Servicios();
         </DialogContent>
 
         <DialogActions>
-          <Button variant="outlined" href={paths.auth.jwt.login}>
-            Cancelar
-          </Button>
-
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
             Registrarse
           </LoadingButton>
