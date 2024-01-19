@@ -2,20 +2,23 @@
 import { Base64 } from 'js-base64';
 import { useState, useEffect } from 'react';
 
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import Grid from '@mui/material/Unstable_Grid2';
 import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
 
 import { endpoints } from 'src/utils/axios';
 
+import { SeoIllustration } from 'src/assets/illustrations';
 import { useGetGeneral, usePostGeneral } from 'src/api/general';
 
 import { useSettingsContext } from 'src/components/settings';
 
-/* import WidgetSumas from '../widget-sumas';
-import GraficaArea from '../grafica-area';
-import GraficaPastel from '../grafica-pastel';
-import GraficaBarras from '../grafica-barras'; */
+import AppWelcome from '../app-welcome';
+import WidgetConteo from '../widget-conteo';
+import GraficaMetas from '../grafica-metas';
 import EncuestaBarra from '../barra-encuesta';
 import EncuestaPorcentaje from '../porcentaje-encuesta';
 
@@ -29,9 +32,93 @@ export default function DashView() {
 
   const user = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
 
-  const { preguntaData } = usePostGeneral(user.puesto, endpoints.dashboard.getPregunta, "preguntaData");
+  const settings = useSettingsContext();
 
-  const { encValidData } = usePostGeneral(user.puesto, endpoints.encuestas.getValidEncContestada, "encValidData");
+  let idDt = "";
+
+  const rol = user.idRol
+  let puestos = 0;
+
+  if (rol === "1") {
+    idDt = 158;
+    puestos = 158;
+  } else {
+    idDt = user.idUsuario;
+    puestos = user.puesto;
+  }
+
+  function formatDate(date) {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  function getTrimesterDates() {
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth();
+
+    const trimStart = new Date(currentYear, Math.floor(currentMonth / 3) * 3, 1);
+    const trimEnd = new Date(trimStart);
+    trimEnd.setMonth(trimStart.getMonth() + 3);
+    trimEnd.setDate(trimEnd.getDate() - 1);
+
+    return {
+      trimStart: formatDate(trimStart),
+      trimEnd: formatDate(trimEnd),
+    };
+  }
+
+  const { trimStart, trimEnd } = getTrimesterDates();
+
+  function rangeMonth() {
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth();
+
+    // Primer día del mes actual
+    const firstDayMonth = new Date(currentYear, currentMonth, 1);
+    const formFirstDay = formatDate(firstDayMonth);
+
+    // Último día del mes actual
+    const lastDayMonth = new Date(currentYear, currentMonth + 1, 0);
+    const formLastDay = formatDate(lastDayMonth);
+
+    return {
+      firstDayMonth: formFirstDay,
+      lastDayMonth: formLastDay,
+    };
+  }
+
+  const { firstDayMonth, lastDayMonth } = rangeMonth();
+
+  const [espe, setEspe] = useState({ idData: idDt, idRol: user.idRol });
+
+  const [meta, setMeta] = useState({
+    idData: idDt,
+    idRol: user.idRol,
+    inicio: trimStart,
+    fin: trimEnd
+  });
+
+  const [areas, setAreas] = useState(puestos);
+
+  const { preguntaData } = usePostGeneral(areas, endpoints.dashboard.getPregunta, "preguntaData");
+
+  const { encValidData } = usePostGeneral(areas, endpoints.encuestas.getValidEncContestada, "encValidData");
+
+  const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
+
+  const { pacientesData } = usePostGeneral(espe, endpoints.dashboard.getPacientes, "pacientesData");
+
+  const { asistenciaData } = usePostGeneral(espe, endpoints.dashboard.getCtAsistidas, "asistenciaData");
+
+  const { canceladaData } = usePostGeneral(espe, endpoints.dashboard.getCtCanceladas, "canceladaData");
+
+  const { penalizadaData } = usePostGeneral(espe, endpoints.dashboard.getCtPenalizadas, "penalizadaData");
+
+  const { metasData } = usePostGeneral(meta, endpoints.dashboard.getMetas, "metasData");
 
   const [pgDt, setPgDt] = useState('');
 
@@ -151,224 +238,216 @@ export default function DashView() {
     })
   );
 
-  const d = new Date();
+  function metasDate() {
 
-  const year = d.getFullYear();
+    let totMeta = 0;
 
-  const [dataValue, setYearData] = useState(year);
-
-  const { usrCountData } = useGetGeneral(endpoints.dashboard.usersCount, "usrCountData");
-
-  const { ctCountData } = useGetGeneral(endpoints.dashboard.citasCount, "ctCountData");
-
-  const { estCountData } = useGetGeneral(endpoints.dashboard.citasEstatus, "estCountData");
-
-  const { estTotData } = useGetGeneral(endpoints.dashboard.estatusTotal, "estTotData");
-
-  const { fechaMinData } = useGetGeneral(endpoints.dashboard.fechaMinima, "fechaMinData");
-
-  const { fechaAsisData } = usePostGeneral(dataValue, endpoints.dashboard.fechaAsistencia, "fechaAsisData");
-
-  const { fechaCncData } = usePostGeneral(dataValue, endpoints.dashboard.fechaCancelada, "fechaCncData");
-
-  const { fechaPnData } = usePostGeneral(dataValue, endpoints.dashboard.fechaPenalizada, "fechaPnData");
-
-  const settings = useSettingsContext();
-
-  const estCount = estCountData.map((i) => ({
-    label: i.estatus,
-    value: i.total,
-  }));
-
-  const estCountXls = estCountData.map((i) => ({
-    estatus: i.estatus,
-    total: i.total,
-  }));
-
-  const handleChangeYear = (newYear) => {
-    setYearData(newYear);
-  }
-
-
-  const desiredLength = 12;
-
-  const resultAs = [];
-  let IndexAs = 0;
-  for (let i = 1; i <= desiredLength; i += 1) {
-    if (IndexAs < fechaAsisData.length && fechaAsisData[IndexAs].mes === i) {
-      resultAs.push(fechaAsisData[IndexAs]);
-      IndexAs += 1;
-    } else {
-      resultAs.push({ mes: i, cantidad: 0, nombre: 'Asistencia' });
+    if (areas === 158 && user.idUsuario === 40) {
+      totMeta = 360;
+    } else if (areas === 158) {
+      totMeta = 240;
+    } else if (areas === 537) {
+      totMeta = 100;
+    } else if (areas === 686) {
+      totMeta = 40;
+    } else if (areas === 585) {
+      totMeta = 80;
     }
-  }
-  const regAs = resultAs.map((u) => (u.cantidad));
 
-  const resultCn = [];
-  let IndexCn = 0;
-  for (let i = 1; i <= desiredLength; i += 1) {
-    if (IndexCn < fechaCncData.length && fechaCncData[IndexCn].mes === i) {
-      resultCn.push(fechaCncData[IndexCn]);
-      IndexCn += 1;
+    return {
+      totalMeta: totMeta
+    };
+  }
+
+  const { totalMeta } = metasDate();
+
+  const handleChangeArea = (event) => {
+
+    setAreas(event.target.value);
+
+    setEspe({ idData: event.target.value, idRol: user.idRol });
+
+    if (event.target.value === 158) {
+      setMeta({
+        idData: event.target.value,
+        idRol: user.idRol,
+        inicio: trimStart,
+        fin: trimEnd
+      })
     } else {
-      resultCn.push({ mes: i, cantidad: 0, nombre: 'Cancelada' });
+      setMeta({
+        idData: event.target.value,
+        idRol: user.idRol,
+        inicio: firstDayMonth,
+        fin: lastDayMonth
+      })
     }
-  }
-  const regCn = resultCn.map((u) => (u.cantidad));
 
-  const resultPn = [];
-  let IndexPn = 0;
-  for (let i = 1; i <= desiredLength; i += 1) {
-    if (IndexPn < fechaPnData.length && fechaPnData[IndexPn].mes === i) {
-      resultPn.push(fechaPnData[IndexPn]);
-      IndexPn += 1;
-    } else {
-      resultPn.push({ mes: i, cantidad: 0, nombre: 'Penalización' });
-    }
-  }
-  const regPn = resultPn.map((u) => (u.cantidad));
-
-  const dataReg = [
-    {
-      name: 'Asistencias',
-      data: regAs,
-    },
-    {
-      name: 'Cancelaciones',
-      data: regCn,
-    },
-    {
-      name: 'Penalizaciones',
-      data: regPn,
-    },
-  ];
-
-  const yearMin = parseInt(fechaMinData.map((u) => (u.year)), 10);
-
-  const propGrafic = [
-    {
-      type: year,
-      data: dataReg
-    },
-  ];
-
-  for (let i = yearMin; i < year; i += 1) {
-    propGrafic.push({ type: i, data: dataReg });
-  }
+  };
 
   return (
     <>
-      {encValidData === true ? (
 
-        <Container maxWidth={settings.themeStretch ? false : 'xl'}>
+      <Container maxWidth={settings.themeStretch ? false : 'xl'}>
 
-          <Typography
-            variant="h4"
-            sx={{
-              mb: { xs: 3, md: 5 },
-            }}
-          >
-            Dashboard
-          </Typography>
+        <Grid container spacing={3}>
 
-          <Grid container spacing={3}>
-
-            {sn === 0 ? (
-              <Grid xs={12} md={6} lg={12}>
-                <EncuestaBarra
-                  idPregunta={pg}
-                  chart={{
-                    categories: respArray,
-                    series: [
-                      {
-                        type: 'data',
-                        data: [
-                          {
-                            name: 'Total',
-                            data: resultArray,
-                          }
-                        ],
-                      },
-                    ],
-                  }}
-                  user={user}
-                  handleChangePg={handleChangePg}
-                  idEncuesta={idEncuesta}
-                  idArea={user.puesto}
-                  handleChangeIdPg={handleChangeIdPg}
-                />
-              </Grid>
-
-            ) : (
-
-              <Grid xs={12} md={6} lg={12}>
-                <EncuestaPorcentaje
-                  idPregunta={pg}
-                  data={_ecommerceSalesOverview}
-                  user={user}
-                  handleChangePg={handleChangePg}
-                  selectPg={selectPg}
-                  idEncuesta={idEncuesta}
-                  idArea={user.puesto}
-                  handleChangeIdPg={handleChangeIdPg}
-                />
-              </Grid>
-
-            )}
-
-            {/* <Grid xs={12} md={4}>
-          {usrCountData.flatMap((u) => (
-            <WidgetSumas
-              key={`route_${uuidv4()}`}
-              title="Total de Usuarios"
-              total={u.usuarios}
+          <Grid xs={12} md={9}>
+            <AppWelcome
+              title={`Bienvenido 👋 \n ${user?.nombre}`}
+              description="If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything."
+              img={<SeoIllustration />}
             />
+          </Grid>
+
+          <Grid xs={12} md={3}>
+
+          </Grid>
+
+          {rol === "1" ? (
+            <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label">Área</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={areas}
+                label="Área"
+                onChange={(e) => handleChangeArea(e)}
+              >
+                {especialistasData.map((i) => (
+                  <MenuItem key={i.idPuesto} value={i.idPuesto}>
+                    {i.nombre}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+          ) : (
+
+            <>
+            </>
+
+          )}
+
+          {pacientesData.map((i) => (
+            <Grid xs={12} sm={6} md={3}>
+              <WidgetConteo
+                title={rol !== 2 ? 'Total citas' : 'Total pacientes'}
+                total={i.pacientes}
+                color="info"
+                icon={<img alt="icon" src="/assets/icons/glass/usuario.png" />}
+              />
+            </Grid>
           ))}
-        </Grid>
 
-        <Grid xs={12} md={4}>
-          {ctCountData.flatMap((u) => (
-            <WidgetSumas
-              key={`route_${uuidv4()}`}
-              title="Total de citas"
-              total={u.citas}
-            />
+          {asistenciaData.map((i) => (
+            <Grid xs={12} sm={6} md={3}>
+              <WidgetConteo
+                title="Total citas asistidas"
+                total={i.asistencia}
+                icon={<img alt="icon" src="/assets/icons/glass/check.png" />}
+              />
+            </Grid>
           ))}
+
+          {canceladaData.map((i) => (
+            <Grid xs={12} sm={6} md={3}>
+              <WidgetConteo
+                title="Total citas canceladas"
+                total={i.cancelada}
+                color="warning"
+                icon={<img alt="icon" src="/assets/icons/glass/cancelar.png" />}
+              />
+            </Grid>
+          ))}
+
+          {penalizadaData.map((i) => (
+            <Grid xs={12} sm={6} md={3}>
+              <WidgetConteo
+                title="Total citas penalizadas"
+                total={i.penalizada}
+                color="error"
+                icon={<img alt="icon" src="/assets/icons/glass/dolar.png" />}
+              />
+            </Grid>
+          ))}
+
+          {rol !== "2" ? (
+            <>
+
+              {metasData.map((i) => (
+                <Grid xs={12} sm={6} md={4}>
+                  <GraficaMetas
+                    title="Meta de citas"
+                    chart={{
+                      series: [
+                        { label: 'Citas', value: i.citas },
+                        { label: 'Faltantes', value: totalMeta - i.citas },
+                      ],
+                    }}
+                  />
+                </Grid>
+              ))}
+
+              {sn === 0 ? (
+                <Grid xs={12} sm={6} md={8}>
+                  <EncuestaBarra
+                    idPregunta={pg}
+                    chart={{
+                      categories: respArray,
+                      series: [
+                        {
+                          type: 'data',
+                          data: [
+                            {
+                              name: 'Total',
+                              data: resultArray,
+                            }
+                          ],
+                        },
+                      ],
+                    }}
+                    user={user}
+                    handleChangePg={handleChangePg}
+                    idEncuesta={idEncuesta}
+                    idArea={user.puesto}
+                    handleChangeIdPg={handleChangeIdPg}
+                  />
+                </Grid>
+
+              ) : (
+
+                <Grid xs={12} sm={6} md={8}>
+                  <EncuestaPorcentaje
+                    idPregunta={pg}
+                    data={_ecommerceSalesOverview}
+                    user={user}
+                    handleChangePg={handleChangePg}
+                    selectPg={selectPg}
+                    idEncuesta={idEncuesta}
+                    idArea={user.puesto}
+                    handleChangeIdPg={handleChangeIdPg}
+                  />
+                </Grid>
+
+              )}
+
+            </>
+
+          ) : (
+
+            <>
+            </>
+
+          )}
+
         </Grid>
 
-        <Grid xs={12} md={4}>
-          <WidgetSumas
-            title="Total Horarios Ocupados"
-            total={678}
-          />
-        </Grid>
+      </Container>
 
-        <Grid xs={12} md={6} lg={8}>
-          <GraficaArea
-            title="Estados de Citas"
-            chart={{
-              series: estCount,
-            }}
-            estatus={estTotData}
-            registros={estCountXls}
-            count={ctCountData}
-          />
-        </Grid>
 
-        <Grid xs={12} md={6} lg={4}>
 
-          <GraficaPastel
-            title="Estados de Citas"
-            chart={{
-              series: estCount,
-            }}
-            registros={estCountXls}
-            count={ctCountData}
-          />
-        </Grid>
-        */}
-
-            {/* <Grid xs={12} md={6} lg={12}>
+      {/* <Grid xs={12} md={6} lg={12}>
           <GraficaBarras
             title="Registro de Citas"
             chart={{
@@ -379,70 +458,6 @@ export default function DashView() {
             handleChangeYear={handleChangeYear}
           />
         </Grid>  */}
-
-            {/* {prgSnData.map((i) => (
-          <Grid xs={12} md={6} lg={6}>
-
-            <EncuestaPorcentaje
-              title={i.pregunta}
-              chart={{
-                series: [
-                  { label: 'Si', value: 3 },
-                  { label: 'No', value: 7 },
-                ],
-              }}
-            />
-          </Grid>
-        ))} */}
-
-            {/*   {prgSnData.map((i) => (
-          <Grid xs={12} md={6} lg={6}>
-            <EcommerceSaleByGender
-              title={i.pregunta}
-              total={20}
-              chart={{
-                series: [
-                  { label: 'Si', value: 66 },
-                  { label: 'No', value: 33 },
-                ],
-              }}
-            />
-          </Grid>
-        ))} */}
-
-            {/* {prgData.map((i) => (
-          <Grid xs={12} md={6} lg={12}>
-            <EncuestaBarra
-              title={i.pregunta}
-              chart={{
-                categories: JSON.parse(`[${i.respuestas.split(', ').map(value => `"${value}"`).join(', ')}]`),
-                series: [
-                  {
-                    type: 'data',
-                    data: [
-                      {
-                        name: 'Total',
-                        data: [76, 42, 29, 0, 27],
-                      }
-                    ],
-                  },
-                ],
-              }}
-            />
-          </Grid>
-        ))} */}
-
-          </Grid>
-        </Container>
-
-      ) : (
-
-        <Typography variant="subtitle2">
-          Sin registros
-        </Typography>
-
-      )}
-
     </>
   );
 }

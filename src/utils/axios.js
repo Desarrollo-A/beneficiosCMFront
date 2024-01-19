@@ -134,6 +134,11 @@ export const endpoints = {
     getPregunta: '/dashboardController/getPregunta',
     getRespuestas: '/dashboardController/getRespuestas',
     getCountRespuestas: '/dashboardController/getCountRespuestas',
+    getPacientes: '/generalController/getPacientes',
+    getCtAsistidas: '/generalController/getCtAsistidas',
+    getCtCanceladas: '/generalController/getCtCanceladas',
+    getCtPenalizadas: '/generalController/getCtPenalizadas',
+    getMetas: '/dashboardController/getMetas'
   },
   encuestas: {
     encuestaInsert: '/encuestasController/encuestaInsert',
