@@ -73,7 +73,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     modalidad: '',
   });
   const [open, setOpen] = useState(false);
-  let resolverModal = () => {};
   const [beneficios, setBeneficios] = useState([]);
   const [especialistas, setEspecialistas] = useState([]);
   const [modalidades, setModalidades] = useState([]);
@@ -234,10 +233,10 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     console.log('Cant de citas usadas:', citasFinalizadas);
 
     if (citasFinalizadas.result === true && citasFinalizadas?.data.length >= 2) {
-      return enqueueSnackbar(
-        'Ya cuentas con la cantidad maxima de beneficios brindados en el mes',
-        { variant: 'error' }
-      );
+      enqueueSnackbar('Ya cuentas con la cantidad maxima de beneficios brindados en el mes', {
+        variant: 'error',
+      });
+      return onClose();
     }
 
     // PROCESO DE AGENDAR: Ya pasó por todas las validaciones y puede agendar
@@ -744,13 +743,19 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     <>
       <FormProvider methods={methods} onSubmit={onSubmit}>
         <DialogTitle sx={{ p: { xs: 1, md: 2 } }}>
-          <Stack direction="row" justifycontent="space-between" sx={{ p: { xs: 1, md: 2 } }}>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            useFlexGap
+            flexWrap="wrap"
+            sx={{ p: { xs: 1, md: 2 } }}
+          >
             <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center' }}>
               {currentEvent?.id ? 'DATOS DE CITA' : 'AGENDAR CITA'}
             </Typography>
             {!!currentEvent?.id && (
               <Tooltip title="Cancelar cita">
-                <IconButton onClick={onCancel}>
+                <IconButton onClick={() => alert('Realizar la cancelación de cita') /* onCancel */}>
                   <Iconify icon="solar:trash-bin-trash-bold" width={22} />
                 </IconButton>
               </Tooltip>
@@ -761,10 +766,9 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
           {currentEvent?.id ? (
             <>
               <Stack spacing={3} sx={{ p: { xs: 1, md: 2 } }}>
-                <Typography variant="subtitle1" sx={{ pl: { xs: 1, md: 1 } }}>
-                  {fechaTitulo}
-                </Typography>
+                <Typography variant="subtitle1">{fechaTitulo}</Typography>
               </Stack>
+
               <Stack
                 alignItems="center"
                 sx={{
@@ -775,7 +779,20 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
               >
                 <Iconify icon="mdi:account-circle" width={30} sx={{ color: 'text.disabled' }} />
                 <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                  TERAPIA CM
+                  Cita en {currentEvent?.beneficio ? currentEvent?.beneficio : 'Beneficio'}
+                </Typography>
+              </Stack>
+              <Stack
+                alignItems="center"
+                sx={{
+                  flexDirection: { sm: 'row', md: 'col' },
+                  px: { xs: 1, md: 2 },
+                  py: 1,
+                }}
+              >
+                <Iconify icon="solar:user-id-broken" width={30} sx={{ color: 'text.disabled' }} />
+                <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                  {currentEvent?.especialista ? currentEvent?.especialista : 'Especialista'}
                 </Typography>
               </Stack>
               <Stack
@@ -788,7 +805,11 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
               >
                 <Iconify icon="mdi:calendar-clock" width={30} sx={{ color: 'text.disabled' }} />
                 <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                  10:00 - 11:00 PM 2022/02/02
+                  {currentEvent?.id
+                    ? `${dayjs(currentEvent?.start).format('HH:mm a')} -${dayjs(
+                        currentEvent?.end
+                      ).format('HH:mm a')}`
+                    : 'Fecha'}
                 </Typography>
               </Stack>
               <Stack
@@ -799,11 +820,23 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                   py: 1,
                 }}
               >
-                <Iconify icon="mdi:earth" width={30} sx={{ color: 'text.disabled' }} />
+                {currentEvent?.tipoCita === 1 ? (
+                  <>
+                    <Iconify icon="mdi:earth" width={30} sx={{ color: 'text.disabled' }} />
 
-                <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                  Ciudad de Querétaro
-                </Typography>
+                    <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                      {currentEvent?.sede ? currentEvent?.sede : 'Querétaro'}
+                    </Typography>
+                  </>
+                ) : (
+                  <>
+                    <Iconify icon="mdi:earth" width={30} sx={{ color: 'text.disabled' }} />
+
+                    <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                      {currentEvent?.sede ? `${currentEvent?.sede} (En línea)` : 'En línea'}
+                    </Typography>
+                  </>
+                )}
               </Stack>
               <Stack
                 alignItems="center"
@@ -813,11 +846,25 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                   py: 1,
                 }}
               >
-                <Iconify icon="ic:outline-place" width={30} sx={{ color: 'text.disabled' }} />
+                {currentEvent?.tipoCita === 1 ? (
+                  <>
+                    <Iconify icon="ic:outline-place" width={30} sx={{ color: 'text.disabled' }} />
 
-                <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                  Calle Venustiano Carranza #36 Centro 76000
-                </Typography>
+                    <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                      {currentEvent?.ubicación
+                        ? currentEvent?.ubicación
+                        : 'Calle Callerinas, 00, Centro, 76000'}
+                    </Typography>
+                  </>
+                ) : (
+                  <>
+                    <Iconify icon="ic:outline-place" width={30} sx={{ color: 'text.disabled' }} />
+
+                    <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                      {currentEvent?.ubicación ? currentEvent?.ubicación : 'Remoto (En línea)'}
+                    </Typography>
+                  </>
+                )}
               </Stack>
               <Stack
                 sx={{
@@ -831,7 +878,9 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                 </Stack>
                 <Stack sx={{ flexDirection: 'col' }}>
                   <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                    beneficiario1@ciudadmaderas.com.mx
+                    {currentEvent?.correo
+                      ? currentEvent?.correo.toLowerCase()
+                      : 'correoPruebas@ciudadmaderas.com.mx'}
                   </Typography>
                 </Stack>
               </Stack>
