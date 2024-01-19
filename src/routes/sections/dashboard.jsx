@@ -82,6 +82,7 @@ export const dashboardRoutes = [
         <DashboardLayout>
           <Suspense fallback={<LoadingScreen />}>
             <Outlet />
+            
           </Suspense>
         </DashboardLayout>
       </AuthGuard>

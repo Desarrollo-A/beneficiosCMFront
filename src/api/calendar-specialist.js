@@ -21,6 +21,7 @@ const occupied_drop = endpoints.calendario.occupiedDrop;
 const end_appointment = endpoints.calendario.endAppointment;
 const get_reasons = endpoints.calendario.getReasons;
 const get_pending_end = endpoints.calendario.getPendingEnd;
+const get_event_reasons = endpoints.calendario.getEventReasons;
 
 const options = {
   revalidateIfStale: false,
@@ -142,7 +143,7 @@ export async function deleteEvent(eventId) {
 
 // ----------------------------------------------------------------------
 
-export async function createAppointment(eventData){
+export async function createAppointment(eventData, modalitie){
   let create = '';
   const fechaInicio = dayjs(`${eventData.fechaInicio} ${eventData.hora_inicio}`).format('YYYY/MM/D HH:mm:ss'); 
   const fechaFinal = dayjs(`${eventData.fechaFinal} ${eventData.hora_final}`).format('YYYY/MM/D HH:mm:ss');
@@ -152,13 +153,14 @@ export async function createAppointment(eventData){
 
   const data = {
         idUsuario: datosUser.idUsuario,
-        idPaciente: eventData.paciente,
+        idPaciente: eventData.paciente.idUsuario,
         fechaInicio,
         fechaFinal,
         creadoPor: datosUser.idUsuario,
         titulo: eventData.title,
         modificadoPor: datosUser.idUsuario,
-        idCatalogo: eventData.idCatalogo
+        idCatalogo: modalitie.idAtencionXSede,
+        fundacion: eventData.paciente.externo
   };
 
   if(start > now){
@@ -201,11 +203,11 @@ export async function updateAppointment(eventData) {
 
 // ----------------------------------------------------------------------
 
-export async function cancelAppointment(currentEvent, cancelType){
+export async function cancelAppointment(currentEvent, id, cancelType){
   const startStamp = dayjs(currentEvent.start).format('YYYY/MM/DD HH:mm:ss');
 
   const data = {
-    idCita: currentEvent.id,
+    idCita: id,
     startStamp,
     estatus: currentEvent.estatus,
     tipo: cancelType
@@ -269,13 +271,31 @@ export function useGetMotivos(){
   return memoizedValue;
 }
 
+// ----------------------------------------------------------------------
 
 export function useGetPending(){
-  const data = useSWR(get_pending_end, url => fetcherPost(url, datosUser.idUsuario, { revalidateOnFocus: true, revalidateOnReconnect: true, refreshWhenHidden: false }));
+  const {data, mutate: revalidate} = useSWR(get_pending_end, url => fetcherPost(url, datosUser?.idUsuario));
+  
+  const memoizedValue = useMemo(() => ({
+    data: data || [],
+    pendingsMutate: revalidate
+  }), [data, revalidate]);
 
-  const momoizedValue = useMemo(() => ({
-    data: data?.data
-  }), [data?.data]);
+  return memoizedValue;
+}
 
-  return momoizedValue;
+// ----------------------------------------------------------------------
+
+export function useGetEventReasons(idCita){
+
+
+  const {data, mutate: revalidate} = useSWR(get_event_reasons, url => fetcherPost(url, idCita));
+
+  const memoizedValue = useMemo(() => ({
+    data: data || [],
+    reasonsMutate: revalidate
+  }), [data, revalidate]);
+
+  return memoizedValue;
+
 }

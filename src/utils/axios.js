@@ -114,7 +114,8 @@ export const endpoints = {
     occupiedDrop: 'calendarioController/occupiedDrop',
     endAppointment: 'calendarioController/endAppointment',
     getReasons: 'calendarioController/getReasons',
-    getPendingEnd: 'calendarioController/getPendingEnd'
+    getPendingEnd: 'calendarioController/getPendingEnd',
+    getEventReasons: 'calendarioController/getEventReasons'
   },
   calendarioColaborador: {
     isPrimeraCita: 'calendarioController/isPrimeraCita',
