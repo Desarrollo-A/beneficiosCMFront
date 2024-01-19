@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 const instance = axios.create({
-    // baseURL: 'http://localhost/beneficiosCMBack/',
-    baseURL: 'https://prueba.gphsis.com/beneficiosCMBack/'
+    baseURL: 'http://localhost/beneficiosCMBack/',
+    // baseURL: 'https://prueba.gphsis.com/beneficiosCMBack/'
 });
 if(localStorage.getItem('token'))
   instance.defaults.headers.common = {'authorization': localStorage.getItem('token')}

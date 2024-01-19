@@ -65,7 +65,7 @@ export function GetCustomEvents() {
 
 export async function createCustom(fecha, eventData) {
 
-    return axios.post('https://prueba.gphsis.com/beneficiosCMBack/calendarioController/save_occupied', {
+  return axios.post('http://localhost/beneficiosCMBack/calendarioController/save_occupied', {
         fecha,
         titulo: eventData.title,
         hora_inicio: eventData.hora_inicio,
