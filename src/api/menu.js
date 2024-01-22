@@ -7,8 +7,15 @@ import { fetcherGet, endpoints } from 'src/utils/axios';
 
 export function useGetMenu() {
   const URL = endpoints.user.menu;
+  const accessToken = sessionStorage.getItem('accessToken');
 
-  const { data, isLoading, error, isValidating } = useSWR(URL, fetcherGet);
+  let config = {
+    headers : {
+      token : accessToken
+    }
+  }
+
+  const { data, isLoading, error, isValidating } = useSWR([URL, config], fetcherGet);
   
   const memoizedValue = useMemo(
     () => ({
