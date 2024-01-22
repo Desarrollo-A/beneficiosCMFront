@@ -15,6 +15,8 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
 
+import { useAuthContext } from 'src/auth/hooks';
+
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
@@ -142,9 +144,9 @@ function handleDownloadPDF(datosTabla, header, rol) {
 // ----------------------------------------------------------------------
 export default function HistorialReportesView() {
 
-  const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+  const { user } = useAuthContext();
 
-  // const rol = datosUser.idUsuario;
+  console.log('user data', user)
 
   const rol = 3;
 
