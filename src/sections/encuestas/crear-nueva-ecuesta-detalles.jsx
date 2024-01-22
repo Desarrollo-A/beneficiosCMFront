@@ -23,8 +23,6 @@ export default function InvoiceNewEditDetails() {
 
   const minEnc = parseInt(minEncuestaData.map((u) => (u.minIdEncuesta)), 10)+1;
 
-  console.log(minEnc)
-
   const { control } = useFormContext();
 
   const { fields, append, remove } = useFieldArray({

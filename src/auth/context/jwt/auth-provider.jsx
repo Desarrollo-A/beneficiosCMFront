@@ -60,7 +60,7 @@ export function AuthProvider({ children }) {
         setSession(accessToken);
 
         const dataPost = JSON.stringify({ token: accessToken });
-        const response = await instance.post(endpoints.auth.me2, dataPost);
+        const response = await instance.post(endpoints.auth.me, dataPost);
         const { user } = response.data;
 
         dispatch({
@@ -171,6 +171,7 @@ export function AuthProvider({ children }) {
       login,
       register,
       logout,
+      check : initialize,
     }),
     [login, logout, register, state.user, status]
   );

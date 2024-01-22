@@ -92,6 +92,7 @@ export default function FormularioEncuesta({ idEncuesta }) {
     try {
       await new Promise((resolve) => setTimeout(resolve));
 
+
       const insert = await insertData(newData);
 
       if (insert.estatus === true) {

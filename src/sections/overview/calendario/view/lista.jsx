@@ -3,17 +3,17 @@ import dayjs from 'dayjs';
 import * as yup from 'yup';
 import { Base64 } from 'js-base64';
 import PropTypes from 'prop-types';
-import { es } from 'date-fns/locale';
+import { es } from 'date-fns/locale'
 import { useState, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
-import Stack from '@mui/system/Stack';
-import Button from '@mui/material/Button';
+import Stack from "@mui/system/Stack";
+import Button from "@mui/material/Button";
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import ToggleButton from '@mui/material/ToggleButton';
-import DialogActions from '@mui/material/DialogActions';
+import DialogActions from "@mui/material/DialogActions";
 import DialogContent from '@mui/material/DialogContent';
 import { Checkbox, FormControlLabel } from '@mui/material';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
@@ -33,7 +33,7 @@ import { RHFTextField, RHFAutocomplete } from 'src/components/hook-form';
 
 const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
 export default function Lista({ currentEvent, onClose, userData, selectedDate, usersMutate }) {
-  dayjs.locale('es'); // valor para cambiar el idioma del dayjs
+    dayjs.locale('es') // valor para cambiar el idioma del dayjs
 
   const [allDay, setAllDay] = useState(false);
   const defaultHour = {
@@ -443,9 +443,9 @@ function userSelect(type, patient) {
 }
 
 Lista.propTypes = {
-  currentEvent: PropTypes.object,
-  onClose: PropTypes.func,
-  userData: PropTypes.any,
-  usersMutate: PropTypes.func,
-  selectedDate: PropTypes.instanceOf(Date),
+    currentEvent: PropTypes.object,
+    onClose: PropTypes.func,
+    userData: PropTypes.any,
+    usersMutate: PropTypes.func,
+    selectedDate: PropTypes.instanceOf(Date)
 };

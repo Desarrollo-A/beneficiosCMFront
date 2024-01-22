@@ -65,10 +65,12 @@ const onSubmit = (e) => {
   const datos = JSON.stringify({numempleado : numEmpleado,password:passwd});
   login?.(numEmpleado, passwd)
   .then(response=>{
-    if(response.result === 0){
-      setErrorMsg(typeof error === 'string' ? error : response.message);
-    }else{
+
+    if(response === undefined){
       router.push(returnTo || PATH_AFTER_LOGIN);
+    }
+    else if(response !== undefined && response.result === 0){
+      setErrorMsg(typeof error === 'string' ? error : response.message);
     }
 })
 }

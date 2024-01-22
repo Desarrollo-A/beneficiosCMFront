@@ -1,6 +1,8 @@
 import * as Yup from 'yup';
+import { mutate } from 'swr';
 import { useMemo } from 'react';
 import PropTypes from 'prop-types';
+import { Base64 } from 'js-base64';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -23,8 +25,12 @@ import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
 export default function UserQuickEditForm({ currentUser, open, onClose, idCita, rel }) {
   const { enqueueSnackbar } = useSnackbar();
+
+  const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
   
   const updateObservacion = useUpdate(endpoints.reportes.observacion);
+
+  const idUsr = datosUser.idUsuario;
 
   const NewUserSchema = Yup.object().shape({
     descripcion: Yup.string().required('El campo es requerido'),
@@ -35,8 +41,11 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
     () => ({
       descripcion: currentUser?.descripcion || '',
       idCita: currentUser?.idCita || '',
+      estatus: currentUser?.estatus || '',
+      modificadoPor: currentUser?.modificadoPor || idUsr,
+      ests: currentUser?.modificadoPor || 5,
     }),
-    [currentUser]
+    [currentUser, idUsr]
   );
 
   const methods = useForm({
@@ -51,6 +60,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
+
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
       reset();
@@ -60,7 +70,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
 
       if (update.estatus === true) {
         enqueueSnackbar(update.msj, { variant: 'success' });
-        rel();
+        mutate(endpoints.reportes.lista);
       } else {
         enqueueSnackbar(update.msj, { variant: 'error' });
       }
@@ -84,7 +94,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
     >
       <FormProvider methods={methods} onSubmit={onSubmit}>
 
-        <DialogTitle>Justificación de Penalización</DialogTitle>
+        <DialogTitle>Justificación de penalización</DialogTitle>
 
         <DialogContent>
 
@@ -100,7 +110,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
 
         <DialogActions>
           <Button variant="outlined" onClick={onClose}>
-            Cancelar
+            Cerrar
           </Button>
 
           <LoadingButton type="submit" variant="contained" loading={isSubmitting}>

@@ -45,7 +45,7 @@ export default function FiltrosTabla({
         )}
 
         {!!filters.area.length && (
-          <Block label="Area:">
+          <Block label="Área:">
             {filters.area.map((item) => (
               <Chip key={item} label={item} size="small" onDelete={() => handleRemoveRole(item)} />
             ))}
