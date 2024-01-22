@@ -65,7 +65,7 @@ export const endpoints = {
   kanban: '/api/kanban',
   calendar: '/api/calendar',
   auth: {
-    me: '/api/auth/me',
+    me: 'loginController/check',
     me2: 'loginController/me',
     login: 'loginController/login',
     login2: '/api/auth/login',
@@ -89,6 +89,7 @@ export const endpoints = {
     search: '/api/product/search',
   },
   user: {
+    session : 'usuario/session',
     list: 'Usuario/getUsers',
     update: 'Usuario/updateUser',
     areas: 'Usuario/getAreas',
