@@ -8,6 +8,8 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import SvgColor from 'src/components/svg-color';
 
+import { useGetMenu } from 'src/api/menu';
+
 // ----------------------------------------------------------------------
 
 const icon = (name) => (
@@ -51,6 +53,9 @@ const ICONS = {
 export function useNavData() {
   const { t } = useTranslate();
 
+  const { menu } = useGetMenu();
+
+  /*
   const data = useMemo(
     () => [
        // AGENDA
@@ -357,6 +362,7 @@ export function useNavData() {
     ],
     [t]
   );
+  */
 
-  return data;
+  return menu;
 }

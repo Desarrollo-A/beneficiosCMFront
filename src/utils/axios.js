@@ -97,6 +97,7 @@ export const endpoints = {
     sede: '/generalController/getSede',
     decodePass: '/Usuario/decodePass',
     updatePass: '/Usuario/updatePass',
+    menu : 'Usuario/menu'
   },
   benefits: {
     list: 'CalendarioController/getBeneficiosPorSede',
