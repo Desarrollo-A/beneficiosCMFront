@@ -8,8 +8,6 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import SvgColor from 'src/components/svg-color';
 
-import { useGetMenu } from 'src/api/menu';
-
 // ----------------------------------------------------------------------
 
 const icon = (name) => (
@@ -53,9 +51,6 @@ const ICONS = {
 export function useNavData() {
   const { t } = useTranslate();
 
-  const { menu } = useGetMenu();
-
-  /*
   const data = useMemo(
     () => [
        // AGENDA
@@ -142,6 +137,20 @@ export function useNavData() {
       {
         subheader: t('management'),
         items: [
+          // USER
+          {
+            title: t('user'),
+            path: paths.dashboard.user.root,
+            icon: ICONS.user,
+            children: [
+              { title: t('cards'), path: paths.dashboard.user.cards },
+              { title: t('list'), path: paths.dashboard.user.list },
+              { title: t('create'), path: paths.dashboard.user.new },
+              { title: t('edit'), path: paths.dashboard.user.demo.edit },
+              { title: t('account'), path: paths.dashboard.user.account },
+            ],
+          },
+
           // PRODUCT
           {
             title: t('product'),
@@ -362,7 +371,6 @@ export function useNavData() {
     ],
     [t]
   );
-  */
 
-  return menu;
+  return data;
 }
