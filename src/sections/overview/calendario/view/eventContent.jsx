@@ -3,11 +3,11 @@ import dayjs from 'dayjs';
 import * as yup from 'yup';
 import PropTypes from 'prop-types';
 import { es } from 'date-fns/locale';
-import { TextField } from '@material-ui/core';
 import { useState, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
+import { Chip } from '@mui/material';
 import Stack from '@mui/system/Stack';
 import Dialog from '@mui/material/Dialog';
 import Button from '@mui/material/Button';
@@ -20,7 +20,6 @@ import DialogContent from '@mui/material/DialogContent';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { Box, Chip, Select, MenuItem, InputLabel, FormControl, Autocomplete } from '@mui/material';
 
 import uuidv4 from 'src/utils/uuidv4';
 import { fDate } from 'src/utils/format-time';
@@ -29,8 +28,6 @@ import {
   reRender,
   deleteEvent,
   updateCustom,
-  endAppointment,
-  cancelAppointment,
   updateAppointment,
   useGetEventReasons,
 } from 'src/api/calendar-specialist';
@@ -40,6 +37,8 @@ import { useSnackbar } from 'src/components/snackbar';
 import { RHFTextField } from 'src/components/hook-form';
 import FormProvider from 'src/components/hook-form/form-provider';
 
+import CancelEventDialog from './cancelEventDialog';
+
 export default function EventContent({ currentEvent, onClose, selectedDate, selectedEnd, reasons}) {
   dayjs.locale('es'); // valor para cambiar el idioma del dayjs
 
@@ -47,20 +46,15 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
   const [open, setOpen] = useState(false);
   const [open2, setOpen2] = useState(false);
   const type = currentEvent?.type;
-  const [assist, setAssist] = useState('');
-  const [cancelType, setCancelType] = useState('');
+  
   const [dateTitle, setDateTitle] = useState(dayjs(selectedDate).format('dddd, DD MMMM YYYY'));
   const pastCheck = selectedDate < new Date(); // checar si la fecha del evento es inferior a la fecha actual
   const disableInputs = (currentEvent?.estatus !== 1 && currentEvent?.estatus !== 6) || pastCheck; // deshabilitar inputs
-  const allDay =
-    dayjs(currentEvent?.start).format('YYYY/MM/DD') < dayjs(currentEvent?.end).format('YYYY/MM/DD');
+  const allDay = dayjs(currentEvent?.start).format('YYYY/MM/DD') < dayjs(currentEvent?.end).format('YYYY/MM/DD');
   const [defaultInicio, setDefaultInicio] = useState(selectedDate);
   const [defaultFecha, setDefaultFecha] = useState(selectedEnd);
   const [defaultEnd, setDefaultEnd] = useState(dayjs(currentEvent.end).$d);
-  const [reason, setReason] = useState([]);
-  const { data: eventReasons, reasonsMutate } = useGetEventReasons(
-    currentEvent?.type === 'date' ? currentEvent?.id : 0
-  );
+  const { data: eventReasons, reasonsMutate } = useGetEventReasons( currentEvent?.type === 'date' ? currentEvent?.id : 0 );
   const formSchema = yup.object().shape({
     title: type === 'cancel' ? yup.string().max(100).required('Se necesita el título').trim() : '', // maximo de caracteres para el titulo 100
     start: !allDay ? yup.date().required() : '',
@@ -99,7 +93,7 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
   const dateError =
     type === 'cancel' &&
     dayjs(defaultInicio).format('YYYY/MM/DD') > dayjs(defaultFecha).format('YYYY/MM/DD'); // validacion que la fecha final no sea menor a la fecha inicio, unicamente año/mes/dia
-  const selectedReason = type === 'date' && (reason.length > 0 || cancelType);
+  
 
   const onSubmit = handleSubmit(async (data) => {
     let save = '';
@@ -180,16 +174,6 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
     [type]
   );
 
-  const handleAssist = (event) => {
-    setAssist(event.target.value);
-    setReason([]);
-    setCancelType('');
-  };
-
-  const handleCancel = (event) => {
-    setCancelType(event.target.value);
-  };
-
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -203,57 +187,7 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
   };
 
   const handleClose2 = () => {
-    setReason([]);
-    setAssist('');
-    setCancelType('');
     setOpen2(false);
-  };
-
-  const endSubmit = async () => {
-    switch (assist) {
-      case 0:
-        try {
-          const resp = await cancelAppointment(currentEvent, currentEvent?.id, cancelType);
-
-          if (resp.result) {
-            enqueueSnackbar(resp.msg);
-            reRender();
-          } else {
-            enqueueSnackbar(resp.msg, { variant: 'error' });
-          }
-
-          setOpen(false);
-          onClose();
-        } catch (error) {
-          enqueueSnackbar('Ha ocurrido un error al cancelar', { variant: 'error' });
-          setOpen(false);
-          onClose();
-        }
-        break;
-
-      case 1:
-        try {
-          const resp = await endAppointment(currentEvent?.id, reason);
-
-          if (resp.result) {
-            enqueueSnackbar(resp.msg);
-            reRender();
-          } else {
-            enqueueSnackbar(resp.msg, { variant: 'error' });
-          }
-
-          setOpen(false);
-          onClose();
-        } catch (error) {
-          enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
-          setOpen2(false);
-          onClose();
-        }
-        break;
-
-      default:
-        break;
-    }
   };
 
   return (
@@ -331,7 +265,8 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
                     } } />
                 )}
               </LocalizationProvider>
-            </Stack><Stack
+            </Stack>
+            <Stack
               direction="row"
               justifyContent="space-between"
               spacing={2}
@@ -415,7 +350,7 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
 
               <Stack direction="row" alignItems="center" spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1 }} >
                 <Iconify icon="mdi:map-marker" />
-                <Typography fontSize="90%">{currentEvent?.oficina}</Typography>
+                <Typography fontSize="90%">{currentEvent?.oficina ? currentEvent?.oficina : 'En linea'}</Typography>
               </Stack>
 
               <Stack spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1 }}>
@@ -490,111 +425,15 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogContent>
-          <Stack
-            direction="row"
-            justifyContent="center"
-            useFlexGap
-            flexWrap="wrap"
-            sx={{ pt: { xs: 1, md: 2 }, pb: { xs: 1, md: 2 } }}
-          >
-            <Typography color="red" sx={{ mt: 1, mb: 1 }}>
-              <strong>¡ATENCIÓN!</strong>
-            </Typography>
-          </Stack>
-          <Typography>¿Seguro que quieres finalizar la cita?</Typography>
-          <Stack spacing={4} sx={{ pt: { xs: 1, md: 4 } }}>
-            <Box sx={{ minWidth: 120 }}>
-              <FormControl fullWidth>
-                <InputLabel id="assist-label">Asistencia</InputLabel>
-                <Select
-                  id="assist"
-                  name="assist"
-                  labelId="assist-label"
-                  value={assist}
-                  label="Asistencia"
-                  onChange={handleAssist}
-                >
-                  {pastCheck && currentEvent?.estatus === 1 && (
-                    <MenuItem value={1}>Asistencia</MenuItem>
-                  )}
-
-                  <MenuItem value={0}>Inasistencia</MenuItem>
-                </Select>
-              </FormControl>
-            </Box>
-            {assist === 1 && (
-              <FormControl fullWidth>
-                <Autocomplete
-                  id="motivos"
-                  name="motivos"
-                  multiple
-                  limitTags={2}
-                  getOptionDisabled={(option) => !!reasons.find(element => element.idOpcion === option.idOpcion)}
-                  onChange={(event, value) => {
-                    setReason(value);
-                  }}
-                  options={reasons.map((rea) => ({ label: rea.nombre, value: rea.idOpcion }))}
-                  renderTags={(value, getTagProps) =>
-                    value.map((option, index) => (
-                      <Chip
-                        style={{
-                          backgroundColor: '#e0e0e0',
-                          borderRadius: '20px',
-                        }}
-                        variant="outlined"
-                        label={option.label}
-                        {...getTagProps({ index })}
-                      />
-                    ))
-                  }
-                  renderInput={(params) => (
-                    <TextField
-                      variant="outlined"
-                      {...params}
-                      label="Selecciona los motivos de la cita"
-                    />
-                  )}
-                />
-              </FormControl>
-            )}
-            {assist === 0 && (
-              <Box sx={{ minWidth: 120 }}>
-                <FormControl fullWidth>
-                  <InputLabel id="cancel-label">Tipo de cancelación</InputLabel>
-                  <Select
-                    id="cancelType"
-                    name="cancelType"
-                    labelId="cancel-label"
-                    value={cancelType}
-                    label="Tipo de cancelación"
-                    onChange={handleCancel}
-                  >
-                    <MenuItem value={7}>Cancelado por especialista</MenuItem>
-                    {pastCheck && currentEvent?.estatus === 1 && (
-                      <MenuItem value={3}>Penalizar</MenuItem>
-                    )}
-                  </Select>
-                </FormControl>
-              </Box>
-            )}
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button variant="contained" color="error" onClick={handleClose2}>
-            Cerrar
-          </Button>
-          <LoadingButton
-            type="submit"
-            variant="contained"
-            disabled={!selectedReason}
-            color="success"
-            onClick={endSubmit}
-            autoFocus
-          >
-            Aceptar
-          </LoadingButton>
-        </DialogActions>
+        <CancelEventDialog 
+           type = {type}
+           currentEvent = { currentEvent }
+           pastCheck = { pastCheck }
+           reasons = { reasons }
+           onClose={handleClose2}
+           close = {onClose}
+           selectedDate = {selectedDate}
+        />
       </Dialog>
     </>
   );
@@ -663,6 +502,8 @@ function dialogTitle(estatus, type) {
       return 'Cita pendiente de pago';
     case 7:
       return 'Cancelado por especialista';
+    case 8:
+      return 'Cita con reagenda';
 
     default:
       return 'Información';

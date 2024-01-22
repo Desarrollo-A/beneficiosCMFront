@@ -5,6 +5,7 @@ import { useMemo, useEffect } from 'react';
 import { enqueueSnackbar } from 'notistack';
 
 import { endpoints, fetcherPost  } from 'src/utils/axios';
+import uuidv4 from 'src/utils/uuidv4';
 
 // ----------------------------------------------------------------------
 
@@ -160,14 +161,15 @@ export async function createAppointment(eventData, modalitie){
         titulo: eventData.title,
         modificadoPor: datosUser.idUsuario,
         idCatalogo: modalitie.idAtencionXSede,
-        fundacion: eventData.paciente.externo
+        fundacion: eventData.paciente.externo,
+        idDetalle: uuidv4()
   };
 
   if(start > now){
     create = fetcherPost(create_appointment, data);
   }
   else{
-    create = { result: false, msg: "No se puede crear en dias anteriores" };
+    create = { result: false, msg: "No se puede agendar cita en dias anteriores" };
   }
 
   return create;
@@ -195,7 +197,7 @@ export async function updateAppointment(eventData) {
         update = fetcherPost(update_appointment, dataValue);
       }
       else{
-        update = { result: false, msg: "No se pueden mover las fechas a un dia anterior o actual" }
+        update = { result: false, msg: "No se pueden mover las fechas a un dia anterior" }
       }
 
     return update;
