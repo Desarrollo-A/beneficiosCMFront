@@ -1,7 +1,7 @@
 import { Base64 } from 'js-base64';
 import { useState, useEffect } from 'react';
-/* import Clock from 'react-clock';
-import 'react-clock/dist/Clock.css'; */
+import Clock from 'react-clock';
+import 'react-clock/dist/Clock.css';
 
 import Card from '@mui/material/Card';
 import Select from '@mui/material/Select';
@@ -318,21 +318,29 @@ export default function DashView() {
             />
           </Grid>
 
-          <Grid xs={12} md={3}>
-            <Card sx={{
-              ...bgGradient({
-                direction: '135deg',
-                startColor: alpha(theme.palette.primary.light, 0.2),
-                endColor: alpha(theme.palette.primary.main, 0.2),
-              }), height: { md: 1 },
-              borderRadius: 2,
-              position: 'relative',
-              color: 'primary.darker',
-              backgroundColor: 'common.white'
-            }}>
-             {/*  <Clock value={value}/> */}
+          <Grid container justifyContent="center" alignItems="center" xs={12} md={3}>
+            <Card
+              sx={{
+                ...bgGradient({
+                  direction: '135deg',
+                  startColor: alpha(theme.palette.primary.light, 0.2),
+                  endColor: alpha(theme.palette.primary.main, 0.2),
+                }),
+                height: '275px',
+                position: 'relative',
+                color: 'primary.darker',
+                backgroundColor: 'common.white',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '370px'
+              }}
+            >
+              <Clock value={value} />
             </Card>
           </Grid>
+
+
 
           {rol === "1" ? (
             <FormControl fullWidth>
