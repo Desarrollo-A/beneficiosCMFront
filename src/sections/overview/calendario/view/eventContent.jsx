@@ -223,14 +223,14 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
               )}
             </Stack>
           </Stack>
+          {type === 'cancel' && 
           <Stack spacing={3} sx={{ p: { xs: 1, md: 2 } }}>
             <Typography variant="subtitle1">{dateTitle}</Typography>
-            {type === 'cancel' && (
               <RHFTextField disabled={disableInputs} name="title" label="Título" />
-            )}
           </Stack>
+          }
 
-          {currentEvent?.estatus === 1 || currentEvent?.estatus === 6 || type === 'cancel' ?
+          {type === 'cancel' ?
           <><Stack
               direction="row"
               justifyContent="space-between"
@@ -248,7 +248,6 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
                     setDateTitle(dayjs(value).format('dddd, DD MMMM YYYY')); // al momento de cambiar el valor en el input, cambia el valor del titulo
                   } } />
 
-                {type === 'cancel' && (
                   <MobileDatePicker
                     label="Fecha final"
                     sx={{ width: '100%' }}
@@ -262,8 +261,8 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
                     }}
                     onChange={(value) => {
                       setDefaultFecha(value);
-                    } } />
-                )}
+                    }} />
+                
               </LocalizationProvider>
             </Stack>
             <Stack
@@ -371,7 +370,7 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
           <Button variant="contained" color="error" onClick={onClose}>
             Cerrar
           </Button>
-          {(currentEvent?.estatus === 1 || currentEvent?.estatus === 6) && !pastCheck ? (
+          {(currentEvent?.estatus === 1 && type === 'cancel') && !pastCheck ? (
             <LoadingButton
               type="submit"
               variant="contained"

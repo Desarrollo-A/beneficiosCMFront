@@ -74,7 +74,9 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
       paciente: currentEvent?.idPaciente,
       idDetalle: currentEvent?.idDetalle,
       idAtencionXSede: currentEvent?.idAtencionXSede,
-      fundacion: currentEvent?.externo
+      fundacion: currentEvent?.externo,
+      oldEventStart: currentEvent?.start,
+      oldEventEnd: currentEvent?.end
     };
     switch(cancelType){
         case 8:
@@ -196,7 +198,9 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
                   onChange={handleCancel}
                 >
                   <MenuItem value={7}>Cancelado por especialista</MenuItem>
-                  <MenuItem value={8}>Reagendar</MenuItem>
+                  {currentEvent?.estatus === 1 && (
+                    <MenuItem value={8}>Reagendar</MenuItem>
+                  )}
                   {pastCheck && currentEvent?.estatus === 1 && (
                     <MenuItem value={3}>Penalizar</MenuItem>
                   )}

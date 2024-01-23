@@ -4,9 +4,8 @@ import useSWR, { mutate } from 'swr';
 import { useMemo, useEffect } from 'react';
 import { enqueueSnackbar } from 'notistack';
 
-import { endpoints, fetcherPost  } from 'src/utils/axios';
 import uuidv4 from 'src/utils/uuidv4';
-import { result } from 'lodash';
+import { endpoints, fetcherPost  } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -252,6 +251,8 @@ export async function cancelAppointment(currentEvent, id, cancelType){
     startStamp,
     estatus: currentEvent.estatus,
     tipo: cancelType,
+    fechaInicio: currentEvent.start,
+    fechaFinal: currentEvent.end
   };
 
   const delDate = await fetcherPost(cancel_appointment, data);
@@ -350,7 +351,7 @@ export function useGetEventReasons(idCita){
 
 export async function reschedule(eventData, idDetalle, cancelType){
   let response ='';
-  const startStamp = dayjs(eventData.start).format('YYYY/MM/DD HH:mm:ss');
+  const startStamp = dayjs(eventData.oldEventStart).format('YYYY/MM/DD HH:mm:ss');
 
   const fechaInicio = dayjs(`${eventData.fechaInicio} ${eventData.hora_inicio}`).format('YYYY/MM/D HH:mm:ss');
   const fechaFinal = dayjs(`${eventData.fechaInicio} ${eventData.hora_final}`).format('YYYY/MM/D HH:mm:ss');
@@ -369,9 +370,11 @@ export async function reschedule(eventData, idDetalle, cancelType){
   };
 
   const cancelData = {
-    tipo: cancelType,
     idCita: eventData?.idCancelar,
-    startStamp
+    tipo: cancelType,
+    startStamp,
+    fechaInicio, 
+    fechaFinal: eventData.oldEventEnd
   };
 
   response = await fetcherPost(check_invoice, idDetalle);
