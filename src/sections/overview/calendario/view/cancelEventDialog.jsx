@@ -10,9 +10,10 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { MobileDatePicker, MobileTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { Chip, Button, Select, MenuItem, TextField, InputLabel, Typography, FormControl, Autocomplete, DialogActions, DialogContent } from '@mui/material';
 
-import { reRender } from 'src/api/calendar-colaborador';
-import { endAppointment, cancelAppointment } from 'src/api/calendar-specialist';
 import { fDate } from 'src/utils/format-time';
+
+import { reRender } from 'src/api/calendar-colaborador';
+import { reschedule, endAppointment, cancelAppointment } from 'src/api/calendar-specialist';
 
 export default function CancelEventDialog({ type, currentEvent, pastCheck, reasons, onClose, close, selectedDate }) {
   dayjs.locale('es'); // valor para cambiar el idioma del dayjs
@@ -23,7 +24,6 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
   const [horaInicio, setHoraInicio] = useState(null);
   const [horaFinal, setHoraFinal] = useState(null);
   const [dateTitle, setDateTitle] = useState(dayjs(selectedDate).format('dddd, DD MMMM YYYY'));
-console.log(currentEvent);
   const selectedReason = validateSelect(type, reason, cancelType, horaInicio, horaFinal);
 
   const handleAssist = (event) => {
@@ -45,34 +45,25 @@ console.log(currentEvent);
   const hourError = checkHour(horaInicio, horaFinal, cancelType);
 
   const endEvent = async () => {
-    switch (assist) {
-      case 0:
-        
-        break;
+    try {
+      const resp = await endAppointment(currentEvent?.id, reason);
 
-      case 1:
-        try {
-          const resp = await endAppointment(currentEvent?.id, reason);
-
-          if (resp.result) {
-            enqueueSnackbar(resp.msg);
-            reRender();
-            onClose();
-            close();
-          } else {
-            enqueueSnackbar(resp.msg, { variant: 'error' });
-          }
-        } catch (error) {
-          enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
-        }
-        break;
-
-      default:
-        break;
+      if (resp.result) {
+        enqueueSnackbar(resp.msg);
+        reRender();
+        onClose();
+        close();
+      } else {
+        enqueueSnackbar(resp.msg, { variant: 'error' });
+      }
+    } catch (error) {
+      enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
     }
   };
 
   const cancelEvent = async () => {
+    let resp = '';
+
     const eventData = {
       // se da el formato juntando la fecha elegida y la hora que se elige con los minutos
       idCancelar: currentEvent?.id,
@@ -81,9 +72,19 @@ console.log(currentEvent);
       hora_final: dayjs(horaFinal).format('HH:mm:ss'),
       fechaInicio: fDate(fecha),
       paciente: currentEvent?.idPaciente,
+      idDetalle: currentEvent?.idDetalle,
+      idAtencionXSede: currentEvent?.idAtencionXSede,
+      fundacion: currentEvent?.externo
     };
+    switch(cancelType){
+        case 8:
+            resp = await reschedule(eventData, eventData.idDetalle, cancelType);
+            break;
 
-    const resp = await cancelAppointment(currentEvent, currentEvent?.id, cancelType);
+        default:
+            resp = await cancelAppointment(currentEvent, currentEvent?.id, cancelType);
+            break;
+    }
 
     if (resp.result) {
       enqueueSnackbar(resp.msg);
@@ -107,7 +108,6 @@ console.log(currentEvent);
         default:
             enqueueSnackbar('Ha ocurrido un error', {variant: 'error'});
             break;
-        
     }
   }
 
@@ -285,7 +285,6 @@ function validateSelect(type, reason, cancelType, horaInicio, horaFinal){
             
             default:
                 validation = false;
-                console.log(validation);
                 break;
         }
     }

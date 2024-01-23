@@ -121,7 +121,9 @@ export const endpoints = {
     endAppointment: 'calendarioController/endAppointment',
     getReasons: 'calendarioController/getReasons',
     getPendingEnd: 'calendarioController/getPendingEnd',
-    getEventReasons: 'calendarioController/getEventReasons'
+    getEventReasons: 'calendarioController/getEventReasons',
+    registrarTransaccion: 'calendarioController/registrarTransaccionPago',
+    checkInvoice: 'calendarioController/checkInvoice'
   },
   calendarioColaborador: {
     isPrimeraCita: 'calendarioController/isPrimeraCita',

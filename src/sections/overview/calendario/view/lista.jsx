@@ -140,8 +140,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
       });
     }
 
-    // Validamos la antiguedad: Mandamos fechaIngreso, fechaDeHoy, isPracticante, idBeneficio.
-    const tieneAntiguedad = validarAntiguedad(patient.fechaIngreso, fechaActual);
+    const tieneAntiguedad = validarAntiguedad(patient.fechaIngreso, fechaActual); // Validamos la antiguedad: Mandamos fechaIngreso, fechaDeHoy, isPracticante, idBeneficio.
 
     if (!tieneAntiguedad && datosUser.idArea !== 25) { // 25 es de ventas
       onClose();
