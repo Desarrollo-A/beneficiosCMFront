@@ -9,6 +9,8 @@ import allLocales from '@fullcalendar/core/locales-all'
 import { useState, useEffect, useCallback } from 'react';
 import interactionPlugin from '@fullcalendar/interaction';
 
+import { useGoogleOneTapLogin } from '@react-oauth/google';
+
 import Card from '@mui/material/Card';
 import Dialog from '@mui/material/Dialog';
 import { useTheme } from '@mui/material/styles';
@@ -38,6 +40,17 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 export default function CalendarioView(){
+    useGoogleOneTapLogin({
+      onSuccess: credentialResponse => {
+        console.log(credentialResponse);
+      },
+      onError: () => 
+      {
+        console.log('Login Failed');
+      },
+      auto_select: true
+    })
+
     const smUp = useResponsive('up', 'sm');
     const settings = useSettingsContext();
     const [filters] = useState(defaultFilters);

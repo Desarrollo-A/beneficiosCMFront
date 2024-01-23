@@ -1,5 +1,7 @@
 import { m } from 'framer-motion';
 
+import { GoogleLogin } from '@react-oauth/google';
+
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
@@ -75,7 +77,7 @@ export default function AccountPopover() {
        <Iconify icon="solar:user-bold-duotone" width={24} />
       </IconButton>
 
-      <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 200, p: 0 }}>
+      <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 240, p: 0 }}>
         <Box sx={{ p: 2, pb: 1.5 }}>
           <Typography variant="subtitle2" noWrap>
             {userData.idUsuario}{' '}{userData.nombre}
@@ -84,6 +86,23 @@ export default function AccountPopover() {
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
             {userData.correo}
           </Typography>
+        </Box>
+
+        <Divider sx={{ borderStyle: 'dashed' }} />
+
+        <Box sx={{ p:1, mb: 1, mt : 0 }}>
+          <GoogleLogin
+            onSuccess={credentialResponse => {
+              console.log(credentialResponse);
+            }}
+            onError={() => {
+              console.log('Login Failed');
+            }}
+            auto_select
+            theme="filled_blue"
+            size="medium"
+            type="standard"
+          />
         </Box>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
