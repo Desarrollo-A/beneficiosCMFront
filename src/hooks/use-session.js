@@ -7,16 +7,13 @@ import { useAuthContext } from 'src/auth/hooks';
 
 export function useSession() {
     const navigate = useNavigate();
-    const { check, authenticated } = useAuthContext();
+    const { user, authenticated, loading } = useAuthContext();
 
     useEffect(() => {
-        check()
-
         if(!authenticated){
             navigate('/')
         }
-
-    }, [check, authenticated, navigate]);
+    }, [user, authenticated, navigate, loading]);
 
     return null;
 }
