@@ -1,6 +1,9 @@
 import { Base64 } from 'js-base64';
 import { useState, useEffect } from 'react';
+/* import Clock from 'react-clock';
+import 'react-clock/dist/Clock.css'; */
 
+import Card from '@mui/material/Card';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -8,12 +11,16 @@ import Container from '@mui/material/Container';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 
+import { alpha, useTheme } from '@mui/material/styles';
+
 import { endpoints } from 'src/utils/axios';
 
 import { SeoIllustration } from 'src/assets/illustrations';
 import { useGetGeneral, usePostGeneral } from 'src/api/general';
 
 import { useSettingsContext } from 'src/components/settings';
+
+import { bgGradient } from 'src/theme/css';
 
 import AppWelcome from '../app-welcome';
 import WidgetConteo from '../widget-conteo';
@@ -284,6 +291,18 @@ export default function DashView() {
 
   };
 
+  const [value, setValue] = useState(new Date());
+
+  useEffect(() => {
+    const interval = setInterval(() => setValue(new Date()), 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
+  const theme = useTheme();
+
   return (
     <>
 
@@ -300,7 +319,19 @@ export default function DashView() {
           </Grid>
 
           <Grid xs={12} md={3}>
-
+            <Card sx={{
+              ...bgGradient({
+                direction: '135deg',
+                startColor: alpha(theme.palette.primary.light, 0.2),
+                endColor: alpha(theme.palette.primary.main, 0.2),
+              }), height: { md: 1 },
+              borderRadius: 2,
+              position: 'relative',
+              color: 'primary.darker',
+              backgroundColor: 'common.white'
+            }}>
+             {/*  <Clock value={value}/> */}
+            </Card>
           </Grid>
 
           {rol === "1" ? (

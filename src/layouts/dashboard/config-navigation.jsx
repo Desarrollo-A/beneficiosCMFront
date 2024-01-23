@@ -64,6 +64,7 @@ export function useNavData() {
             icon: ICONS.file,
             children: [
               { title: t('historial'), path: paths.dashboard.reportes.historial },
+              { title: t('pacientes'), path: paths.dashboard.reportes.pacientes },
             ],
           }
         ],

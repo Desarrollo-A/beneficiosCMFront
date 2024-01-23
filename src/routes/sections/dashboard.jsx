@@ -9,6 +9,7 @@ import { LoadingScreen } from 'src/components/loading-screen';
 // ----------------------------------------------------------------------
 // CITAS
 const HistorialReportesPage = lazy(() => import('src/pages/dashboard/reportes/historial-reportes'));
+const ReportePacientesPage = lazy(() => import('src/pages/dashboard/reportes/reporte-pacientes'));
 // OVERVIEW
 const IndexPage = lazy(() => import('src/pages/dashboard/app'));
 const DashPage = lazy(() => import('src/pages/dashboard/dash'));
@@ -96,6 +97,7 @@ export const dashboardRoutes = [
         path: 'reportes',
         children: [
           { path: 'historial', element: <HistorialReportesPage /> },
+          { path: 'pacientes', element: <ReportePacientesPage />},
         ],
       },
       {

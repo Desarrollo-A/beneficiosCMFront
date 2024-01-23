@@ -114,6 +114,7 @@ export const paths = {
     reportes: {
       root: `${ROOTS.DASHBOARD}/reportes/historial`,
       historial: `${ROOTS.DASHBOARD}/reportes/historial`,
+      pacientes: `${ROOTS.DASHBOARD}/reportes/pacientes`,
     },
     encuestas: {
       root: `${ROOTS.DASHBOARD}/encuestas/ver`,
