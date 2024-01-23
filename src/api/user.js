@@ -7,6 +7,25 @@ import { fetcher, endpoints, fetcherGet, fetcherPost } from 'src/utils/axios';
 // ----------------------------------------------------------------------
 const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
 
+export function useGetUserData(){
+  const URL = endpoints.user.session;
+
+  const { data, isLoading, error, isValidating } = useSWR(URL, fetcherGet);
+  
+  const memoizedValue = useMemo(
+    () => ({
+      user: data || [],
+      userLoading: isLoading,
+      userError: error,
+      userValidating: isValidating,
+      userEmpty: !isLoading && !data,
+    }),
+    [data, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
+}
+
 export function useGetUsers() {
   const URL = endpoints.user.list;
 

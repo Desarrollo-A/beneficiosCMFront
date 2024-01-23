@@ -110,7 +110,14 @@ export default function CalendarioView(){
     const hours2 = {
       start: dayjs(new Date).format('YYYY-MM-DD HH:mm:ss')
     }
-      
+    const statusSizeMap = {
+      1: 'sm',
+      6: 'sm',
+      '': 'sm' // valor vacio para cuando se va a crear
+    };
+    
+    const modalSize = statusSizeMap[currentEvent?.estatus] || 'xs';
+    
     return(
         <Container maxWidth={settings.themeStretch ? false : 'xl'}>
           <Card>
@@ -162,7 +169,7 @@ export default function CalendarioView(){
           
           <Dialog
             fullWidth
-            maxWidth='sm'
+            maxWidth={modalSize}
             open={openForm}
             transitionDuration={{
               enter: theme.transitions.duration.shortest,

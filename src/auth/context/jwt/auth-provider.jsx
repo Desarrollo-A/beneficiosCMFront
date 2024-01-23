@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { useMemo, useEffect, useReducer, useCallback } from 'react';
 
 import instance from 'src/utils/axiosBack';
-import axios, { endpoints } from 'src/utils/axios';
+import axios, { endpoints, fetcherGet } from 'src/utils/axios';
 
 import { AuthContext } from './auth-context';
 import { setSession, isValidToken } from './utils';
@@ -59,9 +59,15 @@ export function AuthProvider({ children }) {
       if (accessToken && isValidToken(accessToken)) {
         setSession(accessToken);
 
-        const dataPost = JSON.stringify({ token: accessToken });
-        const response = await instance.post(endpoints.auth.me2, dataPost);
-        const { user } = response.data;
+        let config = {
+          headers: {
+            token: accessToken,
+          }
+        }
+
+        const response = await fetcherGet([endpoints.auth.me, config])
+
+        const user = response.user
 
         dispatch({
           type: 'INITIAL',

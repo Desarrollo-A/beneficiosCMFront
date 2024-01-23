@@ -20,7 +20,7 @@ import DialogContent from '@mui/material/DialogContent';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { Box, Chip, Select, MenuItem, InputLabel, FormControl, Autocomplete,  } from '@mui/material';
+import { Box, Chip, Select, MenuItem, InputLabel, FormControl, Autocomplete } from '@mui/material';
 
 import uuidv4 from 'src/utils/uuidv4';
 import { fDate } from 'src/utils/format-time';
@@ -32,6 +32,7 @@ import {
   endAppointment,
   cancelAppointment,
   updateAppointment,
+  useGetEventReasons,
 } from 'src/api/calendar-specialist';
 
 import Iconify from 'src/components/iconify';
@@ -39,13 +40,7 @@ import { useSnackbar } from 'src/components/snackbar';
 import { RHFTextField } from 'src/components/hook-form';
 import FormProvider from 'src/components/hook-form/form-provider';
 
-export default function EventContent({
-  currentEvent,
-  onClose,
-  selectedDate,
-  selectedEnd,
-  reasons,
-}) {
+export default function EventContent({ currentEvent, onClose, selectedDate, selectedEnd, reasons}) {
   dayjs.locale('es'); // valor para cambiar el idioma del dayjs
 
   const { enqueueSnackbar } = useSnackbar();
@@ -54,26 +49,6 @@ export default function EventContent({
   const type = currentEvent?.type;
   const [assist, setAssist] = useState('');
   const [cancelType, setCancelType] = useState('');
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleOpen = () => {
-    setOpen2(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleClose2 = () => {
-    setReason([]);
-    setAssist('');
-    setCancelType('');
-    setOpen2(false);
-  };
-
   const [dateTitle, setDateTitle] = useState(dayjs(selectedDate).format('dddd, DD MMMM YYYY'));
   const pastCheck = selectedDate < new Date(); // checar si la fecha del evento es inferior a la fecha actual
   const disableInputs = (currentEvent?.estatus !== 1 && currentEvent?.estatus !== 6) || pastCheck; // deshabilitar inputs
@@ -83,7 +58,9 @@ export default function EventContent({
   const [defaultFecha, setDefaultFecha] = useState(selectedEnd);
   const [defaultEnd, setDefaultEnd] = useState(dayjs(currentEvent.end).$d);
   const [reason, setReason] = useState([]);
-
+  const { data: eventReasons, reasonsMutate } = useGetEventReasons(
+    currentEvent?.type === 'date' ? currentEvent?.id : 0
+  );
   const formSchema = yup.object().shape({
     title: type === 'cancel' ? yup.string().max(100).required('Se necesita el título').trim() : '', // maximo de caracteres para el titulo 100
     start: !allDay ? yup.date().required() : '',
@@ -94,12 +71,34 @@ export default function EventContent({
     resolver: yupResolver(formSchema),
     defaultValues: currentEvent,
   });
+  
+  const Items = () => { // items de los motivos que se trae el evento
+    let items = '';
+    reasonsMutate();
+    if (eventReasons?.length > 0) {
+      items = eventReasons.map((er) => (
+        <Tooltip title={er.nombre} key={er.idOpcion}>
+          <Chip label={er.nombre} variant="outlined" size="small" style={{ backgroundColor: '#e0e0e0', borderRadius: '20px' }}/>
+        </Tooltip>
+      ));
+    }
+    else{
+      items = (
+      <Tooltip title="Sin motivos de cita">
+          <Chip label="Sin motivos de cita" variant="outlined" size="small" style={{ backgroundColor: '#e0e0e0', borderRadius: '20px' }}/>
+        </Tooltip>
+        )
+    }
+    return items;
+  };
 
   const { reset, watch, handleSubmit } = methods;
 
   const values = watch();
   const hourError = checkHour(values.start, defaultEnd, type, defaultInicio, defaultFecha);
-  const dateError = type === 'cancel' && dayjs(defaultInicio).format('YYYY/MM/DD') > dayjs(defaultFecha).format('YYYY/MM/DD'); // validacion que la fecha final no sea menor a la fecha inicio, unicamente año/mes/dia
+  const dateError =
+    type === 'cancel' &&
+    dayjs(defaultInicio).format('YYYY/MM/DD') > dayjs(defaultFecha).format('YYYY/MM/DD'); // validacion que la fecha final no sea menor a la fecha inicio, unicamente año/mes/dia
   const selectedReason = type === 'date' && (reason.length > 0 || cancelType);
 
   const onSubmit = handleSubmit(async (data) => {
@@ -191,11 +190,30 @@ export default function EventContent({
     setCancelType(event.target.value);
   };
 
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleOpen = () => {
+    setOpen2(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleClose2 = () => {
+    setReason([]);
+    setAssist('');
+    setCancelType('');
+    setOpen2(false);
+  };
+
   const endSubmit = async () => {
     switch (assist) {
       case 0:
         try {
-          const resp = await cancelAppointment(currentEvent, cancelType);
+          const resp = await cancelAppointment(currentEvent, currentEvent?.id, cancelType);
 
           if (resp.result) {
             enqueueSnackbar(resp.msg);
@@ -271,91 +289,87 @@ export default function EventContent({
               )}
             </Stack>
           </Stack>
-          {type === 'cancel' && (
-            <Stack spacing={3} sx={{ p: { xs: 1, md: 2 } }}>
-              <Typography variant="subtitle1">{dateTitle}</Typography>
+          <Stack spacing={3} sx={{ p: { xs: 1, md: 2 } }}>
+            <Typography variant="subtitle1">{dateTitle}</Typography>
+            {type === 'cancel' && (
               <RHFTextField disabled={disableInputs} name="title" label="Título" />
-            </Stack>
-          )}
-
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            spacing={2}
-            sx={{ p: { xs: 1, md: 2 } }}
-          >
-            <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
-              <MobileDatePicker
-                label="Fecha inicial"
-                disabled={disableInputs}
-                sx={{ width: '100%' }}
-                value={defaultInicio}
-                onChange={(value) => {
-                  setDefaultInicio(value);
-                  setDateTitle(dayjs(value).format('dddd, DD MMMM YYYY')); // al momento de cambiar el valor en el input, cambia el valor del titulo
-                }}
-              />
-
-              {type === 'cancel' && (
-                <MobileDatePicker
-                  label="Fecha final"
-                  sx={{ width: '100%' }}
-                  value={defaultFecha}
-                  slotProps={{
-                    textField: {
-                      error: dateError,
-                      helperText: dateError && 'Formato incorrecto',
-                    },
-                  }}
-                  onChange={(value) => {
-                    setDefaultFecha(value);
-                  }}
-                />
-              )}
-            </LocalizationProvider>
+            )}
           </Stack>
 
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            spacing={2}
-            sx={{ p: { xs: 1, md: 2 } }}
-          >
-            <Controller
-              name="start"
-              render={({ field }) => (
-                <MobileTimePicker
+          {currentEvent?.estatus === 1 || currentEvent?.estatus === 6 || type === 'cancel' ?
+          <><Stack
+              direction="row"
+              justifyContent="space-between"
+              spacing={2}
+              sx={{ p: { xs: 1, md: 2 } }}
+            >
+              <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
+                <MobileDatePicker
+                  label="Fecha inicial"
                   disabled={disableInputs}
                   sx={{ width: '100%' }}
-                  label="Hora de inicio"
-                  defaultValue={currentEvent?.id ? dayjs(currentEvent.start).$d : null}
+                  value={defaultInicio}
                   onChange={(value) => {
-                    field.onChange(value);
-                    handleHourChange(value);
-                  }}
-                />
-              )}
-            />
+                    setDefaultInicio(value);
+                    setDateTitle(dayjs(value).format('dddd, DD MMMM YYYY')); // al momento de cambiar el valor en el input, cambia el valor del titulo
+                  } } />
 
-            <Controller
-              name="end"
-              render={({ field }) => (
-                <MobileTimePicker
-                  sx={{ width: '100%' }}
-                  disabled={disableInputs || type === 'date'}
-                  label="Hora finalización"
-                  slotProps={{
-                    textField: {
-                      error: hourError,
-                      helperText: hourError && 'Error en las horas seleccionadas',
-                    },
-                  }}
-                  value={defaultEnd}
-                  onChange={(value) => setDefaultEnd(value)}
-                />
-              )}
-            />
-          </Stack>
+                {type === 'cancel' && (
+                  <MobileDatePicker
+                    label="Fecha final"
+                    sx={{ width: '100%' }}
+                    disabled={disableInputs}
+                    value={defaultFecha}
+                    slotProps={{
+                      textField: {
+                        error: dateError,
+                        helperText: dateError && 'Formato incorrecto',
+                      },
+                    }}
+                    onChange={(value) => {
+                      setDefaultFecha(value);
+                    } } />
+                )}
+              </LocalizationProvider>
+            </Stack><Stack
+              direction="row"
+              justifyContent="space-between"
+              spacing={2}
+              sx={{ p: { xs: 1, md: 2 } }}
+            >
+                <Controller
+                  name="start"
+                  render={({ field }) => (
+                    <MobileTimePicker
+                      disabled={disableInputs}
+                      sx={{ width: '100%' }}
+                      label="Hora de inicio"
+                      defaultValue={currentEvent?.id ? dayjs(currentEvent.start).$d : null}
+                      onChange={(value) => {
+                        field.onChange(value);
+                        handleHourChange(value);
+                      } } />
+                  )} />
+
+                <Controller
+                  name="end"
+                  render={({ field }) => (
+                    <MobileTimePicker
+                      sx={{ width: '100%' }}
+                      disabled={disableInputs || type === 'date'}
+                      label="Hora finalización"
+                      slotProps={{
+                        textField: {
+                          error: hourError,
+                          helperText: hourError && 'Error en las horas seleccionadas',
+                        },
+                      }}
+                      value={defaultEnd}
+                      onChange={(value) => setDefaultEnd(value)} />
+                  )} />
+              </Stack>
+              </> : ''}
+          
 
           {type === 'date' && (
             <Stack>
@@ -378,16 +392,42 @@ export default function EventContent({
                 <Iconify icon="mdi:account-circle-outline" />
                 <Typography fontSize="90%">{currentEvent?.nombre}</Typography>
               </Stack>
-
-              <Stack
-                direction="row"
-                alignItems="center"
-                spacing={1}
-                sx={{ px: { xs: 1, md: 2 }, py: 1 }}
-              >
+              
+              <Stack direction="row" alignItems="center" spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1 }} >
                 <Iconify icon="mdi:phone" />
                 <Typography fontSize="90%">{currentEvent?.telPersonal}</Typography>
               </Stack>
+
+              <Stack direction="row" alignItems="center" spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1 }} >
+                <Iconify icon="mdi:calendar-clock" />
+                <Typography fontSize="90%">{dayjs(currentEvent?.start).format('HH:mm a')} - {dayjs(currentEvent?.end).format('HH:mm a')}</Typography>
+              </Stack>
+
+              <Stack direction="row" alignItems="center" spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1 }} >
+                <Iconify icon="mdi:email-outline" />
+                <Typography fontSize="90%">{currentEvent?.correo}</Typography>
+              </Stack>
+
+              <Stack direction="row" alignItems="center" spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1 }} >
+                <Iconify icon="mdi:world" />
+                <Typography fontSize="90%">{currentEvent?.sede}</Typography>
+              </Stack>
+
+              <Stack direction="row" alignItems="center" spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1 }} >
+                <Iconify icon="mdi:map-marker" />
+                <Typography fontSize="90%">{currentEvent?.oficina}</Typography>
+              </Stack>
+
+              <Stack spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1 }}>
+                <Stack spacing={1} direction="row">
+                  <Iconify icon="solar:chat-round-line-outline" />
+                  <Typography>Motivos</Typography>
+                </Stack>
+                <Stack flexDirection="row" flexWrap="wrap" flex={1} spacing={2} sx={{ px: { xs: 1, md: 3 }, py: 1 }} >
+                  <Items />
+                </Stack>
+              </Stack>
+              
             </Stack>
           )}
         </DialogContent>
@@ -428,19 +468,19 @@ export default function EventContent({
           <Typography>¿Seguro que quieres eliminar el horario?</Typography>
         </DialogContent>
         <DialogActions>
-            <Button variant="contained" color="error" onClick={handleClose}>
-              Cerrar
-            </Button>
-            <LoadingButton
-              type="submit"
-              variant="contained"
-              color="success"
-              onClick={onDelete}
-              autoFocus
-            >
-              Aceptar
-            </LoadingButton>
-          </DialogActions>
+          <Button variant="contained" color="error" onClick={handleClose}>
+            Cerrar
+          </Button>
+          <LoadingButton
+            type="submit"
+            variant="contained"
+            color="success"
+            onClick={onDelete}
+            autoFocus
+          >
+            Aceptar
+          </LoadingButton>
+        </DialogActions>
       </Dialog>
 
       <Dialog // dialog de confirmación de finalización
@@ -475,7 +515,10 @@ export default function EventContent({
                   label="Asistencia"
                   onChange={handleAssist}
                 >
-                  <MenuItem value={1}>Asistencia</MenuItem>
+                  {pastCheck && currentEvent?.estatus === 1 && (
+                    <MenuItem value={1}>Asistencia</MenuItem>
+                  )}
+
                   <MenuItem value={0}>Inasistencia</MenuItem>
                 </Select>
               </FormControl>
@@ -487,6 +530,7 @@ export default function EventContent({
                   name="motivos"
                   multiple
                   limitTags={2}
+                  getOptionDisabled={(option) => !!reasons.find(element => element.idOpcion === option.idOpcion)}
                   onChange={(event, value) => {
                     setReason(value);
                   }}
@@ -509,7 +553,6 @@ export default function EventContent({
                       variant="outlined"
                       {...params}
                       label="Selecciona los motivos de la cita"
-                      placeholder="motivos"
                     />
                   )}
                 />
@@ -528,7 +571,9 @@ export default function EventContent({
                     onChange={handleCancel}
                   >
                     <MenuItem value={7}>Cancelado por especialista</MenuItem>
-                    <MenuItem value={3}>Penalizar</MenuItem>
+                    {pastCheck && currentEvent?.estatus === 1 && (
+                      <MenuItem value={3}>Penalizar</MenuItem>
+                    )}
                   </Select>
                 </FormControl>
               </Box>
@@ -605,17 +650,17 @@ function dialogTitle(estatus, type) {
       return 'Eliminado';
     case 1:
       if (type === 'date') return 'Por asistir';
-      return 'Mis horarios';
+      return 'Mis horarios cancelados';
     case 2:
       return 'Cita cancelada';
     case 3:
       return 'Cita penalizada';
     case 4:
-      return 'Finalizada';
+      return 'Cita finalizada';
     case 5:
-      return 'Justificado';
+      return 'Falta justificada';
     case 6:
-      return 'Pendiente de pago';
+      return 'Cita pendiente de pago';
     case 7:
       return 'Cancelado por especialista';
 

@@ -43,7 +43,6 @@ export const fetcherGet = async (args) => {
 };
 
 export const fetcherPost = async (args, dataValue) => {
-
   const [url, config] = Array.isArray(args) ? args : [args];
 
   const res = await instance.post(
@@ -65,7 +64,7 @@ export const endpoints = {
   kanban: '/api/kanban',
   calendar: '/api/calendar',
   auth: {
-    me: '/api/auth/me',
+    me: 'loginController/check',
     me2: 'loginController/me',
     login: 'loginController/login',
     login2: '/api/auth/login',
@@ -89,6 +88,7 @@ export const endpoints = {
     search: '/api/product/search',
   },
   user: {
+    session : 'usuario/session',
     list: 'Usuario/getUsers',
     update: 'Usuario/updateUser',
     areas: 'Usuario/getAreas',
@@ -97,7 +97,8 @@ export const endpoints = {
     puesto: '/generalController/getPuesto',
     sede: '/generalController/getSede',
     decodePass: '/Usuario/decodePass',
-    updatePass: '/Usuario/updatePass'
+    updatePass: '/Usuario/updatePass',
+    menu : 'Usuario/menu'
   },
   benefits: {
     list: 'CalendarioController/getBeneficiosPorSede',
@@ -119,19 +120,21 @@ export const endpoints = {
     occupiedDrop: 'calendarioController/occupiedDrop',
     endAppointment: 'calendarioController/endAppointment',
     getReasons: 'calendarioController/getReasons',
-    getPendingEnd: 'calendarioController/getPendingEnd'
+    getPendingEnd: 'calendarioController/getPendingEnd',
+    getEventReasons: 'calendarioController/getEventReasons'
   },
   calendarioColaborador: {
     isPrimeraCita: 'calendarioController/isPrimeraCita',
     getOficina: 'calendarioController/getOficinaByAtencion',
     getCitasExtras: 'calendarioController/getCitasExtrasUsuario',
     getHorarioBeneficio: 'calendarioController/getHorarioBeneficio',
-    createAppointment: 'calendarioController/getAppointmentsByUser',
     getAllEventsWithRange: 'calendarioController/getAllEventsWithRange',
     getAppointmentsByUser: 'calendarioController/getAppointmentsByUser',
     getCitasFinalizadas: 'calendarioController/getCitasFinalizadasUsuario',
     getCitasSinFinalizar: 'calendarioController/getCitasSinFinalizarUsuario',
     getAtencionPorSede: 'calendarioController/getAtencionPorSede',
+    createAppointment: 'calendarioController/createAppointmentByColaborator',
+    registrarDetallePago: 'calendarioController/registrarTransaccionPago',
   },
   reportes: {
     lista: '/reportesController/citas',
@@ -171,8 +174,8 @@ export const endpoints = {
     getResp2: '/encuestasController/getResp2',
     getResp3: '/encuestasController/getResp3',
     getResp4: '/encuestasController/getResp4',
-    getEncNotificacion:'/encuestasController/getEncNotificacion',
-    getPuestos:'/encuestasController/getPuestos',
+    getEncNotificacion: '/encuestasController/getEncNotificacion',
+    getPuestos: '/encuestasController/getPuestos',
     getEcuestaValidacion: '/encuestasController/getEcuestaValidacion',
     getEncuestasCreadas: '/encuestasController/getEncuestasCreadas',
     updateEstatus:'/encuestasController/updateEstatus',
