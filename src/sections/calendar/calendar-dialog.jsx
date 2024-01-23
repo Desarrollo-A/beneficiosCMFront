@@ -35,6 +35,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import uuidv4 from 'src/utils/uuidv4';
 import { fTimestamp } from 'src/utils/format-time';
 
+import { cancelAppointment } from 'src/api/calendar-specialist';
 import {
   crearCita,
   cancelDate,
@@ -43,8 +44,10 @@ import {
   getModalities,
   getSpecialists,
   useGetBenefits,
-  getAtencionXSede,
+  lastAppointment,
   checaPrimeraCita,
+  getAtencionXSede,
+  updateAppointment,
   getCitasFinalizadas,
   getHorariosOcupados,
   getCitasSinFinalizar,
@@ -293,22 +296,43 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     return onClose();
   });
 
-  const onCancel = useCallback(async () => {
-    try {
-      const resp = await cancelDate(`${currentEvent?.id}`);
-
-      if (resp.status) {
-        enqueueSnackbar(resp.message);
-      } else {
-        enqueueSnackbar(resp.message, { variant: 'error' });
-      }
-
-      onClose();
-    } catch (error) {
-      enqueueSnackbar('Error', { variant: 'error' });
-      onClose();
+  const onCancel = async () => {
+    const cancel = await cancelAppointment(currentEvent, currentEvent.id, 0);
+    if (cancel.result) {
+      enqueueSnackbar('¡Se ha cancelado la cita!', {
+        variant: 'success',
+      });
+      return onClose();
     }
-  }, [currentEvent?.id, enqueueSnackbar, onClose]);
+    if (!cancel.result) {
+      enqueueSnackbar('¡Se generó un error al intentar cancelar la cita!', {
+        variant: 'error',
+      });
+      return onClose();
+    }
+    return '';
+  };
+
+  const onPay = async () => {
+    const update = await updateAppointment(currentEvent.id, 1);
+    setOpen(true);
+    // SIMULACIÓN DE PAGO
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    setOpen(false);
+    if (update.result) {
+      enqueueSnackbar('¡Se ha generado el pago con exito!', {
+        variant: 'success',
+      });
+      return onClose();
+    }
+    if (!update.result) {
+      enqueueSnackbar('¡Se obtuvó un error al intentar generar el pago de cita!', {
+        variant: 'error',
+      });
+      return onClose();
+    }
+    return '';
+  };
 
   const handleChange = async (input, value) => {
     setInfoContact('');
@@ -319,11 +343,36 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     if (input === 'beneficio') {
       setErrorBeneficio(false);
-      setSelectedValues({
-        beneficio: value,
-        especialista: '',
-        modalidad: '',
-      });
+      // HACER PROCESO DE DETALLE PACIENTE
+      const datosUltimaCita = await lastAppointment(datosUser.idSede, value);
+      console.log('infoDetalle', datosUltimaCita);
+      if (datosUltimaCita.result) {
+        const modalitiesData = await getModalities(
+          datosUser.idSede,
+          datosUltimaCita.data[0].idEspecialista
+        );
+        setModalidades(modalitiesData?.data);
+        const data = await getOficinaByAtencion(
+          datosUser.idSede,
+          value,
+          datosUltimaCita.data[0].idEspecialista,
+          datosUltimaCita.data[0].tipoCita
+        );
+        setOficina(data);
+        getHorariosDisponibles(value, datosUltimaCita.data[0].idEspecialista);
+        setSelectedValues({
+          beneficio: value,
+          especialista: datosUltimaCita.data[0].idEspecialista,
+          modalidad: datosUltimaCita.data[0].tipoCita,
+        });
+      } else {
+        // DEFAULT SELECTED VALUES
+        setSelectedValues({
+          beneficio: value,
+          especialista: '',
+          modalidad: '',
+        });
+      }
       const data = await getSpecialists(datosUser.idSede, datosUser.idArea, value);
       setEspecialistas(data?.data);
     } else if (input === 'especialista') {
@@ -356,7 +405,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
           modalidad: '',
         });
       }
-      getHorariosDisponibles(value);
+      getHorariosDisponibles(selectedValues.beneficio, value);
     } else if (input === 'modalidad') {
       setSelectedValues({
         ...selectedValues,
@@ -476,10 +525,11 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     return registrosFecha;
   };
 
-  const getHorariosDisponibles = async (especialista) => {
+  const getHorariosDisponibles = async (beneficio, especialista) => {
     setIsLoading(true);
     // Consultamos el horario del especialista segun su beneficio.
-    const horarioACubrir = await getHorario(selectedValues.beneficio);
+    const horarioACubrir = await getHorario(beneficio);
+    console.log('horarioACubrir', horarioACubrir);
     if (!horarioACubrir) return; // En caso de que no halla horario detenemos el proceso.
 
     // Teniendo en cuenta el dia actual, consultamos los dias restantes del mes actual y todos los dias del mes que sigue.
@@ -755,7 +805,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
             </Typography>
             {!!currentEvent?.id && (
               <Tooltip title="Cancelar cita">
-                <IconButton onClick={() => alert('Realizar la cancelación de cita') /* onCancel */}>
+                <IconButton onClick={() => onCancel()}>
                   <Iconify icon="solar:trash-bin-trash-bold" width={22} />
                 </IconButton>
               </Tooltip>
@@ -806,7 +856,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                 <Iconify icon="mdi:calendar-clock" width={30} sx={{ color: 'text.disabled' }} />
                 <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
                   {currentEvent?.id
-                    ? `${dayjs(currentEvent?.start).format('HH:mm a')} -${dayjs(
+                    ? `${dayjs(currentEvent?.start).format('HH:mm a')} - ${dayjs(
                         currentEvent?.end
                       ).format('HH:mm a')}`
                     : 'Fecha'}
@@ -880,7 +930,23 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                   <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
                     {currentEvent?.correo
                       ? currentEvent?.correo.toLowerCase()
-                      : 'correoPruebas@ciudadmaderas.com.mx'}
+                      : 'correo-demo@ciudadmaderas.com.mx'}
+                  </Typography>
+                </Stack>
+              </Stack>
+              <Stack
+                sx={{
+                  flexDirection: 'row',
+                  px: { xs: 1, md: 2 },
+                  py: 1,
+                }}
+              >
+                <Stack>
+                  <Iconify icon="fa-solid:money-bill" width={30} sx={{ color: 'text.disabled' }} />
+                </Stack>
+                <Stack sx={{ flexDirection: 'col' }}>
+                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                    {currentEvent?.estatus === 6 ? 'Pendiente de pago' : 'Pagado'}
                   </Typography>
                 </Stack>
               </Stack>
@@ -1124,6 +1190,16 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
           <Button variant="contained" color="error" onClick={onClose}>
             Cerrar
           </Button>
+          {currentEvent?.id && currentEvent?.estatus === 6 && (
+            <Button
+              variant="contained"
+              color="success"
+              disabled={currentEvent?.estatus !== 6}
+              onClick={onPay}
+            >
+              Pagar
+            </Button>
+          )}
           {!currentEvent?.id && (
             <>
               {selectedValues.beneficio === 158 ? (
@@ -1150,7 +1226,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         </DialogActions>
       </FormProvider>
       <Dialog open={open} maxWidth="sm">
-        <DialogContent>
+        <DialogContent sx={{ pb: 2 }}>
           <Stack
             direction="row"
             justifyContent="center"
