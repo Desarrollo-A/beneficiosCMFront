@@ -57,7 +57,7 @@ export default function UserTableRow({ row, area }) {
         </TableCell>
       </TableRow>
 
-      <EditarEstatus id={row.id} est={area} open={quickEditar.value} onClose={quickEditar.onFalse} />
+      <EditarEstatus id={row.id} est={area} estatusVal={estNut || estPsi || estQB || estGE} open={quickEditar.value} onClose={quickEditar.onFalse} />
 
       <HistorialCitas idUsuario={row.idUsuario} open={quickHisCit.value} onClose={quickHisCit.onFalse} />
 

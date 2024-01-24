@@ -9,6 +9,7 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
+import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -21,7 +22,7 @@ import { useGetGeneral } from 'src/api/general';
 import { useSnackbar } from 'src/components/snackbar';
 // ----------------------------------------------------------------------
 
-export default function EditarEstatus({ open, onClose, id, est }) {
+export default function EditarEstatus({ open, onClose, id, est, estatusVal }) {
 
   const confirm = useBoolean();
 
@@ -70,8 +71,6 @@ export default function EditarEstatus({ open, onClose, id, est }) {
 
   }
 
-
-
   return (
     <Dialog
       fullWidth
@@ -83,10 +82,12 @@ export default function EditarEstatus({ open, onClose, id, est }) {
       }}
     >
 
-      {/* <DialogTitle>Trimestre</DialogTitle> */}
-
       <Stack spacing={1} >
+
+        <DialogTitle>¿Estás seguro que deseas cambiar el estatus del paciente?</DialogTitle>
+
         <FormControl spacing={3} sx={{ p: 3 }}>
+       
           <InputLabel spacing={3} sx={{ p: 3 }} id="demo-simple-select-label">Estatus</InputLabel>
           <Select
             labelId="demo-simple-select-label"
@@ -96,7 +97,11 @@ export default function EditarEstatus({ open, onClose, id, est }) {
             onChange={(e) => handleChange(e)}
           >
             {estatusData.map((i) => (
-            <MenuItem value={i.idOpcion}>{i.nombre}</MenuItem>
+              i.nombre === estatusVal ? null : (
+                <MenuItem key={i.idOpcion} value={i.idOpcion}>
+                  {i.nombre}
+                </MenuItem>
+              )
             ))}
           </Select>
 
@@ -105,14 +110,14 @@ export default function EditarEstatus({ open, onClose, id, est }) {
       </Stack>
 
       <DialogActions>
+        <Button variant="contained" color="error" onClick={onClose}>
+          Cerrar
+        </Button>
         <Button variant="contained" color="success" onClick={() => {
           handleEstatus(estatus);
           confirm.onFalse();
         }}>
           Guardar
-        </Button>
-        <Button variant="outlined" onClick={onClose}>
-          Cerrar
         </Button>
       </DialogActions>
 
@@ -126,4 +131,5 @@ EditarEstatus.propTypes = {
   open: PropTypes.bool,
   id: PropTypes.number,
   est: PropTypes.number,
+  estatusVal: PropTypes.string,
 };
