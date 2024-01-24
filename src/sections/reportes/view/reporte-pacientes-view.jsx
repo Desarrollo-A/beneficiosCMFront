@@ -1,6 +1,5 @@
 import JsPDF from 'jspdf';
 import Xlsx from 'json-as-xlsx';
-import { Base64 } from 'js-base64';
 import isEqual from 'lodash/isEqual';
 import autoTable from 'jspdf-autotable';
 import { useState, useEffect, useCallback } from 'react';
@@ -17,13 +16,14 @@ import TableContainer from '@mui/material/TableContainer';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
-
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import { endpoints } from 'src/utils/axios';
 
+import { useAuthContext } from 'src/auth/hooks';
 import { useGetGeneral, usePostGeneral } from 'src/api/general';
 
+import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
@@ -37,8 +37,6 @@ import {
   TableHeadCustom,
   TablePaginationCustom,
 } from 'src/components/table';
-
-import Iconify from 'src/components/iconify';
 
 import UserTableRow from '../user-table-row';
 import UserTableToolbar from '../user-table-toolbar';
@@ -128,7 +126,7 @@ export default function ReportePacientesView() {
 
   const confirm = useBoolean();
 
-  const user = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+  const { user } = useAuthContext();
 
   const rol = user.idRol
 

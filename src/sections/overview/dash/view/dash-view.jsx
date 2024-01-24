@@ -1,7 +1,6 @@
-import { Base64 } from 'js-base64';
-import { useState, useEffect } from 'react';
 import Clock from 'react-clock';
 import 'react-clock/dist/Clock.css';
+import { useState, useEffect } from 'react';
 
 import Card from '@mui/material/Card';
 import Select from '@mui/material/Select';
@@ -10,17 +9,16 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Container from '@mui/material/Container';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
-
 import { alpha, useTheme } from '@mui/material/styles';
 
 import { endpoints } from 'src/utils/axios';
 
+import { bgGradient } from 'src/theme/css';
+import { useAuthContext } from 'src/auth/hooks';
 import { SeoIllustration } from 'src/assets/illustrations';
 import { useGetGeneral, usePostGeneral } from 'src/api/general';
 
 import { useSettingsContext } from 'src/components/settings';
-
-import { bgGradient } from 'src/theme/css';
 
 import AppWelcome from '../app-welcome';
 import WidgetConteo from '../widget-conteo';
@@ -36,7 +34,7 @@ export default function DashView() {
 
   console.log(email); */
 
-  const user = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+  const { user } = useAuthContext();
 
   const settings = useSettingsContext();
 

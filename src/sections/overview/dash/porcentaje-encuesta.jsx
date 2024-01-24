@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -12,10 +12,9 @@ import FormControl from '@mui/material/FormControl';
 import LinearProgress from '@mui/material/LinearProgress';
 
 import { endpoints } from 'src/utils/axios';
+import { fPercent } from 'src/utils/format-number';
 
-import { useGetGeneral, usePostGeneral } from 'src/api/general';
-
-import { fPercent, fCurrency } from 'src/utils/format-number';
+import { usePostGeneral } from 'src/api/general';
 
 // ----------------------------------------------------------------------
 

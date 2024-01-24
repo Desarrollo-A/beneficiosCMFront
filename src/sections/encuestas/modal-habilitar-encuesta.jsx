@@ -1,31 +1,29 @@
 import { mutate } from 'swr';
 import { useState } from 'react';
-import { Base64 } from 'js-base64';
 import PropTypes from 'prop-types';
-
-import { useBoolean } from 'src/hooks/use-boolean';
 
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import DialogTitle from '@mui/material/DialogTitle';
+import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import InputLabel from '@mui/material/InputLabel';
+
+import { useBoolean } from 'src/hooks/use-boolean';
 
 import { endpoints } from 'src/utils/axios';
 
 import { useUpdate } from 'src/api/reportes';
+import { useAuthContext } from 'src/auth/hooks';
 
 import { useSnackbar } from 'src/components/snackbar';
 // ----------------------------------------------------------------------
 
 export default function EncuestaHabilitar({ open, onClose, idEncuesta }) {
 
-  const user = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+  const { user } = useAuthContext();
 
   const confirm = useBoolean();
 
