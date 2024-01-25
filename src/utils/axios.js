@@ -123,7 +123,8 @@ export const endpoints = {
     getPendingEnd: 'calendarioController/getPendingEnd',
     getEventReasons: 'calendarioController/getEventReasons',
     registrarTransaccion: 'calendarioController/registrarTransaccionPago',
-    checkInvoice: 'calendarioController/checkInvoice'
+    checkInvoice: 'calendarioController/checkInvoice',
+    mailEspecialista: 'calendarioController/sendMail'
   },
   calendarioColaborador: {
     isPrimeraCita: 'calendarioController/isPrimeraCita',

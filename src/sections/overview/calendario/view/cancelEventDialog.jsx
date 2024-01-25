@@ -46,7 +46,7 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
 
   const endEvent = async () => {
     try {
-      const resp = await endAppointment(currentEvent?.id, reason);
+      const resp = await endAppointment(currentEvent, reason);
 
       if (resp.result) {
         enqueueSnackbar(resp.msg);
@@ -76,7 +76,11 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
       idAtencionXSede: currentEvent?.idAtencionXSede,
       fundacion: currentEvent?.externo,
       oldEventStart: currentEvent?.start,
-      oldEventEnd: currentEvent?.end
+      oldEventEnd: currentEvent?.end,
+      beneficio: currentEvent?.beneficio,
+      especialista: currentEvent?.especialista,
+      sede: currentEvent?.sede,
+      oficina: currentEvent?.oficina
     };
     switch(cancelType){
         case 8:
@@ -198,7 +202,7 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
                   onChange={handleCancel}
                 >
                   <MenuItem value={7}>Cancelado por especialista</MenuItem>
-                  {currentEvent?.estatus === 1 && (
+                  {currentEvent?.estatus === 1 && !pastCheck && (
                     <MenuItem value={8}>Reagendar</MenuItem>
                   )}
                   {pastCheck && currentEvent?.estatus === 1 && (
