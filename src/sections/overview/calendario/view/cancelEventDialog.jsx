@@ -80,7 +80,8 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
       beneficio: currentEvent?.beneficio,
       especialista: currentEvent?.especialista,
       sede: currentEvent?.sede,
-      oficina: currentEvent?.oficina
+      oficina: currentEvent?.oficina,
+      correo: currentEvent?.correo
     };
     switch(cancelType){
         case 8:
