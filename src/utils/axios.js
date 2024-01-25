@@ -88,7 +88,7 @@ export const endpoints = {
     search: '/api/product/search',
   },
   user: {
-    session : 'usuario/session',
+    session: 'usuario/session',
     list: 'Usuario/getUsers',
     update: 'Usuario/updateUser',
     areas: 'Usuario/getAreas',
@@ -98,7 +98,7 @@ export const endpoints = {
     sede: '/generalController/getSede',
     decodePass: '/Usuario/decodePass',
     updatePass: '/Usuario/updatePass',
-    menu : 'Usuario/menu'
+    menu: 'Usuario/menu',
   },
   benefits: {
     list: 'CalendarioController/getBeneficiosPorSede',
@@ -122,6 +122,9 @@ export const endpoints = {
     getReasons: 'calendarioController/getReasons',
     getPendingEnd: 'calendarioController/getPendingEnd',
     getEventReasons: 'calendarioController/getEventReasons',
+    registrarTransaccion: 'calendarioController/registrarTransaccionPago',
+    checkInvoice: 'calendarioController/checkInvoice',
+    mailEspecialista: 'calendarioController/sendMail',
   },
   calendarioColaborador: {
     isPrimeraCita: 'calendarioController/isPrimeraCita',

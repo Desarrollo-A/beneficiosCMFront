@@ -56,6 +56,9 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
   const [modalitie, setModalitie] = useState({
     id: '',
     idAtencionXSede: '',
+    oficina: '',
+    sede: '',
+    especialidad: ''
   });
 
   const formSchema = yup.object().shape({
@@ -140,8 +143,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
       });
     }
 
-    // Validamos la antiguedad: Mandamos fechaIngreso, fechaDeHoy, isPracticante, idBeneficio.
-    const tieneAntiguedad = validarAntiguedad(patient.fechaIngreso, fechaActual);
+    const tieneAntiguedad = validarAntiguedad(patient.fechaIngreso, fechaActual); // Validamos la antiguedad: Mandamos fechaIngreso, fechaDeHoy, isPracticante, idBeneficio.
 
     if (!tieneAntiguedad && datosUser.idArea !== 25) { // 25 es de ventas
       onClose();
@@ -193,7 +195,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
       return;
     }
 
-    setModalitie({ id: value?.label, idAtencionXSede: value?.value });
+    setModalitie({ id: value?.label, idAtencionXSede: value?.value, oficina: value?.oficina, sede: value?.sede, especialidad: value?.especialidad, especialista: value?.especialista });
   };
 
   const validarAntiguedad = (fechaIngreso, fechaHoy) => {
@@ -281,6 +283,10 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
               options={allModalities.map((mod) => ({
                 label: mod.modalidad,
                 value: mod.idAtencionXSede,
+                oficina: mod.ubicacionOficina,
+                sede: mod.lugarAtiende,
+                especialidad: mod.idPuesto,
+                especialista: mod.especialista
               }))}
             />
           ) : (
