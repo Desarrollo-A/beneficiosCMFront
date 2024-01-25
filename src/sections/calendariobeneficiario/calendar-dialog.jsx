@@ -368,7 +368,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       setErrorBeneficio(false);
       // HACER PROCESO DE DETALLE PACIENTE
       const datosUltimaCita = await lastAppointment(datosUser.idSede, value);
-      console.log('infoDetalle', datosUltimaCita);
       if (datosUltimaCita.result) {
         const modalitiesData = await getModalities(
           datosUser.idSede,
@@ -784,7 +783,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       detallePago
     );
     if (registrarCita.result) {
-      const updateDetail = updateDetailPacient(datosUser.idUsuario, beneficio);
+      const updateDetail = await updateDetailPacient(datosUser.idUsuario, beneficio);
       console.log(updateDetail);
       if (!updateDetail.result) {
         enqueueSnackbar('¡Surgió un error con el uso del beneficio para el paciente!', {
