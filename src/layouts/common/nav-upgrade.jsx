@@ -25,11 +25,11 @@ export default function NavUpgrade() {
 
         <Stack spacing={0.5} sx={{ mt: 1.5, mb: 2 }}>
 
-          <Typography variant="subtitle2" noWrap sx={{ color: 'text.disabled' }}>
+          <Typography variant="subtitle2" noWrap sx={{ color: 'text.disabled' }} style={{lineHeight:"1", fontSize:"10px"}}>
           © Ciudad Maderas, <br/> Departamento TI
           </Typography>
 
-          <Typography variant="subtitle2" noWrap sx={{ color: 'text.disabled' }}>
+          <Typography variant="subtitle2" noWrap sx={{ color: 'text.disabled' }} style={{lineHeight:"1", fontSize:"10px"}}>
             {year}
           </Typography>
         </Stack>

@@ -234,15 +234,15 @@ const StyledNavItem = styled(ListItemButton, {
       },
       ...(active && {
         color:
-          theme.palette.mode === 'light' ? theme.palette.primary.main : theme.palette.primary.light,
-        backgroundColor: alpha(theme.palette.primary.main, 0.08),
+          theme.palette.mode === 'light' ? "white" : "white",
+        backgroundColor: "#f4f6f82e",
         '&:hover': {
-          backgroundColor: alpha(theme.palette.primary.main, 0.16),
+          backgroundColor: "#f4f6f82e",
         },
       }),
       ...(opened && {
-        color: theme.palette.text.primary,
-        backgroundColor: theme.palette.action.hover,
+        color: "white",
+        backgroundColor: "rgba(99, 115, 129, 0.08)",
       }),
     }),
 
@@ -286,7 +286,7 @@ const StyledNavItem = styled(ListItemButton, {
         ...baseStyles.arrow,
       },
       ...(active && {
-        color: theme.palette.text.primary,
+        color: "#B4A46C",
       }),
     }),
 
