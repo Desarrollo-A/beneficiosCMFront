@@ -35,7 +35,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import uuidv4 from 'src/utils/uuidv4';
 import { fTimestamp } from 'src/utils/format-time';
 
-import { cancelAppointment } from 'src/api/calendar-specialist';
+import { cancelAppointment, useGetEventReasons } from 'src/api/calendar-specialist';
 import {
   crearCita,
   getHorario,
@@ -100,6 +100,10 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const { enqueueSnackbar } = useSnackbar();
 
   const formSchema = yup.object().shape({});
+
+  const { data: eventReasons, reasonsMutate } = useGetEventReasons(
+    currentEvent?.id ? currentEvent?.id : 0
+  );
 
   const methods = useForm({
     resolver: yupResolver(formSchema),
@@ -433,27 +437,27 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       setOficina(data);
     } else if (input === 'all') {
       setSelectedValues({
-        beneficio: value.puesto,
+        beneficio: value.idPuesto,
         especialista: value.idEspecialista,
         modalidad: value.modalidad,
       });
-      const data = await getSpecialists(value.idSede, value.idArea, value.puesto);
+      const data = await getSpecialists(value.idSede, value.idArea, value.idPuesto);
       setEspecialistas(data?.data);
       const modalitiesData = await getModalities(value.idSede, value.idEspecialista);
       setModalidades(modalitiesData?.data);
-      if (values.puesto === 158) {
+      if (value.idPuesto === 158) {
         const cotactQB = await getContactoQB(value.idEspecialista);
         setInfoContact(cotactQB);
       } else {
         const oficinaAtencion = await getOficinaByAtencion(
           value.idSede,
-          value.puesto, // Beneficio id
+          value.idPuesto, // Beneficio id
           value.idEspecialista,
           value.modalidad
         );
         setOficina(oficinaAtencion);
       }
-      getHorariosDisponibles(value.puesto, value.idEspecialista);
+      getHorariosDisponibles(value.idPuesto, value.idEspecialista);
     }
   };
 
@@ -1281,7 +1285,7 @@ const AppointmentSchedule = ({
                 disabled={!!(beneficios.length === 0 || currentEvent?.id)}
               >
                 {beneficios.map((e) => (
-                  <MenuItem key={e.id} value={e.id}>
+                  <MenuItem key={e.idPuesto} value={e.idPuesto}>
                     {e.puesto.toUpperCase()}
                   </MenuItem>
                 ))}

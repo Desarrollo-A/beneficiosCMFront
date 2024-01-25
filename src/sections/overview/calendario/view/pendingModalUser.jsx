@@ -39,7 +39,7 @@ import uuidv4 from 'src/utils/uuidv4';
 import { useAuthContext } from 'src/auth/hooks';
 import { AvatarShape } from 'src/assets/illustrations';
 // import { reRender, useGetMotivos, useGetPending, endAppointment, cancelAppointment } from 'src/api/calendar-specialist';
-import { cancelAppointment } from 'src/api/calendar-specialist';
+import { cancelAppointment, useGetEventReasons } from 'src/api/calendar-specialist';
 import {
   useGetPendientes,
   updateAppointment,
@@ -55,7 +55,7 @@ export default function PendingModalUser() {
   const [open, setOpen] = useState(true);
   const [open2, setOpen2] = useState(false);
   const [open3, setOpen3] = useState(false);
-  const [open4, setOpen4] = useState(true);
+  const [open4, setOpen4] = useState(false);
   const [event, setEvent] = useState([]);
   const [email, setEmail] = useState('');
   const [emails, setEmails] = useState([]);
@@ -611,7 +611,7 @@ export default function PendingModalUser() {
           <ListItemText
             sx={{ mt: 7, mb: 1 }}
             primary={event.especialista ? event.especialista : 'Especialista'}
-            secondary={event.puesto ? event.puesto : 'Beneficio saludable'}
+            secondary={event.idPuesto ? event.idPuesto : 'Beneficio saludable'}
             primaryTypographyProps={{ typography: 'subtitle1' }}
             tertiary={event.start ? event.start : '2024-01-01 10:00:00'}
             secondaryTypographyProps={{ component: 'span', mt: 0.5 }}
