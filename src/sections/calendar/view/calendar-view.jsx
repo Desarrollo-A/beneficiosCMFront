@@ -127,7 +127,6 @@ export default function CalendarView() {
             <Calendar
               weekends
               editable
-              droppable
               selectable
               locales={allLocales}
               locale="es"
@@ -147,7 +146,7 @@ export default function CalendarView() {
                 dayGridPlugin,
                 timelinePlugin,
                 timeGridPlugin,
-                interactionPlugin,
+                // interactionPlugin,
               ]}
             />
           </StyledCalendar>

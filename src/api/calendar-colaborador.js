@@ -181,6 +181,37 @@ export function registrarDetalleDePago(usuario, folio, concepto, cantidad, metod
   return detalle;
 }
 
+export function lastAppointment(usuario, beneficio) {
+  const URL = [endpoints.calendarioColaborador.getLastAppointment];
+  const detalle = fetcherPost(URL, { usuario, beneficio });
+
+  return detalle;
+}
+
+export function updateAppointment(idCita, estatus, detalle) {
+  const URL = [endpoints.calendarioColaborador.updateAppointment];
+  const update = fetcherPost(URL, { idCita, estatus, detalle });
+
+  return update;
+}
+
+export function useGetPendientes() {
+  const pendientes = endpoints.calendarioColaborador.getPendientes;
+  const { data, mutate: revalidate } = useSWR(pendientes, (url) =>
+    fetcherPost(url, { idUsuario: datosUser?.idUsuario })
+  );
+
+  const memoizedValue = useMemo(
+    () => ({
+      data: data || [],
+      pendingsMutate: revalidate,
+    }),
+    [data, revalidate]
+  );
+
+  return memoizedValue;
+}
+
 export function crearCita(
   titulo,
   idEspecialista,
@@ -238,7 +269,7 @@ export function useGetAppointmentsByUser(current) {
   const memoizedValue = useMemo(() => {
     const events = data?.data?.map((event) => ({
       ...event,
-      textColor: event?.color ? event.color : 'blue',
+      textColor: event?.color ? event.color : 'black',
     }));
 
     return {

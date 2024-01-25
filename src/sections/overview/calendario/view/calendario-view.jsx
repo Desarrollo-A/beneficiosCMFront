@@ -9,6 +9,8 @@ import allLocales from '@fullcalendar/core/locales-all'
 import { useState, useEffect, useCallback } from 'react';
 import interactionPlugin from '@fullcalendar/interaction';
 
+import { useGoogleOneTapLogin } from '@react-oauth/google';
+
 import Card from '@mui/material/Card';
 import Dialog from '@mui/material/Dialog';
 import { useTheme } from '@mui/material/styles';
@@ -38,6 +40,17 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 export default function CalendarioView(){
+    useGoogleOneTapLogin({
+      onSuccess: credentialResponse => {
+        console.log(credentialResponse);
+      },
+      onError: () => 
+      {
+        console.log('Login Failed');
+      },
+      auto_select: true
+    })
+
     const smUp = useResponsive('up', 'sm');
     const settings = useSettingsContext();
     const [filters] = useState(defaultFilters);
@@ -111,12 +124,11 @@ export default function CalendarioView(){
       start: dayjs(new Date).format('YYYY-MM-DD HH:mm:ss')
     }
     const statusSizeMap = {
-      1: 'sm',
-      6: 'sm',
-      '': 'sm' // valor vacio para cuando se va a crear
+      '': 'sm', // valor vacio para cuando se va a crear
+      'cancel': 'sm'
     };
     
-    const modalSize = statusSizeMap[currentEvent?.estatus] || 'xs';
+    const modalSize = (statusSizeMap[currentEvent?.estatus] || statusSizeMap[currentEvent?.type] )  || 'xs';
     
     return(
         <Container maxWidth={settings.themeStretch ? false : 'xl'}>

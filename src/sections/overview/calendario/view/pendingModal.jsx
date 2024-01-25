@@ -65,7 +65,7 @@ export default function PendingModal() {
           }
         >
           <ListItemText primary={pending.titulo} />
-          <ListItemText primary={dayjs(pending.fechaInicio).format('dddd, DD/MMMM/YYYY - HH:MM')} />
+          <ListItemText primary={dayjs(pending.fechaInicio).format('dddd, DD/MMMM/YYYY - HH:mm')} />
         </ListItem>
       ));
     }

@@ -24,6 +24,7 @@ export default function UserCard({ user }) {
   const theme = useTheme();
 
   const { name, coverUrl, role, totalFollowers, totalPosts, avatarUrl, totalFollowing } = user;
+  console.log('USER', user);
 
   return (
     <Card sx={{ textAlign: 'center' }}>

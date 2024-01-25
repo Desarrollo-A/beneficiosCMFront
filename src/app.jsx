@@ -6,6 +6,8 @@ import 'src/locales/i18n';
 
 // ----------------------------------------------------------------------
 
+import { GoogleOAuthProvider } from '@react-oauth/google';
+
 import Router from 'src/routes/sections';
 
 import ThemeProvider from 'src/theme';
@@ -64,7 +66,9 @@ export default function App() {
                   <SettingsDrawer />
                   <ProgressBar />
                   <ContextGeneralProvider>
-                  <Router />
+                    <GoogleOAuthProvider clientId="161969316544-ou10ee3mktbmp2og21po8rj2eke8ej9t.apps.googleusercontent.com">
+                      <Router />
+                    </GoogleOAuthProvider>
                   </ContextGeneralProvider>
                 </CheckoutProvider>
               </SnackbarProvider>

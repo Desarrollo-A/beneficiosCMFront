@@ -74,17 +74,29 @@ export default function JwtRegisterView() {
   });
 
   const validarNumEmpleado = () => {
+    
     if(numEmpleado.trim() === ''){
         console.log('Ingresar número de empleado válido');
     }else{
       // Conectar axios con CH
-      const datos = Base64.encode(JSON.stringify({num_empleado : numEmpleado}));
+      // const datos = Base64.encode(JSON.stringify({num_empleado : []}));
+      const datos = Base64.encode(JSON.stringify({}));
 
-      instance.post('data_colaborador_consultas', datos)
+      let config = {
+        headers : {
+          authorization : '41EgSP8+YSqsyT1ZRuxTK3CYR11LOcyqopI2TTNJd3EL+aU3MUdJNsKGx8xOK+HH',
+          origin : 'http://localhost:3030/auth/jwt/register',
+          'Content-Type' : 'application/json',
+          Accept : 'application/json',
+        }
+      }
+
+      instance.post('https://rh.gphsis.com/index.php/WS/data_colaborador_consultas', datos, config)
       .then(response=>{
+        console.log(response);
         let datosResponse = Base64.decode(JSON.stringify(response.data.response));
         datosResponse = JSON.parse(datosResponse);
-
+        console.log(response.data.response);
         if(datosResponse.resultado === 0){
           setErrorMsg(typeof error === 'string' ? error : 'Número de empleado no encontrado');
         }else{

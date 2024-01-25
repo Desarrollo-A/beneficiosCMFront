@@ -88,7 +88,7 @@ export const endpoints = {
     search: '/api/product/search',
   },
   user: {
-    session : 'usuario/session',
+    session: 'usuario/session',
     list: 'Usuario/getUsers',
     update: 'Usuario/updateUser',
     areas: 'Usuario/getAreas',
@@ -98,7 +98,7 @@ export const endpoints = {
     sede: '/generalController/getSede',
     decodePass: '/Usuario/decodePass',
     updatePass: '/Usuario/updatePass',
-    menu : 'Usuario/menu'
+    menu: 'Usuario/menu',
   },
   benefits: {
     list: 'CalendarioController/getBeneficiosPorSede',
@@ -121,7 +121,10 @@ export const endpoints = {
     endAppointment: 'calendarioController/endAppointment',
     getReasons: 'calendarioController/getReasons',
     getPendingEnd: 'calendarioController/getPendingEnd',
-    getEventReasons: 'calendarioController/getEventReasons'
+    getEventReasons: 'calendarioController/getEventReasons',
+    registrarTransaccion: 'calendarioController/registrarTransaccionPago',
+    checkInvoice: 'calendarioController/checkInvoice',
+    mailEspecialista: 'calendarioController/sendMail',
   },
   calendarioColaborador: {
     isPrimeraCita: 'calendarioController/isPrimeraCita',
@@ -135,6 +138,9 @@ export const endpoints = {
     getAtencionPorSede: 'calendarioController/getAtencionPorSede',
     createAppointment: 'calendarioController/createAppointmentByColaborator',
     registrarDetallePago: 'calendarioController/registrarTransaccionPago',
+    getLastAppointment: 'calendarioController/getLastAppointment',
+    updateAppointment: 'calendarioController/updateAppointmentData',
+    getPendientes: 'calendarioController/getPendientes',
   },
   reportes: {
     lista: '/reportesController/citas',
@@ -162,7 +168,7 @@ export const endpoints = {
     getCtAsistidas: '/generalController/getCtAsistidas',
     getCtCanceladas: '/generalController/getCtCanceladas',
     getCtPenalizadas: '/generalController/getCtPenalizadas',
-    getMetas: '/dashboardController/getMetas'
+    getMetas: '/dashboardController/getMetas',
   },
   encuestas: {
     encuestaInsert: '/encuestasController/encuestaInsert',
@@ -178,10 +184,10 @@ export const endpoints = {
     getPuestos: '/encuestasController/getPuestos',
     getEcuestaValidacion: '/encuestasController/getEcuestaValidacion',
     getEncuestasCreadas: '/encuestasController/getEncuestasCreadas',
-    updateEstatus:'/encuestasController/updateEstatus',
-    updateVigencia:'/encuestasController/updateVigencia',
-    getEstatusUno:'/encuestasController/getEstatusUno',
+    updateEstatus: '/encuestasController/updateEstatus',
+    updateVigencia: '/encuestasController/updateVigencia',
+    getEstatusUno: '/encuestasController/getEstatusUno',
     getValidEncContestada: '/encuestasController/getValidEncContestada',
-    sendMail:'/encuestasController/sendMail',
-  }
+    sendMail: '/encuestasController/sendMail',
+  },
 };
