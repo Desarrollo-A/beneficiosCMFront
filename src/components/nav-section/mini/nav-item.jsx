@@ -164,6 +164,7 @@ const StyledNavItem = styled(ListItemButton, {
       width: 22,
       height: 22,
       flexShrink: 0,
+      color: "white"
     },
     label: {
       textTransform: 'capitalize',
@@ -185,6 +186,7 @@ const StyledNavItem = styled(ListItemButton, {
       justifyContent: 'center',
       padding: theme.spacing(0.5),
       margin: theme.spacing(0, 0.5),
+      color: "white",
       fontWeight: theme.typography.fontWeightSemiBold,
       '& .icon': {
         ...baseStyles.icon,
@@ -207,14 +209,14 @@ const StyledNavItem = styled(ListItemButton, {
       },
       ...(active && {
         fontWeight: theme.typography.fontWeightBold,
-        backgroundColor: alpha(theme.palette.primary.main, 0.08),
-        color: lightMode ? theme.palette.primary.main : theme.palette.primary.light,
+        backgroundColor: "#f4f6f82e",
+        color: lightMode ? "white" : "white",
         '&:hover': {
-          backgroundColor: alpha(theme.palette.primary.main, 0.16),
+          backgroundColor: "rgba(99, 115, 129, 0.08)",
         },
       }),
       ...(opened && {
-        color: theme.palette.text.primary,
+        color: "white",
         backgroundColor: theme.palette.action.hover,
       }),
     }),
@@ -247,7 +249,7 @@ const StyledNavItem = styled(ListItemButton, {
         marginRight: theme.spacing(-0.5),
       },
       ...(active && {
-        color: theme.palette.text.primary,
+        color: "#B4A46C",
         backgroundColor: theme.palette.action.selected,
         fontWeight: theme.typography.fontWeightSemiBold,
       }),

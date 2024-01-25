@@ -183,6 +183,7 @@ const StyledNavItem = styled(ListItemButton, {
       minHeight: 32,
       flexShrink: 0,
       padding: theme.spacing(0, 0.75),
+      color: "white",
       '& .icon': {
         ...baseStyles.icon,
       },
@@ -200,12 +201,12 @@ const StyledNavItem = styled(ListItemButton, {
         ...baseStyles.arrow,
       },
       ...(active && {
-        color: theme.palette.text.primary,
-        backgroundColor: theme.palette.action.selected,
+        color: "white",
+        backgroundColor: "#f4f6f82e",
         fontWeight: theme.typography.fontWeightSemiBold,
       }),
       ...(opened && {
-        color: theme.palette.text.primary,
+        color: "white",
         backgroundColor: theme.palette.action.hover,
       }),
     }),
@@ -233,7 +234,7 @@ const StyledNavItem = styled(ListItemButton, {
         marginRight: theme.spacing(-0.5),
       },
       ...(active && {
-        color: theme.palette.text.primary,
+        color: "#B4A46C",
         backgroundColor: theme.palette.action.selected,
         fontWeight: theme.typography.fontWeightSemiBold,
       }),
