@@ -12,6 +12,7 @@ import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/system/Stack';
+import Chip from '@mui/material/Chip';
 import Button from '@mui/material/Button';
 import Select from '@mui/material/Select';
 import Dialog from '@mui/material/Dialog';
@@ -35,6 +36,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import uuidv4 from 'src/utils/uuidv4';
 import { fTimestamp } from 'src/utils/format-time';
 
+import { useAuthContext } from 'src/auth/hooks';
 import { cancelAppointment, useGetEventReasons } from 'src/api/calendar-specialist';
 import {
   crearCita,
@@ -48,6 +50,7 @@ import {
   getAtencionXSede,
   updateAppointment,
   getCitasFinalizadas,
+  updateDetailPacient,
   getHorariosOcupados,
   getCitasSinFinalizar,
   getOficinaByAtencion,
@@ -67,8 +70,8 @@ const initialValue = dayjs().tz('America/Mexico_City'); // Objeto con todo los d
 const lastDayOfNextMonth = initialValue.add(2, 'month').startOf('month').subtract(1, 'day');
 // const now = dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss');
 
-const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
-console.log('Datos de sesión', datosUser);
+// const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+// console.log('Datos de sesión', datosUser);
 
 export default function CalendarDialog({ currentEvent, onClose, selectedDate, appointmentMutate }) {
   const [selectedValues, setSelectedValues] = useState({
@@ -85,13 +88,15 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const [errorEspecialista, setErrorEspecialista] = useState(false);
   const [errorModalidad, setErrorModalidad] = useState(false);
   const [errorHorarioSeleccionado, setErrorHorarioSeleccionado] = useState(false);
-  const [infoContact, setInfoContact] = useState('');
+  const [infoContact, setInfoContact] = useState({});
   const [oficina, setOficina] = useState({});
   const [diasOcupados, setDiasOcupados] = useState([]);
   const [diasHabilitados, setDiasHabilitados] = useState([]);
   const [fechasDisponibles, setFechasDisponibles] = useState([]);
   const [horariosDisponibles, setHorariosDisponibles] = useState([]);
   const [horarioSeleccionado, setHorarioSeleccionado] = useState('');
+
+  const { user: datosUser } = useAuthContext();
 
   const { data: benefits } = useGetBenefits(datosUser.idSede);
 
@@ -101,9 +106,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
   const formSchema = yup.object().shape({});
 
-  const { data: eventReasons, reasonsMutate } = useGetEventReasons(
-    currentEvent?.id ? currentEvent?.id : 0
-  );
+  const { data: eventReasons, reasonsMutate } = useGetEventReasons(currentEvent?.id || 0);
 
   const methods = useForm({
     resolver: yupResolver(formSchema),
@@ -181,7 +184,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
             1,
             idAtencionPorSede.data[0].idAtencionXSede,
             datosUser.idUsuario,
-            registrarPago.data
+            registrarPago.data,
+            selectedValues.beneficio
           );
         }
         if (!registrarPago.result) {
@@ -208,7 +212,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
             1,
             idAtencionPorSede.data[0].idAtencionXSede,
             datosUser.idUsuario,
-            registrarPago.data
+            registrarPago.data,
+            selectedValues.beneficio
           );
         }
         if (!registrarPago.result) {
@@ -259,7 +264,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
           2,
           idAtencionPorSede.data[0].idAtencionXSede,
           datosUser.idUsuario,
-          registrarPago.data
+          registrarPago.data,
+          selectedValues.beneficio
         );
       }
       if (!registrarPago.result) {
@@ -286,7 +292,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
           2,
           idAtencionPorSede.data[0].idAtencionXSede,
           datosUser.idUsuario,
-          registrarPago.data
+          registrarPago.data,
+          selectedValues.beneficio
         );
       }
       if (!registrarPago.result) {
@@ -336,7 +343,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     await new Promise((resolve) => setTimeout(resolve, 2000));
     setOpen(false);
     if (update.result) {
-      enqueueSnackbar('¡Se ha generado el pago con exito!', {
+      enqueueSnackbar('¡Se ha generado el pago con éxito!', {
         variant: 'success',
       });
       return onClose();
@@ -351,7 +358,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   };
 
   const handleChange = async (input, value) => {
-    setInfoContact('');
+    setInfoContact({});
     setOficina({});
     setHorarioSeleccionado('');
     setErrorHorarioSeleccionado(false);
@@ -760,7 +767,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     tipoCita,
     atencionPorSede,
     idUsuario,
-    detallePago
+    detallePago,
+    beneficio
   ) => {
     const registrarCita = await crearCita(
       titulo,
@@ -776,7 +784,14 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       detallePago
     );
     if (registrarCita.result) {
-      enqueueSnackbar('¡Se ha agendado la cita con exito!', {
+      const updateDetail = updateDetailPacient(datosUser.idUsuario, beneficio);
+      console.log(updateDetail);
+      if (!updateDetail.result) {
+        enqueueSnackbar('¡Surgió un error con el uso del beneficio para el paciente!', {
+          variant: 'error',
+        });
+      }
+      enqueueSnackbar('¡Se ha agendado la cita con éxito!', {
         variant: 'success',
       });
       appointmentMutate();
@@ -894,6 +909,36 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const rescheduleAppointment = () => {
     handleChange('all', currentEvent);
     setReschedule(true);
+  };
+
+  const Items = () => {
+    // items de los motivos que se trae el evento
+    let items = '';
+    // reasonsMutate();
+    if (eventReasons?.length > 0) {
+      items = eventReasons.map((er) => (
+        <Tooltip title={er.nombre} key={er.idOpcion}>
+          <Chip
+            label={er.nombre}
+            variant="outlined"
+            size="small"
+            style={{ backgroundColor: '#e0e0e0', borderRadius: '20px' }}
+          />
+        </Tooltip>
+      ));
+    } else {
+      items = (
+        <Tooltip title="Sin motivos de cita">
+          <Chip
+            label="Sin motivos de cita"
+            variant="outlined"
+            size="small"
+            style={{ backgroundColor: '#e0e0e0', borderRadius: '20px' }}
+          />
+        </Tooltip>
+      );
+    }
+    return items;
   };
 
   useEffect(() => {
@@ -1071,6 +1116,21 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                   <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
                     {currentEvent?.estatus === 6 ? 'Pendiente de pago' : 'Pagado'}
                   </Typography>
+                </Stack>
+              </Stack>
+              <Stack spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1 }}>
+                <Stack spacing={1} direction="row">
+                  <Iconify icon="solar:chat-round-line-outline" />
+                  <Typography>Motivos</Typography>
+                </Stack>
+                <Stack
+                  flexDirection="row"
+                  flexWrap="wrap"
+                  flex={1}
+                  spacing={2}
+                  sx={{ px: { xs: 1, md: 3 }, py: 1 }}
+                >
+                  <Items />
                 </Stack>
               </Stack>
             </>
@@ -1252,6 +1312,7 @@ const AppointmentSchedule = ({
   setHorarioSeleccionado,
   errorHorarioSeleccionado,
   currentEvent,
+  Items,
 }) => (
   <Grid sx={{ display: 'flex' }}>
     <Grid sx={{ width: '100%' }}>
@@ -1472,7 +1533,6 @@ const AppointmentSchedule = ({
 
 AppointmentSchedule.propTypes = {
   selectedValues: PropTypes.object,
-  setSelectedValues: PropTypes.func,
   handleChange: PropTypes.func,
   beneficios: PropTypes.array,
   errorBeneficio: PropTypes.bool,
@@ -1480,7 +1540,7 @@ AppointmentSchedule.propTypes = {
   errorEspecialista: PropTypes.bool,
   modalidades: PropTypes.array,
   errorModalidad: PropTypes.bool,
-  infoContact: PropTypes.string,
+  infoContact: PropTypes.object,
   oficina: PropTypes.object,
   isLoading: PropTypes.bool,
   handleDateChange: PropTypes.func,
@@ -1490,6 +1550,7 @@ AppointmentSchedule.propTypes = {
   setHorarioSeleccionado: PropTypes.func,
   errorHorarioSeleccionado: PropTypes.bool,
   currentEvent: PropTypes.object,
+  Items: PropTypes.any,
 };
 CalendarDialog.propTypes = {
   currentEvent: PropTypes.object,

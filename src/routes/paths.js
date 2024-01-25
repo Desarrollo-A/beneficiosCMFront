@@ -14,7 +14,7 @@ const ROOTS = {
   DASHBOARD: '/dashboard',
 };
 
-// ---------------------------------------------------------------------- 
+// ----------------------------------------------------------------------
 
 export const paths = {
   comingSoon: '/coming-soon',
@@ -97,19 +97,19 @@ export const paths = {
     chat: `${ROOTS.DASHBOARD}/chat`,
     blank: `${ROOTS.DASHBOARD}/blank`,
     kanban: `${ROOTS.DASHBOARD}/kanban`,
-    calendar: `${ROOTS.DASHBOARD}/calendar`,
+    calendar: `${ROOTS.DASHBOARD}/calendariobeneficiario`,
     fileManager: `${ROOTS.DASHBOARD}/file-manager`,
     permission: `${ROOTS.DASHBOARD}/permission`,
     general: {
       dash: `${ROOTS.DASHBOARD}/dash`,
-/*       encuestas: `${ROOTS.DASHBOARD}/encuestas`, */
+      /*       encuestas: `${ROOTS.DASHBOARD}/encuestas`, */
       app: `${ROOTS.DASHBOARD}/app`,
       ecommerce: `${ROOTS.DASHBOARD}/ecommerce`,
       analytics: `${ROOTS.DASHBOARD}/analytics`,
       banking: `${ROOTS.DASHBOARD}/banking`,
       booking: `${ROOTS.DASHBOARD}/booking`,
       file: `${ROOTS.DASHBOARD}/file`,
-      calendario: `${ROOTS.DASHBOARD}/calendario`
+      calendario: `${ROOTS.DASHBOARD}/calendario`,
     },
     reportes: {
       root: `${ROOTS.DASHBOARD}/reportes/historial`,
