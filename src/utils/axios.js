@@ -90,6 +90,7 @@ export const endpoints = {
   },
   user: {
     session : 'usuario/session',
+    authorized : 'usuario/authorized',
     list: 'Usuario/getUsers',
     update: 'Usuario/updateUser',
     areas: 'Usuario/getAreas',

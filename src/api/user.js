@@ -2,6 +2,8 @@ import useSWR from 'swr';
 import { useMemo } from 'react';
 import { Base64 } from 'js-base64';
 
+import { useLocation } from 'react-router-dom';
+
 import { fetcher, endpoints, fetcherGet, fetcherPost } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
@@ -19,6 +21,35 @@ export function useGetUserData(){
       userError: error,
       userValidating: isValidating,
       userEmpty: !isLoading && !data,
+    }),
+    [data, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
+}
+
+export function useGetAuthorized(){
+  const location = useLocation();
+
+  const URL = `${endpoints.user.authorized}?path=${location.pathname}`
+
+  const accessToken = sessionStorage.getItem('accessToken');
+
+  let config = {
+    headers: {
+      token: accessToken,
+    }
+  }
+
+  const { data, isLoading, error, isValidating } = useSWR([URL, config], fetcherGet);
+  
+  const memoizedValue = useMemo(
+    () => ({
+      authorized: data?.authorized || false,
+      authorizedLoading: isLoading,
+      authorizedError: error,
+      authorizedValidating: isValidating,
+      authorizedEmpty: !isLoading && !data,
     }),
     [data, error, isLoading, isValidating]
   );
