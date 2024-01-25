@@ -9,6 +9,7 @@ import Card from '@mui/material/Card';
 import { LoadingButton } from '@mui/lab';
 import Rating from '@mui/material/Rating';
 import Avatar from '@mui/material/Avatar';
+import Divider from '@mui/material/Divider';
 import Tooltip from '@mui/material/Tooltip';
 import InputBase from '@mui/material/InputBase';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -187,7 +188,10 @@ export default function PendingModalUser() {
 
   const handleRatingChange = (event, newValue) => {
     setValorRating(newValue);
-    console.log('newValue', newValue);
+  };
+
+  const handleRate = () => {
+    alert(`Evaluado con ${valorRating} estrellas`);
   };
 
   return (
@@ -432,30 +436,7 @@ export default function PendingModalUser() {
               )}
             </Stack>
           </Stack>
-          {/* <InputBase
-            fullWidth
-            placeholder="Email"
-            sx={{
-              pl: 1.5,
-              height: 40,
-              borderRadius: 1,
-              borderColor: 'gray',
-              borderWidth: 1 / 2,
-              bgcolor: 'common.white',
-            }}
-            endAdornment={
-              <Button color="warning" variant="contained" size="small" sx={{ mr: 0.5 }}>
-                Invite
-              </Button>
-            }
-          />
-          <TextField
-            fullWidth
-            // sx={{ width: '80%' }}
-            label="Correo electrónico"
-            placeholder="Ingrese un correo electrónico"
-            error={false}
-          /> */}
+
           {sendEmails === true && (
             <>
               <Stack
@@ -489,17 +470,6 @@ export default function PendingModalUser() {
                 />
                 {errorEmail && <FormHelperText error={errorEmail}>{errorMessage}</FormHelperText>}
               </Stack>
-              {/* <Stack
-                sx={{
-                  flexDirection: 'row',
-                  px: { xs: 1, md: 2 },
-                  pt: 1,
-                  alignItems: 'center',
-                }}
-              >
-                {JSON.stringify(emails)}
-                {JSON.stringify(email)}
-              </Stack> */}
 
               <Stack
                 flexDirection="row"
@@ -508,26 +478,6 @@ export default function PendingModalUser() {
                 spacing={2}
                 sx={{ px: { xs: 1, md: 3 }, py: 1 }}
               >
-                {/* {emails.length > 0 &&
-                  emails.map((er) => (
-                    <Tooltip title={er.correo} key={er.correo}>
-                      <Chip
-                        label={er.correo}
-                        variant="outlined"
-                        size="small"
-                        style={{ backgroundColor: '#e0e0e0' /* e0e0e0 *, borderRadius: '20px' }}
-                        InputProps={{
-                          startAdornment: (
-                            <Iconify
-                              icon="icons8:plus"
-                              width={24}
-                              sx={{ color: 'text.disabled' }}
-                            />
-                          ),
-                        }}
-                      />
-                    </Tooltip>
-                  ))} */}
                 {emails.length > 0 &&
                   emails.map((each) => (
                     <Tooltip title={each.email} key={each.email}>
@@ -624,7 +574,7 @@ export default function PendingModalUser() {
               sx={{
                 left: 0,
                 right: 0,
-                zIndex: 10, // 10
+                zIndex: 10,
                 mx: 'auto',
                 bottom: -26,
                 position: 'absolute',
@@ -659,14 +609,21 @@ export default function PendingModalUser() {
           </Box>
 
           <ListItemText
-            sx={{ mt: 7, mb: 5 }}
-            primary={event.especialista ? event.especialista : 'Luis Arturo Alarcón Blanco'}
-            secondary={event.puesto ? event.puesto : 'Programador Analista JR'}
+            sx={{ mt: 7, mb: 1 }}
+            primary={event.especialista ? event.especialista : 'Especialista'}
+            secondary={event.puesto ? event.puesto : 'Beneficio saludable'}
+            primaryTypographyProps={{ typography: 'subtitle1' }}
+            tertiary={event.start ? event.start : '2024-01-01 10:00:00'}
+            secondaryTypographyProps={{ component: 'span', mt: 0.5 }}
+          />
+          <ListItemText
+            sx={{ mt: 1, mb: 5 }}
+            secondary={event.start ? event.start : '2024-01-01 10:00:00'}
             primaryTypographyProps={{ typography: 'subtitle1' }}
             secondaryTypographyProps={{ component: 'span', mt: 0.5 }}
           />
 
-          <Stack direction="row" alignItems="center" justifyContent="center" sx={{ mb: 5 }}>
+          <Stack direction="row" alignItems="center" justifyContent="center" sx={{ mb: 2 }}>
             <Rating
               name="half-rating"
               defaultValue={0}
@@ -675,6 +632,11 @@ export default function PendingModalUser() {
               onChange={handleRatingChange}
             />
           </Stack>
+          <DialogActions justifyContent="center" sx={{ justifyContent: 'center' }}>
+            <Button variant="contained" color="success" onClick={handleRate}>
+              Calificar
+            </Button>
+          </DialogActions>
         </Card>
       </Dialog>
     </>
