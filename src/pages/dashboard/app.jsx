@@ -7,8 +7,6 @@ import PendingModalUser from 'src/sections/overview/calendario/view/pendingModal
 
 // ----------------------------------------------------------------------
 
-const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
-
 export default function OverviewAppPage() {
   return (
     <>
@@ -17,8 +15,6 @@ export default function OverviewAppPage() {
       </Helmet>
 
       <OverviewAppView />
-      {datosUser.rol === 3 && <PendingModal />}
-      {datosUser.rol === 2 && <PendingModalUser />}
     </>
   );
 }

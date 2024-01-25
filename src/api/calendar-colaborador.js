@@ -188,9 +188,9 @@ export function lastAppointment(usuario, beneficio) {
   return detalle;
 }
 
-export function updateAppointment(idCita, estatus) {
+export function updateAppointment(idCita, estatus, detalle) {
   const URL = [endpoints.calendarioColaborador.updateAppointment];
-  const update = fetcherPost(URL, { idCita, estatus });
+  const update = fetcherPost(URL, { idCita, estatus, detalle });
 
   return update;
 }
@@ -198,7 +198,7 @@ export function updateAppointment(idCita, estatus) {
 export function useGetPendientes() {
   const pendientes = endpoints.calendarioColaborador.getPendientes;
   const { data, mutate: revalidate } = useSWR(pendientes, (url) =>
-    fetcherPost(url, datosUser?.idUsuario)
+    fetcherPost(url, { idUsuario: datosUser?.idUsuario })
   );
 
   const memoizedValue = useMemo(

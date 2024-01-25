@@ -1,10 +1,20 @@
+import 'dayjs/locale/es';
 import dayjs from 'dayjs';
 import { useState } from 'react';
 import { enqueueSnackbar } from 'notistack';
 import localeData from 'dayjs/plugin/localeData';
 import { Dialog, DialogContent } from '@material-ui/core';
 
+import Card from '@mui/material/Card';
 import { LoadingButton } from '@mui/lab';
+import Rating from '@mui/material/Rating';
+import Avatar from '@mui/material/Avatar';
+import Tooltip from '@mui/material/Tooltip';
+import InputBase from '@mui/material/InputBase';
+import DialogTitle from '@mui/material/DialogTitle';
+import { alpha, useTheme } from '@mui/material/styles';
+import FormHelperText from '@mui/material/FormHelperText';
+import InputAdornment from '@mui/material/InputAdornment';
 import {
   Box,
   Chip,
@@ -23,24 +33,43 @@ import {
   DialogActions,
 } from '@mui/material';
 
-// import { reRender, useGetMotivos, useGetPending, endAppointment, cancelAppointment } from 'src/api/calendar-specialist';
-import { useGetPendientes } from 'src/api/calendar-colaborador';
+import uuidv4 from 'src/utils/uuidv4';
 
+import { useAuthContext } from 'src/auth/hooks';
+import { AvatarShape } from 'src/assets/illustrations';
+// import { reRender, useGetMotivos, useGetPending, endAppointment, cancelAppointment } from 'src/api/calendar-specialist';
+import { cancelAppointment } from 'src/api/calendar-specialist';
+import {
+  useGetPendientes,
+  updateAppointment,
+  registrarDetalleDePago,
+} from 'src/api/calendar-colaborador';
+
+import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
 
-export default function PendingModal() {
+// const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+
+export default function PendingModalUser() {
   const [open, setOpen] = useState(true);
   const [open2, setOpen2] = useState(false);
-  const { data: pendings, pendingsMutate } = useGetPendientes(); // traer todas las citas sin finalzar que sean anterior a la fecha actual
-  const [assist, setAssist] = useState('');
-  const [reason, setReason] = useState([]);
-  const [cancelType, setCancelType] = useState('');
-  const { data: reasons } = useGetMotivos();
-  const [selectEvent, setSelectEvent] = useState('');
-  const selectedReason = reason.length > 0 || cancelType;
+  const [open3, setOpen3] = useState(false);
+  const [open4, setOpen4] = useState(true);
+  const [event, setEvent] = useState([]);
+  const [email, setEmail] = useState('');
+  const [emails, setEmails] = useState([]);
+  const [errorMessage, setErrorMessage] = useState('Formato de correo erróneo');
+  const [errorEmail, setErrorEmail] = useState(false);
+  const [sendEmails, setSendEmails] = useState(false);
+  const [valorRating, setValorRating] = useState(0);
+  const { data: pendientes, pendingsMutate } = useGetPendientes(); // traer todas las citas en pendiente de pago
 
   dayjs.locale('es');
   dayjs.extend(localeData);
+
+  const theme = useTheme();
+  const { user: datosUser } = useAuthContext();
+  console.log('SESION', datosUser);
 
   const onClose = () => {
     setOpen(false);
@@ -48,90 +77,122 @@ export default function PendingModal() {
 
   const handleClose2 = () => {
     setOpen2(false);
-    setReason([]);
-    setCancelType('');
   };
 
-  function handleEnd(event) {
-    setOpen2(true);
-    setSelectEvent(event);
-    setAssist('');
-  }
+  const handleOpen = async (currentEvent) => {
+    setEvent(currentEvent);
+    setOpen3(true);
+    // SIMULACIÓN DE PAGO
 
-  const handleCancel = (event) => {
-    setCancelType(event.target.value);
-  };
-
-  const handleAssist = (event) => {
-    setAssist(event.target.value);
-    setReason([]);
-    setCancelType('');
-  };
-
-  const Items = () => {
-    let items = '';
-    if (pendings) {
-      items = pendings.map((pending) => (
-        <ListItem
-          key={pending.idCita}
-          secondaryAction={
-            <IconButton onClick={() => handleEnd(pending)}>
-              <Iconify icon="solar:archive-minimalistic-bold" />
-            </IconButton>
-          }
-        >
-          <ListItemText primary={pending.titulo} />
-          <ListItemText primary={dayjs(pending.fechaInicio).format('dddd, DD/MMMM/YYYY - HH:MM')} />
-        </ListItem>
-      ));
+    // checar si paga o no
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    setOpen3(false);
+    let precio = 50;
+    let metodoPago = 1;
+    if (datosUser.tipoPuesto.toLowerCase() === 'operativa' || datosUser.idDepto === 13) {
+      precio = 0;
+      metodoPago = 3;
     }
-    return items;
-  };
-
-  const endSubmit = async () => {
-    switch (assist) {
-      case 0:
-        try {
-          const resp = await cancelAppointment(selectEvent, selectEvent.idCita, cancelType);
-
-          if (resp.result) {
-            enqueueSnackbar(resp.msg);
-            handleClose2();
-          } else {
-            enqueueSnackbar(resp.msg, { variant: 'error' });
-          }
-        } catch (error) {
-          enqueueSnackbar('Ha ocurrido un error al cancelar', { variant: 'error' });
-          setOpen(false);
-        }
-        break;
-
-      case 1:
-        try {
-          const resp = await endAppointment(selectEvent.idCita, reason);
-
-          if (resp.result) {
-            enqueueSnackbar(resp.msg);
-            handleClose2();
-          } else {
-            enqueueSnackbar(resp.msg, { variant: 'error' });
-          }
-        } catch (error) {
-          enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
-          setOpen2(false);
-        }
-        break;
-
-      default:
-        break;
+    const registrarPago = await registrarDetalleDePago(
+      datosUser.idUsuario,
+      uuidv4(),
+      1,
+      precio,
+      metodoPago
+    );
+    if (registrarPago.result) {
+      // enqueueSnackbar('¡Detalle de pago registrado!', {
+      //   variant: 'success',
+      // });
+      // Hacer el proceso de actualizar cita
+      const update = await updateAppointment(currentEvent.id, 1, registrarPago.data);
+      if (update.result) {
+        enqueueSnackbar('¡Se ha generado el pago con exito!', {
+          variant: 'success',
+        });
+      }
+      if (!update.result) {
+        enqueueSnackbar('¡Se obtuvó un error al intentar generar el pago de cita!', {
+          variant: 'error',
+        });
+      }
+      console.log('YA NO ENTRA 107');
     }
-    reRender();
+    if (!registrarPago.result) {
+      enqueueSnackbar('¡Ha surgido un error al intentar registrar el detalle de pago!', {
+        variant: 'error',
+      });
+      return 'onClose()';
+    }
+    console.log('YA NO ENTRA 114');
     pendingsMutate();
+    // preview
+    setOpen2(true);
+
+    return '';
+  };
+
+  const onCancel = async (currentEvent) => {
+    const cancel = await cancelAppointment(currentEvent, currentEvent.id, 0);
+    if (cancel.result) {
+      enqueueSnackbar('¡Se ha cancelado la cita!', {
+        variant: 'success',
+      });
+      pendingsMutate();
+      return onClose();
+    }
+    if (!cancel.result) {
+      enqueueSnackbar('¡Se generó un error al intentar cancelar la cita!', {
+        variant: 'error',
+      });
+      pendingsMutate();
+      return onClose();
+    }
+    pendingsMutate();
+    return '';
+  };
+
+  const handleSendEmails = () => {
+    setSendEmails(!sendEmails);
+    setErrorEmail(false);
+    setEmail('');
+    setEmails([]);
+  };
+
+  const handleEmails = (newEmail) => {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+    // Verificar si la cadena cumple con la expresión regular
+    if (!emailRegex.test(newEmail)) {
+      setErrorMessage('Formato de correo erróneo');
+      return setErrorEmail(true);
+    }
+
+    // Verificar si el nuevo correo ya existe en el arreglo
+    if (emails.some((emailObj) => emailObj.email.toLowerCase() === newEmail.toLowerCase())) {
+      setErrorMessage('Correo ya registrado');
+      return setErrorEmail(true);
+    }
+
+    setEmails([...emails, { email: newEmail }]);
+    setEmail('');
+    setErrorEmail(false);
+    return '';
+  };
+
+  const deleteEmail = (removedEmail) => {
+    const newEmails = emails.filter((each) => each.email !== removedEmail);
+    setEmails(newEmails);
+  };
+
+  const handleRatingChange = (event, newValue) => {
+    setValorRating(newValue);
+    console.log('newValue', newValue);
   };
 
   return (
     <>
-      {pendings?.length > 0 && ( // si hay pendientes se mostrara el modal
+      {pendientes?.data?.length > 0 && ( // si hay pendientes se mostrara el modal
         <Dialog open={open} fullWidth maxWidth="sm">
           <DialogContent>
             <Stack
@@ -145,10 +206,41 @@ export default function PendingModal() {
                 <strong>¡ATENCIÓN!</strong>
               </Typography>
             </Stack>
-            <Typography>Hay citas sin finalizar</Typography>
-            <Stack sx={{ mt: 2, mb: 4 }}>
-              <Items />
-            </Stack>
+            <Typography sx={{ textAlign: 'center', pb: 2 }}>
+              ¡Tiene citas con un estado pendiente de pago! Realice el pago ahora mismo para poder
+              hacer uso del beneficio.
+            </Typography>
+            <Typography
+              direction="row"
+              alignItems="center"
+              sx={{ justifyContent: 'space-between' }}
+            >
+              {pendientes?.data?.length > 0 &&
+                pendientes.data.map((pending, key) => (
+                  <ListItem
+                    key={pending.idCita}
+                    secondaryAction={
+                      <>
+                        <Tooltip title="Cancelar cita">
+                          <IconButton onClick={() => onCancel(pendientes?.data[key])}>
+                            <Iconify icon="solar:trash-bin-trash-bold" />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Pagar">
+                          <IconButton onClick={() => handleOpen(pendientes?.data[key])}>
+                            <Iconify icon="ph:money-fill" width={22} />
+                          </IconButton>
+                        </Tooltip>
+                      </>
+                    }
+                  >
+                    <ListItemText primary={pending.beneficio} />
+                    <ListItemText
+                      primary={dayjs(pending.start).format('dddd, DD MMMM YYYY HH:mm')}
+                    />
+                  </ListItem>
+                ))}
+            </Typography>
           </DialogContent>
           <DialogActions>
             <Button variant="contained" color="error" onClick={onClose}>
@@ -157,16 +249,338 @@ export default function PendingModal() {
           </DialogActions>
         </Dialog>
       )}
-
-      <Dialog // dialog de confirmación de finalización
+      <Dialog
         open={open2}
         fullWidth
         disableEnforceFocus
-        maxWidth="sm"
+        maxWidth="xs"
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
+        <DialogTitle sx={{ p: { xs: 1, md: 2 } }}>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            useFlexGap
+            flexWrap="wrap"
+            sx={{ p: { xs: 1, md: 2 } }}
+          >
+            <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center' }}>
+              DATOS DE CITA
+            </Typography>
+          </Stack>
+        </DialogTitle>
         <DialogContent>
+          <Stack spacing={3} sx={{ p: { xs: 1, md: 2 } }}>
+            <Typography variant="subtitle1">
+              {event?.start ? dayjs(event.start).format('dddd, DD MMMM YYYY') : 'Fecha'}
+            </Typography>
+          </Stack>
+
+          <Stack
+            alignItems="center"
+            sx={{
+              flexDirection: { sm: 'row', md: 'col' },
+              px: { xs: 1, md: 2 },
+              py: 1,
+            }}
+          >
+            <Iconify icon="mdi:account-circle" width={30} sx={{ color: 'text.disabled' }} />
+            <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+              Cita en {event?.beneficio ? event?.beneficio : 'Beneficio'}
+            </Typography>
+          </Stack>
+          <Stack
+            alignItems="center"
+            sx={{
+              flexDirection: { sm: 'row', md: 'col' },
+              px: { xs: 1, md: 2 },
+              py: 1,
+            }}
+          >
+            <Iconify icon="solar:user-id-broken" width={30} sx={{ color: 'text.disabled' }} />
+            <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+              {event?.especialista ? event?.especialista : 'Especialista'}
+            </Typography>
+          </Stack>
+          <Stack
+            alignItems="center"
+            sx={{
+              flexDirection: { sm: 'row', md: 'col' },
+              px: { xs: 1, md: 2 },
+              py: 1,
+            }}
+          >
+            <Iconify icon="mdi:calendar-clock" width={30} sx={{ color: 'text.disabled' }} />
+            <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+              {event?.id
+                ? `${dayjs(event?.start).format('HH:mm a')} - ${dayjs(event?.end).format(
+                    'HH:mm a'
+                  )}`
+                : 'Fecha'}
+            </Typography>
+          </Stack>
+          <Stack
+            alignItems="center"
+            sx={{
+              flexDirection: { sm: 'row', md: 'col' },
+              px: { xs: 1, md: 2 },
+              py: 1,
+            }}
+          >
+            {event?.modalidad === 1 ? (
+              <>
+                <Iconify icon="mdi:earth" width={30} sx={{ color: 'text.disabled' }} />
+
+                <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                  {event?.sede ? event?.sede : 'Querétaro'}
+                </Typography>
+              </>
+            ) : (
+              <>
+                <Iconify icon="mdi:earth" width={30} sx={{ color: 'text.disabled' }} />
+
+                <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                  {event?.sede ? `${event?.sede} (En línea)` : 'En línea'}
+                </Typography>
+              </>
+            )}
+          </Stack>
+          <Stack
+            alignItems="center"
+            sx={{
+              flexDirection: { sm: 'row', md: 'col' },
+              px: { xs: 1, md: 2 },
+              py: 1,
+            }}
+          >
+            {event?.modalidad === 1 ? (
+              <>
+                <Iconify icon="ic:outline-place" width={30} sx={{ color: 'text.disabled' }} />
+
+                <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                  {event?.ubicación ? event?.ubicación : 'Calle Callerinas, 00, Centro, 76000'}
+                </Typography>
+              </>
+            ) : (
+              <>
+                <Iconify icon="ic:outline-place" width={30} sx={{ color: 'text.disabled' }} />
+
+                <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                  {event?.ubicación ? event?.ubicación : 'Remoto (En línea)'}
+                </Typography>
+              </>
+            )}
+          </Stack>
+          <Stack
+            sx={{
+              flexDirection: 'row',
+              px: { xs: 1, md: 2 },
+              py: 1,
+            }}
+          >
+            <Stack>
+              <Iconify icon="ic:outline-email" width={30} sx={{ color: 'text.disabled' }} />
+            </Stack>
+            <Stack sx={{ flexDirection: 'col' }}>
+              <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                {event?.correo
+                  ? event?.correoEspecialista.toLowerCase()
+                  : 'correo-demo@ciudadmaderas.com.mx'}
+              </Typography>
+            </Stack>
+          </Stack>
+          <Stack
+            sx={{
+              flexDirection: 'row',
+              px: { xs: 1, md: 2 },
+              py: 1,
+            }}
+          >
+            <Stack>
+              <Iconify icon="fa-solid:money-bill" width={30} sx={{ color: 'text.disabled' }} />
+            </Stack>
+            <Stack sx={{ flexDirection: 'col' }}>
+              <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                {event?.estatus === 1 ? 'Pagado' : 'Pagado'}
+              </Typography>
+            </Stack>
+          </Stack>
+
+          <Stack
+            sx={{
+              flexDirection: 'row',
+              px: { xs: 1, md: 2 },
+              py: 1,
+              alignItems: 'center',
+            }}
+            spacing={2}
+          >
+            <Typography variant="subtitle1" sx={{ py: { xs: 1, md: 1 } }}>
+              Notificar a externos
+            </Typography>
+            <Stack
+              onClick={() => handleSendEmails()}
+              sx={{
+                cursor: 'pointer', // Hace que aparezca la manita al pasar el ratón
+              }}
+            >
+              {!sendEmails ? (
+                <Iconify icon="icons8:plus" width={24} sx={{ color: 'text.disabled' }} />
+              ) : (
+                <Iconify icon="icons8:minus" width={24} sx={{ color: 'text.disabled' }} />
+              )}
+            </Stack>
+          </Stack>
+          {/* <InputBase
+            fullWidth
+            placeholder="Email"
+            sx={{
+              pl: 1.5,
+              height: 40,
+              borderRadius: 1,
+              borderColor: 'gray',
+              borderWidth: 1 / 2,
+              bgcolor: 'common.white',
+            }}
+            endAdornment={
+              <Button color="warning" variant="contained" size="small" sx={{ mr: 0.5 }}>
+                Invite
+              </Button>
+            }
+          />
+          <TextField
+            fullWidth
+            // sx={{ width: '80%' }}
+            label="Correo electrónico"
+            placeholder="Ingrese un correo electrónico"
+            error={false}
+          /> */}
+          {sendEmails === true && (
+            <>
+              <Stack
+                sx={{
+                  px: { xs: 1, md: 2 },
+                  pt: 1,
+                  alignItems: 'start',
+                }}
+              >
+                <TextField
+                  fullWidth
+                  id="input-with-icon-textfield"
+                  label="Correo electrónico"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  error={errorEmail}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <Button
+                          variant="contained"
+                          size="small"
+                          sx={{ backgroundColor: 'text.disabled' }}
+                          onClick={() => handleEmails(email)}
+                        >
+                          Invitar
+                        </Button>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+                {errorEmail && <FormHelperText error={errorEmail}>{errorMessage}</FormHelperText>}
+              </Stack>
+              {/* <Stack
+                sx={{
+                  flexDirection: 'row',
+                  px: { xs: 1, md: 2 },
+                  pt: 1,
+                  alignItems: 'center',
+                }}
+              >
+                {JSON.stringify(emails)}
+                {JSON.stringify(email)}
+              </Stack> */}
+
+              <Stack
+                flexDirection="row"
+                flexWrap="wrap"
+                flex={1}
+                spacing={2}
+                sx={{ px: { xs: 1, md: 3 }, py: 1 }}
+              >
+                {/* {emails.length > 0 &&
+                  emails.map((er) => (
+                    <Tooltip title={er.correo} key={er.correo}>
+                      <Chip
+                        label={er.correo}
+                        variant="outlined"
+                        size="small"
+                        style={{ backgroundColor: '#e0e0e0' /* e0e0e0 *, borderRadius: '20px' }}
+                        InputProps={{
+                          startAdornment: (
+                            <Iconify
+                              icon="icons8:plus"
+                              width={24}
+                              sx={{ color: 'text.disabled' }}
+                            />
+                          ),
+                        }}
+                      />
+                    </Tooltip>
+                  ))} */}
+                {emails.length > 0 &&
+                  emails.map((each) => (
+                    <Tooltip title={each.email} key={each.email}>
+                      <Chip
+                        label={each.email}
+                        variant="outlined"
+                        style={{
+                          backgroundColor: '#e0e0e0',
+                          borderRadius: '20px',
+                          alignItems: 'center',
+                          alignContent: 'center',
+                          justifyContent: 'center',
+                        }}
+                        deleteIcon={
+                          <div
+                            style={{
+                              width: '24px',
+                              height: '24px',
+                              display: 'flex',
+                              alignItems: 'center',
+                            }}
+                          >
+                            <Iconify
+                              icon="typcn:delete-outline"
+                              sx={{
+                                color: 'black',
+                              }}
+                            />
+                          </div>
+                        }
+                        onDelete={() => deleteEmail(each.email)}
+                      />
+                    </Tooltip>
+                  ))}
+              </Stack>
+            </>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" color="error" onClick={handleClose2}>
+            Cerrar
+          </Button>
+          <Button
+            variant="contained"
+            color="success"
+            onClick={() => alert(`Función de notificar a: ${JSON.stringify(emails)}`)}
+          >
+            Notificar
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={open3} maxWidth="sm">
+        <DialogContent sx={{ pb: 2 }}>
           <Stack
             direction="row"
             justifyContent="center"
@@ -174,98 +588,94 @@ export default function PendingModal() {
             flexWrap="wrap"
             sx={{ pt: { xs: 1, md: 2 }, pb: { xs: 1, md: 2 } }}
           >
-            <Typography color="red" sx={{ mt: 1, mb: 1 }}>
-              <strong>¡ATENCIÓN!</strong>
+            <Typography color="black" sx={{ mt: 1, mb: 1 }}>
+              <strong>Confirmando pago...</strong>
             </Typography>
           </Stack>
-          <Typography>¿Seguro que quieres finalizar la cita?</Typography>
-          <Stack spacing={4} sx={{ pt: { xs: 1, md: 4 } }}>
-            <Box sx={{ minWidth: 120 }}>
-              <FormControl fullWidth>
-                <InputLabel id="assist-label">Asistencia</InputLabel>
-                <Select
-                  id="assist"
-                  name="assist"
-                  labelId="assist-label"
-                  value={assist}
-                  label="Asistencia"
-                  onChange={handleAssist}
-                >
-                  <MenuItem value={1}>Asistencia</MenuItem>
-                  <MenuItem value={0}>Inasistencia</MenuItem>
-                </Select>
-              </FormControl>
-            </Box>
-            {assist === 1 && (
-              <FormControl fullWidth>
-                <Autocomplete
-                  id="motivos"
-                  name="motivos"
-                  multiple
-                  limitTags={2}
-                  onChange={(event, value) => {
-                    setReason(value);
-                  }}
-                  options={reasons.map((rea) => ({ label: rea.nombre, value: rea.idOpcion }))}
-                  renderTags={(value, getTagProps) =>
-                    value.map((option, index) => (
-                      <Chip
-                        style={{
-                          backgroundColor: '#e0e0e0',
-                          borderRadius: '20px',
-                        }}
-                        variant="outlined"
-                        label={option.label}
-                        {...getTagProps({ index })}
-                      />
-                    ))
-                  }
-                  renderInput={(params) => (
-                    <TextField
-                      variant="outlined"
-                      {...params}
-                      label="Selecciona los motivos de la cita"
-                      placeholder="motivos"
-                    />
-                  )}
-                />
-              </FormControl>
-            )}
-            {assist === 0 && (
-              <Box sx={{ minWidth: 120 }}>
-                <FormControl fullWidth>
-                  <InputLabel id="cancel-label">Tipo de cancelación</InputLabel>
-                  <Select
-                    id="cancelType"
-                    name="cancelType"
-                    labelId="cancel-label"
-                    value={cancelType}
-                    label="Tipo de cancelación"
-                    onChange={handleCancel}
-                  >
-                    <MenuItem value={7}>Cancelado por especialista</MenuItem>
-                    <MenuItem value={3}>Penalizar</MenuItem>
-                  </Select>
-                </FormControl>
-              </Box>
-            )}
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button variant="contained" color="error" onClick={handleClose2}>
-            Cerrar
-          </Button>
-          <LoadingButton
-            type="submit"
-            variant="contained"
-            disabled={!selectedReason}
-            color="success"
-            onClick={endSubmit}
-            autoFocus
+          <Stack
+            direction="row"
+            justifyContent="center"
+            useFlexGap
+            flexWrap="wrap"
+            sx={{ pt: { xs: 1, md: 2 }, pb: { xs: 1, md: 2 } }}
           >
-            Aceptar
-          </LoadingButton>
-        </DialogActions>
+            <Iconify icon="eos-icons:bubble-loading" width={30} sx={{ color: 'text.disabled' }} />
+          </Stack>
+          {/* eos-icons:bubble-loading */}
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={open4}
+        fullWidth
+        disableEnforceFocus
+        maxWidth="xs"
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        sx={{
+          borderRadius: 'initial',
+          p: 0,
+        }}
+        borderRadius="initial"
+        padding={0}
+      >
+        <Card sx={{ textAlign: 'center' }}>
+          <Box sx={{ position: 'relative' }}>
+            <AvatarShape
+              sx={{
+                left: 0,
+                right: 0,
+                zIndex: 10, // 10
+                mx: 'auto',
+                bottom: -26,
+                position: 'absolute',
+              }}
+            />
+
+            <Avatar
+              alt={event.especialista}
+              src={
+                event.sexoEspecialista === 'F'
+                  ? 'https://api-dev-minimal-v510.vercel.app/assets/images/avatar/avatar_4.jpg'
+                  : 'https://api-dev-minimal-v510.vercel.app/assets/images/avatar/avatar_12.jpg'
+              }
+              sx={{
+                width: 64,
+                height: 64,
+                zIndex: 11,
+                left: 0,
+                right: 0,
+                bottom: -32,
+                mx: 'auto',
+                position: 'absolute',
+              }}
+            />
+
+            <Image
+              src="https://api-dev-minimal-v510.vercel.app/assets/images/cover/cover_12.jpg"
+              alt="https://api-dev-minimal-v510.vercel.app/assets/images/cover/cover_12.jpg"
+              ratio="16/9"
+              overlay={alpha(theme.palette.grey[900], 0.48)}
+            />
+          </Box>
+
+          <ListItemText
+            sx={{ mt: 7, mb: 5 }}
+            primary={event.especialista ? event.especialista : 'Luis Arturo Alarcón Blanco'}
+            secondary={event.puesto ? event.puesto : 'Programador Analista JR'}
+            primaryTypographyProps={{ typography: 'subtitle1' }}
+            secondaryTypographyProps={{ component: 'span', mt: 0.5 }}
+          />
+
+          <Stack direction="row" alignItems="center" justifyContent="center" sx={{ mb: 5 }}>
+            <Rating
+              name="half-rating"
+              defaultValue={0}
+              precision={0.5}
+              value={valorRating}
+              onChange={handleRatingChange}
+            />
+          </Stack>
+        </Card>
       </Dialog>
     </>
   );

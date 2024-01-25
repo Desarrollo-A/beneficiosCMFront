@@ -38,7 +38,6 @@ import { fTimestamp } from 'src/utils/format-time';
 import { cancelAppointment } from 'src/api/calendar-specialist';
 import {
   crearCita,
-  cancelDate,
   getHorario,
   getContactoQB,
   getModalities,
@@ -64,8 +63,10 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(isSameOrBefore);
 
-const initialValue = dayjs().tz('America/Mexico_City');
+const initialValue = dayjs().tz('America/Mexico_City'); // Objeto con todo los datos de fecha y hora
 const lastDayOfNextMonth = initialValue.add(2, 'month').startOf('month').subtract(1, 'day');
+// const now = dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss');
+
 const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
 console.log('Datos de sesión', datosUser);
 
@@ -76,6 +77,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     modalidad: '',
   });
   const [open, setOpen] = useState(false);
+  const [reschedule, setReschedule] = useState(false);
   const [beneficios, setBeneficios] = useState([]);
   const [especialistas, setEspecialistas] = useState([]);
   const [modalidades, setModalidades] = useState([]);
@@ -84,7 +86,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const [errorModalidad, setErrorModalidad] = useState(false);
   const [errorHorarioSeleccionado, setErrorHorarioSeleccionado] = useState(false);
   const [infoContact, setInfoContact] = useState('');
-  const [oficina, setOficina] = useState('');
+  const [oficina, setOficina] = useState({});
   const [diasOcupados, setDiasOcupados] = useState([]);
   const [diasHabilitados, setDiasHabilitados] = useState([]);
   const [fechasDisponibles, setFechasDisponibles] = useState([]);
@@ -106,13 +108,11 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
   const { watch, handleSubmit } = methods;
 
-  const fechaTitulo = dayjs(selectedDate).format('dddd, DD MMMM YYYY');
+  const selectedDateTittle = dayjs(selectedDate).format('dddd, DD MMMM YYYY');
 
   const values = watch();
-  const dateError =
-    values.start && values.end ? fTimestamp(values.start) >= fTimestamp(values.end) : false; // Se dan los datos de star y end, para la validacion que el fin no sea antes que el inicio
 
-  const onSubmit = handleSubmit(async (data) => {
+  const onSubmit = handleSubmit(async () => {
     // Validaciones de inputs: Coloca leyenda de error debajo de cada input en caso que le falte cumplir con el valor
     if (selectedValues.beneficio === '') return setErrorBeneficio(true);
     if (selectedValues.especialista === '') return setErrorEspecialista(true);
@@ -165,7 +165,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     // PROCESO DE AGENDAR: Se le valida que es nuevo usuario y se le agenda su cita.
     if (tieneCitas.result === false) {
-      if (datosUser.tipoPuesto.toLowerCase() === 'operativa' || datosUser.externo === 1) {
+      if (datosUser.tipoPuesto.toLowerCase() === 'operativa' || datosUser.idDepto === 13) {
         // PARAMS: idUsuario, folio (generado con uuidv4), concepto (1-cita, 2-pulsera), cantidad en pesos, metodoPago(1 tarjeta, 2 efectivo, 3 no aplica) .
         const registrarPago = await registrarDetalleDePago(datosUser.idUsuario, uuidv4(), 1, 0, 3);
         if (registrarPago.result) {
@@ -191,7 +191,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         // SIMULACIÓN DE PAGO
         await new Promise((resolve) => setTimeout(resolve, 2000));
         setOpen(false);
-        const registrarPago = await registrarDetalleDePago(datosUser.idUsuario, uuidv4(), 1, 50, 3);
+        const registrarPago = await registrarDetalleDePago(datosUser.idUsuario, uuidv4(), 1, 50, 1);
         if (registrarPago.result) {
           enqueueSnackbar('¡Detalle de pago registrado!', {
             variant: 'success',
@@ -243,7 +243,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     }
 
     // PROCESO DE AGENDAR: Ya pasó por todas las validaciones y puede agendar
-    if (datosUser.tipoPuesto.toLowerCase() === 'operativa' || datosUser.externo === 1) {
+    if (datosUser.tipoPuesto.toLowerCase() === 'operativa' || datosUser.idDepto === 13) {
       // PARAMS: idUsuario, folio (generado con uuidv4), concepto (1-cita, 2-pulsera), cantidad en pesos, metodoPago(1 tarjeta, 2 efectivo, 3 no aplica) .
       const registrarPago = await registrarDetalleDePago(datosUser.idUsuario, uuidv4(), 1, 0, 3);
       if (registrarPago.result) {
@@ -269,7 +269,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       // SIMULACIÓN DE PAGO
       await new Promise((resolve) => setTimeout(resolve, 2000));
       setOpen(false);
-      const registrarPago = await registrarDetalleDePago(datosUser.idUsuario, uuidv4(), 1, 50, 3);
+      const registrarPago = await registrarDetalleDePago(datosUser.idUsuario, uuidv4(), 1, 50, 1);
       if (registrarPago.result) {
         enqueueSnackbar('¡Detalle de pago registrado!', {
           variant: 'success',
@@ -297,24 +297,36 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   });
 
   const onCancel = async () => {
+    // Reagendar
+    // const now = dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss');
+    // const deadline = dayjs(currentEvent.start).subtract(3, 'hour').format('YYYY-MM-DD HH:mm:ss');
+    // console.log('Ahora', now);
+    // console.log('Limite', deadline);
+    // console.log('Estoy antes de la cita?', now < deadline);
+    // console.log('Estoy despues de la cita?', now > deadline);
+
     const cancel = await cancelAppointment(currentEvent, currentEvent.id, 0);
     if (cancel.result) {
       enqueueSnackbar('¡Se ha cancelado la cita!', {
         variant: 'success',
       });
+      appointmentMutate();
       return onClose();
     }
     if (!cancel.result) {
       enqueueSnackbar('¡Se generó un error al intentar cancelar la cita!', {
         variant: 'error',
       });
+      appointmentMutate();
       return onClose();
     }
-    return '';
+    appointmentMutate();
+
+    return 'onClose()';
   };
 
   const onPay = async () => {
-    const update = await updateAppointment(currentEvent.id, 1);
+    const update = await updateAppointment(currentEvent.id, 1, currentEvent.idDetalle);
     setOpen(true);
     // SIMULACIÓN DE PAGO
     await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -336,7 +348,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
   const handleChange = async (input, value) => {
     setInfoContact('');
-    setOficina('');
+    setOficina({});
     setHorarioSeleccionado('');
     setErrorHorarioSeleccionado(false);
     setHorariosDisponibles([]);
@@ -421,10 +433,27 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       setOficina(data);
     } else if (input === 'all') {
       setSelectedValues({
-        beneficio: value,
-        especialista: value,
-        modalidad: value,
+        beneficio: value.puesto,
+        especialista: value.idEspecialista,
+        modalidad: value.modalidad,
       });
+      const data = await getSpecialists(value.idSede, value.idArea, value.puesto);
+      setEspecialistas(data?.data);
+      const modalitiesData = await getModalities(value.idSede, value.idEspecialista);
+      setModalidades(modalitiesData?.data);
+      if (values.puesto === 158) {
+        const cotactQB = await getContactoQB(value.idEspecialista);
+        setInfoContact(cotactQB);
+      } else {
+        const oficinaAtencion = await getOficinaByAtencion(
+          value.idSede,
+          value.puesto, // Beneficio id
+          value.idEspecialista,
+          value.modalidad
+        );
+        setOficina(oficinaAtencion);
+      }
+      getHorariosDisponibles(value.puesto, value.idEspecialista);
     }
   };
 
@@ -529,16 +558,18 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     setIsLoading(true);
     // Consultamos el horario del especialista segun su beneficio.
     const horarioACubrir = await getHorario(beneficio);
-    console.log('horarioACubrir', horarioACubrir);
     if (!horarioACubrir) return; // En caso de que no halla horario detenemos el proceso.
 
+    // if (horarioACubrir?.data.length === 0) {
+    //   horarioACubrir.data;
+    // }
     // Teniendo en cuenta el dia actual, consultamos los dias restantes del mes actual y todos los dias del mes que sigue.
     let diasProximos = generarFechas(initialValue, lastDayOfNextMonth);
 
     // Le quitamos los registros del dia domingo y tambien sabados en el caso de que no lo trabaje el especialista.
     diasProximos = diasProximos.filter((date) => {
       const dayOfWeek = dayjs(date).day();
-      return dayOfWeek !== 0 && (horarioACubrir.data[0].sabados || dayOfWeek !== 6);
+      return dayOfWeek !== 0 && (horarioACubrir?.data[0]?.sabados || dayOfWeek !== 6);
     });
 
     // Traemos citas y horarios bloqueados por parte del usuario y especialsita
@@ -783,6 +814,84 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     return false;
   };
 
+  const handleReSchedule = async () => {
+    // Validaciones de inputs: Coloca leyenda de error debajo de cada input en caso que le falte cumplir con el valor
+    if (selectedValues.beneficio === '') return setErrorBeneficio(true);
+    if (selectedValues.especialista === '') return setErrorEspecialista(true);
+    if (selectedValues.modalidad === '') return setErrorModalidad(true);
+    if (horarioSeleccionado === '') return setErrorHorarioSeleccionado(true);
+
+    const ahora = new Date();
+    const fechaActual = dayjs(ahora).format('YYYY-MM-DD');
+
+    const año = horarioSeleccionado.substring(0, 4);
+    const mes = horarioSeleccionado.substring(5, 7);
+    const dia = horarioSeleccionado.substring(8, 10);
+
+    if (datosUser.fechaIngreso > fechaActual) {
+      enqueueSnackbar('¡Existe un error con la fecha de antiguedad!', {
+        variant: 'error',
+      });
+      return onClose();
+    }
+
+    // Validamos la antiguedad: Mandamos fechaIngreso, fechaDeHoy, isPracticante, idBeneficio.
+    const tieneAntiguedad = validarAntiguedad(datosUser.fechaIngreso, fechaActual);
+
+    // 25 Es ventas :)
+    if (!tieneAntiguedad && datosUser.idArea !== 25) {
+      enqueueSnackbar('¡No cuentas con la antigüedad suficiente para hacer uso del beneficio!', {
+        variant: 'error',
+      });
+      return onClose();
+    }
+
+    const cancel = await cancelAppointment(currentEvent, currentEvent.id, 8);
+    console.log('Regreso de cancel', cancel);
+
+    const citasSinFinalizar = await getCitasSinFinalizar(
+      datosUser.idUsuario,
+      selectedValues.beneficio
+    );
+
+    // Si tiene citas en proceso no lo tengo que dejar agendar citas
+    if (citasSinFinalizar.result) {
+      enqueueSnackbar('Ya tienes una cita en proceso de este beneficio', {
+        variant: 'error',
+      });
+      return onClose();
+    }
+    console.log('Citas sin finalizar: ', citasSinFinalizar);
+
+    const citasFinalizadas = await getCitasFinalizadas(datosUser.idUsuario, mes, año);
+    console.log('Cant de citas usadas:', citasFinalizadas);
+
+    if (citasFinalizadas.result === true && citasFinalizadas?.data.length >= 2) {
+      enqueueSnackbar('Ya cuentas con la cantidad maxima de beneficios brindados en el mes', {
+        variant: 'error',
+      });
+      return onClose();
+    }
+
+    agendarCita(
+      `CITA ${datosUser.nombre} ${año}-${mes}-${dia}`,
+      currentEvent?.idEspecialista,
+      ' ',
+      horarioSeleccionado,
+      currentEvent.tipoCita,
+      currentEvent.idAtencionXSede,
+      datosUser.idUsuario,
+      currentEvent.idDetalle
+    );
+
+    return setReschedule(false);
+  };
+
+  const rescheduleAppointment = () => {
+    handleChange('all', currentEvent);
+    setReschedule(true);
+  };
+
   useEffect(() => {
     if (benefits) {
       setBeneficios(benefits);
@@ -800,15 +909,25 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
             flexWrap="wrap"
             sx={{ p: { xs: 1, md: 2 } }}
           >
-            <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center' }}>
+            <Typography variant="h5" sx={{ display: 'flex', alignItems: 'end' }}>
               {currentEvent?.id ? 'DATOS DE CITA' : 'AGENDAR CITA'}
             </Typography>
-            {!!currentEvent?.id && (
-              <Tooltip title="Cancelar cita">
-                <IconButton onClick={() => onCancel()}>
-                  <Iconify icon="solar:trash-bin-trash-bold" width={22} />
-                </IconButton>
-              </Tooltip>
+            {currentEvent?.id && (currentEvent?.estatus === 1 || currentEvent?.estatus === 6) && (
+              <Stack sx={{ flexDirection: 'row' }}>
+                {dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss') <
+                  dayjs(currentEvent.start).subtract(3, 'hour').format('YYYY-MM-DD HH:mm:ss') && (
+                  <Tooltip title="Reagendar cita">
+                    <IconButton onClick={() => rescheduleAppointment()}>
+                      <Iconify icon="fluent-mdl2:date-time-12" width={22} />
+                    </IconButton>
+                  </Tooltip>
+                )}
+                <Tooltip title="Cancelar cita">
+                  <IconButton onClick={() => onCancel()}>
+                    <Iconify icon="solar:trash-bin-trash-bold" width={22} />
+                  </IconButton>
+                </Tooltip>
+              </Stack>
             )}
           </Stack>
         </DialogTitle>
@@ -816,7 +935,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
           {currentEvent?.id ? (
             <>
               <Stack spacing={3} sx={{ p: { xs: 1, md: 2 } }}>
-                <Typography variant="subtitle1">{fechaTitulo}</Typography>
+                <Typography variant="subtitle1">{selectedDateTittle}</Typography>
               </Stack>
 
               <Stack
@@ -870,7 +989,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                   py: 1,
                 }}
               >
-                {currentEvent?.tipoCita === 1 ? (
+                {currentEvent?.modalidad === 1 ? (
                   <>
                     <Iconify icon="mdi:earth" width={30} sx={{ color: 'text.disabled' }} />
 
@@ -896,7 +1015,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                   py: 1,
                 }}
               >
-                {currentEvent?.tipoCita === 1 ? (
+                {currentEvent?.modalidad === 1 ? (
                   <>
                     <Iconify icon="ic:outline-place" width={30} sx={{ color: 'text.disabled' }} />
 
@@ -952,237 +1071,25 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
               </Stack>
             </>
           ) : (
-            <Grid sx={{ display: 'flex' }}>
-              <Grid sx={{ width: '100%' }}>
-                <Box
-                  sx={{
-                    width: { xs: '100%', md: '100%' },
-                    p: { xs: 1, md: 2 },
-                    borderRight: 'lightgray solid',
-                    borderRightWidth:
-                      selectedValues.especialista && selectedValues.beneficio !== 158
-                        ? '2px' // Puedes ajustar el grosor según tus necesidades
-                        : '0',
-                  }}
-                >
-                  <Stack spacing={3}>
-                    <Typography variant="subtitle1">
-                      {dayjs().locale('es').format('dddd, DD MMMM YYYY')}
-                    </Typography>
-                    <Stack direction="column" spacing={3} justifyContent="space-between">
-                      <FormControl error={!!errorBeneficio} fullWidth>
-                        <InputLabel id="beneficio-input" name="beneficio">
-                          Beneficio
-                        </InputLabel>
-                        <Select
-                          labelId="Beneficio"
-                          id="select-beneficio"
-                          label="Beneficio"
-                          value={selectedValues.beneficio || ''}
-                          defaultValue=""
-                          onChange={(e) => handleChange('beneficio', e.target.value)}
-                          disabled={beneficios.length === 0}
-                        >
-                          {beneficios.map((e) => (
-                            <MenuItem key={e.id} value={e.id}>
-                              {e.puesto.toUpperCase()}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                        {errorBeneficio && selectedValues.beneficio === '' && (
-                          <FormHelperText error={errorBeneficio}>
-                            Seleccione un beneficio
-                          </FormHelperText>
-                        )}
-                      </FormControl>
-                      <FormControl error={!!errorEspecialista} fullWidth>
-                        <InputLabel id="especialista-input">Especialista</InputLabel>
-                        <Select
-                          labelId="especialista-input"
-                          id="select-especialista"
-                          label="Especialista"
-                          name="especialista"
-                          value={selectedValues.especialista}
-                          defaultValue=""
-                          onChange={(e) => handleChange('especialista', e.target.value)}
-                          disabled={especialistas.length === 0}
-                        >
-                          {especialistas.map((e, index) => (
-                            <MenuItem key={e.id} value={e.id}>
-                              {e.especialista.toUpperCase()}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                        {errorEspecialista && selectedValues.especialista === '' && (
-                          <FormHelperText error={errorEspecialista}>
-                            Seleccione un especialista
-                          </FormHelperText>
-                        )}
-                      </FormControl>
-                      <FormControl error={!!errorModalidad} fullWidth>
-                        <InputLabel id="modalidad-input">Modalidad</InputLabel>
-                        <Select
-                          labelId="Modalidad"
-                          id="select-modalidad"
-                          label="Modalidad"
-                          name="Modalidad"
-                          defaultValue=""
-                          value={selectedValues.modalidad}
-                          onChange={(e) => handleChange('modalidad', e.target.value)}
-                          disabled={modalidades.length === 0}
-                        >
-                          {modalidades.map((e, index) => (
-                            <MenuItem key={e.tipoCita} value={e.tipoCita}>
-                              {e.modalidad.toUpperCase()}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                        {errorModalidad && selectedValues.modalidad === '' && (
-                          <FormHelperText error={errorModalidad}>
-                            Seleccione una modalidad
-                          </FormHelperText>
-                        )}
-                      </FormControl>
-                    </Stack>
-                    {selectedValues.modalidad && selectedValues.beneficio === 158 && (
-                      <Stack sx={{ px: 1 }}>
-                        Contacte al especialista seleccionado para agendar una cita de Quantum
-                        Balance:
-                        <br />
-                        {infoContact.result ? (
-                          <>
-                            <Stack
-                              sx={{
-                                flexDirection: 'row',
-                                px: { xs: 1, md: 2 },
-                                py: 1,
-                              }}
-                            >
-                              <Stack>
-                                <Iconify
-                                  icon="ic:outline-email"
-                                  width={30}
-                                  sx={{ color: 'text.disabled' }}
-                                />
-                              </Stack>
-                              <Stack sx={{ flexDirection: 'col' }}>
-                                <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                                  {infoContact.data[0].correo}
-                                </Typography>
-                              </Stack>
-                            </Stack>
-                            <Stack
-                              sx={{
-                                flexDirection: 'row',
-                                px: { xs: 1, md: 2 },
-                                py: 1,
-                              }}
-                            >
-                              <Stack>
-                                <Iconify
-                                  icon="mdi:phone"
-                                  width={30}
-                                  sx={{ color: 'text.disabled' }}
-                                />
-                              </Stack>
-                              <Stack sx={{ flexDirection: 'col' }}>
-                                <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                                  {infoContact.data[0].telPersonal}
-                                </Typography>
-                              </Stack>
-                            </Stack>
-                          </>
-                        ) : (
-                          ' Cargando...'
-                        )}
-                      </Stack>
-                    )}
-                    {selectedValues.modalidad === 1 && selectedValues.beneficio !== 158 && (
-                      <Stack spacing={1} sx={{ p: { xs: 1, md: 1 } }}>
-                        Dirección de la oficina :
-                        {oficina && oficina.result ? (
-                          <Stack
-                            sx={{
-                              flexDirection: 'row',
-                            }}
-                          >
-                            <Stack>
-                              <Iconify
-                                icon="mdi:office-building-marker"
-                                width={30}
-                                sx={{ color: 'text.disabled' }}
-                              />
-                            </Stack>
-                            <Stack sx={{ flexDirection: 'col' }}>
-                              <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                                {oficina.data[0].ubicación}
-                              </Typography>
-                            </Stack>
-                          </Stack>
-                        ) : (
-                          ' Cargando...'
-                        )}
-                      </Stack>
-                    )}
-                  </Stack>
-                </Box>
-              </Grid>
-              <Grid
-                sx={{
-                  width: '100%',
-                  display:
-                    selectedValues.especialista && selectedValues.beneficio !== 158
-                      ? 'block'
-                      : 'none',
-                }}
-              >
-                <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
-                  <DateCalendar
-                    loading={isLoading}
-                    onChange={handleDateChange}
-                    renderLoading={() => <DayCalendarSkeleton />}
-                    minDate={initialValue}
-                    maxDate={lastDayOfNextMonth}
-                    shouldDisableDate={shouldDisableDate}
-                    views={['year', 'month', 'day']}
-                  />
-                </LocalizationProvider>
-                <Stack
-                  direction="column"
-                  spacing={3}
-                  justifyContent="space-between"
-                  sx={{ px: { xs: 1, md: 10 } }}
-                >
-                  {horariosDisponibles ? (
-                    <FormControl error={!!errorHorarioSeleccionado} fullWidth>
-                      <InputLabel id="modalidad-input">Horarios disponibles</InputLabel>
-                      <Select
-                        labelId="Horarios disponibles"
-                        id="select-horario"
-                        label="Horarios disponibles"
-                        name="Horarios disponibles"
-                        value={horarioSeleccionado}
-                        onChange={(e) => setHorarioSeleccionado(e.target.value)}
-                        disabled={horariosDisponibles.length === 0}
-                      >
-                        {horariosDisponibles.map((e, index) => (
-                          <MenuItem key={e.inicio} value={`${e.fecha} ${e.inicio}`}>
-                            {e.inicio}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      {errorHorarioSeleccionado && horarioSeleccionado === '' && (
-                        <FormHelperText error={errorHorarioSeleccionado}>
-                          Seleccione fecha y horario
-                        </FormHelperText>
-                      )}
-                    </FormControl>
-                  ) : (
-                    <>Fecha sin horarios disponibles</>
-                  )}
-                </Stack>
-              </Grid>
-            </Grid>
+            <AppointmentSchedule
+              selectedValues={selectedValues}
+              handleChange={handleChange}
+              beneficios={beneficios}
+              errorBeneficio={errorBeneficio}
+              especialistas={especialistas}
+              errorEspecialista={errorEspecialista}
+              modalidades={modalidades}
+              errorModalidad={errorModalidad}
+              infoContact={infoContact}
+              oficina={oficina}
+              isLoading={isLoading}
+              handleDateChange={handleDateChange}
+              shouldDisableDate={shouldDisableDate}
+              horariosDisponibles={horariosDisponibles}
+              horarioSeleccionado={horarioSeleccionado}
+              setHorarioSeleccionado={setHorarioSeleccionado}
+              errorHorarioSeleccionado={errorHorarioSeleccionado}
+            />
           )}
         </DialogContent>
 
@@ -1212,12 +1119,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                   Contactar
                 </Button>
               ) : (
-                <LoadingButton
-                  type="submit"
-                  variant="contained"
-                  disabled={dateError}
-                  color="success"
-                >
+                <LoadingButton type="submit" variant="contained" color="success">
                   Agendar
                 </LoadingButton>
               )}
@@ -1225,7 +1127,12 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
           )}
         </DialogActions>
       </FormProvider>
-      <Dialog open={open} maxWidth="sm">
+      <Dialog
+        open={open}
+        maxWidth="sm"
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
         <DialogContent sx={{ pb: 2 }}>
           <Stack
             direction="row"
@@ -1250,10 +1157,336 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
           {/* eos-icons:bubble-loading */}
         </DialogContent>
       </Dialog>
+
+      <Dialog
+        fullWidth
+        maxWidth="md"
+        open={reschedule}
+        aria-labelledby="alert-dialog-title1"
+        aria-describedby="alert-dialog-description1"
+      >
+        <DialogTitle sx={{ p: { xs: 1, md: 2 } }}>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            useFlexGap
+            flexWrap="wrap"
+            sx={{ p: { xs: 1, md: 2 } }}
+          >
+            <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center' }}>
+              REAGENDAR CITA
+            </Typography>
+          </Stack>
+        </DialogTitle>
+        <DialogContent sx={{ p: { xs: 1, md: 2 } }} direction="row" justifycontent="space-between">
+          <AppointmentSchedule
+            selectedValues={selectedValues}
+            setSelectedValues={setSelectedValues}
+            handleChange={handleChange}
+            beneficios={beneficios}
+            errorBeneficio={errorBeneficio}
+            especialistas={especialistas}
+            errorEspecialista={errorEspecialista}
+            modalidades={modalidades}
+            errorModalidad={errorModalidad}
+            infoContact={infoContact}
+            oficina={oficina}
+            isLoading={isLoading}
+            handleDateChange={handleDateChange}
+            shouldDisableDate={shouldDisableDate}
+            horariosDisponibles={horariosDisponibles}
+            horarioSeleccionado={horarioSeleccionado}
+            setHorarioSeleccionado={setHorarioSeleccionado}
+            errorHorarioSeleccionado={errorHorarioSeleccionado}
+            currentEvent={currentEvent}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" color="error" onClick={() => setReschedule(false)}>
+            Cerrar
+          </Button>
+          {currentEvent?.id && (
+            <>
+              {selectedValues.beneficio === 158 ? (
+                <Button
+                  variant="contained"
+                  color="success"
+                  disabled={!infoContact.result}
+                  onClick={contactSpecialist}
+                >
+                  Contactar
+                </Button>
+              ) : (
+                <Button variant="contained" color="success" onClick={handleReSchedule}>
+                  Reagendar
+                </Button>
+              )}
+            </>
+          )}
+        </DialogActions>
+      </Dialog>
     </>
   );
 }
 
+const AppointmentSchedule = ({
+  selectedValues,
+  handleChange,
+  beneficios,
+  errorBeneficio,
+  especialistas,
+  errorEspecialista,
+  modalidades,
+  errorModalidad,
+  infoContact,
+  oficina,
+  isLoading,
+  handleDateChange,
+  shouldDisableDate,
+  horariosDisponibles,
+  horarioSeleccionado,
+  setHorarioSeleccionado,
+  errorHorarioSeleccionado,
+  currentEvent,
+}) => (
+  <Grid sx={{ display: 'flex' }}>
+    <Grid sx={{ width: '100%' }}>
+      <Box
+        sx={{
+          width: { xs: '100%', md: '100%' },
+          p: { xs: 1, md: 2 },
+          borderRight: 'lightgray solid',
+          borderRightWidth:
+            selectedValues.especialista && selectedValues.beneficio !== 158
+              ? '2px' // Puedes ajustar el grosor según tus necesidades
+              : '0',
+        }}
+      >
+        <Stack spacing={3}>
+          <Typography variant="subtitle1">
+            {dayjs().locale('es').format('dddd, DD MMMM YYYY')}
+          </Typography>
+          <Stack direction="column" spacing={3} justifyContent="space-between">
+            <FormControl error={!!errorBeneficio} fullWidth>
+              <InputLabel id="beneficio-input" name="beneficio">
+                Beneficio
+              </InputLabel>
+              <Select
+                labelId="Beneficio"
+                id="select-beneficio"
+                label="Beneficio"
+                value={selectedValues.beneficio || ''}
+                defaultValue=""
+                onChange={(e) => handleChange('beneficio', e.target.value)}
+                disabled={!!(beneficios.length === 0 || currentEvent?.id)}
+              >
+                {beneficios.map((e) => (
+                  <MenuItem key={e.id} value={e.id}>
+                    {e.puesto.toUpperCase()}
+                  </MenuItem>
+                ))}
+              </Select>
+              {errorBeneficio && selectedValues.beneficio === '' && (
+                <FormHelperText error={errorBeneficio}>Seleccione un beneficio</FormHelperText>
+              )}
+            </FormControl>
+            <FormControl error={!!errorEspecialista} fullWidth>
+              <InputLabel id="especialista-input">Especialista</InputLabel>
+              <Select
+                labelId="especialista-input"
+                id="select-especialista"
+                label="Especialista"
+                name="especialista"
+                value={selectedValues.especialista}
+                defaultValue=""
+                onChange={(e) => handleChange('especialista', e.target.value)}
+                disabled={!!(especialistas.length === 0 || currentEvent?.id)}
+              >
+                {especialistas.map((e, index) => (
+                  <MenuItem key={e.id} value={e.id}>
+                    {e.especialista.toUpperCase()}
+                  </MenuItem>
+                ))}
+              </Select>
+              {errorEspecialista && selectedValues.especialista === '' && (
+                <FormHelperText error={errorEspecialista}>
+                  Seleccione un especialista
+                </FormHelperText>
+              )}
+            </FormControl>
+            <FormControl error={!!errorModalidad} fullWidth>
+              <InputLabel id="modalidad-input">Modalidad</InputLabel>
+              <Select
+                labelId="Modalidad"
+                id="select-modalidad"
+                label="Modalidad"
+                name="Modalidad"
+                defaultValue=""
+                value={selectedValues.modalidad}
+                onChange={(e) => handleChange('modalidad', e.target.value)}
+                disabled={!!(modalidades.length === 0 || currentEvent?.id)}
+              >
+                {modalidades.map((e, index) => (
+                  <MenuItem key={e.tipoCita} value={e.tipoCita}>
+                    {e.modalidad.toUpperCase()}
+                  </MenuItem>
+                ))}
+              </Select>
+              {errorModalidad && selectedValues.modalidad === '' && (
+                <FormHelperText error={errorModalidad}>Seleccione una modalidad</FormHelperText>
+              )}
+            </FormControl>
+          </Stack>
+          {selectedValues.modalidad && selectedValues.beneficio === 158 && (
+            <Stack sx={{ px: 1 }}>
+              Contacte al especialista seleccionado para agendar una cita de Quantum Balance:
+              <br />
+              {infoContact.result ? (
+                <>
+                  <Stack
+                    sx={{
+                      flexDirection: 'row',
+                      px: { xs: 1, md: 2 },
+                      py: 1,
+                    }}
+                  >
+                    <Stack>
+                      <Iconify icon="ic:outline-email" width={30} sx={{ color: 'text.disabled' }} />
+                    </Stack>
+                    <Stack sx={{ flexDirection: 'col' }}>
+                      <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                        {infoContact.data[0].correo}
+                      </Typography>
+                    </Stack>
+                  </Stack>
+                  <Stack
+                    sx={{
+                      flexDirection: 'row',
+                      px: { xs: 1, md: 2 },
+                      py: 1,
+                    }}
+                  >
+                    <Stack>
+                      <Iconify icon="mdi:phone" width={30} sx={{ color: 'text.disabled' }} />
+                    </Stack>
+                    <Stack sx={{ flexDirection: 'col' }}>
+                      <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                        {infoContact.data[0].telPersonal}
+                      </Typography>
+                    </Stack>
+                  </Stack>
+                </>
+              ) : (
+                ' Cargando...'
+              )}
+            </Stack>
+          )}
+          {selectedValues.modalidad === 1 && selectedValues.beneficio !== 158 && (
+            <Stack spacing={1} sx={{ p: { xs: 1, md: 1 } }}>
+              Dirección de la oficina :
+              {oficina && oficina.result ? (
+                <Stack
+                  sx={{
+                    flexDirection: 'row',
+                  }}
+                >
+                  <Stack>
+                    <Iconify
+                      icon="mdi:office-building-marker"
+                      width={30}
+                      sx={{ color: 'text.disabled' }}
+                    />
+                  </Stack>
+                  <Stack sx={{ flexDirection: 'col' }}>
+                    <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                      {oficina.data[0].ubicación}
+                    </Typography>
+                  </Stack>
+                </Stack>
+              ) : (
+                ' Cargando...'
+              )}
+            </Stack>
+          )}
+        </Stack>
+      </Box>
+    </Grid>
+    <Grid
+      sx={{
+        width: '100%',
+        display: selectedValues.especialista && selectedValues.beneficio !== 158 ? 'block' : 'none',
+      }}
+    >
+      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
+        <DateCalendar
+          loading={isLoading}
+          onChange={handleDateChange}
+          renderLoading={() => <DayCalendarSkeleton />}
+          minDate={initialValue}
+          maxDate={lastDayOfNextMonth}
+          shouldDisableDate={shouldDisableDate}
+          views={['year', 'month', 'day']}
+        />
+      </LocalizationProvider>
+      <Stack
+        direction="column"
+        spacing={3}
+        justifyContent="space-between"
+        sx={{ px: { xs: 1, md: 10 } }}
+      >
+        {horariosDisponibles ? (
+          <FormControl error={!!errorHorarioSeleccionado} fullWidth>
+            <InputLabel id="modalidad-input">Horarios disponibles</InputLabel>
+            <Select
+              labelId="Horarios disponibles"
+              id="select-horario"
+              label="Horarios disponibles"
+              name="Horarios disponibles"
+              value={horarioSeleccionado}
+              onChange={(e) => setHorarioSeleccionado(e.target.value)}
+              disabled={horariosDisponibles.length === 0}
+            >
+              {horariosDisponibles.map((e, index) => (
+                <MenuItem key={e.inicio} value={`${e.fecha} ${e.inicio}`}>
+                  {e.inicio}
+                </MenuItem>
+              ))}
+            </Select>
+            {errorHorarioSeleccionado && horarioSeleccionado === '' && (
+              <FormHelperText error={errorHorarioSeleccionado}>
+                Seleccione fecha y horario
+              </FormHelperText>
+            )}
+          </FormControl>
+        ) : (
+          <>Fecha sin horarios disponibles</>
+        )}
+      </Stack>
+    </Grid>
+  </Grid>
+);
+
+AppointmentSchedule.propTypes = {
+  selectedValues: PropTypes.object,
+  setSelectedValues: PropTypes.func,
+  handleChange: PropTypes.func,
+  beneficios: PropTypes.array,
+  errorBeneficio: PropTypes.bool,
+  especialistas: PropTypes.array,
+  errorEspecialista: PropTypes.bool,
+  modalidades: PropTypes.array,
+  errorModalidad: PropTypes.bool,
+  infoContact: PropTypes.string,
+  oficina: PropTypes.object,
+  isLoading: PropTypes.bool,
+  handleDateChange: PropTypes.func,
+  shouldDisableDate: PropTypes.func,
+  horariosDisponibles: PropTypes.array,
+  horarioSeleccionado: PropTypes.string,
+  setHorarioSeleccionado: PropTypes.func,
+  errorHorarioSeleccionado: PropTypes.bool,
+  currentEvent: PropTypes.object,
+};
 CalendarDialog.propTypes = {
   currentEvent: PropTypes.object,
   onClose: PropTypes.func,
