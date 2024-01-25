@@ -62,7 +62,7 @@ const NavItem = forwardRef(
 
         {title && (
           <Box component="span" sx={{ flex: '1 1 auto', minWidth: 0 }}>
-            <Box component="span" className="label">
+            <Box component="span" className="label" >
               {title}
             </Box>
 
@@ -179,7 +179,7 @@ const StyledNavItem = styled(ListItemButton, {
     item: {
       marginBottom: 4,
       borderRadius: 8,
-      color: theme.palette.text.secondary,
+      color: 'white',
       padding: theme.spacing(0.5, 1, 0.5, 1.5),
     },
     icon: {

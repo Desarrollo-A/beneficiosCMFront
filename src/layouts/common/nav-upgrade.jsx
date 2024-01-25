@@ -1,60 +1,38 @@
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
-
-import { paths } from 'src/routes/paths';
-
-import { useMockedUser } from 'src/hooks/use-mocked-user';
-
-import Label from 'src/components/label';
 
 // ----------------------------------------------------------------------
 
 export default function NavUpgrade() {
-  const { user } = useMockedUser();
+
+  const today = new Date();
+  const year = today.getFullYear();
 
   return (
     <Stack
       sx={{
         px: 2,
-        py: 5,
+        py: 0,
         textAlign: 'center',
       }}
     >
       <Stack alignItems="center">
-        <Box sx={{ position: 'relative' }}>
-          <Avatar src={user?.photoURL} alt={user?.displayName} sx={{ width: 48, height: 48 }} />
-          <Label
-            color="success"
-            variant="filled"
-            sx={{
-              top: -6,
-              px: 0.5,
-              left: 40,
-              height: 20,
-              position: 'absolute',
-              borderBottomLeftRadius: 2,
-            }}
-          >
-            Free
-          </Label>
-        </Box>
+
+       
+        <Box component="img" sx={{ position: 'relative', width: "60%" }} src="/assets/img/gph-02.svg"/>
+        
 
         <Stack spacing={0.5} sx={{ mt: 1.5, mb: 2 }}>
-          <Typography variant="subtitle2" noWrap>
-            {user?.displayName}
+
+          <Typography variant="subtitle2" noWrap sx={{ color: 'text.disabled' }}>
+          © Ciudad Maderas, <br/> Departamento TI
           </Typography>
 
-          <Typography variant="body2" noWrap sx={{ color: 'text.disabled' }}>
-            {user?.email}
+          <Typography variant="subtitle2" noWrap sx={{ color: 'text.disabled' }}>
+            {year}
           </Typography>
         </Stack>
-
-        <Button variant="contained" href={paths.minimalUI} target="_blank" rel="noopener">
-          Upgrade to Pro
-        </Button>
       </Stack>
     </Stack>
   );
