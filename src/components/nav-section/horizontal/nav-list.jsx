@@ -7,9 +7,15 @@ import Popover from '@mui/material/Popover';
 import { usePathname } from 'src/routes/hooks';
 import { useActiveLink } from 'src/routes/hooks/use-active-link';
 
+import SvgColor from 'src/components/svg-color';
+
 import NavItem from './nav-item';
 
 // ----------------------------------------------------------------------
+
+const icon = (name) => (
+  <SvgColor src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />
+);
 
 export default function NavList({ data, depth, slotProps }) {
   const navRef = useRef(null);
@@ -47,7 +53,7 @@ export default function NavList({ data, depth, slotProps }) {
         //
         title={data.title}
         path={data.path}
-        icon={data.icon}
+        icon={icon(data.icon)}
         info={data.info}
         roles={data.roles}
         caption={data.caption}

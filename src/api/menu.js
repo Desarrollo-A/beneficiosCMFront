@@ -9,7 +9,7 @@ export function useGetMenu() {
   const URL = endpoints.user.menu;
   const accessToken = sessionStorage.getItem('accessToken');
 
-  let config = {
+  const config = {
     headers : {
       token : accessToken
     }

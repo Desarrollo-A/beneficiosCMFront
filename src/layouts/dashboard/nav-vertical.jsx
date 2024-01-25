@@ -5,6 +5,8 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Drawer from '@mui/material/Drawer';
 
+import { bgBlur } from 'src/theme/css';
+
 import { usePathname } from 'src/routes/hooks';
 
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -46,9 +48,12 @@ export default function NavVertical({ openNav, onCloseNav }) {
           display: 'flex',
           flexDirection: 'column',
         },
+        ...bgBlur({
+          color:'#161c24',
+        }),
       }}
     >
-      <Logo sx={{ mt: 3, ml: 4, mb: 1 }} />
+      <Logo sx={{ mt: 3, ml: 4, mb: 2 }} />
 
       <NavSectionVertical
         data={navData}

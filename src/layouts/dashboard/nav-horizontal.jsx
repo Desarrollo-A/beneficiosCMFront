@@ -34,7 +34,7 @@ function NavHorizontal() {
       <Toolbar
         sx={{
           ...bgBlur({
-            color: theme.palette.background.default,
+            color:'#161c24',
           }),
         }}
       >
@@ -54,6 +54,7 @@ function NavHorizontal() {
               ...theme.mixins.toolbar,
             }}
           />
+
         </Scrollbar>
       </Toolbar>
 
