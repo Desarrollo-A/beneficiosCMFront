@@ -127,7 +127,7 @@ export function useNavData() {
           },
           {
             title: t('Calendario'),
-            path: paths.dashboard.general.calendario,
+            path: paths.dashboard.general.calendarioEspecialista,
             icon: ICONS.calendar,
           }
         ],

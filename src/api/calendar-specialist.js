@@ -14,7 +14,7 @@ const get_all_events = endpoints.calendario.getAllEvents;
 const save_occupied = endpoints.calendario.saveOccupied;
 const update_occupied = endpoints.calendario.updateOccupied;
 const update_appointment = endpoints.calendario.updateAppointment;
-const delete_occupied = endpoints.calendario.deleteOccupied;
+const delete_event = endpoints.calendario.deleteOccupied;
 const cancel_appointment = endpoints.calendario.cancelAppointment;
 const create_appointment = endpoints.calendario.createAppointment;
 const appointment_drop = endpoints.calendario.appointmentDrop;
@@ -104,6 +104,7 @@ export async function createCustom(eventData) {
     fechaInicio,
     fechaFinal,
     idEspecialista: datosUser.idUsuario,
+    modificadoPor: datosUser.idUsuario
   };
 
   create = fetcherPost(save_occupied, dataValue);
@@ -134,6 +135,7 @@ export async function updateCustom(eventData) {
     titulo: eventData.title,
     idUsuario: datosUser.idUsuario,
     oldStart,
+    modificadoPor: datosUser.idUsuario
   };
 
   if (oldStart > now) {
@@ -152,7 +154,13 @@ export async function updateCustom(eventData) {
 // ----------------------------------------------------------------------
 
 export async function deleteEvent(eventId) {
-  const delEvent = fetcherPost(delete_occupied, eventId);
+  const data = {
+    eventId,
+    modificadoPor: datosUser.idUsuario,
+    fechaModificacion: Date()
+  };
+
+  const delEvent = fetcherPost(delete_event, data);
 
   return delEvent;
 }

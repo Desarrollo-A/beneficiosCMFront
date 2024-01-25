@@ -68,7 +68,7 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
   
   const Items = () => { // items de los motivos que se trae el evento
     let items = '';
-    reasonsMutate();
+    // reasonsMutate();
     if (eventReasons?.length > 0) {
       items = eventReasons.map((er) => (
         <Tooltip title={er.nombre} key={er.idOpcion}>
