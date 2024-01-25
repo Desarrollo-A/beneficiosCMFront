@@ -1,6 +1,5 @@
 import { mutate } from 'swr';
 import PropTypes from 'prop-types';
-import { Base64 } from 'js-base64';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -16,6 +15,7 @@ import { useRouter } from 'src/routes/hooks';
 
 import { endpoints } from 'src/utils/axios';
 
+import { useAuthContext } from 'src/auth/hooks';
 import { usePost, useInsert  } from 'src/api/encuestas';
 import { useGetGeneral, usePostGeneral } from 'src/api/general';
 
@@ -31,7 +31,7 @@ export default function FormularioEncuesta({ idEncuesta }) {
 
   const router = useRouter();
 
-  const user = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+  const { user } = useAuthContext();
 
   const array = [idEncuesta, user.idUsuario];
 

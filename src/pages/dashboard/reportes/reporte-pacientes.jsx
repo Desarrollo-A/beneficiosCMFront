@@ -2,22 +2,19 @@ import { Helmet } from 'react-helmet-async';
 
 import { useSession } from 'src/hooks/use-session';
 
-import { HistorialReportesView } from 'src/sections/reportes/view';
-
+import { ReportePacientesView } from 'src/sections/reportes/view';
 
 // ----------------------------------------------------------------------
 
-export default function HistorialReportesPage() {
-
+export default function ReportePacientesPage() {
   useSession();
-
   return (
     <>
       <Helmet>
-        <title> Dashboard: Historial Reportes</title>
+        <title> Dashboard: Reporte de Pacientes</title>
       </Helmet>
 
-      < HistorialReportesView />
+      < ReportePacientesView />
     </>
   );
 }

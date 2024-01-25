@@ -2,7 +2,6 @@ import * as Yup from 'yup';
 import { mutate } from 'swr';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
-import { Base64 } from 'js-base64';
 import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -23,6 +22,7 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { endpoints } from 'src/utils/axios';
 
 import { useInsert } from 'src/api/encuestas';
+import { useAuthContext } from 'src/auth/hooks';
 
 import FormProvider from 'src/components/hook-form';
 import { useSnackbar } from 'src/components/snackbar';
@@ -32,9 +32,9 @@ import InvoiceNewEditDetails from './crear-nueva-ecuesta-detalles';
 
 // ----------------------------------------------------------------------
 
-export default function InvoiceNewEditForm({ currentInvoice }) {
+export default function InvoiceNewEditForm() {
 
-  const user = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+  const { user } = useAuthContext();
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -202,5 +202,4 @@ export default function InvoiceNewEditForm({ currentInvoice }) {
 }
 
 InvoiceNewEditForm.propTypes = {
-  currentInvoice: PropTypes.object,
 };

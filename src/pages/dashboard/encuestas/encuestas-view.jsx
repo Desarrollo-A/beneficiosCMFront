@@ -2,11 +2,15 @@ import { Helmet } from 'react-helmet-async';
 
 import { useParams } from 'src/routes/hooks';
 
+import { useSession } from 'src/hooks/use-session';
+
 import { EncuestasView } from 'src/sections/encuestas/view';
 
 // ----------------------------------------------------------------------
 
 export default function EncuestasPage() {
+
+  useSession();
 
   const params = useParams();
 

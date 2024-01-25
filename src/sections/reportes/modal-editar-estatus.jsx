@@ -9,6 +9,7 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
+import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -16,39 +17,38 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { endpoints } from 'src/utils/axios';
 
 import { useUpdate } from 'src/api/reportes';
-import { useAuthContext } from 'src/auth/hooks';
+import { useGetGeneral } from 'src/api/general';
 
 import { useSnackbar } from 'src/components/snackbar';
 // ----------------------------------------------------------------------
 
-export default function EncuestaHabilitar({ open, onClose, idEncuesta }) {
-
-  const { user } = useAuthContext();
+export default function EditarEstatus({ open, onClose, id, est, estatusVal }) {
 
   const confirm = useBoolean();
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const [pregunta, setPregunta] = useState('');
+  const [estatus, setEstatus] = useState('');
 
   const handleChange = (event) => {
-    setPregunta(event.target.value);
+    setEstatus(event.target.value);
   }
 
-  const updateEstatus = useUpdate(endpoints.encuestas.updateEstatus);
+  const updateEstatus = useUpdate(endpoints.reportes.updateEstatusPaciente);
 
-  const handleEstatus = async (vig) => {
+  const { estatusData } = useGetGeneral(endpoints.reportes.getEstatusPaciente, "estatusData");
 
-    if (vig !== '') {
+  const handleEstatus = async (i) => {
 
       try {
 
         const data = {
-          'idEncuesta': idEncuesta,
-          'estatus': 1,
-          'vigencia': vig,
-          'area': user.puesto
+          'idDetallePnt': id,
+          'estatus': i,
+          'area': est,
         };
+
+        console.log(data)
 
         onClose();
 
@@ -57,9 +57,8 @@ export default function EncuestaHabilitar({ open, onClose, idEncuesta }) {
         if (update.estatus === true) {
           enqueueSnackbar(update.msj, { variant: 'success' });
 
-          mutate(endpoints.encuestas.getEncuestasCreadas);
           mutate(endpoints.encuestas.getEncNotificacion);
-          mutate(endpoints.encuestas.getEstatusUno);
+          mutate(endpoints.reportes.pacientes);
 
         } else {
           enqueueSnackbar(update.msj, { variant: 'error' });
@@ -70,11 +69,7 @@ export default function EncuestaHabilitar({ open, onClose, idEncuesta }) {
         enqueueSnackbar(`¡No se pudieron actualizar los datos de usuario!`, { variant: 'danger' });
       }
 
-    } else {
-      enqueueSnackbar(`¡No se selecciono el número de días!`, { variant: 'danger' });
-    }
-
-  };
+  }
 
   return (
     <Dialog
@@ -87,21 +82,27 @@ export default function EncuestaHabilitar({ open, onClose, idEncuesta }) {
       }}
     >
 
-      {/* <DialogTitle>Trimestre</DialogTitle> */}
-
       <Stack spacing={1} >
+
+        <DialogTitle>¿Estás seguro que deseas cambiar el estatus del paciente?</DialogTitle>
+
         <FormControl spacing={3} sx={{ p: 3 }}>
-          <InputLabel spacing={3} sx={{ p: 3 }} id="demo-simple-select-label">Dias para constestar</InputLabel>
+       
+          <InputLabel spacing={3} sx={{ p: 3 }} id="demo-simple-select-label">Estatus</InputLabel>
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            label="Dias para constestar"
-            value={pregunta}
+            label="Estatus"
+            value={estatus}
             onChange={(e) => handleChange(e)}
           >
-            <MenuItem value={1}>1</MenuItem>
-            <MenuItem value={2}>2</MenuItem>
-            <MenuItem value={3}>3</MenuItem>
+            {estatusData.map((i) => (
+              i.nombre === estatusVal ? null : (
+                <MenuItem key={i.idOpcion} value={i.idOpcion}>
+                  {i.nombre}
+                </MenuItem>
+              )
+            ))}
           </Select>
 
         </FormControl>
@@ -109,14 +110,14 @@ export default function EncuestaHabilitar({ open, onClose, idEncuesta }) {
       </Stack>
 
       <DialogActions>
+        <Button variant="contained" color="error" onClick={onClose}>
+          Cerrar
+        </Button>
         <Button variant="contained" color="success" onClick={() => {
-          handleEstatus(pregunta);
+          handleEstatus(estatus);
           confirm.onFalse();
         }}>
-          Habilitar
-        </Button>
-        <Button variant="outlined" onClick={onClose}>
-          Cerrar
+          Guardar
         </Button>
       </DialogActions>
 
@@ -125,8 +126,10 @@ export default function EncuestaHabilitar({ open, onClose, idEncuesta }) {
   );
 }
 
-EncuestaHabilitar.propTypes = {
+EditarEstatus.propTypes = {
   onClose: PropTypes.func,
   open: PropTypes.bool,
-  idEncuesta: PropTypes.number,
+  id: PropTypes.number,
+  est: PropTypes.number,
+  estatusVal: PropTypes.string,
 };

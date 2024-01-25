@@ -2,7 +2,7 @@ import JsPDF from 'jspdf';
 import Xlsx from 'json-as-xlsx';
 import isEqual from 'lodash/isEqual';
 import autoTable from 'jspdf-autotable';
-import { useRef, useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
@@ -16,10 +16,8 @@ import TableContainer from '@mui/material/TableContainer';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
-
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import uuidv4 from "src/utils/uuidv4";
 import { endpoints } from 'src/utils/axios';
 
 import { useAuthContext } from 'src/auth/hooks';
@@ -40,71 +38,54 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-import FilasTabla from '../filas-tabla-citas';
-import FiltrosTabla from '../filtros-tabla-citas';
-import BarraTareasTabla from '../barratareas-tabla-citas';
+import UserTableRow from '../user-table-row';
+import UserTableToolbar from '../user-table-toolbar';
+import UserTableFiltersResult from '../user-table-filters-result';
 
 // ----------------------------------------------------------------------
+
+const TABLE_HEAD = [
+  { id: 'id', label: 'ID' },
+  { id: 'nombre', label: 'Nombre', with: 220 },
+  { id: 'sede', label: 'Sede', with: 100 },
+  { id: 'estatus', label: 'Estatus', width: 100 },
+  { id: '', width: 88 },
+];
 
 const defaultFilters = {
   name: '',
-  area: [],
-  estatus: 'all',
+  role: [],
+  status: 'all',
 };
 
 // ----------------------------------------------------------------------
-const doc = new JsPDF();
 
-function handleDownloadExcel(datosTabla, rol) {
-  
-  let data = [];
+function handleDownloadExcel(tableData, area) {
 
-  const baseArray = [
+  let estatus = "";
+
+  if(area === 158){
+    estatus = "estQB";
+  }else if(area === 537){
+    estatus = "estNut";
+  }else if(area === 585){
+    estatus = "estPsi";
+  }else if(area === 686){
+    estatus = "estGE";
+  }
+
+  const data = [
     {
       sheet: "Historial Reportes",
       columns: [
-        { label: "ID Cita", value: "idCita" },
-        { label: "Especialista", value: "especialista" },
-        { label: "Paciente", value: "paciente" },
-        { label: "Oficina", value: "oficina" },
-        { label: "Departamento", value: "area" },
+        { label: "ID", value: "id" },
+        { label: "Nombre", value: "nombre" },
         { label: "Sede", value: "sede" },
-        { label: "Sexo", value: "sexo" },
-        { label: "Motivo consulta", value: "titulo" },
-        { label: "Estatus", value: "estatus" },
-        { label: "Horario cita", value: "horario" },
+        { label: "Estatus", value: estatus },
       ],
-      content: datosTabla,
+      content: tableData,
     },
   ];
-
-  if (rol === "1") {
-    const arr = baseArray[0].columns;
-    arr.splice(1, 1);
-
-    data = [
-      {
-        sheet: "Historial Reportes",
-        columns: arr,
-        content: datosTabla,
-      },
-    ];
-
-  } else if (rol === "2") {
-    const arr = baseArray[0].columns;
-    arr.splice(2, 1);
-
-    data = [
-      {
-        sheet: "Historial Reportes",
-        columns: arr,
-        content: datosTabla,
-      },
-    ];
-
-  } else {
-    data = baseArray;
-  }
 
   const settings = {
     fileName: "Historial Reportes",
@@ -116,53 +97,26 @@ function handleDownloadExcel(datosTabla, rol) {
   Xlsx(data, settings)
 }
 
-function handleDownloadPDF(datosTabla, header, rol) {
+const doc = new JsPDF();
+
+function handleDownloadPDF(tableData, headerBase) {
 
   let data = [];
 
-  if (rol === "1") {
-    data = datosTabla.map(item => ([item.idCita, item.paciente,
-    item.oficina, item.area, item.sede, '', item.titulo, item.estatus, item.horario]))
-  }
-  else if (rol === "2") {
-    data = datosTabla.map(item => ([item.idCita, item.especialista,
-      item.oficina, item.area, item.sede, '', item.titulo, item.estatus, item.horario]))
-  } else {
-    data = datosTabla.map(item => ([item.idCita, item.especialista, item.paciente,
-      item.oficina, item.area, item.sede, '', item.titulo, item.estatus, item.horario]))
-  }
+  data = tableData.map(item => ([item.id, item.nombre, item.sede, item.estNut || item.estPsi || item.estQB || item.estGE ]))
 
   autoTable(doc, {
-    head: [header],
+    head: [headerBase],
     body: data,
   })
-  doc.save('Historial Reportes.pdf')
+  doc.save('Reporte de pacientes.pdf')
 }
+
 // ----------------------------------------------------------------------
-export default function HistorialReportesView() {
 
-  const { user } = useAuthContext();
+export default function ReportePacientesView() {
 
-  const rol = user.idRol;
-
-  let TABLE_HEAD = [];
-
-  let header = [];
-
-  const headerBase = ["ID Cita", "Especialista", "Paciente", "Oficina", "Departamento", "Sede", "Sexo", "Motivo consulta", "Estatus",
-    "Horario cita"];
-
-  const [dataValue, setReportData] = useState('general');
-
-  const { reportesData } = usePostGeneral(dataValue, endpoints.reportes.lista, "reportesData");
-
-  const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
-
-  const [datosTabla, setDatosTabla] = useState([]);
-
-  const [especialistas, setEspecialistas] = useState([]);
-
-  const _rp = especialistas.flatMap((es) => (es.nombre));
+  const headerBase = ["ID", "Nombre", "Sede", "Estatus"];
 
   const table = useTable();
 
@@ -172,45 +126,34 @@ export default function HistorialReportesView() {
 
   const confirm = useBoolean();
 
-  const [filters, setFilters] = useState(defaultFilters);
+  const { user } = useAuthContext();
 
-  const TABLE_BASE = [
-    { id: '', label: 'ID Cita' },
-    { id: '', label: 'Especialista' },
-    { id: '', label: 'Paciente' },
-    { id: '', label: 'Oficina' },
-    { id: '', label: 'Departamento' },
-    { id: '', label: 'Sede' },
-    { id: '', label: 'Sexo' },
-    { id: '', label: 'Motivo Consulta' },
-    { id: '', label: 'Estatus' },
-    { id: '', label: 'Horario cita' },
-    { id: '', width: 88 },
-  ];
+  const rol = user.idRol
+
+  let puestos = 0;
 
   if (rol === "1") {
-
-    TABLE_BASE.splice(1, 1);
-    headerBase.splice(1, 1);
-
-    TABLE_HEAD = TABLE_BASE;
-    header = headerBase;
-
-  } else if (rol === "2") {
-
-    TABLE_BASE.splice(2, 1);
-    headerBase.splice(2, 1);
-
-    TABLE_HEAD = TABLE_BASE;
-    header = headerBase;
-
+    puestos = 158;
   } else {
-    TABLE_HEAD = TABLE_BASE;
-    header = headerBase;
+    puestos = user.idPuesto;
   }
 
+  const [area, setArea] = useState(puestos);
+
+  const { pacientesData } = usePostGeneral(area, endpoints.reportes.pacientes, "pacientesData");
+
+  const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
+
+  const [tableData, setTableData] = useState([]);
+
+  const [filters, setFilters] = useState(defaultFilters);
+
+  const [especialistas, setEspecialistas] = useState([]);
+
+  const _rp = especialistas.flatMap((es) => (es.nombre));
+
   const dataFiltered = applyFilter({
-    inputData: datosTabla,
+    inputData: tableData,
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
@@ -239,24 +182,24 @@ export default function HistorialReportesView() {
 
   const handleDeleteRow = useCallback(
     (id) => {
-      const deleteRow = datosTabla.filter((row) => row.id !== id);
-      setDatosTabla(deleteRow);
+      const deleteRow = tableData.filter((row) => row.id !== id);
+      setTableData(deleteRow);
 
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
-    [dataInPage.length, table, datosTabla]
+    [dataInPage.length, table, tableData]
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = datosTabla.filter((row) => !table.selected.includes(row.id));
-    setDatosTabla(deleteRows);
+    const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
+    setTableData(deleteRows);
 
     table.onUpdatePageDeleteRows({
-      totalRows: datosTabla.length,
+      totalRows: tableData.length,
       totalRowsInPage: dataInPage.length,
       totalRowsFiltered: dataFiltered.length,
     });
-  }, [dataFiltered.length, dataInPage.length, table, datosTabla]);
+  }, [dataFiltered.length, dataInPage.length, table, tableData]);
 
   const handleEditRow = useCallback(
     (id) => {
@@ -265,54 +208,52 @@ export default function HistorialReportesView() {
     [router]
   );
 
+  const handleFilterStatus = useCallback(
+    (event, newValue) => {
+      handleFilters('status', newValue);
+    },
+    [handleFilters]
+  );
+
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
 
-  const targetRef = useRef();
+  useEffect(() => {
+    setTableData(pacientesData);
+  }, [pacientesData]);
+
+  const handleChangeId = (newAr) => {
+    setArea(newAr);
+
+    setEspecialistas(especialistasData);
+  }
+
+  const handlePdf = async e => {
+    e.preventDefault();
+    handleDownloadPDF(
+      tableData,
+      headerBase
+    );
+  }
 
   const handleExcel = async e => {
     e.preventDefault();
     handleDownloadExcel(
-      datosTabla,
-      rol
+      tableData,
+      area
     );
   }
-  
-  const handlePdf = async e => {
-    e.preventDefault();
-    handleDownloadPDF(
-      datosTabla,
-      header,
-      rol
-    );
-  }
-
-  const handleChangeReport = (newData) => {
-    setReportData(newData);
-  }
-
-  useEffect(() => {
-    if (reportesData.length) {
-      setDatosTabla(reportesData);
-    }
-  }, [reportesData]);
-
-  useEffect(() => {
-    if (especialistasData.length) {
-      setEspecialistas(especialistasData);
-    }
-  }, [especialistasData]);
 
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Historial Reportes"
+          heading="Pacientes"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Reportes'/* , href: paths.dashboard.user.root */ },
-            { name: 'Historial' },
+            { name: 'Reportes', /* href: paths.dashboard.user.root */ },
+            { name: 'Pacientes' },
           ]}
           sx={{
             mb: { xs: 3, md: 5 },
@@ -321,17 +262,17 @@ export default function HistorialReportesView() {
 
         <Card>
 
-          <BarraTareasTabla
+          <UserTableToolbar
             filters={filters}
             onFilters={handleFilters}
             //
             roleOptions={_rp}
-            handleChangeReport={handleChangeReport}
-            table={table}
+            handleChangeId={handleChangeId}
+            rol={rol}
           />
 
           {canReset && (
-            <FiltrosTabla
+            <UserTableFiltersResult
               filters={filters}
               onFilters={handleFilters}
               //
@@ -364,24 +305,25 @@ export default function HistorialReportesView() {
             </Tooltip>
 
             <Tooltip title="Exportar a PDF" placement="top" arrow>
-            <MenuItem
-              sx={{ width: 50, p: 1 }}
-              onClick={handlePdf}
-            >
-              <Iconify icon="teenyicons:pdf-outline" />
-            </MenuItem>
+              <MenuItem
+                sx={{ width: 50, p: 1 }}
+                onClick={handlePdf}
+              >
+                <Iconify icon="teenyicons:pdf-outline" />
+              </MenuItem>
             </Tooltip>
 
           </Stack>
 
-          <TableContainer sx={{ position: 'relative', overflow: 'unset' }} >
+          <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+
             <Scrollbar>
-              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }} ref={targetRef}>
+              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
                 <TableHeadCustom
                   order={table.order}
                   orderBy={table.orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={datosTabla.length}
+                  rowCount={tableData.length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
                 />
@@ -393,21 +335,20 @@ export default function HistorialReportesView() {
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
                     .map((row) => (
-                      <FilasTabla
-                        key={`route_${uuidv4()}`}
+                      <UserTableRow
+                        key={row.id}
                         row={row}
-                        selected={table.selected.includes(row.idCita)}
-                        onSelectRow={() => table.onSelectRow(row.idCita)}
-                        onDeleteRow={() => handleDeleteRow(row.idCita)}
-                        onEditRow={() => handleEditRow(row.idCita)}
-                        rol={rol}
-                        rel={handleChangeReport}
+                        area={area}
+                        selected={table.selected.includes(row.id)}
+                        onSelectRow={() => table.onSelectRow(row.id)}
+                        onDeleteRow={() => handleDeleteRow(row.id)}
+                        onEditRow={() => handleEditRow(row.id)}
                       />
                     ))}
 
                   <TableEmptyRows
                     height={denseHeight}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, datosTabla.length)}
+                    emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
                   />
 
                   <TableNoData notFound={notFound} />
@@ -422,6 +363,7 @@ export default function HistorialReportesView() {
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
             onRowsPerPageChange={table.onChangeRowsPerPage}
+          //
           />
         </Card>
       </Container>
@@ -429,10 +371,10 @@ export default function HistorialReportesView() {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Eliminar"
+        title="Delete"
         content={
           <>
-            Estas seguro de eliminar <strong> {table.selected.length} </strong> items?
+            Are you sure want to delete <strong> {table.selected.length} </strong> items?
           </>
         }
         action={
@@ -444,7 +386,7 @@ export default function HistorialReportesView() {
               confirm.onFalse();
             }}
           >
-            Eliminar
+            Delete
           </Button>
         }
       />
@@ -455,7 +397,7 @@ export default function HistorialReportesView() {
 // ----------------------------------------------------------------------
 
 function applyFilter({ inputData, comparator, filters }) {
-  const { name, area } = filters;
+  const { name, status, role } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
 
@@ -469,19 +411,11 @@ function applyFilter({ inputData, comparator, filters }) {
 
   if (name) {
     inputData = inputData.filter(
-      (cita) =>
-        cita.idCita.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        cita.horario.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        cita.estatus.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        cita.area.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        cita.especialista.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        cita.paciente.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        cita.oficina.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 
+      (user) =>
+        user.nombre.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        user.sede.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        user.correo.toLowerCase().indexOf(name.toLowerCase()) !== -1
     );
-  }
-
-  if (area.length) {
-    inputData = inputData.filter((cita) => area.includes(cita.area));
   }
 
   return inputData;

@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import { Base64 } from 'js-base64';
 import { useState, useEffect } from 'react';
 
 import Stack from '@mui/material/Stack';
@@ -14,6 +13,7 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import { endpoints } from 'src/utils/axios';
 
 import { bgBlur } from 'src/theme/css';
+import { useAuthContext } from 'src/auth/hooks';
 import { usePostGeneral } from 'src/api/general';
 
 import Logo from 'src/components/logo';
@@ -28,9 +28,12 @@ import NotifiEncuesta from '../common/notificacion-encuesta';
 import NotificationsPopover from '../common/notifications-popover';
 
 // ----------------------------------------------------------------------
-
 export default function Header({ onOpenNav }) {
   const theme = useTheme();
+
+  const { user: datosUser } = useAuthContext();
+
+  const idUsr = datosUser.idUsuario;
 
   const settings = useSettingsContext();
 
@@ -119,11 +122,9 @@ export default function Header({ onOpenNav }) {
 
   const fechaActual = new Date().toISOString().slice(0, 10);
 
-  const idUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
-
   useEffect(() => {
     const array = {
-      idUsuario: idUser.idUsuario,
+      idUsuario: idUsr,
       vigenciaInicio: trimestreAnterior,
       vigenciaFin: trimestreActual,
       trimDefault: trimestre,
@@ -131,13 +132,19 @@ export default function Header({ onOpenNav }) {
     }
     
     setDataNot(array)
-  }, [idUser.idUsuario, 
+  }, [idUsr, 
       trimestreAnterior, 
       trimestreActual,
       trimestre,
       fechaActual])
 
-  const [dataNot, setDataNot] = useState([]);
+  const [dataNot, setDataNot] = useState({
+    idUsuario: idUsr,
+    vigenciaInicio: trimestreAnterior,
+    vigenciaFin: trimestreActual,
+    trimDefault: trimestre,
+    fechActual: fechaActual,
+  });
 
   const { getData } = usePostGeneral(dataNot, endpoints.encuestas.getEncNotificacion, "getData");
 

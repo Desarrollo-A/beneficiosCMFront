@@ -1,6 +1,6 @@
 import Xlsx from 'json-as-xlsx';
 import PropTypes from 'prop-types';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -111,12 +111,6 @@ export default function EncuestaBarra({ title, subheader, chart, user, handleCha
       title
     );
   }
-
-  const [age, setAge] = useState('');
-
-  const handleChange = (event) => {
-    setAge(event.target.value);
-  };
 
   return (
     <>

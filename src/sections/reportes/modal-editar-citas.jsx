@@ -2,7 +2,6 @@ import * as Yup from 'yup';
 import { mutate } from 'swr';
 import { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { Base64 } from 'js-base64';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -17,6 +16,7 @@ import DialogContent from '@mui/material/DialogContent';
 import { endpoints } from 'src/utils/axios';
 
 import { useUpdate } from 'src/api/reportes';
+import { useAuthContext } from 'src/auth/hooks';
 
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
@@ -26,11 +26,11 @@ import FormProvider, { RHFTextField } from 'src/components/hook-form';
 export default function UserQuickEditForm({ currentUser, open, onClose, idCita, rel }) {
   const { enqueueSnackbar } = useSnackbar();
 
-  const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+  const { user } = useAuthContext();
   
   const updateObservacion = useUpdate(endpoints.reportes.observacion);
 
-  const idUsr = datosUser.idUsuario;
+  const idUsr = user.idUsuario;
 
   const NewUserSchema = Yup.object().shape({
     descripcion: Yup.string().required('El campo es requerido'),

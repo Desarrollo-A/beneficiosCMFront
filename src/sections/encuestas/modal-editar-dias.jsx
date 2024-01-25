@@ -9,6 +9,7 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
+import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -89,6 +90,9 @@ export default function EditarDias({ open, onClose, idEncuesta }) {
       {/* <DialogTitle>Trimestre</DialogTitle> */}
 
       <Stack spacing={1} >
+
+      <DialogTitle>¿Estás de modificar los días habiles de la encuesta?</DialogTitle>
+
         <FormControl spacing={3} sx={{ p: 3 }}>
           <InputLabel spacing={3} sx={{ p: 3 }} id="demo-simple-select-label">Dias para constestar</InputLabel>
           <Select
@@ -108,14 +112,14 @@ export default function EditarDias({ open, onClose, idEncuesta }) {
       </Stack>
 
       <DialogActions>
+        <Button variant="contained" color="error" onClick={onClose}>
+          Cerrar
+        </Button>
         <Button variant="contained" color="success" onClick={() => {
           handleEstatus(pregunta);
           confirm.onFalse();
         }}>
           Guardar
-        </Button>
-        <Button variant="outlined" onClick={onClose}>
-          Cerrar
         </Button>
       </DialogActions>
 

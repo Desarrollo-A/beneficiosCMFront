@@ -76,7 +76,7 @@ export default function UserQuickEditForm({ open, onClose, idEncuesta }) {
       </Stack>
 
       <DialogActions>
-        <Button variant="outlined" onClick={onClose}>
+        <Button variant="contained" color="error" onClick={onClose}>
           Cerrar
         </Button>
       </DialogActions>

@@ -146,6 +146,10 @@ export const endpoints = {
     lista: '/reportesController/citas',
     especialistas: '/generalController/especialistas',
     observacion: '/reportesController/observacion',
+    pacientes: '/reportesController/getPacientes',
+    citas: '/generalController/getAppointmentHistory',
+    getEstatusPaciente: '/generalController/getEstatusPaciente',
+    updateEstatusPaciente: '/generalController/updateEstatusPaciente',
   },
   dashboard: {
     usersCount: '/generalController/usrCount',
