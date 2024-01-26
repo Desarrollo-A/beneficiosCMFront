@@ -141,6 +141,7 @@ export const endpoints = {
     getLastAppointment: 'calendarioController/getLastAppointment',
     updateAppointment: 'calendarioController/updateAppointmentData',
     getPendientes: 'calendarioController/getPendientes',
+    updateDetail: 'calendarioController/updateDetallePaciente',
   },
   reportes: {
     lista: '/reportesController/citas',
