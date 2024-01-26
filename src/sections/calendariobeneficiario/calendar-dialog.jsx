@@ -12,6 +12,7 @@ import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/system/Stack';
+import Chip from '@mui/material/Chip';
 import Button from '@mui/material/Button';
 import Select from '@mui/material/Select';
 import Dialog from '@mui/material/Dialog';
@@ -35,11 +36,11 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import uuidv4 from 'src/utils/uuidv4';
 import { fTimestamp } from 'src/utils/format-time';
 
+import { useAuthContext } from 'src/auth/hooks';
 import { cancelAppointment, useGetEventReasons } from 'src/api/calendar-specialist';
 import {
   crearCita,
   getHorario,
-  getContactoQB,
   getModalities,
   getSpecialists,
   useGetBenefits,
@@ -48,6 +49,7 @@ import {
   getAtencionXSede,
   updateAppointment,
   getCitasFinalizadas,
+  updateDetailPacient,
   getHorariosOcupados,
   getCitasSinFinalizar,
   getOficinaByAtencion,
@@ -63,12 +65,9 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(isSameOrBefore);
 
-const initialValue = dayjs().tz('America/Mexico_City'); // Objeto con todo los datos de fecha y hora
+let initialValue = dayjs().tz('America/Mexico_City'); // Objeto con todo los datos de fecha y hora
 const lastDayOfNextMonth = initialValue.add(2, 'month').startOf('month').subtract(1, 'day');
-// const now = dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss');
-
-const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
-console.log('Datos de sesión', datosUser);
+initialValue = initialValue.hour() < 15 ? initialValue : initialValue.add(1, 'day');
 
 export default function CalendarDialog({ currentEvent, onClose, selectedDate, appointmentMutate }) {
   const [selectedValues, setSelectedValues] = useState({
@@ -77,6 +76,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     modalidad: '',
   });
   const [open, setOpen] = useState(false);
+  const [confirmCancel, setConfirmCancel] = useState(false);
   const [reschedule, setReschedule] = useState(false);
   const [beneficios, setBeneficios] = useState([]);
   const [especialistas, setEspecialistas] = useState([]);
@@ -85,13 +85,15 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const [errorEspecialista, setErrorEspecialista] = useState(false);
   const [errorModalidad, setErrorModalidad] = useState(false);
   const [errorHorarioSeleccionado, setErrorHorarioSeleccionado] = useState(false);
-  const [infoContact, setInfoContact] = useState('');
+  const [infoContact, setInfoContact] = useState({});
   const [oficina, setOficina] = useState({});
   const [diasOcupados, setDiasOcupados] = useState([]);
   const [diasHabilitados, setDiasHabilitados] = useState([]);
   const [fechasDisponibles, setFechasDisponibles] = useState([]);
   const [horariosDisponibles, setHorariosDisponibles] = useState([]);
   const [horarioSeleccionado, setHorarioSeleccionado] = useState('');
+
+  const { user: datosUser } = useAuthContext();
 
   const { data: benefits } = useGetBenefits(datosUser.idSede);
 
@@ -101,9 +103,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
   const formSchema = yup.object().shape({});
 
-  const { data: eventReasons, reasonsMutate } = useGetEventReasons(
-    currentEvent?.id ? currentEvent?.id : 0
-  );
+  const { data: eventReasons, reasonsMutate } = useGetEventReasons(currentEvent?.id || 0);
 
   const methods = useForm({
     resolver: yupResolver(formSchema),
@@ -181,7 +181,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
             1,
             idAtencionPorSede.data[0].idAtencionXSede,
             datosUser.idUsuario,
-            registrarPago.data
+            registrarPago.data,
+            selectedValues.beneficio
           );
         }
         if (!registrarPago.result) {
@@ -208,7 +209,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
             1,
             idAtencionPorSede.data[0].idAtencionXSede,
             datosUser.idUsuario,
-            registrarPago.data
+            registrarPago.data,
+            selectedValues.beneficio
           );
         }
         if (!registrarPago.result) {
@@ -234,10 +236,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       });
       return onClose();
     }
-    console.log('Citas sin finalizar: ', citasSinFinalizar);
 
     const citasFinalizadas = await getCitasFinalizadas(datosUser.idUsuario, mes, año);
-    console.log('Cant de citas usadas:', citasFinalizadas);
 
     if (citasFinalizadas.result === true && citasFinalizadas?.data.length >= 2) {
       enqueueSnackbar('Ya cuentas con la cantidad maxima de beneficios brindados en el mes', {
@@ -259,7 +259,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
           2,
           idAtencionPorSede.data[0].idAtencionXSede,
           datosUser.idUsuario,
-          registrarPago.data
+          registrarPago.data,
+          selectedValues.beneficio
         );
       }
       if (!registrarPago.result) {
@@ -286,7 +287,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
           2,
           idAtencionPorSede.data[0].idAtencionXSede,
           datosUser.idUsuario,
-          registrarPago.data
+          registrarPago.data,
+          selectedValues.beneficio
         );
       }
       if (!registrarPago.result) {
@@ -301,14 +303,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   });
 
   const onCancel = async () => {
-    // Reagendar
-    // const now = dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss');
-    // const deadline = dayjs(currentEvent.start).subtract(3, 'hour').format('YYYY-MM-DD HH:mm:ss');
-    // console.log('Ahora', now);
-    // console.log('Limite', deadline);
-    // console.log('Estoy antes de la cita?', now < deadline);
-    // console.log('Estoy despues de la cita?', now > deadline);
-
     const cancel = await cancelAppointment(currentEvent, currentEvent.id, 0);
     if (cancel.result) {
       enqueueSnackbar('¡Se ha cancelado la cita!', {
@@ -336,7 +330,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     await new Promise((resolve) => setTimeout(resolve, 2000));
     setOpen(false);
     if (update.result) {
-      enqueueSnackbar('¡Se ha generado el pago con exito!', {
+      enqueueSnackbar('¡Se ha generado el pago con éxito!', {
         variant: 'success',
       });
       return onClose();
@@ -351,7 +345,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   };
 
   const handleChange = async (input, value) => {
-    setInfoContact('');
+    setInfoContact({});
     setOficina({});
     setHorarioSeleccionado('');
     setErrorHorarioSeleccionado(false);
@@ -361,7 +355,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       setErrorBeneficio(false);
       // HACER PROCESO DE DETALLE PACIENTE
       const datosUltimaCita = await lastAppointment(datosUser.idSede, value);
-      console.log('infoDetalle', datosUltimaCita);
       if (datosUltimaCita.result) {
         const modalitiesData = await getModalities(
           datosUser.idSede,
@@ -402,18 +395,18 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
           modalidad: modalitiesData.data[0].tipoCita,
         });
         setErrorModalidad(false);
-        if (selectedValues.beneficio === 158) {
-          const data = await getContactoQB(value);
-          setInfoContact(data);
-        } else {
-          const data = await getOficinaByAtencion(
-            datosUser.idSede,
-            selectedValues.beneficio,
-            value,
-            modalitiesData.data[0].tipoCita
-          );
-          setOficina(data);
-        }
+        // if (selectedValues.beneficio === 158) {
+        //   const data = await getContactoQB(value);
+        //   setInfoContact(data);
+        // } else {
+        const data = await getOficinaByAtencion(
+          datosUser.idSede,
+          selectedValues.beneficio,
+          value,
+          modalitiesData.data[0].tipoCita
+        );
+        setOficina(data);
+        // }
       } else {
         setSelectedValues({
           ...selectedValues,
@@ -445,18 +438,18 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       setEspecialistas(data?.data);
       const modalitiesData = await getModalities(value.idSede, value.idEspecialista);
       setModalidades(modalitiesData?.data);
-      if (value.idPuesto === 158) {
-        const cotactQB = await getContactoQB(value.idEspecialista);
-        setInfoContact(cotactQB);
-      } else {
-        const oficinaAtencion = await getOficinaByAtencion(
-          value.idSede,
-          value.idPuesto, // Beneficio id
-          value.idEspecialista,
-          value.modalidad
-        );
-        setOficina(oficinaAtencion);
-      }
+      // if (value.idPuesto === 158) {
+      //   const cotactQB = await getContactoQB(value.idEspecialista);
+      //   setInfoContact(cotactQB);
+      // } else {
+      const oficinaAtencion = await getOficinaByAtencion(
+        value.idSede,
+        value.idPuesto, // Beneficio id
+        value.idEspecialista,
+        value.modalidad
+      );
+      setOficina(oficinaAtencion);
+      // }
       getHorariosDisponibles(value.idPuesto, value.idEspecialista);
     }
   };
@@ -562,11 +555,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     setIsLoading(true);
     // Consultamos el horario del especialista segun su beneficio.
     const horarioACubrir = await getHorario(beneficio);
-    if (!horarioACubrir) return; // En caso de que no halla horario detenemos el proceso.
+    if (!horarioACubrir.result) return; // En caso de que no halla horario detenemos el proceso.
 
-    // if (horarioACubrir?.data.length === 0) {
-    //   horarioACubrir.data;
-    // }
     // Teniendo en cuenta el dia actual, consultamos los dias restantes del mes actual y todos los dias del mes que sigue.
     let diasProximos = generarFechas(initialValue, lastDayOfNextMonth);
 
@@ -584,7 +574,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       lastDayOfNextMonth.format('YYYY-MM-DD')
     );
 
-    // Dias laborables con horario
+    // Dias laborables con horario.
     const diasLaborablesConHorario = diasProximos.map((item) => {
       const elemento = {};
       elemento.fecha = item;
@@ -633,34 +623,41 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     const registrosCadaHora = getRegistrosEn1hora(registrosFiltrados);
 
+    // Resltado final de los horarios de todos los dias para agendar
     setFechasDisponibles(registrosCadaHora);
 
-    const diasDisponibles = obtenerSoloFechas(registrosFiltrados);
+    // ////////////////////////////////////////////////////////////////////////////////////////
+    // Este proceso solo es para quitar en el calendario visualmente los dias que no están ///
+    // ///////////////////////////////////////////////////////////////////////////////////////
+    const diasDisponibles = obtenerSoloFechas(registrosCadaHora);
     setDiasHabilitados(diasDisponibles);
 
     const diasOcupadosFiltro = filtradoDias(diasProximos, diasDisponibles);
 
-    const año = new Date().getFullYear();
+    const year = initialValue.year();
 
     // Dias festivos
-    const diasFestivos = [
-      `${año}-01-01`,
-      `${año}-02-05`,
-      `${año}-03-21`,
-      `${año}-05-01`,
-      `${año}-09-16`,
-      `${año}-11-20`,
-      `${año}-12-01`,
-      `${año}-03-21`,
-      `${año + 1}-01-01`,
-      `${año + 1}-02-05`,
-      `${año + 1}-03-21`,
-      `${año + 1}-05-01`,
-      `${año + 1}-09-16`,
-      `${año + 1}-11-20`,
-      `${año + 1}-12-01`,
-      `${año + 1}-03-21`,
-    ];
+    const diasFestivos =
+      beneficio === 158
+        ? []
+        : [
+            `${year}-01-01`,
+            `${year}-02-05`,
+            `${year}-03-21`,
+            `${year}-05-01`,
+            `${year}-09-16`,
+            `${year}-11-20`,
+            `${year}-12-01`,
+            `${year}-03-21`,
+            `${year + 1}-01-01`,
+            `${year + 1}-02-05`,
+            `${year + 1}-03-21`,
+            `${year + 1}-05-01`,
+            `${year + 1}-09-16`,
+            `${year + 1}-11-20`,
+            `${year + 1}-12-01`,
+            `${year + 1}-03-21`,
+          ];
 
     const diasADeshabilitar = new Set([...diasOcupadosFiltro, ...diasFestivos]);
 
@@ -743,15 +740,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     return isWeekendDay || isDisabledFromSQLServer;
   };
 
-  const contactSpecialist = () => {
-    const phoneNumber = infoContact.data[0].telPersonal;
-    // Construye el enlace de WhatsApp
-    const whatsappLink = `https://wa.me/${phoneNumber}?text=¡Hola,%20me%20gustaría%20agendar%20una%20cita!%20`;
-
-    // Abre una nueva ventana con el enlace de WhatsApp
-    window.open(whatsappLink, '_blank');
-  };
-
   const agendarCita = async (
     titulo,
     especialista,
@@ -760,7 +748,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     tipoCita,
     atencionPorSede,
     idUsuario,
-    detallePago
+    detallePago,
+    beneficio
   ) => {
     const registrarCita = await crearCita(
       titulo,
@@ -776,7 +765,13 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       detallePago
     );
     if (registrarCita.result) {
-      enqueueSnackbar('¡Se ha agendado la cita con exito!', {
+      const updateDetail = await updateDetailPacient(datosUser.idUsuario, beneficio);
+      if (!updateDetail.result) {
+        enqueueSnackbar('¡Surgió un error con el uso del beneficio para el paciente!', {
+          variant: 'error',
+        });
+      }
+      enqueueSnackbar('¡Se ha agendado la cita con éxito!', {
         variant: 'success',
       });
       appointmentMutate();
@@ -851,7 +846,10 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     }
 
     const cancel = await cancelAppointment(currentEvent, currentEvent.id, 8);
-    console.log('Regreso de cancel', cancel);
+
+    if (!cancel.result) {
+      return '';
+    }
 
     const citasSinFinalizar = await getCitasSinFinalizar(
       datosUser.idUsuario,
@@ -865,10 +863,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       });
       return onClose();
     }
-    console.log('Citas sin finalizar: ', citasSinFinalizar);
 
     const citasFinalizadas = await getCitasFinalizadas(datosUser.idUsuario, mes, año);
-    console.log('Cant de citas usadas:', citasFinalizadas);
 
     if (citasFinalizadas.result === true && citasFinalizadas?.data.length >= 2) {
       enqueueSnackbar('Ya cuentas con la cantidad maxima de beneficios brindados en el mes', {
@@ -894,6 +890,36 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const rescheduleAppointment = () => {
     handleChange('all', currentEvent);
     setReschedule(true);
+  };
+
+  const Items = () => {
+    // items de los motivos que se trae el evento
+    let items = '';
+    // reasonsMutate();
+    if (eventReasons?.length > 0) {
+      items = eventReasons.map((er) => (
+        <Tooltip title={er.nombre} key={er.idOpcion}>
+          <Chip
+            label={er.nombre}
+            variant="outlined"
+            size="small"
+            style={{ backgroundColor: '#e0e0e0', borderRadius: '20px' }}
+          />
+        </Tooltip>
+      ));
+    } else {
+      items = (
+        <Tooltip title="Sin motivos de cita">
+          <Chip
+            label="Sin motivos de cita"
+            variant="outlined"
+            size="small"
+            style={{ backgroundColor: '#e0e0e0', borderRadius: '20px' }}
+          />
+        </Tooltip>
+      );
+    }
+    return items;
   };
 
   useEffect(() => {
@@ -927,7 +953,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                   </Tooltip>
                 )}
                 <Tooltip title="Cancelar cita">
-                  <IconButton onClick={() => onCancel()}>
+                  <IconButton onClick={() => setConfirmCancel(true)}>
                     <Iconify icon="solar:trash-bin-trash-bold" width={22} />
                   </IconButton>
                 </Tooltip>
@@ -951,9 +977,41 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                 }}
               >
                 <Iconify icon="mdi:account-circle" width={30} sx={{ color: 'text.disabled' }} />
-                <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                  Cita en {currentEvent?.beneficio ? currentEvent?.beneficio : 'Beneficio'}
-                </Typography>
+                {currentEvent?.estatus === 2 || currentEvent?.estatus === '7' ? (
+                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                    Cita en {`${currentEvent?.beneficio} (cancelado)`}
+                  </Typography>
+                ) : (
+                  ''
+                )}
+                {currentEvent?.estatus === 8 ? (
+                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                    Cita en {`${currentEvent?.beneficio} (reagendado)`}
+                  </Typography>
+                ) : (
+                  ''
+                )}
+                {currentEvent?.estatus === 3 ? (
+                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                    Cita en {`${currentEvent?.beneficio} (penalizado)`}
+                  </Typography>
+                ) : (
+                  ''
+                )}
+                {currentEvent?.estatus === 4 ? (
+                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                    Cita en {`${currentEvent?.beneficio} (finalizada)`}
+                  </Typography>
+                ) : (
+                  ''
+                )}
+                {currentEvent?.estatus === 5 ? (
+                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                    Cita en {`${currentEvent?.beneficio} (justificado)`}
+                  </Typography>
+                ) : (
+                  ''
+                )}
               </Stack>
               <Stack
                 alignItems="center"
@@ -1073,6 +1131,21 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                   </Typography>
                 </Stack>
               </Stack>
+              <Stack spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1 }}>
+                <Stack spacing={1} direction="row">
+                  <Iconify icon="solar:chat-round-line-outline" />
+                  <Typography>Motivos</Typography>
+                </Stack>
+                <Stack
+                  flexDirection="row"
+                  flexWrap="wrap"
+                  flex={1}
+                  spacing={2}
+                  sx={{ px: { xs: 1, md: 3 }, py: 1 }}
+                >
+                  <Items />
+                </Stack>
+              </Stack>
             </>
           ) : (
             <AppointmentSchedule
@@ -1112,22 +1185,9 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
             </Button>
           )}
           {!currentEvent?.id && (
-            <>
-              {selectedValues.beneficio === 158 ? (
-                <Button
-                  variant="contained"
-                  color="success"
-                  disabled={!infoContact.result}
-                  onClick={contactSpecialist}
-                >
-                  Contactar
-                </Button>
-              ) : (
-                <LoadingButton type="submit" variant="contained" color="success">
-                  Agendar
-                </LoadingButton>
-              )}
-            </>
+            <LoadingButton type="submit" variant="contained" color="success">
+              Agendar
+            </LoadingButton>
           )}
         </DialogActions>
       </FormProvider>
@@ -1185,7 +1245,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         <DialogContent sx={{ p: { xs: 1, md: 2 } }} direction="row" justifycontent="space-between">
           <AppointmentSchedule
             selectedValues={selectedValues}
-            setSelectedValues={setSelectedValues}
             handleChange={handleChange}
             beneficios={beneficios}
             errorBeneficio={errorBeneficio}
@@ -1210,23 +1269,49 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
             Cerrar
           </Button>
           {currentEvent?.id && (
-            <>
-              {selectedValues.beneficio === 158 ? (
-                <Button
-                  variant="contained"
-                  color="success"
-                  disabled={!infoContact.result}
-                  onClick={contactSpecialist}
-                >
-                  Contactar
-                </Button>
-              ) : (
-                <Button variant="contained" color="success" onClick={handleReSchedule}>
-                  Reagendar
-                </Button>
-              )}
-            </>
+            // <>
+            //   {selectedValues.beneficio === 158 ? (
+            //     <Button
+            //       variant="contained"
+            //       color="success"
+            //       disabled={!infoContact.result}
+            //       onClick={contactSpecialist}
+            //     >
+            //       Contactar
+            //     </Button>
+            //   ) : (
+            <Button variant="contained" color="success" onClick={handleReSchedule}>
+              Reagendar
+            </Button>
+            //   )}
+            // </>
           )}
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={confirmCancel} maxWidth="sm">
+        <DialogContent>
+          <Stack
+            direction="row"
+            justifyContent="center"
+            useFlexGap
+            flexWrap="wrap"
+            sx={{ pt: { xs: 1, md: 2 }, pb: { xs: 1, md: 2 } }}
+          >
+            <Typography color="red" sx={{ mt: 1, mb: 1 }}>
+              <strong>¡ATENCIÓN!</strong>
+            </Typography>
+          </Stack>
+
+          <Typography>¿Está seguro de cancelar el horario?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" color="error" onClick={() => setConfirmCancel(false)}>
+            Cerrar
+          </Button>
+          <Button variant="contained" color="success" onClick={onCancel} autoFocus>
+            Aceptar
+          </Button>
         </DialogActions>
       </Dialog>
     </>
@@ -1252,6 +1337,7 @@ const AppointmentSchedule = ({
   setHorarioSeleccionado,
   errorHorarioSeleccionado,
   currentEvent,
+  Items,
 }) => (
   <Grid sx={{ display: 'flex' }}>
     <Grid sx={{ width: '100%' }}>
@@ -1260,10 +1346,10 @@ const AppointmentSchedule = ({
           width: { xs: '100%', md: '100%' },
           p: { xs: 1, md: 2 },
           borderRight: 'lightgray solid',
-          borderRightWidth:
-            selectedValues.especialista && selectedValues.beneficio !== 158
-              ? '2px' // Puedes ajustar el grosor según tus necesidades
-              : '0',
+          borderRightWidth: selectedValues.especialista ? '2px' : '0px',
+          // selectedValues.especialista && selectedValues.beneficio !== 158
+          //   ? '2px' // Puedes ajustar el grosor según tus necesidades
+          //   : '0',
         }}
       >
         <Stack spacing={3}>
@@ -1341,7 +1427,7 @@ const AppointmentSchedule = ({
               )}
             </FormControl>
           </Stack>
-          {selectedValues.modalidad && selectedValues.beneficio === 158 && (
+          {/* {selectedValues.modalidad && selectedValues.beneficio === 158 && (
             <Stack sx={{ px: 1 }}>
               Contacte al especialista seleccionado para agendar una cita de Quantum Balance:
               <br />
@@ -1384,8 +1470,8 @@ const AppointmentSchedule = ({
                 ' Cargando...'
               )}
             </Stack>
-          )}
-          {selectedValues.modalidad === 1 && selectedValues.beneficio !== 158 && (
+          )} */}
+          {selectedValues.modalidad === 1 && selectedValues.beneficio /* !== 158 */ && (
             <Stack spacing={1} sx={{ p: { xs: 1, md: 1 } }}>
               Dirección de la oficina :
               {oficina && oficina.result ? (
@@ -1418,7 +1504,7 @@ const AppointmentSchedule = ({
     <Grid
       sx={{
         width: '100%',
-        display: selectedValues.especialista && selectedValues.beneficio !== 158 ? 'block' : 'none',
+        display: selectedValues.modalidad ? 'block' : 'none',
       }}
     >
       <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
@@ -1472,7 +1558,6 @@ const AppointmentSchedule = ({
 
 AppointmentSchedule.propTypes = {
   selectedValues: PropTypes.object,
-  setSelectedValues: PropTypes.func,
   handleChange: PropTypes.func,
   beneficios: PropTypes.array,
   errorBeneficio: PropTypes.bool,
@@ -1480,7 +1565,7 @@ AppointmentSchedule.propTypes = {
   errorEspecialista: PropTypes.bool,
   modalidades: PropTypes.array,
   errorModalidad: PropTypes.bool,
-  infoContact: PropTypes.string,
+  infoContact: PropTypes.object,
   oficina: PropTypes.object,
   isLoading: PropTypes.bool,
   handleDateChange: PropTypes.func,
@@ -1490,6 +1575,7 @@ AppointmentSchedule.propTypes = {
   setHorarioSeleccionado: PropTypes.func,
   errorHorarioSeleccionado: PropTypes.bool,
   currentEvent: PropTypes.object,
+  Items: PropTypes.any,
 };
 CalendarDialog.propTypes = {
   currentEvent: PropTypes.object,

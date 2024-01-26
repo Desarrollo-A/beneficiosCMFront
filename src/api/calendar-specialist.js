@@ -519,10 +519,10 @@ export async function reschedule(eventData, idDetalle, cancelType){
     response = await fetcherPost(create_appointment, data);
     
     if(response.result){
-      const mail_1 = fetcherPost(sendMail, mailAppointment);
+      fetcherPost(sendMail, mailAppointment);
       response = await fetcherPost(cancel_appointment, cancelData);
       if(response.result){
-        const mail_2 = fetcherPost(sendMail, mailCancel);
+        fetcherPost(sendMail, mailCancel);
       }
     }
   }

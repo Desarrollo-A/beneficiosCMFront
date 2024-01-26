@@ -3,9 +3,9 @@ import Stack from '@mui/material/Stack';
 
 import { useMockedUser } from 'src/hooks/use-mocked-user';
 
-import { hideScroll } from 'src/theme/css';
+import { bgBlur, hideScroll } from 'src/theme/css';
 
-import Logo from 'src/components/logo';
+import Logo from 'src/components/logoMini';
 import { NavSectionMini } from 'src/components/nav-section';
 
 import { NAV } from '../config-layout';
@@ -24,6 +24,9 @@ export default function NavMini() {
       sx={{
         flexShrink: { lg: 0 },
         width: { lg: NAV.W_MINI },
+        ...bgBlur({
+          color:'#161c24',
+        }),
       }}
     >
       <NavToggleButton

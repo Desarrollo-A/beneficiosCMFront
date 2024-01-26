@@ -8,6 +8,8 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import SvgColor from 'src/components/svg-color';
 
+import { useGetMenu } from 'src/api/menu';
+
 // ----------------------------------------------------------------------
 
 const icon = (name) => (
@@ -49,11 +51,14 @@ const ICONS = {
 // ----------------------------------------------------------------------
 
 export function useNavData() {
-  const { t } = useTranslate();
+  // const { t } = useTranslate();
 
+  const { menu } = useGetMenu();
+
+  /*
   const data = useMemo(
     () => [
-       // AGENDA
+      // AGENDA
       // ----------------------------------------------------------------------
       {
         subheader: t('agenda'),
@@ -66,7 +71,7 @@ export function useNavData() {
               { title: t('historial'), path: paths.dashboard.reportes.historial },
               { title: t('pacientes'), path: paths.dashboard.reportes.pacientes },
             ],
-          }
+          },
         ],
       },
       // ENCUESTAS
@@ -82,7 +87,7 @@ export function useNavData() {
               { title: t('ver'), path: paths.dashboard.encuestas.ver },
               { title: t('crear'), path: paths.dashboard.encuestas.crear },
             ],
-          }
+          },
         ],
       },
       // OVERVIEW
@@ -129,7 +134,7 @@ export function useNavData() {
             title: t('Calendario'),
             path: paths.dashboard.general.calendarioEspecialista,
             icon: ICONS.calendar,
-          }
+          },
         ],
       },
 
@@ -234,8 +239,8 @@ export function useNavData() {
             ],
           },
 
-           // Usuarios batch
-           {
+          // Usuarios batch
+          {
             title: t('Usuarios'),
             path: paths.dashboard.usuarios.root,
             icon: ICONS.user,
@@ -244,7 +249,7 @@ export function useNavData() {
               { title: t('perfil'), path: paths.dashboard.usuarios.perfil },
             ],
           },
-          
+
           // FILE MANAGER
           {
             title: t('file_manager'),
@@ -269,7 +274,7 @@ export function useNavData() {
 
           // CALENDAR
           {
-            title: t('calendar'),
+            title: t('Calendario'),
             path: paths.dashboard.calendar,
             icon: ICONS.calendar,
           },
@@ -373,5 +378,7 @@ export function useNavData() {
     [t]
   );
 
-  return data;
+*/
+
+  return menu;
 }

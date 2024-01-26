@@ -14,10 +14,10 @@ const ReportePacientesPage = lazy(() => import('src/pages/dashboard/reportes/rep
 const IndexPage = lazy(() => import('src/pages/dashboard/app'));
 const DashPage = lazy(() => import('src/pages/dashboard/dash'));
 // ENCUESTAS
-const EncuestasPage = lazy(() => import('src/pages/dashboard/encuestas/encuestas-view'))
-const CrearEncuestaPage = lazy(() => import('src/pages/dashboard/encuestas/crear-view'))
-const VerEncuestasPage = lazy(() => import('src/pages/dashboard/encuestas/ver-view'))
-const VerEncuestaDetallePage = lazy(() => import('src/pages/dashboard/encuestas/ver-detalle-view'))
+const EncuestasPage = lazy(() => import('src/pages/dashboard/encuestas/encuestas-view'));
+const CrearEncuestaPage = lazy(() => import('src/pages/dashboard/encuestas/crear-view'));
+const VerEncuestasPage = lazy(() => import('src/pages/dashboard/encuestas/ver-view'));
+const VerEncuestaDetallePage = lazy(() => import('src/pages/dashboard/encuestas/ver-detalle-view'));
 // ----------------------------------------------------------------------
 const OverviewEcommercePage = lazy(() => import('src/pages/dashboard/ecommerce'));
 const OverviewAnalyticsPage = lazy(() => import('src/pages/dashboard/analytics'));
@@ -87,7 +87,6 @@ export const dashboardRoutes = [
         <DashboardLayout>
           <Suspense fallback={<LoadingScreen />}>
             <Outlet />
-            
           </Suspense>
         </DashboardLayout>
       </AuthGuard>
@@ -98,7 +97,7 @@ export const dashboardRoutes = [
         path: 'reportes',
         children: [
           { path: 'historial', element: <HistorialReportesPage /> },
-          { path: 'pacientes', element: <ReportePacientesPage />},
+          { path: 'pacientes', element: <ReportePacientesPage /> },
         ],
       },
       {
@@ -107,11 +106,11 @@ export const dashboardRoutes = [
           { path: 'contestar', element: <EncuestasPage /> },
           { path: 'crear', element: <CrearEncuestaPage /> },
           { path: 'ver', element: <VerEncuestasPage /> },
-          { path: 'detalle', element: <VerEncuestaDetallePage/> },
+          { path: 'detalle', element: <VerEncuestaDetallePage /> },
         ],
       },
       { path: 'dash', element: <DashPage /> },
-/*       { path: 'encuestas', element: <EncuestasPage /> }, */
+      /*       { path: 'encuestas', element: <EncuestasPage /> }, */
       { path: 'ecommerce', element: <OverviewEcommercePage /> },
       { path: 'analytics', element: <OverviewAnalyticsPage /> },
       { path: 'banking', element: <OverviewBankingPage /> },
@@ -197,7 +196,7 @@ export const dashboardRoutes = [
       { path: 'file-manager', element: <FileManagerPage /> },
       { path: 'mail', element: <MailPage /> },
       { path: 'chat', element: <ChatPage /> },
-      { path: 'calendar', element: <CalendarPage /> },
+      { path: 'calendariobeneficiario', element: <CalendarPage /> },
       { path: 'kanban', element: <KanbanPage /> },
       { path: 'permission', element: <PermissionDeniedPage /> },
       { path: 'blank', element: <BlankPage /> },

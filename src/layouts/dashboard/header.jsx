@@ -16,7 +16,7 @@ import { bgBlur } from 'src/theme/css';
 import { useAuthContext } from 'src/auth/hooks';
 import { usePostGeneral } from 'src/api/general';
 
-import Logo from 'src/components/logo';
+import Logo from 'src/components/logoMini';
 import SvgColor from 'src/components/svg-color';
 import { useSettingsContext } from 'src/components/settings';
 
