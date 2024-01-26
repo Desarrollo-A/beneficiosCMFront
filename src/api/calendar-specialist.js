@@ -26,6 +26,7 @@ const get_event_reasons = endpoints.calendario.getEventReasons;
 const registar_transaccion = endpoints.calendario.registrarTransaccion;
 const check_invoice = endpoints.calendario.checkInvoice;
 const sendMail = endpoints.calendario.mailEspecialista;
+const update_detalle_paciente = endpoints.calendario.updateDetallePaciente;
 
 const options = {
   revalidateIfStale: false,
@@ -527,4 +528,19 @@ export async function reschedule(eventData, idDetalle, cancelType){
   }
 
   return response;
+}
+
+// ----------------------------------------------------------------------
+
+export async function UpdateDetallePaciente(idPaciente){
+  const beneficio = datosUser.idPuesto;
+
+  const data = {
+    usuario: idPaciente,
+    beneficio
+  };
+
+  const update = fetcherPost(update_detalle_paciente, data);
+
+  return update;
 }

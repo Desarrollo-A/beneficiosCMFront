@@ -125,6 +125,7 @@ export const endpoints = {
     registrarTransaccion: 'calendarioController/registrarTransaccionPago',
     checkInvoice: 'calendarioController/checkInvoice',
     mailEspecialista: 'calendarioController/sendMail',
+    updateDetallePaciente: 'calendarioController/updateDetallePaciente'
   },
   calendarioColaborador: {
     isPrimeraCita: 'calendarioController/isPrimeraCita',
