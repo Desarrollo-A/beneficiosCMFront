@@ -78,11 +78,11 @@ const ContextGeneralProvider = (props) => {
 
     return (
         <contextGeneral.Provider value={{llamarServidor,llamarServidorRespuesta,setCargando,setMensaje}}>
-          {  <Snackbar open={mensaje.open} autoHideDuration={10000} onClose={cerrarMensaje}>
+          <Snackbar open={mensaje.open} autoHideDuration={10000} onClose={cerrarMensaje}>
                 <Alert onClose={cerrarMensaje} variant="filled" severity={mensaje.status<0?'error':mensaje.status>0?'success':'info'}>
                 {mensaje.value}
                 </Alert>
-            </Snackbar>}
+            </Snackbar>
             {props.children}
         </contextGeneral.Provider>
     );

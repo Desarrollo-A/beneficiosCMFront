@@ -226,7 +226,7 @@ EncuestaBarra.propTypes = {
   handleChangePg: PropTypes.func,
   user: PropTypes.object,
   selectPg: PropTypes.string,
-  idEncuesta: PropTypes.number,
+  idEncuesta: PropTypes.any,
   idArea: PropTypes.number,
   idPregunta: PropTypes.number,
   handleChangeIdPg: PropTypes.func,

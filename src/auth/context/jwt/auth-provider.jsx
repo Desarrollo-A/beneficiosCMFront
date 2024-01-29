@@ -59,7 +59,7 @@ export function AuthProvider({ children }) {
       if (accessToken && isValidToken(accessToken)) {
         setSession(accessToken);
 
-        let config = {
+        const config = {
           headers: {
             token: accessToken,
           }
@@ -67,7 +67,7 @@ export function AuthProvider({ children }) {
 
         const response = await fetcherGet([endpoints.auth.me, config])
 
-        const user = response.user
+        const {user} = response
 
         dispatch({
           type: 'INITIAL',

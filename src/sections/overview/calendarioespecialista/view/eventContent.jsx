@@ -54,7 +54,7 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
   const [defaultInicio, setDefaultInicio] = useState(selectedDate);
   const [defaultFecha, setDefaultFecha] = useState(selectedEnd);
   const [defaultEnd, setDefaultEnd] = useState(dayjs(currentEvent.end).$d);
-  const { data: eventReasons, reasonsMutate } = useGetEventReasons( currentEvent?.type === 'date' ? currentEvent?.id : 0 );
+  const { data: eventReasons } = useGetEventReasons( currentEvent?.type === 'date' ? currentEvent?.id : 0 );
   const formSchema = yup.object().shape({
     title: type === 'cancel' ? yup.string().max(100).required('Se necesita el título').trim() : '', // maximo de caracteres para el titulo 100
     start: !allDay ? yup.date().required() : '',
@@ -68,7 +68,7 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
   
   const Items = () => { // items de los motivos que se trae el evento
     let items = '';
-    reasonsMutate();
+    // reasonsMutate();
     if (eventReasons?.length > 0) {
       items = eventReasons.map((er) => (
         <Tooltip title={er.nombre} key={er.idOpcion}>
@@ -307,54 +307,53 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
 
           {type === 'date' && (
             <Stack>
-              <Stack
-                direction="row"
-                alignItems="center"
-                justifyContent="space-between"
-                spacing={1}
-                sx={{ px: { xs: 1, md: 2 }, py: 1 }}
-              >
-                <Typography variant="h6">Información</Typography>
+              <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1 }} >
+                <Typography variant="h6">{dateTitle}</Typography>
               </Stack>
 
               <Stack
                 direction="row"
                 alignItems="center"
-                spacing={1}
+                spacing={2}
                 sx={{ px: { xs: 1, md: 2 }, py: 1 }}
               >
-                <Iconify icon="mdi:account-circle-outline" />
+                <Iconify icon="mdi:account-circle" width={30}  sx={{ color: 'text.disabled' }}/>
+                <Typography fontSize="90%">{currentEvent?.title}</Typography>
+              </Stack>
+
+              <Stack direction="row" alignItems="center" spacing={2} sx={{ px: { xs: 1, md: 2 }, py: 1 }} >
+                <Iconify icon="solar:user-id-broken"  width={30}  sx={{ color: 'text.disabled' }}/>
                 <Typography fontSize="90%">{currentEvent?.nombre}</Typography>
               </Stack>
-              
-              <Stack direction="row" alignItems="center" spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1 }} >
-                <Iconify icon="mdi:phone" />
+
+              <Stack direction="row" alignItems="center" spacing={2} sx={{ px: { xs: 1, md: 2 }, py: 1 }} >
+                <Iconify icon="mdi:phone"  width={30}  sx={{ color: 'text.disabled' }}/>
                 <Typography fontSize="90%">{currentEvent?.telPersonal}</Typography>
               </Stack>
 
-              <Stack direction="row" alignItems="center" spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1 }} >
-                <Iconify icon="mdi:calendar-clock" />
+              <Stack direction="row" alignItems="center" spacing={2} sx={{ px: { xs: 1, md: 2 }, py: 1 }} >
+                <Iconify icon="mdi:calendar-clock"  width={30}  sx={{ color: 'text.disabled' }}/>
                 <Typography fontSize="90%">{dayjs(currentEvent?.start).format('HH:mm a')} - {dayjs(currentEvent?.end).format('HH:mm a')}</Typography>
               </Stack>
 
-              <Stack direction="row" alignItems="center" spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1 }} >
-                <Iconify icon="mdi:email-outline" />
-                <Typography fontSize="90%">{currentEvent?.correo}</Typography>
-              </Stack>
-
-              <Stack direction="row" alignItems="center" spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1 }} >
-                <Iconify icon="mdi:world" />
+              <Stack direction="row" alignItems="center" spacing={2} sx={{ px: { xs: 1, md: 2 }, py: 1 }} >
+                <Iconify icon="mdi:world"  width={30}  sx={{ color: 'text.disabled' }}/>
                 <Typography fontSize="90%">{currentEvent?.sede}</Typography>
               </Stack>
 
-              <Stack direction="row" alignItems="center" spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1 }} >
-                <Iconify icon="mdi:map-marker" />
+              <Stack direction="row" alignItems="center" spacing={2} sx={{ px: { xs: 1, md: 2 }, py: 1 }} >
+                <Iconify icon="ic:outline-place" width={30}  sx={{ color: 'text.disabled' }}/>
                 <Typography fontSize="90%">{currentEvent?.oficina ? currentEvent?.oficina : 'En linea'}</Typography>
               </Stack>
 
+              <Stack direction="row" alignItems="center" spacing={2} sx={{ px: { xs: 1, md: 2 }, py: 1 }} >
+                <Iconify icon="mdi:email-outline" width={30}  sx={{ color: 'text.disabled' }}/>
+                <Typography fontSize="90%">{currentEvent?.correo}</Typography>
+              </Stack>
+
               <Stack spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1 }}>
-                <Stack spacing={1} direction="row">
-                  <Iconify icon="solar:chat-round-line-outline" />
+                <Stack spacing={2} direction="row">
+                  <Iconify icon="solar:chat-round-line-outline" width={30}  sx={{ color: 'text.disabled' }}/>
                   <Typography>Motivos</Typography>
                 </Stack>
                 <Stack flexDirection="row" flexWrap="wrap" flex={1} spacing={2} sx={{ px: { xs: 1, md: 3 }, py: 1 }} >
