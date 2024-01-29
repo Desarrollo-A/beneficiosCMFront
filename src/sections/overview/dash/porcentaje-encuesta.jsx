@@ -95,9 +95,9 @@ EncuestaPorcentaje.propTypes = {
   handleChangePg: PropTypes.func,
   handleChangeIdPg: PropTypes.func,
   selectPg: PropTypes.string,
-  idEncuesta: PropTypes.number,
-  idArea: PropTypes.number,
-  idPregunta: PropTypes.number,
+  idEncuesta: PropTypes.any,
+  idArea: PropTypes.any,
+  idPregunta: PropTypes.any,
 };
 
 // ----------------------------------------------------------------------
@@ -112,11 +112,8 @@ function ProgressItem({ progress }) {
           {progress.label}
         </Typography>
 
-        <Typography variant="subtitle2">{fPercent(progress.value)}</Typography>
+        <Typography variant="subtitle2">{/* {fPercent(progress.value)} */}</Typography>
 
-        {/* <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          &nbsp;({fPercent(progress.value)})
-        </Typography> */}
       </Stack>
 
       <LinearProgress
@@ -133,5 +130,5 @@ function ProgressItem({ progress }) {
 }
 
 ProgressItem.propTypes = {
-  progress: PropTypes.object,
+  progress: PropTypes.any,
 };

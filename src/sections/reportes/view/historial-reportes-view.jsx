@@ -392,9 +392,9 @@ export default function HistorialReportesView() {
                       table.page * table.rowsPerPage,
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
-                    .map((row) => (
+                    .map((row, index) => (
                       <FilasTabla
-                        key={`route_${uuidv4()}`}
+                        key={index}
                         row={row}
                         selected={table.selected.includes(row.idCita)}
                         onSelectRow={() => table.onSelectRow(row.idCita)}

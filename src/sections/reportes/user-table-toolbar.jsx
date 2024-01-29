@@ -124,5 +124,5 @@ UserTableToolbar.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   handleChangeId: PropTypes.func,
-  rol: PropTypes.number,
+  rol: PropTypes.any,
 };
