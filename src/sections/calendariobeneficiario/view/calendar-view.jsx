@@ -106,7 +106,7 @@ export default function CalendarView() {
             flexDirection: { sm: 'row', md: 'col' },
           }}
         >
-          <Typography variant="h4">Calendar</Typography>
+          <Typography variant="h4"> </Typography>
           <Button color="inherit" variant="outlined" onClick={dialog.onTrue}>
             Agendar nueva cita
           </Button>

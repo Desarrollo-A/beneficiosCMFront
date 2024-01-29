@@ -1,23 +1,24 @@
 import * as Yup from 'yup';
 import { useState } from 'react';
+import { Base64 } from 'js-base64';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import instance from 'src/utils/axiosCH';
+import { useNavigate , useLocation } from 'react-router';
+
 import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { Base64 } from 'js-base64';
+
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
-import { useRouter, useSearchParams,useParams } from 'src/routes/hooks';
-import { useNavigate } from 'react-router';
-import { useLocation } from 'react-router';
+import { useRouter,useSearchParams } from 'src/routes/hooks';
+
+import instance from 'src/utils/axiosCH';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { PATH_AFTER_LOGIN } from 'src/config-global';
-import { PATH_AFTER_REGISTRO } from 'src/config-global';
+import { PATH_AFTER_LOGIN , PATH_AFTER_REGISTRO } from 'src/config-global';
 
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 // ----------------------------------------------------------------------
@@ -74,29 +75,23 @@ export default function JwtRegisterView() {
   });
 
   const validarNumEmpleado = () => {
-    
     if(numEmpleado.trim() === ''){
         console.log('Ingresar número de empleado válido');
     }else{
       // Conectar axios con CH
-      // const datos = Base64.encode(JSON.stringify({num_empleado : []}));
-      const datos = Base64.encode(JSON.stringify({}));
+      const datos = Base64.encode(JSON.stringify({num_empleado : numEmpleado}));
+      console.log(datos);
 
-      let config = {
+      const config = {
         headers : {
           authorization : '41EgSP8+YSqsyT1ZRuxTK3CYR11LOcyqopI2TTNJd3EL+aU3MUdJNsKGx8xOK+HH',
-          origin : 'http://localhost:3030/auth/jwt/register',
-          'Content-Type' : 'application/json',
-          Accept : 'application/json',
         }
       }
 
       instance.post('https://rh.gphsis.com/index.php/WS/data_colaborador_consultas', datos, config)
       .then(response=>{
-        console.log(response);
-        let datosResponse = Base64.decode(JSON.stringify(response.data.response));
+        let datosResponse = Base64.decode(JSON.stringify(response.data));
         datosResponse = JSON.parse(datosResponse);
-        console.log(response.data.response);
         if(datosResponse.resultado === 0){
           setErrorMsg(typeof error === 'string' ? error : 'Número de empleado no encontrado');
         }else{

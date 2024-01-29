@@ -1,6 +1,6 @@
 import { m } from 'framer-motion';
 
-import { GoogleLogin } from '@react-oauth/google';
+import { useGoogleLogin } from '@react-oauth/google';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -65,6 +65,12 @@ export default function AccountPopover() {
     router.push(path);
   };
 
+  const login = useGoogleLogin({
+    onSuccess: tokenResponse => console.log(tokenResponse),
+    scope : "https://www.googleapis.com/auth/calendar",
+    flow : "auth-code"
+  });
+
   return (
     <>
       <IconButton
@@ -90,19 +96,10 @@ export default function AccountPopover() {
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
-        <Box sx={{ p:2, mb: 1, mt : 0 }}>
-          <GoogleLogin
-            onSuccess={credentialResponse => {
-              console.log(credentialResponse);
-            }}
-            onError={() => {
-              console.log('Login Failed');
-            }}
-            auto_select
-            theme="filled_blue"
-            size="medium"
-            type="standard"
-          />
+        <Box sx={{ p:1, mb: 1, mt : 0 }}>
+          <MenuItem onClick={() => login()}>
+            Conectar cuenta de google
+          </MenuItem>
         </Box>
 
         <Divider sx={{ borderStyle: 'dashed' }} />

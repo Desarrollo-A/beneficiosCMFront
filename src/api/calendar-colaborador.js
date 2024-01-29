@@ -195,6 +195,13 @@ export function updateAppointment(idCita, estatus, detalle) {
   return update;
 }
 
+export function updateDetailPacient(usuario, beneficio) {
+  const URL = [endpoints.calendarioColaborador.updateDetail];
+  const update = fetcherPost(URL, { usuario, beneficio });
+
+  return update;
+}
+
 export function useGetPendientes() {
   const pendientes = endpoints.calendarioColaborador.getPendientes;
   const { data, mutate: revalidate } = useSWR(pendientes, (url) =>

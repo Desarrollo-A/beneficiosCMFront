@@ -108,7 +108,7 @@ export default function PendingModalUser() {
       // Hacer el proceso de actualizar cita
       const update = await updateAppointment(currentEvent.id, 1, registrarPago.data);
       if (update.result) {
-        enqueueSnackbar('¡Se ha generado el pago con exito!', {
+        enqueueSnackbar('¡Se ha generado el pago con éxito!', {
           variant: 'success',
         });
       }
@@ -191,7 +191,7 @@ export default function PendingModalUser() {
   };
 
   const handleRate = () => {
-    alert(`Evaluado con ${valorRating} estrellas`);
+    alert(`Evaluado con ${valorRating * 2} estrellas`);
   };
 
   return (
