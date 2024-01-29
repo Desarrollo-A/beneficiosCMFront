@@ -123,9 +123,10 @@ export function lastAppointment(usuario, beneficio) {
 }
 
 // Actualizar algun dato de cita como estatus de la cita, o su detalle de pago.
-export function updateAppointment(idCita, estatus, detalle) {
+export function updateAppointment(idUsuario, idCita, estatus, detalle, evaluacion) {
+  console.log('ASCO', idUsuario, idCita, estatus, detalle, evaluacion);
   const URL = [endpoints.calendarioColaborador.updateAppointment];
-  const update = fetcherPost(URL, { idCita, estatus, detalle });
+  const update = fetcherPost(URL, { idUsuario, idCita, estatus, detalle, evaluacion });
 
   return update;
 }

@@ -321,24 +321,50 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   };
 
   const onPay = async () => {
-    const update = await updateAppointment(currentEvent.id, 1, currentEvent.idDetalle);
-    setOpen(true);
-    // SIMULACIÓN DE PAGO
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setOpen(false);
-    if (update.result) {
-      enqueueSnackbar('¡Se ha generado el pago con éxito!', {
-        variant: 'success',
-      });
-      return onClose();
+    let precio = 50;
+    let metodoPago = 1;
+    if (datosUser.tipoPuesto.toLowerCase() === 'operativa' || datosUser.idDepto === 13) {
+      precio = 0;
+      metodoPago = 3;
     }
-    if (!update.result) {
-      enqueueSnackbar('¡Se obtuvó un error al intentar generar el pago de cita!', {
+    const registrarPago = await registrarDetalleDePago(
+      datosUser.idUsuario,
+      uuidv4(),
+      1,
+      precio,
+      metodoPago
+    );
+    if (registrarPago.result) {
+      const update = await updateAppointment(
+        datosUser.idUsuario,
+        currentEvent.id,
+        1,
+        registrarPago.data,
+        null
+      );
+      setOpen(true);
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      setOpen(false);
+      if (update.result) {
+        enqueueSnackbar('¡Se ha generado el pago con éxito!', {
+          variant: 'success',
+        });
+        return onClose();
+      }
+      if (!update.result) {
+        enqueueSnackbar('¡Se obtuvó un error al intentar generar el pago de cita!', {
+          variant: 'error',
+        });
+        return onClose();
+      }
+    }
+    if (!registrarPago.result) {
+      enqueueSnackbar('¡Ha surgido un error al intentar registrar el detalle de pago!', {
         variant: 'error',
       });
-      return onClose();
     }
-    return '';
+    onClose();
+    return !registrarPago.result;
   };
 
   const handleChange = async (input, value) => {

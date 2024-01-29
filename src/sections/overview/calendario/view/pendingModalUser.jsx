@@ -38,7 +38,6 @@ import uuidv4 from 'src/utils/uuidv4';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { AvatarShape } from 'src/assets/illustrations';
-// import { reRender, useGetMotivos, useGetPending, endAppointment, cancelAppointment } from 'src/api/calendar-specialist';
 import { cancelAppointment, useGetEventReasons } from 'src/api/calendar-specialist';
 import {
   useGetPendientes,
@@ -48,8 +47,6 @@ import {
 
 import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
-
-// const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
 
 export default function PendingModalUser() {
   const [open, setOpen] = useState(true);
@@ -106,11 +103,18 @@ export default function PendingModalUser() {
       //   variant: 'success',
       // });
       // Hacer el proceso de actualizar cita
-      const update = await updateAppointment(currentEvent.id, 1, registrarPago.data);
+      const update = await updateAppointment(
+        datosUser.idUsuario,
+        currentEvent.id,
+        1,
+        registrarPago.data,
+        null
+      );
       if (update.result) {
         enqueueSnackbar('¡Se ha generado el pago con éxito!', {
           variant: 'success',
         });
+        setOpen2(true);
       }
       if (!update.result) {
         enqueueSnackbar('¡Se obtuvo un error al intentar generar el pago de cita!', {
@@ -125,8 +129,6 @@ export default function PendingModalUser() {
       return 'onClose()';
     }
     pendingsMutate();
-    // preview
-    setOpen2(true);
 
     return '';
   };
@@ -188,8 +190,30 @@ export default function PendingModalUser() {
     setValorRating(newValue);
   };
 
-  const handleRate = () => {
-    alert(`Evaluado con ${valorRating * 2} estrellas`);
+  const handleRate = async (thisEvent) => {
+    alert(thisEvent);
+    const update = await updateAppointment(
+      datosUser.idUsuario,
+      thisEvent.id,
+      thisEvent.estatus,
+      thisEvent.idDetalle,
+      valorRating * 2
+    );
+
+    if (update.result) {
+      enqueueSnackbar('¡Gracias por evaluar la cita!', {
+        variant: 'success',
+      });
+    }
+    if (!update.result) {
+      enqueueSnackbar('¡Se obtuvo un error al intentar guardar la evaluación de la cita!', {
+        variant: 'error',
+      });
+    }
+    setValorRating(0);
+    pendingsMutate();
+    onClose();
+    return update.result;
   };
 
   return (
@@ -565,90 +589,112 @@ export default function PendingModalUser() {
           </Stack>
         </DialogContent>
       </Dialog>
-      <Dialog
-        open={open4}
-        fullWidth
-        disableEnforceFocus
-        maxWidth="xs"
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        sx={{
-          borderRadius: 'initial',
-          p: 0,
-        }}
-        padding={0}
-      >
-        <Card sx={{ textAlign: 'center' }}>
-          <Box sx={{ position: 'relative' }}>
-            <AvatarShape
-              sx={{
-                left: 0,
-                right: 0,
-                zIndex: 10,
-                mx: 'auto',
-                bottom: -26,
-                position: 'absolute',
-              }}
-            />
+      {pendientes?.data?.pago?.length === 0 && pendientes?.data?.evaluacion?.length > 0 && (
+        <Dialog
+          open={open}
+          fullWidth
+          disableEnforceFocus
+          maxWidth="xs"
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+          sx={{
+            borderRadius: 'initial',
+            p: 0,
+          }}
+          padding={0}
+        >
+          <Card sx={{ textAlign: 'center' }}>
+            <Box sx={{ position: 'relative' }}>
+              <AvatarShape
+                sx={{
+                  left: 0,
+                  right: 0,
+                  zIndex: 10,
+                  mx: 'auto',
+                  bottom: -26,
+                  position: 'absolute',
+                }}
+              />
 
-            <Avatar
-              alt={event.especialista}
-              src={
-                event.sexoEspecialista === 'F'
-                  ? 'https://api-dev-minimal-v510.vercel.app/assets/images/avatar/avatar_4.jpg'
-                  : 'https://api-dev-minimal-v510.vercel.app/assets/images/avatar/avatar_12.jpg'
+              <Avatar
+                alt={pendientes?.data?.evaluacion[0].especialista}
+                src={
+                  pendientes?.data?.evaluacion[0].sexoEspecialista === 'F'
+                    ? 'https://api-dev-minimal-v510.vercel.app/assets/images/avatar/avatar_4.jpg'
+                    : 'https://api-dev-minimal-v510.vercel.app/assets/images/avatar/avatar_12.jpg'
+                }
+                sx={{
+                  width: 64,
+                  height: 64,
+                  zIndex: 11,
+                  left: 0,
+                  right: 0,
+                  bottom: -32,
+                  mx: 'auto',
+                  position: 'absolute',
+                }}
+              />
+
+              <Image
+                src="https://api-dev-minimal-v510.vercel.app/assets/images/cover/cover_12.jpg"
+                alt="https://api-dev-minimal-v510.vercel.app/assets/images/cover/cover_12.jpg"
+                ratio="16/9"
+                overlay={alpha(theme.palette.grey[900], 0.48)}
+              />
+            </Box>
+
+            <ListItemText
+              sx={{ mt: 7, mb: 1 }}
+              primary={
+                pendientes?.data?.evaluacion[0].especialista
+                  ? pendientes?.data?.evaluacion[0].especialista
+                  : 'Especialista'
               }
-              sx={{
-                width: 64,
-                height: 64,
-                zIndex: 11,
-                left: 0,
-                right: 0,
-                bottom: -32,
-                mx: 'auto',
-                position: 'absolute',
-              }}
+              secondary={
+                pendientes?.data?.evaluacion[0].beneficio
+                  ? pendientes?.data?.evaluacion[0].beneficio
+                  : 'Beneficio saludable'
+              }
+              primaryTypographyProps={{ typography: 'subtitle1' }}
+              tertiary={
+                pendientes?.data?.evaluacion[0].start
+                  ? pendientes?.data?.evaluacion[0].start
+                  : '2024-01-01 10:00:00'
+              }
+              secondaryTypographyProps={{ component: 'span', mt: 0.5 }}
+            />
+            <ListItemText
+              sx={{ mt: 1, mb: 5 }}
+              secondary={
+                pendientes?.data?.evaluacion[0].start
+                  ? pendientes?.data?.evaluacion[0].start
+                  : '2024-01-01 10:00:00'
+              }
+              primaryTypographyProps={{ typography: 'subtitle1' }}
+              secondaryTypographyProps={{ component: 'span', mt: 0.5 }}
             />
 
-            <Image
-              src="https://api-dev-minimal-v510.vercel.app/assets/images/cover/cover_12.jpg"
-              alt="https://api-dev-minimal-v510.vercel.app/assets/images/cover/cover_12.jpg"
-              ratio="16/9"
-              overlay={alpha(theme.palette.grey[900], 0.48)}
-            />
-          </Box>
-
-          <ListItemText
-            sx={{ mt: 7, mb: 1 }}
-            primary={event.especialista ? event.especialista : 'Especialista'}
-            secondary={event.idPuesto ? event.idPuesto : 'Beneficio saludable'}
-            primaryTypographyProps={{ typography: 'subtitle1' }}
-            tertiary={event.start ? event.start : '2024-01-01 10:00:00'}
-            secondaryTypographyProps={{ component: 'span', mt: 0.5 }}
-          />
-          <ListItemText
-            sx={{ mt: 1, mb: 5 }}
-            secondary={event.start ? event.start : '2024-01-01 10:00:00'}
-            primaryTypographyProps={{ typography: 'subtitle1' }}
-            secondaryTypographyProps={{ component: 'span', mt: 0.5 }}
-          />
-
-          <Stack direction="row" alignItems="center" justifyContent="center" sx={{ mb: 2 }}>
-            <Rating
-              name="half-rating"
-              defaultValue={0}
-              precision={0.5}
-              value={valorRating}
-              onChange={handleRatingChange}
-            />
-          </Stack>
-          <DialogActions justifycontent="center" sx={{ justifyContent: 'center' }}>
-            <Button variant="contained" color="success" onClick={handleRate}>
-              Calificar
-            </Button>
-          </DialogActions>
-        </Card>
-      </Dialog>
+            <Stack direction="row" alignItems="center" justifyContent="center" sx={{ mb: 2 }}>
+              <Rating
+                name="half-rating"
+                defaultValue={0}
+                precision={0.5}
+                value={valorRating}
+                onChange={(e, value) => handleRatingChange(value)}
+              />
+            </Stack>
+            <DialogActions justifycontent="center" sx={{ justifyContent: 'center' }}>
+              <Button
+                variant="contained"
+                color="success"
+                onClick={() => handleRate(pendientes?.data?.evaluacion[0])}
+              >
+                Calificar
+              </Button>
+            </DialogActions>
+          </Card>
+        </Dialog>
+      )}
     </>
   );
 }
