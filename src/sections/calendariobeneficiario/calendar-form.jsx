@@ -16,8 +16,6 @@ import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker';
 import uuidv4 from 'src/utils/uuidv4';
 import { fTimestamp } from 'src/utils/format-time';
 
-import { createEvent, updateEvent, deleteEvent } from 'src/api/calendar';
-
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import { ColorPicker } from 'src/components/color-utils';
@@ -83,16 +81,6 @@ export default function CalendarForm({ currentEvent, colorOptions, onClose }) {
       console.error(error);
     }
   });
-
-  const onDelete = useCallback(async () => {
-    try {
-      await deleteEvent(`${currentEvent?.id}`);
-      enqueueSnackbar('Delete success!');
-      onClose();
-    } catch (error) {
-      console.error(error);
-    }
-  }, [currentEvent?.id, enqueueSnackbar, onClose]);
 
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>

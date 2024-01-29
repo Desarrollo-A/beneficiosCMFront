@@ -1,14 +1,13 @@
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
 import * as yup from 'yup';
-import { Base64 } from 'js-base64';
 import PropTypes from 'prop-types';
 import utc from 'dayjs/plugin/utc';
 import { useForm } from 'react-hook-form';
+import { useState, useEffect } from 'react';
 import timezone from 'dayjs/plugin/timezone';
 import { yupResolver } from '@hookform/resolvers/yup';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
-import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/system/Stack';
@@ -34,13 +33,13 @@ import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 import uuidv4 from 'src/utils/uuidv4';
-import { fTimestamp } from 'src/utils/format-time';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { cancelAppointment, useGetEventReasons } from 'src/api/calendar-specialist';
 import {
   crearCita,
   getHorario,
+  checkInvoice,
   getModalities,
   getSpecialists,
   useGetBenefits,
@@ -103,18 +102,16 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
   const formSchema = yup.object().shape({});
 
-  const { data: eventReasons, reasonsMutate } = useGetEventReasons(currentEvent?.id || 0);
+  const { data: eventReasons } = useGetEventReasons(currentEvent?.id || 0);
 
   const methods = useForm({
     resolver: yupResolver(formSchema),
     defaultValues: currentEvent,
   });
 
-  const { watch, handleSubmit } = methods;
+  const { handleSubmit } = methods;
 
   const selectedDateTittle = dayjs(selectedDate).format('dddd, DD MMMM YYYY');
-
-  const values = watch();
 
   const onSubmit = handleSubmit(async () => {
     // Validaciones de inputs: Coloca leyenda de error debajo de cada input en caso que le falte cumplir con el valor
@@ -395,10 +392,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
           modalidad: modalitiesData.data[0].tipoCita,
         });
         setErrorModalidad(false);
-        // if (selectedValues.beneficio === 158) {
-        //   const data = await getContactoQB(value);
-        //   setInfoContact(data);
-        // } else {
         const data = await getOficinaByAtencion(
           datosUser.idSede,
           selectedValues.beneficio,
@@ -406,7 +399,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
           modalitiesData.data[0].tipoCita
         );
         setOficina(data);
-        // }
       } else {
         setSelectedValues({
           ...selectedValues,
@@ -438,18 +430,15 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       setEspecialistas(data?.data);
       const modalitiesData = await getModalities(value.idSede, value.idEspecialista);
       setModalidades(modalitiesData?.data);
-      // if (value.idPuesto === 158) {
-      //   const cotactQB = await getContactoQB(value.idEspecialista);
-      //   setInfoContact(cotactQB);
-      // } else {
+
       const oficinaAtencion = await getOficinaByAtencion(
         value.idSede,
-        value.idPuesto, // Beneficio id
+        value.idPuesto, // Beneficio
         value.idEspecialista,
         value.modalidad
       );
       setOficina(oficinaAtencion);
-      // }
+
       getHorariosDisponibles(value.idPuesto, value.idEspecialista);
     }
   };
@@ -770,6 +759,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         enqueueSnackbar('¡Surgió un error con el uso del beneficio para el paciente!', {
           variant: 'error',
         });
+        return onClose();
       }
       enqueueSnackbar('¡Se ha agendado la cita con éxito!', {
         variant: 'success',
@@ -827,6 +817,15 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const mes = horarioSeleccionado.substring(5, 7);
     const dia = horarioSeleccionado.substring(8, 10);
 
+    const checkInvoiceDetail = await checkInvoice(currentEvent.idDetalle);
+
+    if (!checkInvoiceDetail.result) {
+      enqueueSnackbar('¡La cita no se puede reagendar más veces!', {
+        variant: 'error',
+      });
+      return onClose();
+    }
+
     if (datosUser.fechaIngreso > fechaActual) {
       enqueueSnackbar('¡Existe un error con la fecha de antiguedad!', {
         variant: 'error',
@@ -881,7 +880,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       currentEvent.tipoCita,
       currentEvent.idAtencionXSede,
       datosUser.idUsuario,
-      currentEvent.idDetalle
+      currentEvent.idDetalle,
+      selectedValues.beneficio
     );
 
     return setReschedule(false);
@@ -895,7 +895,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const Items = () => {
     // items de los motivos que se trae el evento
     let items = '';
-    // reasonsMutate();
     if (eventReasons?.length > 0) {
       items = eventReasons.map((er) => (
         <Tooltip title={er.nombre} key={er.idOpcion}>
@@ -945,13 +944,14 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
             {currentEvent?.id && (currentEvent?.estatus === 1 || currentEvent?.estatus === 6) && (
               <Stack sx={{ flexDirection: 'row' }}>
                 {dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss') <
-                  dayjs(currentEvent.start).subtract(3, 'hour').format('YYYY-MM-DD HH:mm:ss') && (
-                  <Tooltip title="Reagendar cita">
-                    <IconButton onClick={() => rescheduleAppointment()}>
-                      <Iconify icon="fluent-mdl2:date-time-12" width={22} />
-                    </IconButton>
-                  </Tooltip>
-                )}
+                  dayjs(currentEvent.start).subtract(3, 'hour').format('YYYY-MM-DD HH:mm:ss') &&
+                  currentEvent?.estatus === 1 && (
+                    <Tooltip title="Reagendar cita">
+                      <IconButton onClick={() => rescheduleAppointment()}>
+                        <Iconify icon="fluent-mdl2:date-time-12" width={22} />
+                      </IconButton>
+                    </Tooltip>
+                  )}
                 <Tooltip title="Cancelar cita">
                   <IconButton onClick={() => setConfirmCancel(true)}>
                     <Iconify icon="solar:trash-bin-trash-bold" width={22} />
@@ -964,7 +964,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         <DialogContent sx={{ p: { xs: 1, md: 2 } }} direction="row" justifycontent="space-between">
           {currentEvent?.id ? (
             <>
-              <Stack spacing={3} sx={{ p: { xs: 1, md: 2 } }}>
+              <Stack sx={{ p: { xs: 1, md: 2 } }}>
                 <Typography variant="subtitle1">{selectedDateTittle}</Typography>
               </Stack>
 
@@ -974,19 +974,20 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                   flexDirection: { sm: 'row', md: 'col' },
                   px: { xs: 1, md: 2 },
                   py: 1,
+                  alignItems: 'center',
                 }}
               >
                 <Iconify icon="mdi:account-circle" width={30} sx={{ color: 'text.disabled' }} />
-                {currentEvent?.estatus === 2 || currentEvent?.estatus === '7' ? (
+                {currentEvent?.estatus === 1 ? (
                   <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                    Cita en {`${currentEvent?.beneficio} (cancelado)`}
+                    Cita en {`${currentEvent?.beneficio} (por asistir)`}
                   </Typography>
                 ) : (
                   ''
                 )}
-                {currentEvent?.estatus === 8 ? (
+                {currentEvent?.estatus === 2 || currentEvent?.estatus === '7' ? (
                   <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                    Cita en {`${currentEvent?.beneficio} (reagendado)`}
+                    Cita en {`${currentEvent?.beneficio} (cancelado)`}
                   </Typography>
                 ) : (
                   ''
@@ -1012,6 +1013,27 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                 ) : (
                   ''
                 )}
+                {currentEvent?.estatus === 6 ? (
+                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                    Cita en {`${currentEvent?.beneficio} (pendiente de pago)`}
+                  </Typography>
+                ) : (
+                  ''
+                )}
+                {currentEvent?.estatus === 8 ? (
+                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                    Cita en {`${currentEvent?.beneficio} (reagendado)`}
+                  </Typography>
+                ) : (
+                  ''
+                )}
+                {currentEvent?.estatus === 9 ? (
+                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                    Cita en {`${currentEvent?.beneficio} (cita expirada)`}
+                  </Typography>
+                ) : (
+                  ''
+                )}
               </Stack>
               <Stack
                 alignItems="center"
@@ -1019,6 +1041,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                   flexDirection: { sm: 'row', md: 'col' },
                   px: { xs: 1, md: 2 },
                   py: 1,
+                  alignItems: 'center',
                 }}
               >
                 <Iconify icon="solar:user-id-broken" width={30} sx={{ color: 'text.disabled' }} />
@@ -1032,6 +1055,21 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                   flexDirection: { sm: 'row', md: 'col' },
                   px: { xs: 1, md: 2 },
                   py: 1,
+                  alignItems: 'center',
+                }}
+              >
+                <Iconify icon="mdi:phone" width={30} sx={{ color: 'text.disabled' }} />
+                <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                  {currentEvent?.telefonoEspecialista ? currentEvent?.telefonoEspecialista : 'n/a'}
+                </Typography>
+              </Stack>
+              <Stack
+                alignItems="center"
+                sx={{
+                  flexDirection: { sm: 'row', md: 'col' },
+                  px: { xs: 1, md: 2 },
+                  py: 1,
+                  alignItems: 'center',
                 }}
               >
                 <Iconify icon="mdi:calendar-clock" width={30} sx={{ color: 'text.disabled' }} />
@@ -1049,6 +1087,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                   flexDirection: { sm: 'row', md: 'col' },
                   px: { xs: 1, md: 2 },
                   py: 1,
+                  alignItems: 'center',
                 }}
               >
                 {currentEvent?.modalidad === 1 ? (
@@ -1075,6 +1114,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                   flexDirection: { sm: 'row', md: 'col' },
                   px: { xs: 1, md: 2 },
                   py: 1,
+                  alignItems: 'center',
                 }}
               >
                 {currentEvent?.modalidad === 1 ? (
@@ -1102,6 +1142,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                   flexDirection: 'row',
                   px: { xs: 1, md: 2 },
                   py: 1,
+                  alignItems: 'center',
                 }}
               >
                 <Stack>
@@ -1109,8 +1150,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                 </Stack>
                 <Stack sx={{ flexDirection: 'col' }}>
                   <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                    {currentEvent?.correo
-                      ? currentEvent?.correo.toLowerCase()
+                    {currentEvent?.correoEspecialista
+                      ? currentEvent?.correoEspecialista.toLowerCase()
                       : 'correo-demo@ciudadmaderas.com.mx'}
                   </Typography>
                 </Stack>
@@ -1120,21 +1161,25 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                   flexDirection: 'row',
                   px: { xs: 1, md: 2 },
                   py: 1,
+                  alignItems: 'center',
                 }}
               >
-                <Stack>
-                  <Iconify icon="fa-solid:money-bill" width={30} sx={{ color: 'text.disabled' }} />
-                </Stack>
-                <Stack sx={{ flexDirection: 'col' }}>
-                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                    {currentEvent?.estatus === 6 ? 'Pendiente de pago' : 'Pagado'}
-                  </Typography>
-                </Stack>
+                <Iconify icon="fa-solid:money-bill" width={30} sx={{ color: 'text.disabled' }} />
+
+                <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                  {currentEvent?.estatus === 6 ? 'Pendiente de pago' : 'Pagado'}
+                </Typography>
               </Stack>
               <Stack spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1 }}>
-                <Stack spacing={1} direction="row">
-                  <Iconify icon="solar:chat-round-line-outline" />
-                  <Typography>Motivos</Typography>
+                <Stack direction="row" sx={{ alignItems: 'center' }}>
+                  <Iconify
+                    icon="solar:chat-round-line-outline"
+                    width={30}
+                    sx={{ color: 'text.disabled' }}
+                  />
+                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                    Motivos
+                  </Typography>
                 </Stack>
                 <Stack
                   flexDirection="row"
@@ -1269,22 +1314,9 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
             Cerrar
           </Button>
           {currentEvent?.id && (
-            // <>
-            //   {selectedValues.beneficio === 158 ? (
-            //     <Button
-            //       variant="contained"
-            //       color="success"
-            //       disabled={!infoContact.result}
-            //       onClick={contactSpecialist}
-            //     >
-            //       Contactar
-            //     </Button>
-            //   ) : (
             <Button variant="contained" color="success" onClick={handleReSchedule}>
               Reagendar
             </Button>
-            //   )}
-            // </>
           )}
         </DialogActions>
       </Dialog>
@@ -1347,9 +1379,6 @@ const AppointmentSchedule = ({
           p: { xs: 1, md: 2 },
           borderRight: 'lightgray solid',
           borderRightWidth: selectedValues.especialista ? '2px' : '0px',
-          // selectedValues.especialista && selectedValues.beneficio !== 158
-          //   ? '2px' // Puedes ajustar el grosor según tus necesidades
-          //   : '0',
         }}
       >
         <Stack spacing={3}>

@@ -8,14 +8,38 @@ import { LoadingButton } from '@mui/lab';
 import { Box, Stack } from '@mui/system';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { MobileDatePicker, MobileTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
-import { Chip, Button, Select, MenuItem, TextField, InputLabel, Typography, FormControl, Autocomplete, DialogActions, DialogContent } from '@mui/material';
+import {
+  Chip,
+  Button,
+  Select,
+  MenuItem,
+  TextField,
+  InputLabel,
+  Typography,
+  FormControl,
+  Autocomplete,
+  DialogActions,
+  DialogContent,
+} from '@mui/material';
 
 import { fDate } from 'src/utils/format-time';
 
-import { reRender } from 'src/api/calendar-colaborador';
-import { reschedule, endAppointment, cancelAppointment } from 'src/api/calendar-specialist';
+import {
+  reRender,
+  reschedule,
+  endAppointment,
+  cancelAppointment,
+} from 'src/api/calendar-specialist';
 
-export default function CancelEventDialog({ type, currentEvent, pastCheck, reasons, onClose, close, selectedDate }) {
+export default function CancelEventDialog({
+  type,
+  currentEvent,
+  pastCheck,
+  reasons,
+  onClose,
+  close,
+  selectedDate,
+}) {
   dayjs.locale('es'); // valor para cambiar el idioma del dayjs
   const [assist, setAssist] = useState('');
   const [cancelType, setCancelType] = useState('');
@@ -81,16 +105,16 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
       especialista: currentEvent?.especialista,
       sede: currentEvent?.sede,
       oficina: currentEvent?.oficina,
-      correo: currentEvent?.correo
+      correo: currentEvent?.correo,
     };
-    switch(cancelType){
-        case 8:
-            resp = await reschedule(eventData, eventData.idDetalle, cancelType);
-            break;
+    switch (cancelType) {
+      case 8:
+        resp = await reschedule(eventData, eventData.idDetalle, cancelType);
+        break;
 
-        default:
-            resp = await cancelAppointment(currentEvent, currentEvent?.id, cancelType);
-            break;
+      default:
+        resp = await cancelAppointment(currentEvent, currentEvent?.id, cancelType);
+        break;
     }
 
     if (resp.result) {
@@ -103,20 +127,20 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
     }
   };
 
-  const handleSubmit= () => {
-    switch(assist){
-        case 0:
-            cancelEvent();
-            break;
-        case 1:
-            endEvent();
-            break;
+  const handleSubmit = () => {
+    switch (assist) {
+      case 0:
+        cancelEvent();
+        break;
+      case 1:
+        endEvent();
+        break;
 
-        default:
-            enqueueSnackbar('Ha ocurrido un error', {variant: 'error'});
-            break;
+      default:
+        enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
+        break;
     }
-  }
+  };
 
   return (
     <>
@@ -232,12 +256,7 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
               />
             </LocalizationProvider>
 
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              spacing={2}
-              sx={{ mt: 2 }}
-            >
+            <Stack direction="row" justifyContent="space-between" spacing={2} sx={{ mt: 2 }}>
               <MobileTimePicker
                 sx={{ width: '100%' }}
                 label="Hora de inicio"
@@ -282,28 +301,27 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
   );
 }
 
-function validateSelect(type, reason, cancelType, horaInicio, horaFinal){
-    let validation = true;
+function validateSelect(type, reason, cancelType, horaInicio, horaFinal) {
+  let validation = true;
 
-    if(type === 'date' && (reason.length > 0 || cancelType)){
-        switch(cancelType){
-            case 8:
-                if(horaInicio || horaFinal)
-                    validation = false
-                break;
-            
-            default:
-                validation = false;
-                break;
-        }
+  if (type === 'date' && (reason.length > 0 || cancelType)) {
+    switch (cancelType) {
+      case 8:
+        if (horaInicio || horaFinal) validation = false;
+        break;
+
+      default:
+        validation = false;
+        break;
     }
+  }
 
-    return validation;
+  return validation;
 }
 
 function checkHour(start, end, cancelType) {
   let validation = { result: false, msg: '' };
-  
+
   const startStamp = dayjs(start).$d;
   const endStamp = dayjs(end).$d;
   let hour = '';
@@ -315,15 +333,14 @@ function checkHour(start, end, cancelType) {
 
         if (startStamp >= endStamp) {
           validation = { result: true, msg: 'Error: hora de inicio mayor a la hora final' };
-        }
-        else if (hour !== 1) {
+        } else if (hour !== 1) {
           validation = { result: true, msg: 'Error: No se puede agendar mas de una hora' };
         }
       }
       break;
 
     default:
-        validation = { result: false, msg: '' };
+      validation = { result: false, msg: '' };
       break;
   }
 
@@ -337,5 +354,5 @@ CancelEventDialog.propTypes = {
   reasons: PropTypes.array,
   onClose: PropTypes.func,
   close: PropTypes.func,
-  selectedDate: PropTypes.any
+  selectedDate: PropTypes.any,
 };

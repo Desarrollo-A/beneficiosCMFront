@@ -63,7 +63,7 @@ export default function PendingModalUser() {
   const [errorEmail, setErrorEmail] = useState(false);
   const [sendEmails, setSendEmails] = useState(false);
   const [valorRating, setValorRating] = useState(0);
-  const { data: pendientes, pendingsMutate } = useGetPendientes(); // traer todas las citas en pendiente de pago
+  const { data: pendientes, pendingsMutate } = useGetPendientes(); // traer todas las citas en pendiente de pago o evaluacion
 
   dayjs.locale('es');
   dayjs.extend(localeData);
@@ -113,11 +113,10 @@ export default function PendingModalUser() {
         });
       }
       if (!update.result) {
-        enqueueSnackbar('¡Se obtuvó un error al intentar generar el pago de cita!', {
+        enqueueSnackbar('¡Se obtuvo un error al intentar generar el pago de cita!', {
           variant: 'error',
         });
       }
-      console.log('YA NO ENTRA 107');
     }
     if (!registrarPago.result) {
       enqueueSnackbar('¡Ha surgido un error al intentar registrar el detalle de pago!', {
@@ -125,7 +124,6 @@ export default function PendingModalUser() {
       });
       return 'onClose()';
     }
-    console.log('YA NO ENTRA 114');
     pendingsMutate();
     // preview
     setOpen2(true);
@@ -186,7 +184,7 @@ export default function PendingModalUser() {
     setEmails(newEmails);
   };
 
-  const handleRatingChange = (event, newValue) => {
+  const handleRatingChange = (newValue) => {
     setValorRating(newValue);
   };
 
@@ -196,7 +194,7 @@ export default function PendingModalUser() {
 
   return (
     <>
-      {pendientes?.data?.length > 0 && ( // si hay pendientes se mostrara el modal
+      {pendientes?.data?.pago?.length > 0 && ( // si hay pendientes se mostrara el modal
         <Dialog open={open} fullWidth maxWidth="sm">
           <DialogContent>
             <Stack
@@ -219,19 +217,19 @@ export default function PendingModalUser() {
               alignItems="center"
               sx={{ justifyContent: 'space-between' }}
             >
-              {pendientes?.data?.length > 0 &&
-                pendientes.data.map((pending, key) => (
+              {pendientes?.data?.pago?.length > 0 &&
+                pendientes.data.pago.map((pending, key) => (
                   <ListItem
-                    key={pending.idCita}
+                    key={pending.id}
                     secondaryAction={
                       <>
                         <Tooltip title="Cancelar cita">
-                          <IconButton onClick={() => onCancel(pendientes?.data[key])}>
+                          <IconButton onClick={() => onCancel(pendientes?.data?.pago[key])}>
                             <Iconify icon="solar:trash-bin-trash-bold" />
                           </IconButton>
                         </Tooltip>
                         <Tooltip title="Pagar">
-                          <IconButton onClick={() => handleOpen(pendientes?.data[key])}>
+                          <IconButton onClick={() => handleOpen(pendientes?.data.pago[key])}>
                             <Iconify icon="ph:money-fill" width={22} />
                           </IconButton>
                         </Tooltip>
@@ -305,6 +303,20 @@ export default function PendingModalUser() {
             <Iconify icon="solar:user-id-broken" width={30} sx={{ color: 'text.disabled' }} />
             <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
               {event?.especialista ? event?.especialista : 'Especialista'}
+            </Typography>
+          </Stack>
+          <Stack
+            alignItems="center"
+            sx={{
+              flexDirection: { sm: 'row', md: 'col' },
+              px: { xs: 1, md: 2 },
+              py: 1,
+              alignItems: 'center',
+            }}
+          >
+            <Iconify icon="mdi:phone" width={30} sx={{ color: 'text.disabled' }} />
+            <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+              {event?.telefonoEspecialista ? event?.telefonoEspecialista : 'n/a'}
             </Typography>
           </Stack>
           <Stack
@@ -484,7 +496,7 @@ export default function PendingModalUser() {
                       <Chip
                         label={each.email}
                         variant="outlined"
-                        style={{
+                        sx={{
                           backgroundColor: '#e0e0e0',
                           borderRadius: '20px',
                           alignItems: 'center',
@@ -492,7 +504,7 @@ export default function PendingModalUser() {
                           justifyContent: 'center',
                         }}
                         deleteIcon={
-                          <div
+                          <Stack
                             style={{
                               width: '24px',
                               height: '24px',
@@ -506,7 +518,7 @@ export default function PendingModalUser() {
                                 color: 'black',
                               }}
                             />
-                          </div>
+                          </Stack>
                         }
                         onDelete={() => deleteEmail(each.email)}
                       />
@@ -551,7 +563,6 @@ export default function PendingModalUser() {
           >
             <Iconify icon="eos-icons:bubble-loading" width={30} sx={{ color: 'text.disabled' }} />
           </Stack>
-          {/* eos-icons:bubble-loading */}
         </DialogContent>
       </Dialog>
       <Dialog
@@ -565,7 +576,6 @@ export default function PendingModalUser() {
           borderRadius: 'initial',
           p: 0,
         }}
-        borderRadius="initial"
         padding={0}
       >
         <Card sx={{ textAlign: 'center' }}>
@@ -632,7 +642,7 @@ export default function PendingModalUser() {
               onChange={handleRatingChange}
             />
           </Stack>
-          <DialogActions justifyContent="center" sx={{ justifyContent: 'center' }}>
+          <DialogActions justifycontent="center" sx={{ justifyContent: 'center' }}>
             <Button variant="contained" color="success" onClick={handleRate}>
               Calificar
             </Button>
