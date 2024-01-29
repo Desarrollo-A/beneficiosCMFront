@@ -85,6 +85,8 @@ export default function FormularioEncuesta({ idEncuesta }) {
       return {
         ...item,
         idUsuario: user.idUsuario,
+        idEnc: idEncuesta,
+        idArea: encuestaData[0]?.idArea,
         resp: data[respKey]
       };
     });
@@ -92,8 +94,9 @@ export default function FormularioEncuesta({ idEncuesta }) {
     try {
       await new Promise((resolve) => setTimeout(resolve));
 
-
       const insert = await insertData(newData);
+
+      console.log(newData)
 
       if (insert.estatus === true) {
         enqueueSnackbar(insert.msj, { variant: 'success' });

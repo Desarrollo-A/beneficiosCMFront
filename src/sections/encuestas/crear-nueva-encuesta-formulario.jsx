@@ -51,9 +51,9 @@ export default function InvoiceNewEditForm() {
 
   const defaultValues = useMemo(
     () => ({
-      area: user.puesto
+      area: user.idPuesto
     }),
-    [user.puesto]
+    [user.idPuesto]
   );
 
   const methods = useForm({

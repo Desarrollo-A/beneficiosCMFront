@@ -90,7 +90,7 @@ export default function AccountPopover() {
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
-        <Box sx={{ p:1, mb: 1, mt : 0 }}>
+        <Box sx={{ p:2, mb: 1, mt : 0 }}>
           <GoogleLogin
             onSuccess={credentialResponse => {
               console.log(credentialResponse);

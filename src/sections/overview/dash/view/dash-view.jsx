@@ -331,13 +331,13 @@ export default function DashView() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '370px'
+                width: '360px'
               }}
             >
-              <Clock value={value} />
+              <Clock value={value}/>
             </Card>
           </Grid>
-
+              
 
 
           {rol === "1" ? (
