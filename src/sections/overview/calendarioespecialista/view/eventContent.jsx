@@ -7,7 +7,7 @@ import { useState, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
-import { Chip } from '@mui/material';
+import { Chip, List } from '@mui/material';
 import Stack from '@mui/system/Stack';
 import Dialog from '@mui/material/Dialog';
 import Button from '@mui/material/Button';
@@ -46,6 +46,7 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
   const [open, setOpen] = useState(false);
   const [open2, setOpen2] = useState(false);
   const type = currentEvent?.type;
+  const fechasFolio = currentEvent?.fechasFolio ? currentEvent?.fechasFolio.split(',') : [];
   
   const [dateTitle, setDateTitle] = useState(dayjs(selectedDate).format('dddd, DD MMMM YYYY'));
   const pastCheck = selectedDate < new Date(); // checar si la fecha del evento es inferior a la fecha actual
@@ -78,7 +79,7 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
     }
     else{
       items = (
-      <Tooltip title="Sin motivos de cita">
+        <Tooltip title="Sin motivos de cita">
           <Chip label="Sin motivos de cita" variant="outlined" size="small" style={{ backgroundColor: '#e0e0e0', borderRadius: '20px' }}/>
         </Tooltip>
         )
@@ -351,6 +352,21 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
                 <Typography fontSize="90%">{currentEvent?.correo}</Typography>
               </Stack>
 
+              {currentEvent?.fechasFolio &&
+              <Stack flexDirection="row" flexWrap="wrap" flex={1} spacing={2}  sx={{ px: { xs: 1, md: 2 }, py: 1 }} >
+                <Stack spacing={2} direction="row">
+                  <Iconify icon="mdi:clock-remove-outline" width={30}  sx={{ color: 'text.disabled' }}/>
+                </Stack>
+                <Stack >
+                {fechasFolio.map((fecha, i) => [
+                  i > 0 && "",
+                  <Typography key={i} style={{textDecoration: 'line-through'}} fontSize="90%">{fecha}</Typography>
+                  ])
+                }
+                </Stack>
+                
+              </Stack>
+              }
               <Stack spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1 }}>
                 <Stack spacing={2} direction="row">
                   <Iconify icon="solar:chat-round-line-outline" width={30}  sx={{ color: 'text.disabled' }}/>

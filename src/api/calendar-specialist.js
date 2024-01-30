@@ -257,6 +257,8 @@ export async function createAppointment(eventData, modalitie) {
       tituloEmail: 'Reservación',
       temaEmail: 'Se ha agendado tu cita con: ',
       correo: eventData.paciente.correo,
+      temaExtra: '',
+      link: '',
     };
 
     create = await fetcherPost(create_appointment, data);
@@ -402,6 +404,8 @@ export async function endAppointment(currentEvent, reason) {
     horaFinal: dayjs(currentEvent?.end).format('HH:mm A'),
     view: 'email-appointment',
     correo: currentEvent?.correo,
+    temaExtra: 'Califica tu cita aqui',
+    link: 'https://google.com',
   };
 
   const update = await fetcherPost(end_appointment, data);
@@ -505,30 +509,19 @@ export async function reschedule(eventData, idDetalle, cancelType) {
     modificadoPor: datosUser.idUsuario,
   };
 
-  const mailAppointment = {
-    // datos para enviar el mail
-    especialidad: eventData.beneficio,
+  const mailReschedule = {
+    titulo: 'REAGENDAMIENTO DE CITA',
+    beneficio: eventData.beneficio,
     especialista: eventData.especialista,
+    sede: eventData.sede,
+    oficina: eventData?.oficina || 'virtual',
     fecha,
     horaInicio,
     horaFinal,
-    view: 'email-appointment',
-    oficina: eventData?.oficina || 'virtual',
-    sede: eventData.sede,
-    tituloEmail: 'Reservación',
-    temaEmail: 'Se ha agendado tu cita con: ',
-    correo: eventData?.correo,
-  };
-
-  const mailCancel = {
-    titulo: 'CANCELACIÓN POR REAGENDAMIENTO',
-    imagen: 'cancel.png',
-    fecha: dayjs(eventData.oldEventStart).format('DD/MM/YYYY'),
-    horaInicio: dayjs(eventData.oldEventStart).format('HH:mm: a'),
-    horaFinal: dayjs(eventData.oldEventEnd).format('HH:mm: a'),
-    beneficio: eventData.beneficio,
-    especialista: eventData.especialista,
-    view: 'email-cancelar',
+    fechaOld: dayjs(eventData.oldEventStart).format('DD/MM/YYYY'),
+    horaInicioOld: dayjs(eventData.oldEventStart).format('HH:mm: a'),
+    horaFinalOld: dayjs(eventData.oldEventEnd).format('HH:mm: a'),
+    view: 'email-reschedule',
     correo: eventData?.correo,
   };
 
@@ -538,10 +531,9 @@ export async function reschedule(eventData, idDetalle, cancelType) {
     response = await fetcherPost(create_appointment, data);
 
     if (response.result) {
-      fetcherPost(sendMail, mailAppointment);
       response = await fetcherPost(cancel_appointment, cancelData);
       if (response.result) {
-        fetcherPost(sendMail, mailCancel);
+        fetcherPost(sendMail, mailReschedule);
       }
     }
   }
