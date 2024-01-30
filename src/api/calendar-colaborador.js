@@ -1,9 +1,12 @@
+import 'dayjs/locale/es';
 import useSWR from 'swr';
+import dayjs from 'dayjs';
 import { Base64 } from 'js-base64';
 import { useMemo, useEffect } from 'react';
 
 import { endpoints, fetcherPost } from 'src/utils/axios';
 
+// Se hizo el intento con el useAuthContext pero se manda a declarar más veces y da mas errores debido a su uso como componente
 const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
 
 // ----------------------------------------------------------------------
@@ -90,6 +93,14 @@ export function getCitasSinFinalizar(usuario, beneficio) {
   return cita;
 }
 
+// Traer las citas sin evaluar y ya terminadas
+export function getCitasSinEvaluar(usuario, beneficio) {
+  const URL = [endpoints.calendarioColaborador.getCitasSinEvaluar];
+  const cita = fetcherPost(URL, { usuario, beneficio });
+
+  return cita;
+}
+
 // Traer las citas finalizadas del mes que se consulte.
 export function getCitasFinalizadas(usuario, mes, año) {
   const URL = [endpoints.calendarioColaborador.getCitasFinalizadas];
@@ -124,7 +135,6 @@ export function lastAppointment(usuario, beneficio) {
 
 // Actualizar algun dato de cita como estatus de la cita, o su detalle de pago.
 export function updateAppointment(idUsuario, idCita, estatus, detalle, evaluacion) {
-  console.log('ASCO', idUsuario, idCita, estatus, detalle, evaluacion);
   const URL = [endpoints.calendarioColaborador.updateAppointment];
   const update = fetcherPost(URL, { idUsuario, idCita, estatus, detalle, evaluacion });
 
@@ -140,9 +150,9 @@ export function updateDetailPacient(usuario, beneficio) {
 }
 
 // Actualizar el registro de detalle paciente que indica que un usuario esta activo en el beneficio.
-export function checkInvoice(idDetalle) {
+export function checkInvoice(id) {
   const URL = [endpoints.calendario.checkInvoice];
-  const check = fetcherPost(URL, { idDetalle });
+  const check = fetcherPost(URL, { id });
 
   return check;
 }
@@ -238,6 +248,27 @@ export function useGetAppointmentsByUser(current) {
   }, [data?.data, error, isLoading, isValidating, revalidate]);
 
   return memoizedValue;
+}
+
+export function cancelAppointment(currentEvent, id, cancelType) {
+  const URL = [endpoints.calendario.cancelAppointment];
+  const data = {
+    idCita: id,
+    startStamp: dayjs(currentEvent.start).format('YYYY/MM/DD HH:mm:ss'),
+    start: currentEvent.start,
+    tipo: cancelType,
+    modificadoPor: datosUser.idUsuario,
+  };
+  const cancel = fetcherPost(URL, data);
+
+  return cancel;
+}
+
+export function consultarCita(idCita) {
+  const URL = [endpoints.calendarioColaborador.getCitaById];
+  const cita = fetcherPost(URL, { idCita });
+
+  return cita;
 }
 
 // Actualizar el registro de detalle paciente que indica que un usuario esta activo en el beneficio.

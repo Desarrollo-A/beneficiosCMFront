@@ -35,18 +35,21 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import uuidv4 from 'src/utils/uuidv4';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { cancelAppointment, useGetEventReasons } from 'src/api/calendar-specialist';
+import { useGetEventReasons } from 'src/api/calendar-specialist';
 import {
   crearCita,
   getHorario,
   checkInvoice,
   getModalities,
+  consultarCita,
   getSpecialists,
   useGetBenefits,
   lastAppointment,
   checaPrimeraCita,
   getAtencionXSede,
+  cancelAppointment,
   updateAppointment,
+  getCitasSinEvaluar,
   getCitasFinalizadas,
   updateDetailPacient,
   getHorariosOcupados,
@@ -58,6 +61,9 @@ import {
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider from 'src/components/hook-form/form-provider';
+
+import CalendarPreview from './calendar-preview';
+import AppointmentSchedule from './appointment-schedule';
 
 dayjs.locale('es');
 dayjs.extend(utc);
@@ -75,6 +81,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     modalidad: '',
   });
   const [open, setOpen] = useState(false);
+  const [open2, setOpen2] = useState(false);
   const [confirmCancel, setConfirmCancel] = useState(false);
   const [reschedule, setReschedule] = useState(false);
   const [beneficios, setBeneficios] = useState([]);
@@ -91,6 +98,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const [fechasDisponibles, setFechasDisponibles] = useState([]);
   const [horariosDisponibles, setHorariosDisponibles] = useState([]);
   const [horarioSeleccionado, setHorarioSeleccionado] = useState('');
+  const [event, setEvent] = useState({});
 
   const { user: datosUser } = useAuthContext();
 
@@ -131,7 +139,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       enqueueSnackbar('¡Existe un error con la fecha de antiguedad!', {
         variant: 'error',
       });
-      return onClose();
+      onClose();
+      return false;
     }
 
     // Validamos la antiguedad: Mandamos fechaIngreso, fechaDeHoy, isPracticante, idBeneficio.
@@ -142,7 +151,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       enqueueSnackbar('¡No cuentas con la antigüedad suficiente para hacer uso del beneficio!', {
         variant: 'error',
       });
-      return onClose();
+      onClose();
+      return false;
     }
 
     // Consultamos su atencionXSede
@@ -158,67 +168,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
           variant: 'error',
         }
       );
-      return onClose();
-    }
-
-    // Checo si tiene citas para saber si es nuevo Paciente o no.
-    const tieneCitas = await checaPrimeraCita(datosUser.idUsuario, selectedValues.especialista);
-
-    // PROCESO DE AGENDAR: Se le valida que es nuevo usuario y se le agenda su cita.
-    if (tieneCitas.result === false) {
-      if (datosUser.tipoPuesto.toLowerCase() === 'operativa' || datosUser.idDepto === 13) {
-        // PARAMS: idUsuario, folio (generado con uuidv4), concepto (1-cita, 2-pulsera), cantidad en pesos, metodoPago(1 tarjeta, 2 efectivo, 3 no aplica) .
-        const registrarPago = await registrarDetalleDePago(datosUser.idUsuario, uuidv4(), 1, 0, 3);
-        if (registrarPago.result) {
-          return agendarCita(
-            `CITA ${datosUser.nombre} ${año}-${mes}-${dia}`,
-            selectedValues.especialista,
-            '',
-            horarioSeleccionado,
-            1,
-            idAtencionPorSede.data[0].idAtencionXSede,
-            datosUser.idUsuario,
-            registrarPago.data,
-            selectedValues.beneficio
-          );
-        }
-        if (!registrarPago.result) {
-          enqueueSnackbar('¡Ha surgido un error al intentar registrar el detalle de pago!', {
-            variant: 'error',
-          });
-          return onClose();
-        }
-      } else {
-        setOpen(true);
-        // SIMULACIÓN DE PAGO
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        setOpen(false);
-        const registrarPago = await registrarDetalleDePago(datosUser.idUsuario, uuidv4(), 1, 50, 1);
-        if (registrarPago.result) {
-          enqueueSnackbar('¡Detalle de pago registrado!', {
-            variant: 'success',
-          });
-          return agendarCita(
-            `CITA ${datosUser.nombre} ${año}-${mes}-${dia}`,
-            selectedValues.especialista,
-            ' ',
-            horarioSeleccionado,
-            1,
-            idAtencionPorSede.data[0].idAtencionXSede,
-            datosUser.idUsuario,
-            registrarPago.data,
-            selectedValues.beneficio
-          );
-        }
-        if (!registrarPago.result) {
-          enqueueSnackbar('¡Ha surgido un error al intentar registrar el detalle de pago!', {
-            variant: 'error',
-          });
-          return onClose();
-        }
-        return onClose();
-      }
-      return onClose();
+      onClose();
+      return false;
     }
 
     const citasSinFinalizar = await getCitasSinFinalizar(
@@ -231,7 +182,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       enqueueSnackbar('Ya tienes una cita en proceso de este beneficio', {
         variant: 'error',
       });
-      return onClose();
+      onClose();
+      return false;
     }
 
     const citasFinalizadas = await getCitasFinalizadas(datosUser.idUsuario, mes, año);
@@ -240,63 +192,88 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       enqueueSnackbar('Ya cuentas con la cantidad maxima de beneficios brindados en el mes', {
         variant: 'error',
       });
-      return onClose();
+      onClose();
+      return false;
     }
 
-    // PROCESO DE AGENDAR: Ya pasó por todas las validaciones y puede agendar
+    // Proceso de agenda
+    const tieneCitas = await checaPrimeraCita(datosUser.idUsuario, selectedValues.especialista);
+
+    let tipoCita = 2;
+    let precio = 50;
+    let metodoPago = 1;
+    // PROCESO DE AGENDAR: Se le valida que es nuevo usuario y se le agenda su cita.
+    if (tieneCitas.result === true) {
+      tipoCita = 1;
+    }
     if (datosUser.tipoPuesto.toLowerCase() === 'operativa' || datosUser.idDepto === 13) {
-      // PARAMS: idUsuario, folio (generado con uuidv4), concepto (1-cita, 2-pulsera), cantidad en pesos, metodoPago(1 tarjeta, 2 efectivo, 3 no aplica) .
-      const registrarPago = await registrarDetalleDePago(datosUser.idUsuario, uuidv4(), 1, 0, 3);
-      if (registrarPago.result) {
-        return agendarCita(
-          `CITA ${datosUser.nombre} ${año}-${mes}-${dia}`,
-          selectedValues.especialista,
-          '',
-          horarioSeleccionado,
-          2,
-          idAtencionPorSede.data[0].idAtencionXSede,
-          datosUser.idUsuario,
-          registrarPago.data,
-          selectedValues.beneficio
-        );
-      }
-      if (!registrarPago.result) {
-        enqueueSnackbar('¡Ha surgido un error al intentar registrar el detalle de pago!', {
-          variant: 'error',
-        });
-        return onClose();
-      }
-    } else {
+      tipoCita = 1;
+      precio = 0;
+      metodoPago = 3;
+    }
+    const agendar = await agendarCita(
+      `CITA ${datosUser.nombre} ${año}-${mes}-${dia}`,
+      selectedValues.especialista,
+      '',
+      horarioSeleccionado,
+      1,
+      idAtencionPorSede.data[0].idAtencionXSede,
+      datosUser.idUsuario,
+      null,
+      selectedValues.beneficio
+    );
+    if (!agendar.result) {
+      enqueueSnackbar(agendar.msg, {
+        variant: 'error',
+      });
+      return onClose();
+    }
+    if (metodoPago === 1) {
       setOpen(true);
       // SIMULACIÓN DE PAGO
       await new Promise((resolve) => setTimeout(resolve, 2000));
       setOpen(false);
-      const registrarPago = await registrarDetalleDePago(datosUser.idUsuario, uuidv4(), 1, 50, 1);
-      if (registrarPago.result) {
-        enqueueSnackbar('¡Detalle de pago registrado!', {
-          variant: 'success',
-        });
-        return agendarCita(
-          `CITA ${datosUser.nombre} ${año}-${mes}-${dia}`,
-          selectedValues.especialista,
-          ' ',
-          horarioSeleccionado,
-          2,
-          idAtencionPorSede.data[0].idAtencionXSede,
-          datosUser.idUsuario,
-          registrarPago.data,
-          selectedValues.beneficio
-        );
-      }
-      if (!registrarPago.result) {
-        enqueueSnackbar('¡Ha surgido un error al intentar registrar el detalle de pago!', {
-          variant: 'error',
-        });
-        return onClose();
-      }
+    }
+    const registrarPago = await registrarDetalleDePago(
+      datosUser.idUsuario,
+      uuidv4(),
+      tipoCita,
+      precio,
+      metodoPago
+    );
+    if (!registrarPago.result) {
+      enqueueSnackbar('¡Ha surgido un error al generar el detalle de pago!', {
+        variant: 'error',
+      });
       return onClose();
     }
-    return onClose();
+    const update = await updateAppointment(
+      datosUser.idUsuario,
+      agendar.data,
+      1,
+      registrarPago.data,
+      null
+    );
+    if (!update.result) {
+      enqueueSnackbar('¡Ha surgido un error al intentar registrar el detalle de pago!', {
+        variant: 'error',
+      });
+      return onClose();
+    }
+    enqueueSnackbar('¡Se ha agendado la cita con éxito!', {
+      variant: 'success',
+    });
+    appointmentMutate();
+    const scheduledAppointment = await consultarCita(agendar.data);
+    if (!scheduledAppointment.result) {
+      enqueueSnackbar('¡Surgió un error al poder mostrar el preview de la cita!', {
+        variant: 'error',
+      });
+      onClose();
+    }
+    setEvent({ ...scheduledAppointment.data[0] });
+    setOpen2(true);
+    return true;
   });
 
   const onCancel = async () => {
@@ -782,28 +759,14 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     if (registrarCita.result) {
       const updateDetail = await updateDetailPacient(datosUser.idUsuario, beneficio);
       if (!updateDetail.result) {
-        enqueueSnackbar('¡Surgió un error con el uso del beneficio para el paciente!', {
+        enqueueSnackbar('¡Ha surgidó un error al actualizar el estado del beneficio en uso!', {
           variant: 'error',
         });
-        return onClose();
+        return registrarCita;
       }
-      enqueueSnackbar('¡Se ha agendado la cita con éxito!', {
-        variant: 'success',
-      });
-      appointmentMutate();
-      return onClose();
+      return registrarCita;
     }
-    if (!registrarCita.result) {
-      enqueueSnackbar(registrarCita.msg, {
-        variant: 'error',
-      });
-      return onClose();
-    }
-
-    enqueueSnackbar('¡Ha surgido un error al intentar agendar la cita!', {
-      variant: 'error',
-    });
-    return onClose();
+    return registrarCita;
   };
 
   const validarAntiguedad = (fechaIngreso, fechaHoy) => {
@@ -873,7 +836,10 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const cancel = await cancelAppointment(currentEvent, currentEvent.id, 8);
 
     if (!cancel.result) {
-      return '';
+      enqueueSnackbar('Surgió un error al intentar cancelar la cita previa', {
+        variant: 'error',
+      });
+      return onClose();
     }
 
     const citasSinFinalizar = await getCitasSinFinalizar(
@@ -898,7 +864,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       return onClose();
     }
 
-    agendarCita(
+    const agendar = await agendarCita(
       `CITA ${datosUser.nombre} ${año}-${mes}-${dia}`,
       currentEvent?.idEspecialista,
       ' ',
@@ -910,12 +876,30 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       selectedValues.beneficio
     );
 
+    if (agendar.result) {
+      enqueueSnackbar(agendar.msg, {
+        variant: 'success',
+      });
+    }
+    if (!agendar.result) {
+      enqueueSnackbar(agendar.msg, {
+        variant: 'error',
+      });
+    }
+
+    appointmentMutate();
+    onClose();
     return setReschedule(false);
   };
 
   const rescheduleAppointment = () => {
     handleChange('all', currentEvent);
     setReschedule(true);
+  };
+
+  const handleClose = () => {
+    setOpen2(false);
+    onClose();
   };
 
   const Items = () => {
@@ -934,9 +918,9 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       ));
     } else {
       items = (
-        <Tooltip title="Sin motivos de cita">
+        <Tooltip title="Motivos por agregar por especialista">
           <Chip
-            label="Sin motivos de cita"
+            label="Motivos por agregar por especialista"
             variant="outlined"
             size="small"
             style={{ backgroundColor: '#e0e0e0', borderRadius: '20px' }}
@@ -1196,27 +1180,31 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                   {currentEvent?.estatus === 6 ? 'Pendiente de pago' : 'Pagado'}
                 </Typography>
               </Stack>
-              <Stack spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1 }}>
-                <Stack direction="row" sx={{ alignItems: 'center' }}>
-                  <Iconify
-                    icon="solar:chat-round-line-outline"
-                    width={30}
-                    sx={{ color: 'text.disabled' }}
-                  />
-                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                    Motivos
-                  </Typography>
+              {currentEvent?.estatus === 4 ? (
+                <Stack spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1 }}>
+                  <Stack direction="row" sx={{ alignItems: 'center' }}>
+                    <Iconify
+                      icon="solar:chat-round-line-outline"
+                      width={30}
+                      sx={{ color: 'text.disabled' }}
+                    />
+                    <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                      Motivos
+                    </Typography>
+                  </Stack>
+                  <Stack
+                    flexDirection="row"
+                    flexWrap="wrap"
+                    flex={1}
+                    spacing={2}
+                    sx={{ px: { xs: 1, md: 3 }, py: 1 }}
+                  >
+                    <Items />
+                  </Stack>
                 </Stack>
-                <Stack
-                  flexDirection="row"
-                  flexWrap="wrap"
-                  flex={1}
-                  spacing={2}
-                  sx={{ px: { xs: 1, md: 3 }, py: 1 }}
-                >
-                  <Items />
-                </Stack>
-              </Stack>
+              ) : (
+                ''
+              )}
             </>
           ) : (
             <AppointmentSchedule
@@ -1361,7 +1349,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
             </Typography>
           </Stack>
 
-          <Typography>¿Está seguro de cancelar el horario?</Typography>
+          <Typography>¿Está seguro de cancelar la cita?</Typography>
         </DialogContent>
         <DialogActions>
           <Button variant="contained" color="error" onClick={() => setConfirmCancel(false)}>
@@ -1372,266 +1360,12 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
           </Button>
         </DialogActions>
       </Dialog>
+
+      <CalendarPreview event={event} open={open2} handleClose={handleClose} />
     </>
   );
 }
 
-const AppointmentSchedule = ({
-  selectedValues,
-  handleChange,
-  beneficios,
-  errorBeneficio,
-  especialistas,
-  errorEspecialista,
-  modalidades,
-  errorModalidad,
-  infoContact,
-  oficina,
-  isLoading,
-  handleDateChange,
-  shouldDisableDate,
-  horariosDisponibles,
-  horarioSeleccionado,
-  setHorarioSeleccionado,
-  errorHorarioSeleccionado,
-  currentEvent,
-  Items,
-}) => (
-  <Grid sx={{ display: 'flex' }}>
-    <Grid sx={{ width: '100%' }}>
-      <Box
-        sx={{
-          width: { xs: '100%', md: '100%' },
-          p: { xs: 1, md: 2 },
-          borderRight: 'lightgray solid',
-          borderRightWidth: selectedValues.especialista ? '2px' : '0px',
-        }}
-      >
-        <Stack spacing={3}>
-          <Typography variant="subtitle1">
-            {dayjs().locale('es').format('dddd, DD MMMM YYYY')}
-          </Typography>
-          <Stack direction="column" spacing={3} justifyContent="space-between">
-            <FormControl error={!!errorBeneficio} fullWidth>
-              <InputLabel id="beneficio-input" name="beneficio">
-                Beneficio
-              </InputLabel>
-              <Select
-                labelId="Beneficio"
-                id="select-beneficio"
-                label="Beneficio"
-                value={selectedValues.beneficio || ''}
-                defaultValue=""
-                onChange={(e) => handleChange('beneficio', e.target.value)}
-                disabled={!!(beneficios.length === 0 || currentEvent?.id)}
-              >
-                {beneficios.map((e) => (
-                  <MenuItem key={e.idPuesto} value={e.idPuesto}>
-                    {e.puesto.toUpperCase()}
-                  </MenuItem>
-                ))}
-              </Select>
-              {errorBeneficio && selectedValues.beneficio === '' && (
-                <FormHelperText error={errorBeneficio}>Seleccione un beneficio</FormHelperText>
-              )}
-            </FormControl>
-            <FormControl error={!!errorEspecialista} fullWidth>
-              <InputLabel id="especialista-input">Especialista</InputLabel>
-              <Select
-                labelId="especialista-input"
-                id="select-especialista"
-                label="Especialista"
-                name="especialista"
-                value={selectedValues.especialista}
-                defaultValue=""
-                onChange={(e) => handleChange('especialista', e.target.value)}
-                disabled={!!(especialistas.length === 0 || currentEvent?.id)}
-              >
-                {especialistas.map((e, index) => (
-                  <MenuItem key={e.id} value={e.id}>
-                    {e.especialista.toUpperCase()}
-                  </MenuItem>
-                ))}
-              </Select>
-              {errorEspecialista && selectedValues.especialista === '' && (
-                <FormHelperText error={errorEspecialista}>
-                  Seleccione un especialista
-                </FormHelperText>
-              )}
-            </FormControl>
-            <FormControl error={!!errorModalidad} fullWidth>
-              <InputLabel id="modalidad-input">Modalidad</InputLabel>
-              <Select
-                labelId="Modalidad"
-                id="select-modalidad"
-                label="Modalidad"
-                name="Modalidad"
-                defaultValue=""
-                value={selectedValues.modalidad}
-                onChange={(e) => handleChange('modalidad', e.target.value)}
-                disabled={!!(modalidades.length === 0 || currentEvent?.id)}
-              >
-                {modalidades.map((e, index) => (
-                  <MenuItem key={e.tipoCita} value={e.tipoCita}>
-                    {e.modalidad.toUpperCase()}
-                  </MenuItem>
-                ))}
-              </Select>
-              {errorModalidad && selectedValues.modalidad === '' && (
-                <FormHelperText error={errorModalidad}>Seleccione una modalidad</FormHelperText>
-              )}
-            </FormControl>
-          </Stack>
-          {/* {selectedValues.modalidad && selectedValues.beneficio === 158 && (
-            <Stack sx={{ px: 1 }}>
-              Contacte al especialista seleccionado para agendar una cita de Quantum Balance:
-              <br />
-              {infoContact.result ? (
-                <>
-                  <Stack
-                    sx={{
-                      flexDirection: 'row',
-                      px: { xs: 1, md: 2 },
-                      py: 1,
-                    }}
-                  >
-                    <Stack>
-                      <Iconify icon="ic:outline-email" width={30} sx={{ color: 'text.disabled' }} />
-                    </Stack>
-                    <Stack sx={{ flexDirection: 'col' }}>
-                      <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                        {infoContact.data[0].correo}
-                      </Typography>
-                    </Stack>
-                  </Stack>
-                  <Stack
-                    sx={{
-                      flexDirection: 'row',
-                      px: { xs: 1, md: 2 },
-                      py: 1,
-                    }}
-                  >
-                    <Stack>
-                      <Iconify icon="mdi:phone" width={30} sx={{ color: 'text.disabled' }} />
-                    </Stack>
-                    <Stack sx={{ flexDirection: 'col' }}>
-                      <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                        {infoContact.data[0].telPersonal}
-                      </Typography>
-                    </Stack>
-                  </Stack>
-                </>
-              ) : (
-                ' Cargando...'
-              )}
-            </Stack>
-          )} */}
-          {selectedValues.modalidad === 1 && selectedValues.beneficio /* !== 158 */ && (
-            <Stack spacing={1} sx={{ p: { xs: 1, md: 1 } }}>
-              Dirección de la oficina :
-              {oficina && oficina.result ? (
-                <Stack
-                  sx={{
-                    flexDirection: 'row',
-                  }}
-                >
-                  <Stack>
-                    <Iconify
-                      icon="mdi:office-building-marker"
-                      width={30}
-                      sx={{ color: 'text.disabled' }}
-                    />
-                  </Stack>
-                  <Stack sx={{ flexDirection: 'col' }}>
-                    <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                      {oficina.data[0].ubicación}
-                    </Typography>
-                  </Stack>
-                </Stack>
-              ) : (
-                ' Cargando...'
-              )}
-            </Stack>
-          )}
-        </Stack>
-      </Box>
-    </Grid>
-    <Grid
-      sx={{
-        width: '100%',
-        display: selectedValues.modalidad ? 'block' : 'none',
-      }}
-    >
-      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
-        <DateCalendar
-          loading={isLoading}
-          onChange={handleDateChange}
-          renderLoading={() => <DayCalendarSkeleton />}
-          minDate={initialValue}
-          maxDate={lastDayOfNextMonth}
-          shouldDisableDate={shouldDisableDate}
-          views={['year', 'month', 'day']}
-        />
-      </LocalizationProvider>
-      <Stack
-        direction="column"
-        spacing={3}
-        justifyContent="space-between"
-        sx={{ px: { xs: 1, md: 10 } }}
-      >
-        {horariosDisponibles ? (
-          <FormControl error={!!errorHorarioSeleccionado} fullWidth>
-            <InputLabel id="modalidad-input">Horarios disponibles</InputLabel>
-            <Select
-              labelId="Horarios disponibles"
-              id="select-horario"
-              label="Horarios disponibles"
-              name="Horarios disponibles"
-              value={horarioSeleccionado}
-              onChange={(e) => setHorarioSeleccionado(e.target.value)}
-              disabled={horariosDisponibles.length === 0}
-            >
-              {horariosDisponibles.map((e, index) => (
-                <MenuItem key={e.inicio} value={`${e.fecha} ${e.inicio}`}>
-                  {e.inicio}
-                </MenuItem>
-              ))}
-            </Select>
-            {errorHorarioSeleccionado && horarioSeleccionado === '' && (
-              <FormHelperText error={errorHorarioSeleccionado}>
-                Seleccione fecha y horario
-              </FormHelperText>
-            )}
-          </FormControl>
-        ) : (
-          <>Fecha sin horarios disponibles</>
-        )}
-      </Stack>
-    </Grid>
-  </Grid>
-);
-
-AppointmentSchedule.propTypes = {
-  selectedValues: PropTypes.object,
-  handleChange: PropTypes.func,
-  beneficios: PropTypes.array,
-  errorBeneficio: PropTypes.bool,
-  especialistas: PropTypes.array,
-  errorEspecialista: PropTypes.bool,
-  modalidades: PropTypes.array,
-  errorModalidad: PropTypes.bool,
-  infoContact: PropTypes.object,
-  oficina: PropTypes.object,
-  isLoading: PropTypes.bool,
-  handleDateChange: PropTypes.func,
-  shouldDisableDate: PropTypes.func,
-  horariosDisponibles: PropTypes.array,
-  horarioSeleccionado: PropTypes.string,
-  setHorarioSeleccionado: PropTypes.func,
-  errorHorarioSeleccionado: PropTypes.bool,
-  currentEvent: PropTypes.object,
-  Items: PropTypes.any,
-};
 CalendarDialog.propTypes = {
   currentEvent: PropTypes.object,
   onClose: PropTypes.func,

@@ -347,9 +347,9 @@ export async function cancelAppointment(currentEvent, id, cancelType) {
 
   const delDate = await fetcherPost(cancel_appointment, data);
 
-  // if (delDate.result) {
-  //   fetcherPost(sendMail, mailMessage);
-  // }
+  if (delDate.result) {
+    fetcherPost(sendMail, mailMessage);
+  }
 
   return delDate;
 }
