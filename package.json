@@ -7,9 +7,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "set NODE_ENV=development&& vite --mode development",
     "start": "vite preview",
-    "build": "vite build",
+    "build": "set NODE_ENV=production&& vite build --mode production",
+    "pruebas": "set NODE_ENV=pruebas&& vite build --mode pruebas",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "eslint --fix \"src/**/*.{js,jsx,ts,tsx}\"",
     "prettier": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",

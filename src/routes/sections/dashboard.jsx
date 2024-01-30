@@ -81,7 +81,7 @@ const BlankPage = lazy(() => import('src/sections/_examples/extra/upload-view'))
 
 export const dashboardRoutes = [
   {
-    path: 'dashboard',
+    path: `${import.meta.env.BASE_URL}dashboard`,
     element: (
       <AuthGuard>
         <DashboardLayout>

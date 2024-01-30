@@ -11,7 +11,6 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 
-import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 import { useRouter,useSearchParams } from 'src/routes/hooks';
 
@@ -84,7 +83,10 @@ export default function JwtRegisterView() {
 
       const config = {
         headers : {
-          authorization : '41EgSP8+YSqsyT1ZRuxTK3CYR11LOcyqopI2TTNJd3EL+aU3MUdJNsKGx8xOK+HH',
+          Authorization : '41EgSP8+YSqsyT1ZRuxTK3CYR11LOcyqopI2TTNJd3EL+aU3MUdJNsKGx8xOK+HH',
+          'Access-Control-Allow-Origin': '*',
+          Accept : '*/*',
+          Origin : 'https://prueba.gphsis.com/auth/jwt/register',
         }
       }
 
@@ -114,7 +116,7 @@ export default function JwtRegisterView() {
       <Stack direction="row" spacing={0.5}>
         <Typography variant="body2"> ¿Ya tienes una cuenta? </Typography>
 
-        <Link href={paths.auth.jwt.login} component={RouterLink} variant="subtitle2">
+        <Link href={import.meta.env.BASE_URL} component={RouterLink} variant="subtitle2">
           Iniciar sesión
         </Link>
       </Stack>

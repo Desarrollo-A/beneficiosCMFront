@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-import { HOST, HOST_API } from 'src/config-global';
+import { HOST } from 'src/config-global';
 
 // ----------------------------------------------------------------------
 
-const axiosInstance = axios.create({ baseURL: HOST_API });
+const axiosInstance = axios.create({ baseURL: HOST });
 axiosInstance.interceptors.response.use(
   (res) => res,
   (error) => Promise.reject((error.response && error.response.data) || 'Something went wrong')
@@ -64,12 +64,12 @@ export const endpoints = {
   kanban: '/api/kanban',
   calendar: '/api/calendar',
   auth: {
-    me: 'loginController/check',
-    me2: 'loginController/me',
-    login: 'loginController/login',
+    me: '/loginController/check',
+    me2: '/loginController/me',
+    login: '/loginController/login',
     login2: '/api/auth/login',
     register: '/api/auth/register',
-    logout: 'loginController/logout',
+    logout: '/loginController/logout',
   },
   mail: {
     list: '/api/mail/list',
