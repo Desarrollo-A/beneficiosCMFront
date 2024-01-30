@@ -135,7 +135,7 @@ export default function CalendarioView(){
 
               <Calendar
                 weekends
-                editable
+                editable = {false} // en false para prevenir un drag del evento
                 droppable
                 selectable
                 eventConstraint={hours2}

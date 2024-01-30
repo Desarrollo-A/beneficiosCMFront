@@ -12,8 +12,7 @@ import { Chip, Button, Select, MenuItem, TextField, InputLabel, Typography, Form
 
 import { fDate } from 'src/utils/format-time';
 
-import { reRender } from 'src/api/calendar-colaborador';
-import { reschedule, endAppointment, cancelAppointment } from 'src/api/calendar-specialist';
+import {  reRender, reschedule, endAppointment, cancelAppointment } from 'src/api/calendar-specialist';
 
 export default function CancelEventDialog({ type, currentEvent, pastCheck, reasons, onClose, close, selectedDate }) {
   dayjs.locale('es'); // valor para cambiar el idioma del dayjs

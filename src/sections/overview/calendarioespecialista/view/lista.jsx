@@ -25,7 +25,7 @@ import uuidv4 from 'src/utils/uuidv4';
 import { fDate } from 'src/utils/format-time';
 
 import { getModalities } from 'src/api/calendar-colaborador';
-import { reRender, createCustom, createAppointment } from 'src/api/calendar-specialist';
+import { reRender, createCustom, createAppointment, UpdateDetallePaciente } from 'src/api/calendar-specialist';
 
 import { enqueueSnackbar } from 'src/components/snackbar';
 import FormProvider from 'src/components/hook-form/form-provider';
@@ -33,7 +33,7 @@ import { RHFTextField, RHFAutocomplete } from 'src/components/hook-form';
 
 const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
 export default function Lista({ currentEvent, onClose, userData, selectedDate, usersMutate }) {
-    dayjs.locale('es') // valor para cambiar el idioma del dayjs
+  dayjs.locale('es') // valor para cambiar el idioma del dayjs
 
   const [allDay, setAllDay] = useState(false);
   const defaultHour = {
@@ -160,6 +160,9 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
 
       case 'date':
         save = await createAppointment(eventData, modalitie);
+        if(save.result){
+          UpdateDetallePaciente(patient.idUsuario);
+        }
         break;
 
       default:

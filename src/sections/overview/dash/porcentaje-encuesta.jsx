@@ -95,9 +95,9 @@ EncuestaPorcentaje.propTypes = {
   handleChangePg: PropTypes.func,
   handleChangeIdPg: PropTypes.func,
   selectPg: PropTypes.string,
-  idEncuesta: PropTypes.number,
+  idEncuesta: PropTypes.any,
   idArea: PropTypes.number,
-  idPregunta: PropTypes.number,
+  idPregunta: PropTypes.any,
 };
 
 // ----------------------------------------------------------------------
