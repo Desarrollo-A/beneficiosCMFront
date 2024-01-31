@@ -64,12 +64,12 @@ export const endpoints = {
   kanban: '/api/kanban',
   calendar: '/api/calendar',
   auth: {
-    me: '/loginController/check',
-    me2: '/loginController/me',
-    login: '/loginController/login',
+    me: '/LoginController/check',
+    me2: '/LoginController/me',
+    login: '/LoginController/login',
     login2: '/api/auth/login',
     register: '/api/auth/register',
-    logout: '/loginController/logout',
+    logout: '/LoginController/logout',
   },
   mail: {
     list: '/api/mail/list',

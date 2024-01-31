@@ -24,7 +24,7 @@ const Logo = forwardRef(({ disabledLink = false, sx, ...other }, ref) => {
     <div style={{margin:"30px"}}>
      <Box
        component="img"
-       src="/assets/img/unnamed.png"
+       src= {`${import.meta.env.BASE_URL}assets/img/unnamed.png`}
        style={{marginTop:"0", marginLeft:"0", marginRight:"0"}}
        sx={{ width: "100%", cursor: 'pointer', ...sx }}
      />

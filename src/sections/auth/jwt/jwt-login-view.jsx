@@ -66,11 +66,7 @@ const onSubmit = (e) => {
   const datos = JSON.stringify({numempleado : numEmpleado,password:passwd});
   login?.(numEmpleado, passwd)
   .then(response=>{
-
     if(response === undefined){
-
-      console.log(PATH_AFTER_LOGIN)
-
       router.push(returnTo || PATH_AFTER_LOGIN);
     }
     else if(response !== undefined && response.result === 0){
