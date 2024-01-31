@@ -244,8 +244,7 @@ export async function createAppointment(eventData, modalitie) {
       reagenda: 0,
     };
 
-    const mailMessage = {
-      // datos para enviar el mail
+    const mailMessage = { // datos para enviar el mail
       especialidad,
       especialista: modalitie.especialista,
       fecha,
@@ -328,7 +327,7 @@ export async function cancelAppointment(currentEvent, id, cancelType) {
 
   const data = {
     idCita: id,
-    startStamp,
+    start: startStamp,
     tipo: cancelType,
     modificadoPor: datosUser.idUsuario,
   };
@@ -490,6 +489,7 @@ export async function reschedule(eventData, idDetalle, cancelType) {
     idPaciente: eventData.paciente,
     fechaInicio,
     fechaFinal,
+    fechaCreacion: eventData.fechaCreacion,
     creadoPor: datosUser.idUsuario,
     titulo: eventData.title,
     modificadoPor: datosUser.idUsuario,
@@ -502,7 +502,7 @@ export async function reschedule(eventData, idDetalle, cancelType) {
   const cancelData = {
     idCita: eventData?.idCancelar,
     tipo: cancelType,
-    startStamp,
+    start: startStamp,
     modificadoPor: datosUser.idUsuario,
   };
 
@@ -528,8 +528,8 @@ export async function reschedule(eventData, idDetalle, cancelType) {
     response = await fetcherPost(create_appointment, data);
 
     if (response.result) {
-      response = await fetcherPost(cancel_appointment, cancelData);
-      if (response.result) {
+      const del = await fetcherPost(cancel_appointment, cancelData);
+      if (del.result) {
         fetcherPost(sendMail, mailReschedule);
       }
     }
