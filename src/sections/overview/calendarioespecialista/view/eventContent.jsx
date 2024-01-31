@@ -7,7 +7,7 @@ import { useState, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
-import { Chip, List } from '@mui/material';
+import { Chip } from '@mui/material';
 import Stack from '@mui/system/Stack';
 import Dialog from '@mui/material/Dialog';
 import Button from '@mui/material/Button';
@@ -364,7 +364,6 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
                   ])
                 }
                 </Stack>
-                
               </Stack>
               }
               <Stack spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1 }}>

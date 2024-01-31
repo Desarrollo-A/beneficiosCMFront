@@ -238,7 +238,7 @@ export default function DashView() {
   const _ecommerceSalesOverview = ['No', 'Si'].map(
     (label, index) => ({
       label,
-      value: _dt.percent(index),
+      value: _dt.percent(index) ?? 0,
     })
   );
 
@@ -313,6 +313,7 @@ export default function DashView() {
               title={`Bienvenido 👋 \n ${user?.nombre}`}
               description="If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything."
               img={<SeoIllustration />}
+              
             />
           </Grid>
 
@@ -331,13 +332,13 @@ export default function DashView() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '370px'
+                width: '360px'
               }}
             >
-              <Clock value={value} />
+              <Clock value={value}/>
             </Card>
           </Grid>
-
+              
 
 
           {rol === "1" ? (
@@ -350,8 +351,8 @@ export default function DashView() {
                 label="Área"
                 onChange={(e) => handleChangeArea(e)}
               >
-                {especialistasData.map((i) => (
-                  <MenuItem key={i.idPuesto} value={i.idPuesto}>
+                {especialistasData.map((i, index) => (
+                  <MenuItem key={index} value={i.idPuesto}>
                     {i.nombre}
                   </MenuItem>
                 ))}
@@ -365,45 +366,45 @@ export default function DashView() {
 
           )}
 
-          {pacientesData.map((i) => (
-            <Grid xs={12} sm={6} md={3}>
+          {pacientesData.map((i, index) => (
+            <Grid xs={12} sm={6} md={3} key={index}>
               <WidgetConteo
                 title={rol === '2' ? 'Total citas' : 'Total pacientes'}
                 total={i.pacientes}
                 color="info"
-                icon={<img alt="icon" src="/assets/icons/glass/usuario.png" />}
+                icon={<img alt="icon" src= {`${import.meta.env.BASE_URL}assets/icons/glass/usuario.png`} />}
               />
             </Grid>
           ))}
 
-          {asistenciaData.map((i) => (
-            <Grid xs={12} sm={6} md={3}>
+          {asistenciaData.map((i, index) => (
+            <Grid xs={12} sm={6} md={3} key={index}>
               <WidgetConteo
                 title="Total citas asistidas"
                 total={i.asistencia}
-                icon={<img alt="icon" src="/assets/icons/glass/check.png" />}
+                icon={<img alt="icon" src= {`${import.meta.env.BASE_URL}assets/icons/glass/check.png`} />}
               />
             </Grid>
           ))}
 
-          {canceladaData.map((i) => (
-            <Grid xs={12} sm={6} md={3}>
+          {canceladaData.map((i, index) => (
+            <Grid xs={12} sm={6} md={3} key={index}>
               <WidgetConteo
                 title="Total citas canceladas"
                 total={i.cancelada}
                 color="warning"
-                icon={<img alt="icon" src="/assets/icons/glass/cancelar.png" />}
+                icon={<img alt="icon" src= {`${import.meta.env.BASE_URL}assets/icons/glass/calendar.png`} />}
               />
             </Grid>
           ))}
 
-          {penalizadaData.map((i) => (
-            <Grid xs={12} sm={6} md={3}>
+          {penalizadaData.map((i, index) => (
+            <Grid xs={12} sm={6} md={3} key={index}>
               <WidgetConteo
                 title="Total citas penalizadas"
                 total={i.penalizada}
                 color="error"
-                icon={<img alt="icon" src="/assets/icons/glass/dolar.png" />}
+                icon={<img alt="icon" src= {`${import.meta.env.BASE_URL}assets/icons/glass/dolar.png`}/>}
               />
             </Grid>
           ))}
@@ -411,8 +412,8 @@ export default function DashView() {
           {rol !== "2" ? (
             <>
 
-              {metasData.map((i) => (
-                <Grid xs={12} sm={6} md={4}>
+              {metasData.map((i, index) => (
+                <Grid xs={12} sm={6} md={4} key={index}>
                   <GraficaMetas
                     title="Meta de citas"
                     chart={{

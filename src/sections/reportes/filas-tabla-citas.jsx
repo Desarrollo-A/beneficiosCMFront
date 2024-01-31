@@ -52,8 +52,6 @@ export default function FilasTabla({ row, selected, rol, rel  }) {
 
         <TableCell sx={{ whiteSpace: 'nowrap' }} style={{ display: paci ? '' : 'none' }}>{paciente}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{oficina}</TableCell>
-
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{area}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{sede}</TableCell>
@@ -107,6 +105,6 @@ export default function FilasTabla({ row, selected, rol, rel  }) {
 FilasTabla.propTypes = {
   row: PropTypes.object,
   selected: PropTypes.bool,
-  rol: PropTypes.number,
+  rol: PropTypes.any,
   rel: PropTypes.func,
 };

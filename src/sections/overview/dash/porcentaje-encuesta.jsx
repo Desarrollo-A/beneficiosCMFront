@@ -12,7 +12,6 @@ import FormControl from '@mui/material/FormControl';
 import LinearProgress from '@mui/material/LinearProgress';
 
 import { endpoints } from 'src/utils/axios';
-import { fPercent } from 'src/utils/format-number';
 
 import { usePostGeneral } from 'src/api/general';
 
@@ -96,7 +95,7 @@ EncuestaPorcentaje.propTypes = {
   handleChangeIdPg: PropTypes.func,
   selectPg: PropTypes.string,
   idEncuesta: PropTypes.any,
-  idArea: PropTypes.number,
+  idArea: PropTypes.any,
   idPregunta: PropTypes.any,
 };
 
@@ -112,11 +111,8 @@ function ProgressItem({ progress }) {
           {progress.label}
         </Typography>
 
-        <Typography variant="subtitle2">{fPercent(progress.value)}</Typography>
+        <Typography variant="subtitle2">{/* {fPercent(progress.value)} */}</Typography>
 
-        {/* <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          &nbsp;({fPercent(progress.value)})
-        </Typography> */}
       </Stack>
 
       <LinearProgress
@@ -133,5 +129,5 @@ function ProgressItem({ progress }) {
 }
 
 ProgressItem.propTypes = {
-  progress: PropTypes.object,
+  progress: PropTypes.any,
 };

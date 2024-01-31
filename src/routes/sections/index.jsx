@@ -6,13 +6,12 @@ import AuthClassicLayout from 'src/layouts/auth/classic';
 
 // import { PATH_AFTER_LOGIN } from 'src/config-global';
 import { authRoutes } from './auth';
+import { mainRoutes } from './main';
 import { authDemoRoutes } from './auth-demo';
-import { HomePage, mainRoutes } from './main';
 import { dashboardRoutes } from './dashboard';
 import { componentsRoutes } from './components';
 
 const JwtLoginPage = lazy(() => import('src/pages/auth/jwt/login'));
-
 
 // ---------------------------------------------------------------------- 
 
@@ -28,7 +27,7 @@ export default function Router() {
 
     // SET INDEX PAGE WITH HOME PAGE
     {
-      path: '/',
+      path: import.meta.env.BASE_URL,
       element: (
         <AuthClassicLayout>
           <JwtLoginPage />

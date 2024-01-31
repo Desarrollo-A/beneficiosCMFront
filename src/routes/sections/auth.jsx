@@ -176,7 +176,7 @@ const authAuth0 = {
 
 export const authRoutes = [
   {
-    path: 'auth',
+    path: `${import.meta.env.BASE_URL}auth`,
     children: [authAmplify, authJwt, authFirebase, authAuth0],
   },
 ];

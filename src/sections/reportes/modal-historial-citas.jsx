@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import Card from '@mui/material/Card';
@@ -17,9 +18,14 @@ import { endpoints } from 'src/utils/axios';
 import { usePostGeneral } from 'src/api/general';
 // ----------------------------------------------------------------------
 
-export default function HistorialCitas({ open, onClose, idUsuario }) {
+export default function HistorialCitas({ open, onClose, idUsuario, area }) {
 
-  const { citasData } = usePostGeneral(idUsuario, endpoints.reportes.citas, "citasData");
+  const [data, setData] = useState({
+    idUser: idUsuario,
+    espe: area
+  });
+
+  const { citasData } = usePostGeneral(data, endpoints.reportes.citas, "citasData");
 
   return (
     <Dialog
@@ -45,7 +51,7 @@ export default function HistorialCitas({ open, onClose, idUsuario }) {
           }}
         >
           {citasData.map((item, index) => (
-            <OrderItem key={item.idCita} item={item} lastTimeline={index === citasData.length - 1} />
+            <OrderItem key={index} item={item} lastTimeline={index === citasData.length - 1} />
           ))}
         </Timeline>
       </Card>
@@ -59,24 +65,29 @@ HistorialCitas.propTypes = {
   onClose: PropTypes.func,
   open: PropTypes.bool,
   idUsuario: PropTypes.number,
+  area: PropTypes.any,
 };
 
 function OrderItem({ item, lastTimeline }) {
-  const { titulo, estatus, estatusCita, tipoCita, horario } = item;
+  const { titulo, estatus, estatusCita, tipoCita, horario, especialista } = item;
+
   return (
     <TimelineItem>
       <TimelineSeparator>
         <TimelineDot
-          color={
-            (estatusCita === 1 && 'warning') ||
-            (estatusCita === 2 && 'error') ||
+        sx={{
+          backgroundColor:
+            (estatusCita === 0 && 'red') ||
+            (estatusCita === 1 && 'orange') ||
+            (estatusCita === 2 && 'red') ||
             (estatusCita === 3 && 'grey') ||
             (estatusCita === 4 && 'green') ||
-            (estatusCita === 5 && 'success') ||
-            (estatusCita === 6 && 'secondary') ||
-            (estatusCita === 7 && 'primary') ||
-            'error'
-          }
+            (estatusCita === 5 && 'pink') ||
+            (estatusCita === 6 && 'blue') ||
+            (estatusCita === 7 && 'red') ||
+            (estatusCita === 8 && 'red') ||
+            'error.main',
+        }}
         />
         {lastTimeline ? null : <TimelineConnector />}
       </TimelineSeparator>
@@ -89,7 +100,7 @@ function OrderItem({ item, lastTimeline }) {
         </Typography>
         <Stack spacing={1} >
         <Typography variant="caption" sx={{ color: 'text.disabled' }}>
-        {tipoCita}
+        {especialista}
         </Typography>
         </Stack>
       </TimelineContent>
@@ -98,6 +109,6 @@ function OrderItem({ item, lastTimeline }) {
 }
 
 OrderItem.propTypes = {
-  item: PropTypes.object,
-  lastTimeline: PropTypes.bool,
+  item: PropTypes.any,
+  lastTimeline: PropTypes.any,
 };

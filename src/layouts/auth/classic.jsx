@@ -72,12 +72,12 @@ export default function AuthClassicLayout({ children, image, title }) {
         backgroundSize: 'cover',
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center center',
-        backgroundImage: 'url(/src/assets/illustrations/mainLoginBG.jpg)',
+        backgroundImage: `url(${import.meta.env.BASE_URL}assets/illustrations/mainLoginBG.jpg)`,
       }}>
       <Box
         component="img"
         alt="auth"
-        src={image || '/public/assets/img/unnamed.png'}
+        src={image || `${import.meta.env.BASE_URL}assets/img/unnamed.png`}
         sx={{
           maxWidth: {
             xs: 480,

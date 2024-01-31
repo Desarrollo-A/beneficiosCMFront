@@ -228,6 +228,6 @@ EncuestaBarra.propTypes = {
   selectPg: PropTypes.string,
   idEncuesta: PropTypes.any,
   idArea: PropTypes.number,
-  idPregunta: PropTypes.number,
+  idPregunta: PropTypes.any,
   handleChangeIdPg: PropTypes.func,
 };

@@ -14,7 +14,7 @@ import NavItem from './nav-item';
 // ----------------------------------------------------------------------
 
 const icon = (name) => (
-  <SvgColor src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />
+  <SvgColor src= {`${import.meta.env.BASE_URL}assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />
   // OR
   // <Iconify icon="fluent:mail-24-filled" />
   // https://icon-sets.iconify.design/solar/
@@ -56,7 +56,7 @@ export default function NavList({ data, depth, slotProps }) {
         onMouseLeave={handleCloseMenu}
         //
         title={data.title}
-        path={data.path}
+        path = {`${import.meta.env.BASE_URL}${data.path}`}
         icon={icon(data.icon)}
         info={data.info}
         roles={data.roles}

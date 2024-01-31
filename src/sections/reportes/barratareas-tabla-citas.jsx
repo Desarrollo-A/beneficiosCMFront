@@ -85,9 +85,9 @@ export default function BarraTareasTabla({
           onChange={handleChangeStatus}
         >
           
-          {report.map((option) => (
+          {report.map((option, index) => (
             <MenuItem 
-              key={option.value} 
+              key={index} 
               value={option.value}
             >
               {option.label}
@@ -116,8 +116,8 @@ export default function BarraTareasTabla({
               },
             }}
           >
-            {roleOptions.map((option) => (
-              <MenuItem key={option} value={option}>
+            {roleOptions.map((option, index) => (
+              <MenuItem key={index} value={option}>
                 <Checkbox disableRipple size="small" checked={filters.area.includes(option)} />
                 {option}
               </MenuItem>
@@ -185,5 +185,5 @@ BarraTareasTabla.propTypes = {
   onFilters: PropTypes.func,
   roleOptions: PropTypes.array,
   handleChangeReport: PropTypes.func,
-  table: PropTypes.func,
+  table: PropTypes.any,
 };

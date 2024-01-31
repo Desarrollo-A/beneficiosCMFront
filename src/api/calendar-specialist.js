@@ -256,9 +256,7 @@ export async function createAppointment(eventData, modalitie) {
       sede: modalitie?.sede || 'virtual',
       tituloEmail: 'Reservación',
       temaEmail: 'Se ha agendado tu cita con: ',
-      correo: eventData.paciente.correo,
-      temaExtra: '',
-      link: '',
+      correo: eventData.paciente.correo
     };
 
     create = await fetcherPost(create_appointment, data);
@@ -391,8 +389,8 @@ export async function endAppointment(currentEvent, reason) {
     idUsuario: datosUser.idUsuario,
   };
 
-  const mailData = {
-    // datos que se envian al correo
+  const mailData = { // datos que se envian al correo
+    idCita: currentEvent?.id,
     tituloEmail: 'FINALIZACIÓN',
     temaEmail: 'Se ha finalizado tu cita en: ',
     especialidad: currentEvent?.beneficio,
@@ -402,10 +400,9 @@ export async function endAppointment(currentEvent, reason) {
     fecha: dayjs(currentEvent?.start).format('DD/MM/YYYY'),
     horaInicio: dayjs(currentEvent?.start).format('HH:mm A'),
     horaFinal: dayjs(currentEvent?.end).format('HH:mm A'),
-    view: 'email-appointment',
+    view: 'email-end',
     correo: currentEvent?.correo,
-    temaExtra: 'Califica tu cita aqui',
-    link: 'https://google.com',
+    link: 'https://prueba.gphsis.com/beneficiosmaderas/dashboard/calendariobeneficiario'
   };
 
   const update = await fetcherPost(end_appointment, data);

@@ -2,6 +2,7 @@ import * as Yup from 'yup';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+
 import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
@@ -43,8 +44,8 @@ export default function JwtLoginView() {
   });
 
   const defaultValues = {
-    numEmpleado: numEmpleado,
-    password: passwd,
+    'numEmpleado': numEmpleado,
+    'password': passwd,
   };
 
   const methods = useForm({
@@ -65,7 +66,6 @@ const onSubmit = (e) => {
   const datos = JSON.stringify({numempleado : numEmpleado,password:passwd});
   login?.(numEmpleado, passwd)
   .then(response=>{
-
     if(response === undefined){
       router.push(returnTo || PATH_AFTER_LOGIN);
     }

@@ -20,6 +20,7 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import Servicios from 'src/utils/servicios';
 
 import { useAuthContext } from 'src/auth/hooks';
+import { PATH_AFTER_LOGIN } from 'src/config-global';
 
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
