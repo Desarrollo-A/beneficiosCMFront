@@ -24,9 +24,6 @@ export default function NavMini() {
       sx={{
         flexShrink: { lg: 0 },
         width: { lg: NAV.W_MINI },
-        ...bgBlur({
-          color:'#161c24',
-        }),
       }}
     >
       <NavToggleButton
@@ -44,6 +41,9 @@ export default function NavMini() {
           width: NAV.W_MINI,
           borderRight: (theme) => `dashed 1px ${theme.palette.divider}`,
           ...hideScroll.x,
+          ...bgBlur({
+            color:'#161c24',
+          }),
         }}
       >
         <Logo sx={{ mx: 'auto', my: 2 }} />

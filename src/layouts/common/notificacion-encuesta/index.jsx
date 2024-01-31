@@ -28,7 +28,6 @@ import NotificationItem from './notificacion-encuesta';
 export default function NotifiEncuesta() {
 
   const idUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
-  console.log(idUser.idUsuario);
 
   const { getData } = usePostGeneral(idUser.idUsuario, endpoints.encuestas.getEncNotificacion, "getData");
 

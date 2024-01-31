@@ -59,7 +59,7 @@ export default function UserTableRow({ row, area }) {
 
       <EditarEstatus id={row.id} est={area} estatusVal={estNut || estPsi || estQB || estGE} open={quickEditar.value} onClose={quickEditar.onFalse} />
 
-      <HistorialCitas idUsuario={row.idUsuario} open={quickHisCit.value} onClose={quickHisCit.onFalse} />
+      <HistorialCitas idUsuario={row.idUsuario} open={quickHisCit.value} area={area} onClose={quickHisCit.onFalse} />
 
       <CustomPopover
         open={popover.open}
@@ -93,5 +93,5 @@ export default function UserTableRow({ row, area }) {
 
 UserTableRow.propTypes = {
   row: PropTypes.object,
-  area: PropTypes.number,
+  area: PropTypes.any,
 };

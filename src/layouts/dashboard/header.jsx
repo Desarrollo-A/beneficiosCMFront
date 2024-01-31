@@ -168,7 +168,7 @@ export default function Header({ onOpenNav }) {
         spacing={{ xs: 0.5, sm: 1 }}
       >
 
-        <NotificationsPopover />
+        {/* <NotificationsPopover /> */}
 
         {getData.length > 0 && <NotifiEncuesta data={getData} />}
 
