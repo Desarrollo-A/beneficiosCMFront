@@ -56,10 +56,6 @@ export default function PendingModalUser() {
   const [open2, setOpen2] = useState(false);
   const [open3, setOpen3] = useState(false);
   const [event, setEvent] = useState({});
-  const [emails, setEmails] = useState([]);
-  const [errorMessage, setErrorMessage] = useState('Formato de correo erróneo');
-  const [errorEmail, setErrorEmail] = useState(false);
-  const [sendEmails, setSendEmails] = useState(false);
   const [valorRating, setValorRating] = useState(0);
   const { data: pendientes, pendingsMutate } = useGetPendientes(); // traer todas las citas en pendiente de pago o evaluacion
 
@@ -155,38 +151,11 @@ export default function PendingModalUser() {
     return '';
   };
 
-  const handleEmails = (newEmail) => {
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
-    // Verificar si la cadena cumple con la expresión regular
-    if (!emailRegex.test(newEmail)) {
-      setErrorMessage('Formato de correo erróneo');
-      return setErrorEmail(true);
-    }
-
-    // Verificar si el nuevo correo ya existe en el arreglo
-    if (emails.some((emailObj) => emailObj.email.toLowerCase() === newEmail.toLowerCase())) {
-      setErrorMessage('Correo ya registrado');
-      return setErrorEmail(true);
-    }
-
-    setEmails([...emails, { email: newEmail }]);
-    setEmail('');
-    setErrorEmail(false);
-    return '';
-  };
-
-  const deleteEmail = (removedEmail) => {
-    const newEmails = emails.filter((each) => each.email !== removedEmail);
-    setEmails(newEmails);
-  };
-
   const handleRatingChange = (newValue) => {
     setValorRating(newValue);
   };
 
   const handleRate = async (thisEvent) => {
-    alert(thisEvent);
     const update = await updateAppointment(
       datosUser.idUsuario,
       thisEvent.id,
@@ -309,15 +278,15 @@ export default function PendingModalUser() {
             }}
             padding={0}
           >
-            <Card sx={{ textAlign: 'center' }}>
-              <Box sx={{ position: 'relative' }} style={{ borderRadius: '25px;' }}>
+            <Card sx={{ textAlign: 'center', borderRadius: '0%' }}>
+              <Box sx={{ position: 'relative' }}>
                 <AvatarShape
                   sx={{
                     left: 0,
                     right: 0,
                     zIndex: 10,
                     mx: 'auto',
-                    bottom: -26,
+                    bottom: -27,
                     position: 'absolute',
                   }}
                 />
@@ -346,6 +315,7 @@ export default function PendingModalUser() {
                   alt="https://api-dev-minimal-v510.vercel.app/assets/images/cover/cover_12.jpg"
                   ratio="16/9"
                   overlay={alpha(theme.palette.grey[900], 0.48)}
+                  sx={{ borderRadius: '0%' }}
                 />
               </Box>
 

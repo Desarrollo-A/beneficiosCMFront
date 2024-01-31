@@ -272,52 +272,69 @@ export function consultarCita(idCita) {
 }
 
 // Actualizar el registro de detalle paciente que indica que un usuario esta activo en el beneficio.
-export function sendMail(
-  idEspecialidad,
-  nombreEspecialista,
-  fecha,
-  horaInicio,
-  horaFinal,
-  oficina,
-  sede,
-  correo
-) {
+export function sendMail(event, typeEmail, correo) {
   const URL = [endpoints.calendario.mailEspecialista];
+  let imagen = '';
+  let view = '';
+  let tituloEmail = '';
+  let temaEmail = '';
+  let fechaOld = '';
+  let horaInicioOld = '';
+  let horaFinalOld = '';
 
-  let especialidad = '';
-  switch (idEspecialidad) {
-    case 537:
-      especialidad = 'nutrición';
+  switch (typeEmail) {
+    case 1: // Agendar
+      tituloEmail = 'Reservación';
+      imagen = 'appointment.png';
+      view = 'email-appointment';
+      temaEmail = 'Se ha realizado su cita para ';
       break;
-    case 585:
-      especialidad = 'psicología';
+    case 2: // Cancelar
+      tituloEmail = 'Cancelación';
+      imagen = 'cancel.png';
+      view = 'email-cancelar';
+      temaEmail = 'Se ha cancelado su cita de ';
       break;
-    case 686:
-      especialidad = 'guía espiritual';
-      break;
-    case 158:
-      especialidad = 'quantum balance';
+    case 3: // Reagendar
+      tituloEmail = 'Reagenda';
+      imagen = 'appointment.png';
+      view = 'email-reschedule';
+      temaEmail = 'Se ha reagendado su cita de ';
+      fechaOld = dayjs(event.oldEventStart).format('DD/MM/YYYY');
+      horaInicioOld = dayjs(event.oldEventStart).format('HH:mm: a');
+      horaFinalOld = dayjs(event.oldEventEnd).format('HH:mm: a');
       break;
     default:
-      especialidad = 'NA';
+      tituloEmail = 'Test';
+      imagen = 'appointment.png';
+      view = 'email-appointment';
+      temaEmail = 'Test de ';
       break;
   }
-  const mailMessage = {
-    // datos para enviar el mail
-    especialidad,
-    especialista: nombreEspecialista,
-    fecha,
-    horaInicio,
-    horaFinal,
-    view: 'email-appointment',
-    oficina: oficina || 'virtual',
-    sede: sede || 'virtual',
-    tituloEmail: 'Reservación',
-    temaEmail: 'Se ha agendado tu cita con: ',
+
+  alert(JSON.stringify(event));
+
+  const data = {
+    tituloEmail,
+    titulo: tituloEmail,
+    temaEmail,
+    imagen,
+    beneficio: event.beneficio,
+    especialidad: event.beneficio,
+    oficina: event.ubicación,
+    especialista: event.especialista,
+    sede: event.sede,
+    fecha: dayjs(event.start).format('DD/MM/YYYY'),
+    horaInicio: dayjs(event.start).format('HH:mm a'),
+    horaFinal: dayjs(event.end).format('HH:mm a'),
+    fechaOld,
+    horaInicioOld,
+    horaFinalOld,
+    view,
     correo,
   };
 
-  const mail = fetcherPost(URL, { mailMessage });
+  const mail = fetcherPost(URL, data);
 
   return mail;
 }

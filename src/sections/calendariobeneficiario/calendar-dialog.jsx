@@ -37,6 +37,7 @@ import uuidv4 from 'src/utils/uuidv4';
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetEventReasons } from 'src/api/calendar-specialist';
 import {
+  sendMail,
   crearCita,
   getHorario,
   checkInvoice,
@@ -270,6 +271,15 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         variant: 'error',
       });
       onClose();
+      return false;
+    }
+    const email = await sendMail(
+      scheduledAppointment.data[0],
+      1,
+      'programador.analista36@ciudadmaderas.com'
+    );
+    if (!email.result) {
+      console.error('No se pudo notificar al usuario');
     }
     setEvent({ ...scheduledAppointment.data[0] });
     setOpen2(true);
@@ -282,6 +292,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       enqueueSnackbar('¡Se ha cancelado la cita!', {
         variant: 'success',
       });
+
       appointmentMutate();
       return onClose();
     }
@@ -876,17 +887,35 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       selectedValues.beneficio
     );
 
-    if (agendar.result) {
-      enqueueSnackbar(agendar.msg, {
-        variant: 'success',
-      });
-    }
     if (!agendar.result) {
-      enqueueSnackbar(agendar.msg, {
+      return enqueueSnackbar(agendar.msg, {
         variant: 'error',
       });
     }
 
+    const scheduledAppointment = await consultarCita(agendar.data);
+    if (!scheduledAppointment.result) {
+      enqueueSnackbar('¡Surgió un error al poder mostrar el preview de la cita!', {
+        variant: 'error',
+      });
+      onClose();
+      return false;
+    }
+    const email = await sendMail(
+      {
+        ...scheduledAppointment.data[0],
+        oldEventStart: currentEvent.start,
+        oldEventEnd: currentEvent.end,
+      },
+      3,
+      'programador.analista36@ciudadmaderas.com'
+    );
+    if (!email.result) {
+      console.error('No se pudo notificar al usuario');
+    }
+    enqueueSnackbar(agendar.msg, {
+      variant: 'success',
+    });
     appointmentMutate();
     onClose();
     return setReschedule(false);
