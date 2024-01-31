@@ -40,6 +40,8 @@ import { useAuthContext } from 'src/auth/hooks';
 import { AvatarShape } from 'src/assets/illustrations';
 import { useGetEventReasons } from 'src/api/calendar-specialist';
 import {
+  sendMail,
+  consultarCita,
   useGetPendientes,
   cancelAppointment,
   updateAppointment,
@@ -133,13 +135,6 @@ export default function PendingModalUser() {
 
   const onCancel = async (currentEvent) => {
     const cancel = await cancelAppointment(currentEvent, currentEvent.id, 0);
-    if (cancel.result) {
-      enqueueSnackbar('¡Se ha cancelado la cita!', {
-        variant: 'success',
-      });
-      pendingsMutate();
-      return onClose();
-    }
     if (!cancel.result) {
       enqueueSnackbar('¡Se generó un error al intentar cancelar la cita!', {
         variant: 'error',
@@ -147,8 +142,29 @@ export default function PendingModalUser() {
       pendingsMutate();
       return onClose();
     }
+    if (cancel.result) {
+      enqueueSnackbar('¡Se ha cancelado la cita!', {
+        variant: 'success',
+      });
+    }
+    const scheduledAppointment = await consultarCita(currentEvent.id);
+    if (!scheduledAppointment.result) {
+      enqueueSnackbar('¡Surgió un error al poder mostrar el preview de la cita!', {
+        variant: 'error',
+      });
+      onClose();
+      return false;
+    }
+    const email = await sendMail(
+      scheduledAppointment.data[0],
+      2,
+      'programador.analista36@ciudadmaderas.com'
+    );
+    if (!email.result) {
+      console.error('No se pudo notificar al usuario');
+    }
     pendingsMutate();
-    return '';
+    return onClose();
   };
 
   const handleRatingChange = (newValue) => {

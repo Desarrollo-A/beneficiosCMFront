@@ -312,8 +312,6 @@ export function sendMail(event, typeEmail, correo) {
       break;
   }
 
-  alert(JSON.stringify(event));
-
   const data = {
     tituloEmail,
     titulo: tituloEmail,

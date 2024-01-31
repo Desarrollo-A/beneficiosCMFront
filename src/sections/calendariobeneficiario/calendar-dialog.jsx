@@ -122,6 +122,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
   const selectedDateTittle = dayjs(selectedDate).format('dddd, DD MMMM YYYY');
 
+  const fechasFolio = currentEvent?.fechasFolio ? currentEvent?.fechasFolio.split(',') : [];
+
   const onSubmit = handleSubmit(async () => {
     // Validaciones de inputs: Coloca leyenda de error debajo de cada input en caso que le falte cumplir con el valor
     if (selectedValues.beneficio === '') return setErrorBeneficio(true);
@@ -173,6 +175,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       return false;
     }
 
+    // Revisamos si tiene citas sin estatus de finalizar
     const citasSinFinalizar = await getCitasSinFinalizar(
       datosUser.idUsuario,
       selectedValues.beneficio
@@ -181,6 +184,17 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     // Si tiene citas en proceso no lo tengo que dejar agendar citas
     if (citasSinFinalizar.result) {
       enqueueSnackbar('Ya tienes una cita en proceso de este beneficio', {
+        variant: 'error',
+      });
+      onClose();
+      return false;
+    }
+
+    // TERMINAS CITAS SIN EVALUAR
+    const citasSinEvaluar = await getCitasSinEvaluar(datosUser.idUsuario, selectedValues.beneficio);
+    // Si tiene citas en proceso no lo tengo que dejar agendar citas
+    if (citasSinEvaluar.result) {
+      enqueueSnackbar('Evalúa tu cita previa para poder agendar otra cita', {
         variant: 'error',
       });
       onClose();
@@ -212,8 +226,27 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       precio = 0;
       metodoPago = 3;
     }
+
+    let nombreBeneficio = '';
+    switch (selectedValues.beneficio) {
+      case 158:
+        nombreBeneficio = 'quantum balance';
+        break;
+      case 537:
+        nombreBeneficio = 'nutrición';
+        break;
+      case 585:
+        nombreBeneficio = 'psicología';
+        break;
+      case 686:
+        nombreBeneficio = 'guía espiritual';
+        break;
+      default:
+        break;
+    }
+
     const agendar = await agendarCita(
-      `CITA ${datosUser.nombre} ${año}-${mes}-${dia}`,
+      `Cita ${nombreBeneficio} - ${datosUser.nombre}`,
       selectedValues.especialista,
       '',
       horarioSeleccionado,
@@ -288,14 +321,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
   const onCancel = async () => {
     const cancel = await cancelAppointment(currentEvent, currentEvent.id, 0);
-    if (cancel.result) {
-      enqueueSnackbar('¡Se ha cancelado la cita!', {
-        variant: 'success',
-      });
-
-      appointmentMutate();
-      return onClose();
-    }
     if (!cancel.result) {
       enqueueSnackbar('¡Se generó un error al intentar cancelar la cita!', {
         variant: 'error',
@@ -303,9 +328,29 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       appointmentMutate();
       return onClose();
     }
+    if (cancel.result) {
+      enqueueSnackbar('¡Se ha cancelado la cita!', {
+        variant: 'success',
+      });
+    }
+    const scheduledAppointment = await consultarCita(currentEvent.id);
+    if (!scheduledAppointment.result) {
+      enqueueSnackbar('¡Surgió un error al poder mostrar el preview de la cita!', {
+        variant: 'error',
+      });
+      onClose();
+      return false;
+    }
+    const email = await sendMail(
+      scheduledAppointment.data[0],
+      2,
+      'programador.analista36@ciudadmaderas.com'
+    );
+    if (!email.result) {
+      console.error('No se pudo notificar al usuario');
+    }
     appointmentMutate();
-
-    return 'onClose()';
+    return onClose();
   };
 
   const onPay = async () => {
@@ -875,8 +920,26 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       return onClose();
     }
 
+    let nombreBeneficio = '';
+    switch (selectedValues.beneficio) {
+      case 158:
+        nombreBeneficio = 'quantum balance';
+        break;
+      case 537:
+        nombreBeneficio = 'nutrición';
+        break;
+      case 585:
+        nombreBeneficio = 'psicología';
+        break;
+      case 686:
+        nombreBeneficio = 'guía espiritual';
+        break;
+      default:
+        break;
+    }
+
     const agendar = await agendarCita(
-      `CITA ${datosUser.nombre} ${año}-${mes}-${dia}`,
+      `Cita ${nombreBeneficio} - ${datosUser.nombre}`,
       currentEvent?.idEspecialista,
       ' ',
       horarioSeleccionado,
@@ -1209,6 +1272,31 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                   {currentEvent?.estatus === 6 ? 'Pendiente de pago' : 'Pagado'}
                 </Typography>
               </Stack>
+              {currentEvent?.fechasFolio && (
+                <Stack
+                  flexDirection="row"
+                  flexWrap="wrap"
+                  flex={1}
+                  spacing={2}
+                  sx={{ px: { xs: 1, md: 2 }, py: 1 }}
+                >
+                  <Stack spacing={2} direction="row">
+                    <Iconify
+                      icon="mdi:clock-remove-outline"
+                      width={30}
+                      sx={{ color: 'text.disabled' }}
+                    />
+                  </Stack>
+                  <Stack>
+                    {fechasFolio.map((fecha, i) => [
+                      i > 0 && '',
+                      <Typography key={i} style={{ textDecoration: 'line-through' }} fontSize="90%">
+                        {fecha}
+                      </Typography>,
+                    ])}
+                  </Stack>
+                </Stack>
+              )}
               {currentEvent?.estatus === 4 ? (
                 <Stack spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1 }}>
                   <Stack direction="row" sx={{ alignItems: 'center' }}>

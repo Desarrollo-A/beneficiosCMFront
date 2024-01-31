@@ -135,7 +135,7 @@ export const endpoints = {
     getAppointmentsByUser: 'calendarioController/getAppointmentsByUser',
     getCitasFinalizadas: 'calendarioController/getCitasFinalizadasUsuario',
     getCitasSinFinalizar: 'calendarioController/getCitasSinFinalizarUsuario',
-    getCitasSinEvaluar: 'calendarioController/getCitasSinEvaluar',
+    getCitasSinEvaluar: 'calendarioController/getCitasSinEvaluarUsuario',
     getAtencionPorSede: 'calendarioController/getAtencionPorSede',
     createAppointment: 'calendarioController/createAppointmentByColaborator',
     registrarDetallePago: 'calendarioController/registrarTransaccionPago',
