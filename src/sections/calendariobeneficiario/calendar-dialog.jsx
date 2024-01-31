@@ -9,28 +9,17 @@ import timezone from 'dayjs/plugin/timezone';
 import { yupResolver } from '@hookform/resolvers/yup';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 
-import Box from '@mui/material/Box';
 import Stack from '@mui/system/Stack';
 import Chip from '@mui/material/Chip';
 import Button from '@mui/material/Button';
-import Select from '@mui/material/Select';
 import Dialog from '@mui/material/Dialog';
 import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
-import Grid from '@mui/material/Unstable_Grid2';
-import InputLabel from '@mui/material/InputLabel';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-import FormControl from '@mui/material/FormControl';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import FormHelperText from '@mui/material/FormHelperText';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 import uuidv4 from 'src/utils/uuidv4';
 
@@ -136,7 +125,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     const año = horarioSeleccionado.substring(0, 4);
     const mes = horarioSeleccionado.substring(5, 7);
-    const dia = horarioSeleccionado.substring(8, 10);
+    // const dia = horarioSeleccionado.substring(8, 10);
 
     if (datosUser.fechaIngreso > fechaActual) {
       enqueueSnackbar('¡Existe un error con la fecha de antiguedad!', {
@@ -306,11 +295,13 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       onClose();
       return false;
     }
-    const email = await sendMail(
-      scheduledAppointment.data[0],
-      1,
-      'programador.analista36@ciudadmaderas.com'
-    );
+    const email = await sendMail(scheduledAppointment.data[0], 1, [
+      'programador.analista36@ciudadmaderas.com',
+      'programador.analista34@ciudadmaderas.com',
+      'programador.analista32@ciudadmaderas.com',
+      'programador.analista12@ciudadmaderas.com',
+      'tester.ti2@ciudadmaderas.com',
+    ]);
     if (!email.result) {
       console.error('No se pudo notificar al usuario');
     }
@@ -341,11 +332,13 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       onClose();
       return false;
     }
-    const email = await sendMail(
-      scheduledAppointment.data[0],
-      2,
-      'programador.analista36@ciudadmaderas.com'
-    );
+    const email = await sendMail(scheduledAppointment.data[0], 2, [
+      'programador.analista36@ciudadmaderas.com',
+      'programador.analista34@ciudadmaderas.com',
+      'programador.analista32@ciudadmaderas.com',
+      'programador.analista12@ciudadmaderas.com',
+      'tester.ti2@ciudadmaderas.com',
+    ]);
     if (!email.result) {
       console.error('No se pudo notificar al usuario');
     }
@@ -517,12 +510,16 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const generarArregloMinutos = (horaInicio, horaFin) => {
     const inicio = dayjs.tz(`1970-01-01T${horaInicio}Z`, 'America/Mexico_City');
     const fin = dayjs.tz(`1970-01-01T${horaFin}Z`, 'America/Mexico_City');
+    console.log('INICIO', inicio);
+    console.log('fin', fin);
     const arregloMinutos = [];
 
     for (let i = inicio; i.isSameOrBefore(fin); i = i.add(5, 'minutes')) {
+      console.log('for', inicio, i.isSameOrBefore(fin), i.add(5, 'minutes'), i.format('HH:mm:ss'));
       arregloMinutos.push(i.format('HH:mm:ss'));
     }
 
+    console.log('arregloMinutos', arregloMinutos);
     return arregloMinutos;
   };
 
@@ -601,18 +598,22 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
   const getHorariosDisponibles = async (beneficio, especialista) => {
     setIsLoading(true);
+    console.log('Loading', true);
     // Consultamos el horario del especialista segun su beneficio.
     const horarioACubrir = await getHorario(beneficio);
     if (!horarioACubrir.result) return; // En caso de que no halla horario detenemos el proceso.
+    console.log('horarioACubrir', horarioACubrir);
 
     // Teniendo en cuenta el dia actual, consultamos los dias restantes del mes actual y todos los dias del mes que sigue.
     let diasProximos = generarFechas(initialValue, lastDayOfNextMonth);
+    console.log('diasProximos', diasProximos);
 
     // Le quitamos los registros del dia domingo y tambien sabados en el caso de que no lo trabaje el especialista.
     diasProximos = diasProximos.filter((date) => {
       const dayOfWeek = dayjs(date).day();
       return dayOfWeek !== 0 && (horarioACubrir?.data[0]?.sabados || dayOfWeek !== 6);
     });
+    console.log('diasProximos filter', diasProximos);
 
     // Traemos citas y horarios bloqueados por parte del usuario y especialsita
     const horariosOcupados = await getHorariosOcupados(
@@ -621,6 +622,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       initialValue.format('YYYY-MM-DD'),
       lastDayOfNextMonth.format('YYYY-MM-DD')
     );
+    console.log('horariosOcupados', horariosOcupados);
 
     // Dias laborables con horario.
     const diasLaborablesConHorario = diasProximos.map((item) => {
@@ -642,11 +644,12 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
       return elemento;
     });
+    console.log('diasLaborablesConHorario', diasLaborablesConHorario);
 
     const fechasEn5minutos = diasLaborablesConHorario
       .map((item) => {
         const minutos = generarArregloMinutos(item.horaInicio, item.horaFin);
-
+        console.log('---', item.horaInicio, item.horaFin, item.fecha, item.diaSemana, minuto);
         return minutos.map((minuto) => ({
           fecha: item.fecha,
           diaSemana: item.diaSemana,
@@ -654,6 +657,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         }));
       })
       .flat();
+    console.log('fechasEn5minutos', fechasEn5minutos);
 
     // El proceso chido de quitar los registros en donde hay citas u horario ocupado
     const registrosFiltrados = fechasEn5minutos.filter((row) => {
@@ -668,21 +672,27 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       // En caso de que horariosOcupados o horariosOcupados.data sean undefined, se considera que no hay conflictos
       return true;
     });
+    console.log('registrosFiltrados', registrosFiltrados);
 
     const registrosCadaHora = getRegistrosEn1hora(registrosFiltrados);
+    console.log('registrosCadaHora', registrosCadaHora);
 
     // Resltado final de los horarios de todos los dias para agendar
     setFechasDisponibles(registrosCadaHora);
+    console.log('fechas disponibles con horarios', registrosCadaHora);
 
     // ////////////////////////////////////////////////////////////////////////////////////////
     // Este proceso solo es para quitar en el calendario visualmente los dias que no están ///
     // ///////////////////////////////////////////////////////////////////////////////////////
     const diasDisponibles = obtenerSoloFechas(registrosCadaHora);
     setDiasHabilitados(diasDisponibles);
+    console.log('solo dias Disponibles', registrosCadaHora);
 
     const diasOcupadosFiltro = filtradoDias(diasProximos, diasDisponibles);
+    console.log('dias Ocupados Filtro', diasOcupadosFiltro);
 
     const year = initialValue.year();
+    console.log('year', year);
 
     // Dias festivos
     const diasFestivos =
@@ -706,8 +716,10 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
             `${year + 1}-12-01`,
             `${year + 1}-03-21`,
           ];
+    console.log('diasFestivos', diasFestivos);
 
     const diasADeshabilitar = new Set([...diasOcupadosFiltro, ...diasFestivos]);
+    console.log('diasADeshabilitar', diasADeshabilitar);
 
     setDiasOcupados([...diasADeshabilitar]);
     setIsLoading(false);
@@ -860,7 +872,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     const año = horarioSeleccionado.substring(0, 4);
     const mes = horarioSeleccionado.substring(5, 7);
-    const dia = horarioSeleccionado.substring(8, 10);
+    // const dia = horarioSeleccionado.substring(8, 10);
 
     const checkInvoiceDetail = await checkInvoice(currentEvent.idDetalle);
 
@@ -971,7 +983,13 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         oldEventEnd: currentEvent.end,
       },
       3,
-      'programador.analista36@ciudadmaderas.com'
+      [
+        'programador.analista36@ciudadmaderas.com',
+        'programador.analista34@ciudadmaderas.com',
+        'programador.analista32@ciudadmaderas.com',
+        'programador.analista12@ciudadmaderas.com',
+        'tester.ti2@ciudadmaderas.com',
+      ]
     );
     if (!email.result) {
       console.error('No se pudo notificar al usuario');

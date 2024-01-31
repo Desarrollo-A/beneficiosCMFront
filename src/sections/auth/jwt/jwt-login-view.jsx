@@ -54,8 +54,6 @@ export default function JwtLoginView() {
   });
 
   const {
-    reset,
-    handleSubmit,
     formState: { isSubmitting },
   } = methods;
 
@@ -63,14 +61,13 @@ export default function JwtLoginView() {
 
 const onSubmit = (e) => {
   e.preventDefault();
-  const datos = JSON.stringify({numempleado : numEmpleado,password:passwd});
   login?.(numEmpleado, passwd)
   .then(response=>{
     if(response === undefined){
       router.push(returnTo || PATH_AFTER_LOGIN);
     }
     else if(response !== undefined && response.result === 0){
-      setErrorMsg(typeof error === 'string' ? error : response.message);
+      setErrorMsg(response.message);
     }
 })
 }

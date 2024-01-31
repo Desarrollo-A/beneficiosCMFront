@@ -65,7 +65,7 @@ export default function JwtRegisterView() {
     try {
       await register?.(data.email, data.firstName, data.lastName);
 
-      router.push(returnTo || PATH_AFTER_LOGIN,{ state: {userdata: datosResponse}} );
+      router.push(returnTo || PATH_AFTER_LOGIN,{ state: {userdata: data}} );
     } catch (error) {
       console.error(error);
       reset();
@@ -95,7 +95,7 @@ export default function JwtRegisterView() {
         let datosResponse = Base64.decode(JSON.stringify(response.data));
         datosResponse = JSON.parse(datosResponse);
         if(datosResponse.resultado === 0){
-          setErrorMsg(typeof error === 'string' ? error : 'Número de empleado no encontrado');
+          setErrorMsg('Número de empleado no encontrado');
         }else{
           navigate(PATH_AFTER_REGISTRO,{state:datosResponse});
           location(PATH_AFTER_REGISTRO,{state:datosResponse});

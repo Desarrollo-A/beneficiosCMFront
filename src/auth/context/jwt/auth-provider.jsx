@@ -125,9 +125,9 @@ export function AuthProvider({ children }) {
           },
         },
       });
-    } else {
-      return { result: 0, message: 'El usuario y/o contraseña no son correctos' };
     }
+    return { result: 0, message: 'El usuario y/o contraseña no son correctos' };
+    
   }, []);
 
   // REGISTER
@@ -160,7 +160,7 @@ export function AuthProvider({ children }) {
   const logout = useCallback(async () => {
     setSession(null);
 
-    const response = await instance.post(endpoints.auth.logout);
+    await instance.post(endpoints.auth.logout);
     dispatch({
       type: 'LOGOUT',
     });
@@ -185,7 +185,7 @@ export function AuthProvider({ children }) {
       logout,
       check : initialize,
     }),
-    [login, logout, register, state.user, status]
+    [login, logout, register, state.user, status, initialize]
   );
 
   return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;
