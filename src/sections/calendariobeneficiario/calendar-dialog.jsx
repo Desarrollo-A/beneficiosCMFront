@@ -9,28 +9,17 @@ import timezone from 'dayjs/plugin/timezone';
 import { yupResolver } from '@hookform/resolvers/yup';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 
-import Box from '@mui/material/Box';
 import Stack from '@mui/system/Stack';
 import Chip from '@mui/material/Chip';
 import Button from '@mui/material/Button';
-import Select from '@mui/material/Select';
 import Dialog from '@mui/material/Dialog';
 import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
-import Grid from '@mui/material/Unstable_Grid2';
-import InputLabel from '@mui/material/InputLabel';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-import FormControl from '@mui/material/FormControl';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import FormHelperText from '@mui/material/FormHelperText';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 import uuidv4 from 'src/utils/uuidv4';
 
@@ -136,7 +125,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     const año = horarioSeleccionado.substring(0, 4);
     const mes = horarioSeleccionado.substring(5, 7);
-    const dia = horarioSeleccionado.substring(8, 10);
+    // const dia = horarioSeleccionado.substring(8, 10);
 
     if (datosUser.fechaIngreso > fechaActual) {
       enqueueSnackbar('¡Existe un error con la fecha de antiguedad!', {
@@ -864,7 +853,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     const año = horarioSeleccionado.substring(0, 4);
     const mes = horarioSeleccionado.substring(5, 7);
-    const dia = horarioSeleccionado.substring(8, 10);
+    // const dia = horarioSeleccionado.substring(8, 10);
 
     const checkInvoiceDetail = await checkInvoice(currentEvent.idDetalle);
 

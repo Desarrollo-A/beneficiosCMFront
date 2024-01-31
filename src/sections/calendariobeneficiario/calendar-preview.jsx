@@ -2,7 +2,6 @@ import 'dayjs/locale/es';
 import dayjs from 'dayjs';
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { enqueueSnackbar } from 'notistack';
 import { Dialog, DialogContent } from '@material-ui/core';
 
 import Tooltip from '@mui/material/Tooltip';
@@ -11,19 +10,6 @@ import FormHelperText from '@mui/material/FormHelperText';
 import InputAdornment from '@mui/material/InputAdornment';
 import { Chip, Stack, Button, TextField, Typography, DialogActions } from '@mui/material';
 
-import uuidv4 from 'src/utils/uuidv4';
-
-import { useAuthContext } from 'src/auth/hooks';
-import { AvatarShape } from 'src/assets/illustrations';
-import { useGetEventReasons } from 'src/api/calendar-specialist';
-import {
-  useGetPendientes,
-  cancelAppointment,
-  updateAppointment,
-  registrarDetalleDePago,
-} from 'src/api/calendar-colaborador';
-
-import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
 
 export default function CalendarPreview({ event, open, handleClose }) {
