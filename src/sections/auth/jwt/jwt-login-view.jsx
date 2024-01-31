@@ -44,8 +44,8 @@ export default function JwtLoginView() {
   });
 
   const defaultValues = {
-    numEmpleado,
-    password: passwd,
+    'numEmpleado': numEmpleado,
+    'password': passwd,
   };
 
   const methods = useForm({

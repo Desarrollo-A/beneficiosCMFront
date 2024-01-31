@@ -27,7 +27,7 @@ export default function Router() {
 
     // SET INDEX PAGE WITH HOME PAGE
     {
-      path: import.meta.env.VITE_FOLDER_URI,
+      path: import.meta.env.BASE_URL,
       element: (
         <AuthClassicLayout>
           <JwtLoginPage />

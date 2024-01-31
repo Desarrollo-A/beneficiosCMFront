@@ -3,6 +3,8 @@ import { useMemo } from 'react';
 import useSWR, { mutate } from 'swr';
 
 import { fetcher, endpoints } from 'src/utils/axios';
+
+import { HOST } from 'src/config-global';
  
 // ----------------------------------------------------------------------
 
@@ -65,7 +67,7 @@ export function GetCustomEvents() {
 
 export async function createCustom(fecha, eventData) {
 
-  return axios.post('https://prueba.gphsis.com/beneficiosmaderas/calendarioController/save_occupied', {
+  return axios.post(`${HOST}/calendarioController/save_occupied`, {
         fecha,
         titulo: eventData.title,
         hora_inicio: eventData.hora_inicio,
