@@ -5,7 +5,7 @@ import { useMemo, useEffect } from 'react';
 import { enqueueSnackbar } from 'notistack';
 
 import uuidv4 from 'src/utils/uuidv4';
-import { endpoints, fetcherPost  } from 'src/utils/axios';
+import { endpoints, fetcherPost } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -105,7 +105,7 @@ export async function createCustom(eventData) {
     fechaInicio,
     fechaFinal,
     idEspecialista: datosUser.idUsuario,
-    modificadoPor: datosUser.idUsuario
+    modificadoPor: datosUser.idUsuario,
   };
 
   create = fetcherPost(save_occupied, dataValue);
@@ -136,7 +136,7 @@ export async function updateCustom(eventData) {
     titulo: eventData.title,
     idUsuario: datosUser.idUsuario,
     oldStart,
-    modificadoPor: datosUser.idUsuario
+    modificadoPor: datosUser.idUsuario,
   };
 
   if (oldStart > now) {
@@ -158,7 +158,7 @@ export async function deleteEvent(eventId) {
   const data = {
     eventId,
     modificadoPor: datosUser.idUsuario,
-    fechaModificacion: Date()
+    fechaModificacion: Date(),
   };
 
   const delEvent = fetcherPost(delete_event, data);
@@ -168,23 +168,29 @@ export async function deleteEvent(eventId) {
 
 // ----------------------------------------------------------------------
 
-export async function createAppointment(eventData, modalitie){
+export async function createAppointment(eventData, modalitie) {
   let create = '';
   let transaction = '';
   let transactionId = 0;
   let especialidad = '';
-  const fechaInicio = dayjs(`${eventData.fechaInicio} ${eventData.hora_inicio}`).format('YYYY/MM/D HH:mm:ss');
-  const fechaFinal = dayjs(`${eventData.fechaFinal} ${eventData.hora_final}`).format('YYYY/MM/D HH:mm:ss');
+  const fechaInicio = dayjs(`${eventData.fechaInicio} ${eventData.hora_inicio}`).format(
+    'YYYY/MM/D HH:mm:ss'
+  );
+  const fechaFinal = dayjs(`${eventData.fechaFinal} ${eventData.hora_final}`).format(
+    'YYYY/MM/D HH:mm:ss'
+  );
   const fundacion = eventData.paciente.externo;
 
-  const start = dayjs(`${eventData.newDate} ${eventData.hora_inicio}`).format('YYYY/MM/DD HH:mm:ss'); // fecha a la que se movera
+  const start = dayjs(`${eventData.newDate} ${eventData.hora_inicio}`).format(
+    'YYYY/MM/DD HH:mm:ss'
+  ); // fecha a la que se movera
   const now = dayjs(new Date()).format('YYYY/MM/DD HH:mm:ss');
 
   const fecha = dayjs(eventData.fechaInicio).format('DD/MM/YYYY');
   const horaInicio = dayjs(fechaInicio).format('HH:mm a');
   const horaFinal = dayjs(fechaFinal).format('HH:mm a');
 
-  switch(modalitie.especialidad){
+  switch (modalitie.especialidad) {
     case 537:
       especialidad = 'nutrición';
       break;
@@ -204,21 +210,21 @@ export async function createAppointment(eventData, modalitie){
     default:
       especialidad = 'NA';
       break;
-  };
+  }
 
   const dataTransaction = {
     usuario: eventData.paciente.idUsuario,
     folio: uuidv4(),
     concepto: 1,
     cantidad: 0,
-    metodoPago: 3
+    metodoPago: 3,
   };
 
   if (start > now) {
-    if(fundacion === 1){
+    if (fundacion === 1) {
       transaction = await fetcherPost(registar_transaccion, dataTransaction);
 
-      if(transaction.result){
+      if (transaction.result) {
         transactionId = transaction.data;
       }
     }
@@ -235,33 +241,33 @@ export async function createAppointment(eventData, modalitie){
       fundacion,
       idDetalle: transactionId,
       especialidad,
-      reagenda: 0
+      reagenda: 0,
     };
 
-    const mailMessage = { // datos para enviar el mail
+    const mailMessage = {
+      // datos para enviar el mail
       especialidad,
       especialista: modalitie.especialista,
       fecha,
       horaInicio,
       horaFinal,
-      view: "email-appointment",
-      oficina: modalitie?.oficina || "virtual",
-      sede: modalitie?.sede || "virtual",
+      view: 'email-appointment',
+      oficina: modalitie?.oficina || 'virtual',
+      sede: modalitie?.sede || 'virtual',
       tituloEmail: 'Reservación',
       temaEmail: 'Se ha agendado tu cita con: ',
       correo: eventData.paciente.correo,
       temaExtra: '',
-      link: ''
+      link: '',
     };
-  
+
     create = await fetcherPost(create_appointment, data);
 
-    if(create.result && fundacion === 1){
+    if (create.result && fundacion === 1) {
       fetcherPost(sendMail, mailMessage);
     }
-  }
-  else{
-    create = { result: false, msg: "No se puede agendar cita en dias anteriores" };
+  } else {
+    create = { result: false, msg: 'No se puede agendar cita en dias anteriores' };
   }
 
   return create;
@@ -289,30 +295,29 @@ export async function updateAppointment(eventData) {
     idPaciente: eventData.paciente,
   };
 
-      if(start > now){
-        update = fetcherPost(update_appointment, dataValue);
-      }
-      else{
-        update = { result: false, msg: "No se pueden mover las fechas a un dia anterior" }
-      }
+  if (start > now) {
+    update = fetcherPost(update_appointment, dataValue);
+  } else {
+    update = { result: false, msg: 'No se pueden mover las fechas a un dia anterior' };
+  }
 
   return update;
 }
 
 // ----------------------------------------------------------------------
 
-export async function cancelAppointment(currentEvent, id, cancelType){
+export async function cancelAppointment(currentEvent, id, cancelType) {
   const startStamp = dayjs(currentEvent.start).format('YYYY/MM/DD HH:mm:ss');
   let tituloEmail = '';
   let imagen = '';
 
-  switch(cancelType){
+  switch (cancelType) {
     case 7:
       tituloEmail = 'CANCELADO POR ESPECIALISTA';
       imagen = 'cancel.png';
       break;
-    
-    case 3: 
+
+    case 3:
       tituloEmail = 'PENALIZACIÓN';
       imagen = 'penalization.png';
       break;
@@ -327,24 +332,24 @@ export async function cancelAppointment(currentEvent, id, cancelType){
     idCita: id,
     startStamp,
     tipo: cancelType,
-    modificadoPor: datosUser.idUsuario
+    modificadoPor: datosUser.idUsuario,
   };
 
   const mailMessage = {
     titulo: tituloEmail,
     imagen,
-    fecha:  dayjs(currentEvent?.start).format('DD/MM/YYYY'),
+    fecha: dayjs(currentEvent?.start).format('DD/MM/YYYY'),
     horaInicio: dayjs(currentEvent?.start).format('HH:mm a'),
     horaFinal: dayjs(currentEvent?.end).format('HH:mm a'),
     beneficio: currentEvent.beneficio,
     especialista: currentEvent.especialista,
-    view: "email-cancelar",
-    correo: currentEvent?.correo
+    view: 'email-cancelar',
+    correo: currentEvent?.correo,
   };
 
   const delDate = await fetcherPost(cancel_appointment, data);
 
-  if(delDate.result){
+  if (delDate.result) {
     fetcherPost(sendMail, mailMessage);
   }
 
@@ -379,13 +384,15 @@ export async function dropUpdate(args) {
 // ----------------------------------------------------------------------
 
 export async function endAppointment(currentEvent, reason) {
-  const data = { // datos que se envian para la cancelación
+  const data = {
+    // datos que se envian para la cancelación
     idCita: currentEvent?.id,
     reason,
     idUsuario: datosUser.idUsuario,
   };
 
-  const mailData = { // datos que se envian al correo
+  const mailData = {
+    // datos que se envian al correo
     tituloEmail: 'FINALIZACIÓN',
     temaEmail: 'Se ha finalizado tu cita en: ',
     especialidad: currentEvent?.beneficio,
@@ -398,11 +405,11 @@ export async function endAppointment(currentEvent, reason) {
     view: 'email-appointment',
     correo: currentEvent?.correo,
     temaExtra: 'Califica tu cita aqui',
-    link: 'https://google.com'
+    link: 'https://google.com',
   };
 
   const update = await fetcherPost(end_appointment, data);
-  if(update.result){
+  if (update.result) {
     fetcherPost(sendMail, mailData);
   }
 
@@ -432,39 +439,50 @@ export function useGetMotivos() {
 
 // ----------------------------------------------------------------------
 
-export function useGetPending(){
-  const {data, mutate: revalidate} = useSWR(get_pending_end, url => fetcherPost(url, datosUser?.idUsuario));
-  
-  const memoizedValue = useMemo(() => ({
-    data: data || [],
-    pendingsMutate: revalidate
-  }), [data, revalidate]);
+export function useGetPending() {
+  const { data, mutate: revalidate } = useSWR(get_pending_end, (url) =>
+    fetcherPost(url, datosUser?.idUsuario)
+  );
+
+  const memoizedValue = useMemo(
+    () => ({
+      data: data || [],
+      pendingsMutate: revalidate,
+    }),
+    [data, revalidate]
+  );
 
   return memoizedValue;
 }
 
 // ----------------------------------------------------------------------
 
-export function useGetEventReasons(idCita){
-  const {data, mutate: revalidate} = useSWR(get_event_reasons, url => fetcherPost(url, idCita));
+export function useGetEventReasons(idCita) {
+  const { data, mutate: revalidate } = useSWR(get_event_reasons, (url) => fetcherPost(url, idCita));
 
-  const memoizedValue = useMemo(() => ({
-    data: data || [],
-    reasonsMutate: revalidate
-  }), [data, revalidate]);
+  const memoizedValue = useMemo(
+    () => ({
+      data: data || [],
+      reasonsMutate: revalidate,
+    }),
+    [data, revalidate]
+  );
 
   return memoizedValue;
-
 }
 
 // ----------------------------------------------------------------------
 
-export async function reschedule(eventData, idDetalle, cancelType){
+export async function reschedule(eventData, idDetalle, cancelType) {
   let response = '';
   const startStamp = dayjs(eventData.oldEventStart).format('YYYY/MM/DD HH:mm:ss');
 
-  const fechaInicio = dayjs(`${eventData.fechaInicio} ${eventData.hora_inicio}`).format('YYYY/MM/D HH:mm:ss');
-  const fechaFinal = dayjs(`${eventData.fechaInicio} ${eventData.hora_final}`).format('YYYY/MM/D HH:mm:ss');
+  const fechaInicio = dayjs(`${eventData.fechaInicio} ${eventData.hora_inicio}`).format(
+    'YYYY/MM/D HH:mm:ss'
+  );
+  const fechaFinal = dayjs(`${eventData.fechaInicio} ${eventData.hora_final}`).format(
+    'YYYY/MM/D HH:mm:ss'
+  );
 
   const fecha = dayjs(eventData.fechaInicio).format('DD/MM/YYYY');
   const horaInicio = dayjs(fechaInicio).format('HH:mm:ss');
@@ -481,7 +499,7 @@ export async function reschedule(eventData, idDetalle, cancelType){
     idCatalogo: eventData.idAtencionXSede,
     fundacion: eventData.fundacion,
     idDetalle,
-    reagenda: 1
+    reagenda: 1,
   };
 
   const cancelData = {
@@ -503,19 +521,18 @@ export async function reschedule(eventData, idDetalle, cancelType){
     fechaOld: dayjs(eventData.oldEventStart).format('DD/MM/YYYY'),
     horaInicioOld: dayjs(eventData.oldEventStart).format('HH:mm: a'),
     horaFinalOld: dayjs(eventData.oldEventEnd).format('HH:mm: a'),
-    view: "email-reschedule",
-    correo: eventData?.correo
+    view: 'email-reschedule',
+    correo: eventData?.correo,
   };
 
   response = await fetcherPost(check_invoice, idDetalle);
 
-  if(response.result){
+  if (response.result) {
     response = await fetcherPost(create_appointment, data);
-    
-    if(response.result){
-      
+
+    if (response.result) {
       response = await fetcherPost(cancel_appointment, cancelData);
-      if(response.result){
+      if (response.result) {
         fetcherPost(sendMail, mailReschedule);
       }
     }
@@ -526,12 +543,12 @@ export async function reschedule(eventData, idDetalle, cancelType){
 
 // ----------------------------------------------------------------------
 
-export async function UpdateDetallePaciente(idPaciente){
+export async function UpdateDetallePaciente(idPaciente) {
   const beneficio = datosUser.idPuesto;
 
   const data = {
     usuario: idPaciente,
-    beneficio
+    beneficio,
   };
 
   const update = fetcherPost(update_detalle_paciente, data);

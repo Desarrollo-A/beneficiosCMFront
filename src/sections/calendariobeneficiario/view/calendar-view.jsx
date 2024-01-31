@@ -1,44 +1,33 @@
-import { Base64 } from 'js-base64';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Calendar from '@fullcalendar/react'; // => request placed at the top
 import listPlugin from '@fullcalendar/list';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import timelinePlugin from '@fullcalendar/timeline';
 import allLocales from '@fullcalendar/core/locales-all';
-import interactionPlugin from '@fullcalendar/interaction';
 
-import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
 import Container from '@mui/material/Container';
 import { useTheme } from '@mui/material/styles';
-import InputLabel from '@mui/material/InputLabel';
 import Typography from '@mui/material/Typography';
-import DialogTitle from '@mui/material/DialogTitle';
-import FormControl from '@mui/material/FormControl';
 
 import { useBoolean } from 'src/hooks/use-boolean';
+import { useSession } from 'src/hooks/use-session';
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import { fTimestamp } from 'src/utils/format-time';
 
-import { useSettingsContext } from 'src/components/settings';
-import { CALENDAR_COLOR_OPTIONS } from 'src/_mock/_calendar';
-// import { dropUpdate, GetCustomEvents } from 'src/api/calendar-specialist';
 import { useGetAppointmentsByUser } from 'src/api/calendar-colaborador';
 
+import { useSettingsContext } from 'src/components/settings';
+
 import { StyledCalendar } from '../styles';
-import CalendarForm from '../calendar-form';
 import CalendarDialog from '../calendar-dialog';
 import { useEvent, useCalendar } from '../hooks';
 import CalendarToolbar from '../calendar-toolbar';
-import CalendarFilters from '../calendar-filters';
-import NuevaCitaForm from '../calendario-formulario';
 
 // ----------------------------------------------------------------------
 
@@ -51,6 +40,7 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 
 export default function CalendarView() {
+  useSession();
   const theme = useTheme();
   const dialog = useBoolean();
 
@@ -64,21 +54,19 @@ export default function CalendarView() {
       : false;
 
   const {
-    calendarRef,
     view,
     date,
     openForm,
-    onOpenForm,
     onDatePrev,
     onDateNext,
     onDateToday,
     onCloseForm,
+    calendarRef,
     onChangeView,
-    onSelectRange,
     onClickEvent,
-    onResizeEvent,
-    selectEventId,
     selectedDate,
+    onSelectRange,
+    selectEventId,
   } = useCalendar();
 
   const {
@@ -141,13 +129,7 @@ export default function CalendarView() {
               select={onSelectRange}
               eventClick={onClickEvent}
               height={smUp ? 720 : 'auto'}
-              plugins={[
-                listPlugin,
-                dayGridPlugin,
-                timelinePlugin,
-                timeGridPlugin,
-                // interactionPlugin,
-              ]}
+              plugins={[listPlugin, dayGridPlugin, timelinePlugin, timeGridPlugin]}
             />
           </StyledCalendar>
         </Card>
@@ -190,7 +172,7 @@ export default function CalendarView() {
 
 // ----------------------------------------------------------------------
 
-function applyFilter({ inputData, filters, dateError }) {
+const applyFilter = ({ inputData, filters, dateError }) => {
   const { colors, startDate, endDate } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
@@ -212,4 +194,4 @@ function applyFilter({ inputData, filters, dateError }) {
   }
 
   return inputData;
-}
+};

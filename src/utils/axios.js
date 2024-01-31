@@ -106,7 +106,6 @@ export const endpoints = {
   especialistas: {
     list: 'CalendarioController/getEspecialistaPorBeneficioYSede',
     modalities: 'CalendarioController/getModalidadesEspecialista',
-    contact: 'Usuario/getSpecialistContact',
   },
   calendario: {
     getAllEvents: 'calendarioController/getAllEvents',
@@ -125,7 +124,7 @@ export const endpoints = {
     registrarTransaccion: 'calendarioController/registrarTransaccionPago',
     checkInvoice: 'calendarioController/checkInvoice',
     mailEspecialista: 'calendarioController/sendMail',
-    updateDetallePaciente: 'calendarioController/updateDetallePaciente'
+    updateDetallePaciente: 'calendarioController/updateDetallePaciente',
   },
   calendarioColaborador: {
     isPrimeraCita: 'calendarioController/isPrimeraCita',
@@ -136,6 +135,7 @@ export const endpoints = {
     getAppointmentsByUser: 'calendarioController/getAppointmentsByUser',
     getCitasFinalizadas: 'calendarioController/getCitasFinalizadasUsuario',
     getCitasSinFinalizar: 'calendarioController/getCitasSinFinalizarUsuario',
+    getCitasSinEvaluar: 'calendarioController/getCitasSinEvaluarUsuario',
     getAtencionPorSede: 'calendarioController/getAtencionPorSede',
     createAppointment: 'calendarioController/createAppointmentByColaborator',
     registrarDetallePago: 'calendarioController/registrarTransaccionPago',
@@ -143,6 +143,8 @@ export const endpoints = {
     updateAppointment: 'calendarioController/updateAppointmentData',
     getPendientes: 'calendarioController/getPendientes',
     updateDetail: 'calendarioController/updateDetallePaciente',
+    cancelAppointment: 'calendarioController/cancelAppointmentUser',
+    getCitaById: 'calendarioController/getCitaById',
   },
   reportes: {
     lista: '/reportesController/citas',
