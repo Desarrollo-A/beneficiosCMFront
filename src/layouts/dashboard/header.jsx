@@ -25,15 +25,14 @@ import { NAV, HEADER } from '../config-layout';
 import SettingsButton from '../common/settings-button';
 import AccountPopover from '../common/account-popover';
 import NotifiEncuesta from '../common/notificacion-encuesta';
-import NotificationsPopover from '../common/notifications-popover';
 
 // ----------------------------------------------------------------------
 export default function Header({ onOpenNav }) {
   const theme = useTheme();
 
-  const { user: datosUser } = useAuthContext();
+  const { user: datosUser, authenticated } = useAuthContext();
 
-  const idUsr = datosUser.idUsuario;
+  const idUsr = authenticated ? datosUser.idUsuario: undefined;
 
   const settings = useSettingsContext();
 

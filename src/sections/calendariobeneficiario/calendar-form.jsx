@@ -1,6 +1,5 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
-import { useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -13,18 +12,15 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import DialogActions from '@mui/material/DialogActions';
 import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker';
 
-import uuidv4 from 'src/utils/uuidv4';
 import { fTimestamp } from 'src/utils/format-time';
 
 import Iconify from 'src/components/iconify';
-import { useSnackbar } from 'src/components/snackbar';
 import { ColorPicker } from 'src/components/color-utils';
 import FormProvider, { RHFSwitch, RHFTextField } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 
 export default function CalendarForm({ currentEvent, colorOptions, onClose }) {
-  const { enqueueSnackbar } = useSnackbar();
 
   const EventSchema = Yup.object().shape({
     title: Yup.string().max(255).required('Title is required'),
@@ -43,7 +39,6 @@ export default function CalendarForm({ currentEvent, colorOptions, onClose }) {
   console.log(currentEvent);
 
   const {
-    reset,
     watch,
     control,
     handleSubmit,
@@ -55,28 +50,9 @@ export default function CalendarForm({ currentEvent, colorOptions, onClose }) {
   const dateError = values.start && values.end ? values.start > values.end : false;
 
   const onSubmit = handleSubmit(async (data) => {
-    const eventData = {
-      id: currentEvent?.id ? currentEvent?.id : uuidv4(),
-      color: data?.color,
-      title: data?.title,
-      allDay: data?.allDay,
-      description: data?.description,
-      end: data?.end,
-      date: data?.start,
-    };
 
     try {
-      if (!dateError) {
-        if (currentEvent?.id) {
-          await updateEvent(eventData);
-          enqueueSnackbar('Update success!');
-        } else {
-          await createEvent(eventData);
-          enqueueSnackbar('Create success!');
-        }
-        onClose();
-        reset();
-      }
+     console.log("prueba");
     } catch (error) {
       console.error(error);
     }
@@ -155,7 +131,7 @@ export default function CalendarForm({ currentEvent, colorOptions, onClose }) {
       <DialogActions>
         {!!currentEvent?.id && (
           <Tooltip title="Delete Event">
-            <IconButton onClick={onDelete}>
+            <IconButton>
               <Iconify icon="solar:trash-bin-trash-bold" />
             </IconButton>
           </Tooltip>

@@ -125,8 +125,10 @@ export function AuthProvider({ children }) {
           },
         },
       });
+    }else{
+      return { result: 0, message: 'El usuario y/o contraseña no son correctos' };
     }
-    return { result: 0, message: 'El usuario y/o contraseña no son correctos' };
+    return { result: 0, message: 'Error inesperado' };
     
   }, []);
 
@@ -159,8 +161,6 @@ export function AuthProvider({ children }) {
   // LOGOUT
   const logout = useCallback(async () => {
     setSession(null);
-
-    await instance.post(endpoints.auth.logout);
     dispatch({
       type: 'LOGOUT',
     });

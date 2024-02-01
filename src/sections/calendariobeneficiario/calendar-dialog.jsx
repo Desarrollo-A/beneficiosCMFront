@@ -508,6 +508,12 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   };
 
   const generarArregloMinutos = (horaInicio, horaFin) => {
+    console.log("PROBABLE ERROR", horaInicio);
+    console.log("ProbLABE ERROR 2", horaFin)
+    console.log('valid 1', !Number.isNaN(new Date(horaInicio).getTime()));
+    console.log('valid 2', !Number.isNaN(new Date(horaFin).getTime()));
+    console.log('valid 1', !Number.isNaN(new Date(`1970-01-01T${horaInicio}Z`).getTime()));
+    console.log('valid 2', !Number.isNaN(new Date(`1970-01-01T${horaFin}Z`).getTime()));
     const inicio = dayjs.tz(`1970-01-01T${horaInicio}Z`, 'America/Mexico_City');
     const fin = dayjs.tz(`1970-01-01T${horaFin}Z`, 'America/Mexico_City');
     console.log('INICIO', inicio);
@@ -649,7 +655,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const fechasEn5minutos = diasLaborablesConHorario
       .map((item) => {
         const minutos = generarArregloMinutos(item.horaInicio, item.horaFin);
-        console.log('---', item.horaInicio, item.horaFin, item.fecha, item.diaSemana, minuto);
+        console.log('---', item.horaInicio, item.horaFin, item.fecha, item.diaSemana);
         return minutos.map((minuto) => ({
           fecha: item.fecha,
           diaSemana: item.diaSemana,
