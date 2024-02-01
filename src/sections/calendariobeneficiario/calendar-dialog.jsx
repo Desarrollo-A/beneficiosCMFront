@@ -296,10 +296,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       return false;
     }
     const email = await sendMail(scheduledAppointment.data[0], 1, [
-      'programador.analista36@ciudadmaderas.com',
-      'programador.analista34@ciudadmaderas.com',
-      'programador.analista32@ciudadmaderas.com',
-      'programador.analista12@ciudadmaderas.com',
       'tester.ti2@ciudadmaderas.com',
     ]);
     if (!email.result) {
@@ -617,7 +613,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     // Le quitamos los registros del dia domingo y tambien sabados en el caso de que no lo trabaje el especialista.
     diasProximos = diasProximos.filter((date) => {
       const dayOfWeek = dayjs(date).day();
-      return dayOfWeek !== 0 && (horarioACubrir?.data[0]?.sabados || dayOfWeek !== 6);
+
+      return dayOfWeek !== 0 && (horarioACubrir?.data[0]?.sabados !== '0' || dayOfWeek !== 6);
     });
     console.log('diasProximos filter', diasProximos);
 
@@ -655,7 +652,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const fechasEn5minutos = diasLaborablesConHorario
       .map((item) => {
         const minutos = generarArregloMinutos(item.horaInicio, item.horaFin);
-        console.log('---', item.horaInicio, item.horaFin, item.fecha, item.diaSemana);
         return minutos.map((minuto) => ({
           fecha: item.fecha,
           diaSemana: item.diaSemana,

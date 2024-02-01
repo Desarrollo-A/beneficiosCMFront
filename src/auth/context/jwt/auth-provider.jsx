@@ -61,17 +61,17 @@ export function AuthProvider({ children }) {
       if (accessToken && isValidToken(accessToken)) {
         setSession(accessToken);
 
-        const url = `${HOST}${endpoints.auth.me}`
+        const url = `${HOST}${endpoints.auth.me}`;
 
         const config = {
           headers: {
             token: accessToken,
-          }
-        }
+          },
+        };
 
-        const response = await fetcherGet([url, config])
+        const response = await fetcherGet([url, config]);
 
-        const {user} = response
+        const { user } = response;
 
         dispatch({
           type: 'INITIAL',
@@ -108,7 +108,7 @@ export function AuthProvider({ children }) {
   const login = useCallback(async (numempleado, password) => {
     const data = JSON.stringify({ numempleado, password });
 
-    const url = `${HOST}${endpoints.auth.login}`
+    const url = `${HOST}${endpoints.auth.login}`;
 
     const response = await instance.post(url, data);
 
@@ -182,7 +182,7 @@ export function AuthProvider({ children }) {
       login,
       register,
       logout,
-      check : initialize,
+      check: initialize,
     }),
     [login, logout, register, state.user, status, initialize]
   );
