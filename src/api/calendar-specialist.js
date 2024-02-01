@@ -456,6 +456,11 @@ export function useGetPending() {
 export function useGetEventReasons(idCita) {
   const { data, mutate: revalidate } = useSWR(get_event_reasons, (url) => fetcherPost(url, idCita));
 
+  useEffect(() => {
+    // esta función ayuda a que se de un trigger para traer de nuevo los eventos del mes, cada que cambia month
+    revalidate();
+  }, [idCita, revalidate]);
+
   const memoizedValue = useMemo(
     () => ({
       data: data || [],
