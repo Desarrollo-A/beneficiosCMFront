@@ -129,6 +129,7 @@ export function AuthProvider({ children }) {
       return { result: 0, message: 'El usuario y/o contraseña no son correctos' };
     }
     
+    return { result: 0, message: 'Error inesperado' };
   }, []);
 
   // REGISTER
