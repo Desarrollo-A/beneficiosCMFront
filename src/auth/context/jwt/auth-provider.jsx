@@ -4,6 +4,8 @@ import { useMemo, useEffect, useReducer, useCallback } from 'react';
 import instance from 'src/utils/axiosBack';
 import axios, { endpoints, fetcherGet } from 'src/utils/axios';
 
+import { HOST } from 'src/config-global';
+
 import { AuthContext } from './auth-context';
 import { setSession, isValidToken } from './utils';
 // ----------------------------------------------------------------------
@@ -59,15 +61,17 @@ export function AuthProvider({ children }) {
       if (accessToken && isValidToken(accessToken)) {
         setSession(accessToken);
 
-        let config = {
+        const url = `${HOST}${endpoints.auth.me}`;
+
+        const config = {
           headers: {
             token: accessToken,
-          }
-        }
+          },
+        };
 
-        const response = await fetcherGet([endpoints.auth.me, config])
+        const response = await fetcherGet([url, config]);
 
-        const user = response.user
+        const { user } = response;
 
         dispatch({
           type: 'INITIAL',
@@ -104,26 +108,26 @@ export function AuthProvider({ children }) {
   const login = useCallback(async (numempleado, password) => {
     const data = JSON.stringify({ numempleado, password });
 
-    const response = await instance.post(endpoints.auth.login, data);
+    const url = `${HOST}${endpoints.auth.login}`
 
-    if (response.data.result === 1) {
-      const { accessToken, user } = response.data;
-      setSession(accessToken);
+    const response = await instance.post(url, data);
 
-      dispatch({
-        type: 'LOGIN',
-        payload: {
-          user: {
-            ...user,
-            accessToken,
-          },
-        },
-      });
-    } else {
+    if (response.data.result !== 1) {
       return { result: 0, message: 'El usuario y/o contraseña no son correctos' };
-    }
-  }, []);
+    } 
+    const { accessToken, user } = response.data;
+    setSession(accessToken);
 
+    return dispatch({
+      type: 'LOGIN',
+      payload: {
+        user: {
+          ...user,
+          accessToken,
+        },
+      },
+    });
+  }, []);
   // REGISTER
   const register = useCallback(async (numEmpleado) => {
     const data = {
@@ -153,8 +157,6 @@ export function AuthProvider({ children }) {
   // LOGOUT
   const logout = useCallback(async () => {
     setSession(null);
-
-    const response = await instance.post(endpoints.auth.logout);
     dispatch({
       type: 'LOGOUT',
     });
@@ -177,9 +179,9 @@ export function AuthProvider({ children }) {
       login,
       register,
       logout,
-      check : initialize,
+      check: initialize,
     }),
-    [login, logout, register, state.user, status]
+    [login, logout, register, state.user, status, initialize]
   );
 
   return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;

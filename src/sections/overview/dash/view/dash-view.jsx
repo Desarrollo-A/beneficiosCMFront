@@ -372,7 +372,7 @@ export default function DashView() {
                 title={rol === '2' ? 'Total citas' : 'Total pacientes'}
                 total={i.pacientes}
                 color="info"
-                icon={<img alt="icon" src="/assets/icons/glass/usuario.png" />}
+                icon={<img alt="icon" src= {`${import.meta.env.BASE_URL}assets/icons/glass/usuario.png`} />}
               />
             </Grid>
           ))}
@@ -382,7 +382,7 @@ export default function DashView() {
               <WidgetConteo
                 title="Total citas asistidas"
                 total={i.asistencia}
-                icon={<img alt="icon" src="/assets/icons/glass/check.png" />}
+                icon={<img alt="icon" src= {`${import.meta.env.BASE_URL}assets/icons/glass/check.png`} />}
               />
             </Grid>
           ))}
@@ -393,7 +393,7 @@ export default function DashView() {
                 title="Total citas canceladas"
                 total={i.cancelada}
                 color="warning"
-                icon={<img alt="icon" src="/assets/icons/glass/cancelar.png" />}
+                icon={<img alt="icon" src= {`${import.meta.env.BASE_URL}assets/icons/glass/cancelar.png`} />}
               />
             </Grid>
           ))}
@@ -404,7 +404,7 @@ export default function DashView() {
                 title="Total citas penalizadas"
                 total={i.penalizada}
                 color="error"
-                icon={<img alt="icon" src="/assets/icons/glass/dolar.png" />}
+                icon={<img alt="icon" src= {`${import.meta.env.BASE_URL}assets/icons/glass/dolar.png`}/>}
               />
             </Grid>
           ))}

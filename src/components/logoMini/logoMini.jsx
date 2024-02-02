@@ -23,7 +23,7 @@ const LogoMini = forwardRef(({ disabledLink = false, sx, ...other }, ref) => {
    const logo = (
      <Box
        component="img"
-       src="/assets/img/unnamed.png"
+       src= {`${import.meta.env.BASE_URL}assets/img/unnamed.png`}
        sx={{ width: 40, height: 40, cursor: 'pointer', ...sx }}
      />
    );

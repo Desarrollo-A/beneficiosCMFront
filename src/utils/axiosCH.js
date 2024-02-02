@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 const instance = axios.create({
-     //baseURL: 'https://prueba.gphsis.com/RHCV/index.php/WS/'
-    //baseURL: 'https://rh.gphsis.com/index.php/WS/' //data_colaborador_consultas
+     // baseURL: 'https://prueba.gphsis.com/RHCV/index.php/WS/'
+    // baseURL: 'https://rh.gphsis.com/index.php/WS/' // data_colaborador_consultas
 });
 
 /*

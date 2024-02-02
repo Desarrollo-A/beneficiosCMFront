@@ -9,9 +9,9 @@ const MOCK_ID = _id[1];
 const MOCK_TITLE = _postTitles[2];
 
 const ROOTS = {
-  AUTH: '/auth',
+  AUTH: `${import.meta.env.BASE_URL}auth`,
   AUTH_DEMO: '/auth-demo',
-  DASHBOARD: '/dashboard',
+  DASHBOARD: `${import.meta.env.BASE_URL}dashboard`,
 };
 
 // ----------------------------------------------------------------------
@@ -109,7 +109,8 @@ export const paths = {
       banking: `${ROOTS.DASHBOARD}/banking`,
       booking: `${ROOTS.DASHBOARD}/booking`,
       file: `${ROOTS.DASHBOARD}/file`,
-      calendario: `${ROOTS.DASHBOARD}/calendario`,
+      calendarioEspecialista: `${ROOTS.DASHBOARD}/calendarioespecialista`,
+      evaluacioncitas: `${ROOTS.DASHBOARD}/evaluacioncitas`,
     },
     reportes: {
       root: `${ROOTS.DASHBOARD}/reportes/historial`,

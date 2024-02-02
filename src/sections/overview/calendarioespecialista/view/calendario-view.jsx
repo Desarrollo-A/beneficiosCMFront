@@ -9,7 +9,7 @@ import allLocales from '@fullcalendar/core/locales-all'
 import { useState, useEffect, useCallback } from 'react';
 import interactionPlugin from '@fullcalendar/interaction';
 
-import { useGoogleLogin } from '@react-oauth/google';
+// import { useGoogleLogin } from '@react-oauth/google';
 
 import Card from '@mui/material/Card';
 import Dialog from '@mui/material/Dialog';
@@ -135,7 +135,7 @@ export default function CalendarioView(){
 
               <Calendar
                 weekends
-                editable
+                editable = {false} // en false para prevenir un drag del evento
                 droppable
                 selectable
                 eventConstraint={hours2}

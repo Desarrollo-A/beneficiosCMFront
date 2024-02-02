@@ -1,16 +1,39 @@
 import dayjs from 'dayjs';
 import { useState } from 'react';
 import { enqueueSnackbar } from 'notistack';
-import localeData from "dayjs/plugin/localeData";
-import { Dialog, DialogContent  } from '@material-ui/core';
+import localeData from 'dayjs/plugin/localeData';
+import { Dialog, DialogContent } from '@material-ui/core';
 
 import { LoadingButton } from '@mui/lab';
-import { Box, Chip, Stack, Button,Select, ListItem, MenuItem, TextField, Typography, InputLabel, IconButton, FormControl, ListItemText, Autocomplete, DialogActions } from '@mui/material';
+import {
+  Box,
+  Chip,
+  List,
+  Stack,
+  Button,
+  Select,
+  Divider,
+  ListItem,
+  MenuItem,
+  TextField,
+  Typography,
+  InputLabel,
+  IconButton,
+  FormControl,
+  ListItemText,
+  Autocomplete,
+  DialogActions,
+} from '@mui/material';
 
-import { reRender, useGetMotivos, useGetPending, endAppointment, cancelAppointment } from 'src/api/calendar-specialist';
+import {
+  reRender,
+  useGetMotivos,
+  useGetPending,
+  endAppointment,
+  cancelAppointment,
+} from 'src/api/calendar-specialist';
 
 import Iconify from 'src/components/iconify';
-
 
 export default function PendingModal() {
   const [open, setOpen] = useState(true);
@@ -56,17 +79,23 @@ export default function PendingModal() {
     let items = '';
     if (pendings) {
       items = pendings.map((pending) => (
-        <ListItem
-          key={pending.idCita}
-          secondaryAction={
-            <IconButton onClick={() => handleEnd(pending)}>
+        <Stack key={pending.idCita} sx={{p:1}}>
+          <ListItem alignItems="flex-start" key={pending.idCita}>
+            <ListItemText primary={pending.titulo} sx={{ width: '45%' }}  primaryTypographyProps={{fontSize: '14px'}} />
+            <ListItemText
+              primary={dayjs(pending.start).format('dddd, DD/MMMM/YYYY - HH:mm')}
+              sx={{ width: '50%', marginLeft: '1em' }}
+              primaryTypographyProps={{fontSize: '14px'}}
+            />
+            <IconButton
+              onClick={() => handleEnd(pending)}
+              sx={{ alignItems: 'inherit', padding: 0 }}
+            >
               <Iconify icon="solar:archive-minimalistic-bold" />
             </IconButton>
-          }
-        >
-          <ListItemText primary={pending.titulo} />
-          <ListItemText primary={dayjs(pending.fechaInicio).format('dddd, DD/MMMM/YYYY - HH:mm')} />
-        </ListItem>
+          </ListItem>
+          <Divider />
+        </Stack>
       ));
     }
     return items;
@@ -76,7 +105,7 @@ export default function PendingModal() {
     switch (assist) {
       case 0:
         try {
-          const resp = await cancelAppointment(selectEvent, selectEvent.idCita, cancelType);
+          const resp = await cancelAppointment(selectEvent, selectEvent.id, cancelType);
 
           if (resp.result) {
             enqueueSnackbar(resp.msg);
@@ -92,7 +121,7 @@ export default function PendingModal() {
 
       case 1:
         try {
-          const resp = await endAppointment(selectEvent.idCita, reason);
+          const resp = await endAppointment(selectEvent, reason);
 
           if (resp.result) {
             enqueueSnackbar(resp.msg);
@@ -130,9 +159,9 @@ export default function PendingModal() {
               </Typography>
             </Stack>
             <Typography>Hay citas sin finalizar</Typography>
-            <Stack sx={{ mt: 2, mb: 4 }}>
+            <List>
               <Items />
-            </Stack>
+            </List>
           </DialogContent>
           <DialogActions>
             <Button variant="contained" color="error" onClick={onClose}>

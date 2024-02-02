@@ -20,7 +20,7 @@ export function useSession() {
         if(!authenticated){
             navigate('/')
         }
-    }, [check, authenticated]);
+    }, [checked, authenticated, navigate]);
 
     useEffect(() => {
         if (!needFetching) return;
@@ -29,7 +29,7 @@ export function useSession() {
 
         setChecked(true)
         
-    }, [needFetching])
+    }, [check, needFetching])
 
     return null;
 }

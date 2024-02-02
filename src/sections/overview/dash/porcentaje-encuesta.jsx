@@ -12,7 +12,6 @@ import FormControl from '@mui/material/FormControl';
 import LinearProgress from '@mui/material/LinearProgress';
 
 import { endpoints } from 'src/utils/axios';
-import { fPercent } from 'src/utils/format-number';
 
 import { usePostGeneral } from 'src/api/general';
 

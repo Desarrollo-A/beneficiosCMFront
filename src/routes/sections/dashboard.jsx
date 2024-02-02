@@ -10,6 +10,7 @@ import { LoadingScreen } from 'src/components/loading-screen';
 // CITAS
 const HistorialReportesPage = lazy(() => import('src/pages/dashboard/reportes/historial-reportes'));
 const ReportePacientesPage = lazy(() => import('src/pages/dashboard/reportes/reporte-pacientes'));
+const EvaluacionCitasPage = lazy(() => import ('src/pages/dashboard/evaluacion-citas-view'));
 // OVERVIEW
 const IndexPage = lazy(() => import('src/pages/dashboard/app'));
 const DashPage = lazy(() => import('src/pages/dashboard/dash'));
@@ -83,7 +84,7 @@ const BlankPage = lazy(() => import('src/sections/_examples/extra/upload-view'))
 
 export const dashboardRoutes = [
   {
-    path: 'dashboard',
+    path: `${import.meta.env.BASE_URL}dashboard`,
     element: (
       <AuthGuard>
         <DashboardLayout>
@@ -124,7 +125,7 @@ export const dashboardRoutes = [
       { path: 'banking', element: <OverviewBankingPage /> },
       { path: 'booking', element: <OverviewBookingPage /> },
       { path: 'file', element: <OverviewFilePage /> },
-      { path: 'calendario', element: <CalendarioPage /> },
+      { path: 'calendarioespecialista', element: <CalendarioPage /> },
       {
         path: 'user',
         children: [
@@ -208,6 +209,7 @@ export const dashboardRoutes = [
       { path: 'kanban', element: <KanbanPage /> },
       { path: 'permission', element: <PermissionDeniedPage /> },
       { path: 'blank', element: <BlankPage /> },
+      { path: 'evaluacioncitas', element: <EvaluacionCitasPage /> }
     ],
   },
 ];
