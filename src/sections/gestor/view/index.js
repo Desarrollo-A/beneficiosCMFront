@@ -1,0 +1,1 @@
+export { default as AtencionXsedeView } from './atencionXsede-view';

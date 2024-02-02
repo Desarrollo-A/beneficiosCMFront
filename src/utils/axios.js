@@ -194,4 +194,20 @@ export const endpoints = {
     getValidEncContestada: '/EncuestasController/getValidEncContestada',
     sendMail: '/EncuestasController/sendMail',
   },
+  gestor:{
+    getAtencionXsede: '/generalController/getAtencionXsede',
+    getSedes: '/generalController/getSedes',
+    getOficinas: '/generalController/getOficinas',
+    getModalidades: '/generalController/getModalidades',
+    getSinAsigSede: '/generalController/getSinAsigSede',
+    getOficinasVal: '/gestorController/getOficinasVal',
+    getEspecialistasVal: '/gestorController/getEspecialistasVal',
+    getSedeNone: '/gestorController/getSedeNone',
+    getSedeNoneEsp: '/gestorController/getSedeNoneEsp',
+    insertAtxSede: '/gestorController/insertAtxSede',
+    updateModalidad: '/gestorController/updateModalidad',
+    updateEspecialista: '/gestorController/updateEspecialista',
+    getEsp: '/gestorController/getEsp',
+    getAtencionXsedeEsp: '/gestorController/getAtencionXsedeEsp',
+  }
 };

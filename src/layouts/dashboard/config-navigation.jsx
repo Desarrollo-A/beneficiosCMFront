@@ -45,18 +45,19 @@ const ICONS = {
   ecommerce: icon('ic_ecommerce'),
   analytics: icon('ic_analytics'),
   dashboard: icon('ic_dashboard'),
+  gestor: icon('ic_gestor'),
   donut: icon('donut'),
 };
 
 // ----------------------------------------------------------------------
 
 export function useNavData() {
-  // const { t } = useTranslate();
+ /*  const { t } = useTranslate(); */
 
   const { menu } = useGetMenu();
 
-  /*
-  const data = useMemo(
+  
+  /* const data = useMemo(
     () => [
       // AGENDA
       // ----------------------------------------------------------------------
@@ -250,6 +251,16 @@ export function useNavData() {
             ],
           },
 
+          // gestor
+          {
+            title: t('gestor'),
+            path: paths.dashboard.gestor.atencionXsede,
+            icon: ICONS.user,
+            children: [
+              { title: t('Atención por sede'), path: paths.dashboard.gestor.atencionXsede},
+            ],
+          },
+
           // FILE MANAGER
           {
             title: t('file_manager'),
@@ -377,8 +388,8 @@ export function useNavData() {
     ],
     [t]
   );
+ */
 
-*/
 
   return menu;
 }
