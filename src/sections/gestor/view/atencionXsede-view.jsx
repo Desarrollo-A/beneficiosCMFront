@@ -76,8 +76,6 @@ export default function AtencionXsedeView() {
 
   const rol = user.idRol;
 
-  console.log(typeof rol)
-
   const { atXsedeData } = useGetGeneral(endpoints.gestor.getAtencionXsede, "atXsedeData");
 
   const { atXsdEspData } = usePostGeneral(user.idPuesto, endpoints.gestor.getAtencionXsedeEsp, "atXsdEspData");
@@ -301,6 +299,7 @@ export default function AtencionXsedeView() {
                         <RowsAtencionXsede
                           key={row.id}
                           row={row}
+                          rol={rol}
                           modalidadesData={modalidadesData}
                           selected={table.selected.includes(row.id)}
                           onSelectRow={() => table.onSelectRow(row.id)}
