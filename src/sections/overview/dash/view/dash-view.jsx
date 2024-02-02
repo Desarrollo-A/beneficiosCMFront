@@ -43,7 +43,7 @@ export default function DashView() {
   const rol = user.idRol
   let puestos = 0;
 
-  if (rol === "1") {
+  if (rol === "1" || rol === 1) {
     idDt = 158;
     puestos = 158;
   } else {
@@ -341,7 +341,7 @@ export default function DashView() {
               
 
 
-          {rol === "1" ? (
+          {rol === "1" || rol === 1 ? (
             <FormControl fullWidth>
               <InputLabel id="demo-simple-select-label">Área</InputLabel>
               <Select
@@ -369,7 +369,7 @@ export default function DashView() {
           {pacientesData.map((i, index) => (
             <Grid xs={12} sm={6} md={3} key={index}>
               <WidgetConteo
-                title={rol === '2' ? 'Total citas' : 'Total pacientes'}
+                title={rol === '2' || rol === 2 ? 'Total citas' : 'Total pacientes'}
                 total={i.pacientes}
                 color="info"
                 icon={<img alt="icon" src= {`${import.meta.env.BASE_URL}assets/icons/glass/usuario.png`} />}
