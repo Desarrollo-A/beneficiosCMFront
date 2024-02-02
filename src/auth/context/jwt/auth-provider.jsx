@@ -112,22 +112,21 @@ export function AuthProvider({ children }) {
 
     const response = await instance.post(url, data);
 
-    if (response.data.result === 1) {
-      const { accessToken, user } = response.data;
-      setSession(accessToken);
-
-      dispatch({
-        type: 'LOGIN',
-        payload: {
-          user: {
-            ...user,
-            accessToken,
-          },
-        },
-      });
-    } else {
+    if (response.data.result !== 1) {
       return { result: 0, message: 'El usuario y/o contraseña no son correctos' };
-    }
+    } 
+    const { accessToken, user } = response.data;
+    setSession(accessToken);
+
+    return dispatch({
+      type: 'LOGIN',
+      payload: {
+        user: {
+          ...user,
+          accessToken,
+        },
+      },
+    });
   }, []);
 
   // REGISTER
@@ -185,7 +184,7 @@ export function AuthProvider({ children }) {
       logout,
       check : initialize,
     }),
-    [login, logout, register, state.user, status]
+    [login, logout, register, state.user, status, initialize]
   );
 
   return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;
