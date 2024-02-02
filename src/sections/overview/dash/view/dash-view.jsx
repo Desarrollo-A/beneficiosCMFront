@@ -11,6 +11,8 @@ import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import { alpha, useTheme } from '@mui/material/styles';
 
+
+import { _appAuthors, _appRelated, _appFeatured, _appInvoices, _appInstalled } from 'src/_mock';
 import { endpoints } from 'src/utils/axios';
 
 import { bgGradient } from 'src/theme/css';
@@ -24,6 +26,7 @@ import AppWelcome from '../app-welcome';
 import WidgetConteo from '../widget-conteo';
 import GraficaMetas from '../grafica-metas';
 import EncuestaBarra from '../barra-encuesta';
+import AppTopRelated from '../app-top-related';
 import EncuestaPorcentaje from '../porcentaje-encuesta';
 
 // ----------------------------------------------------------------------
@@ -313,7 +316,7 @@ export default function DashView() {
               title={`Bienvenido 👋 \n ${user?.nombre}`}
               description="If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything."
               img={<SeoIllustration />}
-              
+
             />
           </Grid>
 
@@ -335,10 +338,10 @@ export default function DashView() {
                 width: '360px'
               }}
             >
-              <Clock value={value}/>
+              <Clock value={value} />
             </Card>
           </Grid>
-              
+
 
 
           {rol === "1" || rol === 1 ? (
@@ -372,7 +375,7 @@ export default function DashView() {
                 title={rol === '2' || rol === 2 ? 'Total citas' : 'Total pacientes'}
                 total={i.pacientes}
                 color="info"
-                icon={<img alt="icon" src= {`${import.meta.env.BASE_URL}assets/icons/glass/usuario.png`} />}
+                icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/usuario.png`} />}
               />
             </Grid>
           ))}
@@ -382,7 +385,7 @@ export default function DashView() {
               <WidgetConteo
                 title="Total citas asistidas"
                 total={i.asistencia}
-                icon={<img alt="icon" src= {`${import.meta.env.BASE_URL}assets/icons/glass/check.png`} />}
+                icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/check.png`} />}
               />
             </Grid>
           ))}
@@ -393,7 +396,7 @@ export default function DashView() {
                 title="Total citas canceladas"
                 total={i.cancelada}
                 color="warning"
-                icon={<img alt="icon" src= {`${import.meta.env.BASE_URL}assets/icons/glass/cancelar.png`} />}
+                icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/cancelar.png`} />}
               />
             </Grid>
           ))}
@@ -404,12 +407,12 @@ export default function DashView() {
                 title="Total citas penalizadas"
                 total={i.penalizada}
                 color="error"
-                icon={<img alt="icon" src= {`${import.meta.env.BASE_URL}assets/icons/glass/dolar.png`}/>}
+                icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/dolar.png`} />}
               />
             </Grid>
           ))}
 
-          {rol !== "2" ? (
+          {rol === "1" || rol === 1 || rol === "3" || rol === 3 ? (
             <>
 
               {metasData.map((i, index) => (
@@ -478,7 +481,13 @@ export default function DashView() {
 
           )}
 
+          {/* <Grid xs={12} md={6} lg={4}>
+            <AppTopRelated title="Top Related Applications" list={_appRelated} />
+          </Grid> */}
+
         </Grid>
+
+
 
       </Container>
 
