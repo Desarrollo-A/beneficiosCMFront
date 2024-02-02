@@ -67,6 +67,10 @@ export function GetCustomEvents(current) {
     reRender();
   }, [month]);
 
+  if (data?.events?.length > 0) {
+    data.events = data.events.map(item => ({...item, id: item.id.toString()}));
+  }
+
   const memoizedValue = useMemo(() => {
     const events = data?.events?.map((event) => ({
       ...event,

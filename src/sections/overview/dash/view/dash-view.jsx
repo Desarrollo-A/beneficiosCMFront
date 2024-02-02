@@ -393,7 +393,7 @@ export default function DashView() {
                 title="Total citas canceladas"
                 total={i.cancelada}
                 color="warning"
-                icon={<img alt="icon" src= {`${import.meta.env.BASE_URL}assets/icons/glass/calendar.png`} />}
+                icon={<img alt="icon" src= {`${import.meta.env.BASE_URL}assets/icons/glass/cancelar.png`} />}
               />
             </Grid>
           ))}
