@@ -186,9 +186,9 @@ export default function AtencionXsedeView() {
   }, []);
 
   useEffect(() => {
-    if(rol === "1"){
+    if(rol === "1" || rol === 1){
       setTableData(atXsedeData);
-    }else if(rol === "3"){
+    }else if(rol === "3" || rol === 3){
       setTableData(atXsdEspData);
     }
   }, [atXsedeData, atXsdEspData, rol]);
@@ -299,6 +299,7 @@ export default function AtencionXsedeView() {
                         <RowsAtencionXsede
                           key={row.id}
                           row={row}
+                          rol={rol}
                           modalidadesData={modalidadesData}
                           selected={table.selected.includes(row.id)}
                           onSelectRow={() => table.onSelectRow(row.id)}

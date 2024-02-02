@@ -33,11 +33,11 @@ export default function FilasTabla({ row, selected, rol, rel  }) {
 
   let paci = Boolean(true);
 
-  if (rol === 1) {
+  if (rol === 1 || rol === "1") {
     espe = false
   }
 
-  if (rol === 2) {
+  if (rol === 2 || rol === "2") {
     paci = false
   }
 
@@ -78,7 +78,7 @@ export default function FilasTabla({ row, selected, rol, rel  }) {
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{horario}</TableCell>
 
-        {estatus === 'Penalización' && observaciones === null && rol === 3 ? (
+        {estatus === 'Penalización' && observaciones === null && rol === 3 || rol === "3" ? (
           <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }} >
             <Tooltip title="Justificar" placement="top" arrow>
               <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>

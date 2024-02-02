@@ -132,7 +132,7 @@ export default function ReportePacientesView() {
 
   let puestos = 0;
 
-  if (rol === "1") {
+  if (rol === "1" || rol === 1) {
     puestos = 158;
   } else {
     puestos = user.idPuesto;

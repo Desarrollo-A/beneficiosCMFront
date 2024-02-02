@@ -22,7 +22,7 @@ import ModalEspecialista from './modal-especialista';
 
 // ----------------------------------------------------------------------
 
-export default function RowsAtencionXsede({ row, selected, onEditRow, onDeleteRow, modalidadesData  }) {
+export default function RowsAtencionXsede({ row, selected, onEditRow, onDeleteRow, modalidadesData, rol }) {
   const { id, sede, oficina, ubicación, nombre, puesto, idPuesto, modalidad, estatus } = row;
 
   const confirm = useBoolean();
@@ -37,7 +37,7 @@ export default function RowsAtencionXsede({ row, selected, onEditRow, onDeleteRo
     <>
       <TableRow hover selected={selected}>
 
-      <TableCell sx={{ whiteSpace: 'nowrap' }}>{id}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{id}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{sede}</TableCell>
 
@@ -73,12 +73,20 @@ export default function RowsAtencionXsede({ row, selected, onEditRow, onDeleteRo
           </Label>
         </TableCell>
 
-        <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
+        {rol === "1" || rol === 1 ? (
 
-          <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-            <Iconify icon="eva:more-vertical-fill" />
-          </IconButton>
-        </TableCell>
+          <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
+
+            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+              <Iconify icon="eva:more-vertical-fill" />
+            </IconButton>
+          </TableCell>
+
+        ) : (
+
+          <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}/>
+          
+        )}
       </TableRow>
 
       <ModalEspecialista estatusVal={nombre} id={id} puesto={idPuesto} open={modalEsp.value} onClose={modalEsp.onFalse} />
@@ -122,4 +130,5 @@ RowsAtencionXsede.propTypes = {
   row: PropTypes.object,
   selected: PropTypes.bool,
   modalidadesData: PropTypes.any,
+  rol: PropTypes.any,
 };

@@ -58,7 +58,7 @@ export default function SedeSnAsignar({ onDelete, sx, modalidadesData, puestosDa
   return (
     <>
 
-      {user.idRol === "1" ? (
+      {user.idRol === "1" || user.idRol === 1 ? (
         <BankingContacts
           title="Contacts"
           subheader="You have 122 contacts"
