@@ -62,6 +62,10 @@ export function GetCustomEvents(current) {
     options
   );
 
+  if (data?.events?.length > 0) {
+    data.events = data.events.map((item) => ({ ...item, id: item.id.toString() }));
+  }
+
   useEffect(() => {
     // esta función ayuda a que se de un trigger para traer de nuevo los eventos del mes, cada que cambia month
     reRender();
