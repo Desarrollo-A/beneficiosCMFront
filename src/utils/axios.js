@@ -145,6 +145,9 @@ export const endpoints = {
     updateDetail: 'CalendarioController/updateDetallePaciente',
     cancelAppointment: 'CalendarioController/cancelAppointmentUser',
     getCitaById: 'CalendarioController/getCitaById',
+    insertGoogleEvent: 'CalendarioController/insertGoogleEvent',
+    updateGoogleEvent: 'CalendarioController/updateGoogleEvent',
+    deleteGoogleEvent: 'CalendarioController/deleteGoogleEvent',
   },
   reportes: {
     lista: '/ReportesController/citas',

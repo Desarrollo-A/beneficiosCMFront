@@ -32,6 +32,7 @@ import {
   cancelAppointment,
   updateAppointment,
   registrarDetalleDePago,
+  deleteGoogleCalendarEvent,
 } from 'src/api/calendar-colaborador';
 
 import Image from 'src/components/image';
@@ -93,7 +94,8 @@ export default function PendingModalUser() {
         currentEvent.id,
         1,
         registrarPago.data,
-        null
+        null,
+        currentEvent.idEventoGoogle
       );
       if (update.result) {
         enqueueSnackbar('¡Se ha generado el pago con éxito!', {
@@ -132,6 +134,18 @@ export default function PendingModalUser() {
       enqueueSnackbar('¡Se ha cancelado la cita!', {
         variant: 'success',
       });
+
+      const deleteGoogleEvent = await deleteGoogleCalendarEvent(
+        currentEvent.idEventoGoogle,
+        datosUser.correo
+      );
+      if (!deleteGoogleEvent.result) {
+        enqueueSnackbar('¡No se pudo sincronizar el evento con el calendario de google!', {
+          variant: 'error',
+        });
+        pendingsMutate();
+        return onClose();
+      }
     }
     const scheduledAppointment = await consultarCita(currentEvent.id);
     if (!scheduledAppointment.result) {
@@ -165,7 +179,8 @@ export default function PendingModalUser() {
       thisEvent.id,
       thisEvent.estatus,
       thisEvent.idDetalle,
-      valorRating * 2
+      valorRating * 2,
+      thisEvent.idEventoGoogle
     );
 
     if (update.result) {
