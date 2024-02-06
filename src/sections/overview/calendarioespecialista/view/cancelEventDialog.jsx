@@ -98,7 +98,8 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
       sede: currentEvent?.sede,
       oficina: currentEvent?.oficina,
       correo: currentEvent?.correo,
-      fechaCreacion: currentEvent?.fechaCreacion
+      fechaCreacion: currentEvent?.fechaCreacion,
+      idEventoGoogle: currentEvent?.idEventoGoogle
     };
     switch (cancelType) {
       case 8:

@@ -125,6 +125,10 @@ export const endpoints = {
     checkInvoice: 'calendarioController/checkInvoice',
     mailEspecialista: 'calendarioController/sendMail',
     updateDetallePaciente: 'calendarioController/updateDetallePaciente',
+    insertGoogleEvent: 'calendarioController/insertGoogleEvent',
+    insertGoogleId: 'calendarioController/insertGoogleId',
+    updateGoogleEvent: 'calendarioController/updateGoogleEvent',
+    deleteGoogleEvent: 'calendarioController/deleteGoogleEvent'
   },
   calendarioColaborador: {
     isPrimeraCita: 'calendarioController/isPrimeraCita',
