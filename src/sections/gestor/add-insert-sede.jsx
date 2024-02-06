@@ -22,8 +22,6 @@ export default function AddInsertSede({idSede, especiaData, oficinaData, modalid
 
   const { user } = useAuthContext();
 
-  const { respuestasData } = useGetGeneral(endpoints.encuestas.getRespuestas, "respuestasData");
-
   const { control } = useFormContext();
 
   const { fields, append, remove } = useFieldArray({

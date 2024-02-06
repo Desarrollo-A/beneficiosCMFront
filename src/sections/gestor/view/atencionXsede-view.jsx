@@ -186,9 +186,9 @@ export default function AtencionXsedeView() {
   }, []);
 
   useEffect(() => {
-    if(rol === "1" || rol === 1){
+    if(rol === "4" || rol === 4){
       setTableData(atXsedeData);
-    }else if(rol === "3" || rol === 3){
+    }else if(rol === "1" || rol === 1 || rol === "3" || rol === 3){
       setTableData(atXsdEspData);
     }
   }, [atXsedeData, atXsdEspData, rol]);
@@ -235,7 +235,9 @@ export default function AtencionXsedeView() {
             <TabList onChange={handleChange} >
               <Tab label="Registros" value="1" />
 
-              {sedesEmptyData !== false ? (
+              {sedesEmptyData !== false && 
+               user.idRol === "4" || user.idRol === 4 || user.idRol === "1" || user.idRol === 1 
+                ? (
 
                 <Tab value="2" iconPosition="end" icon={
                   <Label
@@ -243,14 +245,9 @@ export default function AtencionXsedeView() {
                     color='warning'
                   ><Iconify icon="line-md:alert-twotone" /></Label>
                 }
-                  label="Sedes sin asignar" />
+                  label="Asignación de sedes" />
 
-              ) : (
-
-                <>
-                </>
-
-              )}
+              ) : null}
 
             </TabList>
           </Box>
@@ -327,20 +324,22 @@ export default function AtencionXsedeView() {
             />
 
           </TabPanel>
+
+          {user.idRol === "4" || user.idRol === 4 || user.idRol === "1" || user.idRol === 1 ? (
           <TabPanel value="2">
 
             <Stack spacing={2}>
-              {sedesEmptyData.map((data, index) => (
                 <SedesSnAsignar
-                  key={index}
-                  sd={data}
                   modalidadesData={modalidadesData}
-                  puestosData={puestosData}
+                  puestosData={puestos}
+                  sedesData={sedes}
                 />
-              ))}
             </Stack>
 
           </TabPanel>
+          ) : (
+            null
+          )};
         </TabContext>
 
       </Card>

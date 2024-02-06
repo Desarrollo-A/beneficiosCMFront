@@ -73,7 +73,7 @@ export default function RowsAtencionXsede({ row, selected, onEditRow, onDeleteRo
           </Label>
         </TableCell>
 
-        {rol === "1" || rol === 1 ? (
+        {rol === "4" || rol === 4 || rol === "1" || rol === 1 ? (
 
           <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
 

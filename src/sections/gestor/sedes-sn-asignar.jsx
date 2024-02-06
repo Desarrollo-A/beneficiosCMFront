@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
@@ -26,14 +26,15 @@ import Iconify from 'src/components/iconify';
 
 import BankingContacts from './banking-contacts';
 import ModalAsignarSede from './modal-asignar-sede';
+import SedeItem from './sede-item';
 
 // ----------------------------------------------------------------------
 
-export default function SedeSnAsignar({ onDelete, sx, modalidadesData, puestosData, ...other }) {
+export default function SedeSnAsignar({ onDelete, sx, modalidadesData, puestosData, sedesData, ...other }) {
 
   const { user } = useAuthContext();
 
-  const { sedData } = usePostGeneral(user.idPuesto, endpoints.gestor.getSedeNoneEsp, "sedData");
+  /* const { sedData } = usePostGeneral(user.idPuesto, endpoints.gestor.getSedeNoneEsp, "sedData"); */
 
   const smUp = useResponsive('up', 'sm');
 
@@ -58,93 +59,16 @@ export default function SedeSnAsignar({ onDelete, sx, modalidadesData, puestosDa
   return (
     <>
 
-      {user.idRol === "1" || user.idRol === 1 ? (
+      {user.idRol === "4" || user.idRol === 4 ? (
         <BankingContacts
-          title="Contacts"
-          subheader="You have 122 contacts"
           list={puestosData}
           modalidadesData={modalidadesData}
+          sedesData={sedesData}
         />
       ) : (
         <>
-          {sedData.map((e, index) => (
-            <Stack
-              component={Paper}
-              variant="outlined"
-              spacing={1}
-              direction={{ xs: 'column', sm: 'row' }}
-              alignItems={{ xs: 'unset', sm: 'center' }}
-              sx={{
-                borderRadius: 2,
-                bgcolor: 'unset',
-                cursor: 'pointer',
-                position: 'relative',
-                p: { xs: 2.5, sm: 2 },
-                '&:hover': {
-                  bgcolor: 'background.paper',
-                  boxShadow: (theme) => theme.customShadows.z20,
-                },
-                ...sx,
-              }}
-              {...other}
-            >
-
-              <ListItemText
-                key={1}
-                onClick={details.onTrue}
-                primary={e.sede}
-                secondary={
-                  <>
-                    {fData()}
-                    <Box
-                      sx={{
-                        mx: 0.75,
-                        width: 2,
-                        height: 2,
-                        borderRadius: '50%',
-                        bgcolor: 'currentColor',
-                      }}
-                    />
-                    {"Fecha de creación: "}{e.fechaCreacion}
-                  </>
-                }
-                primaryTypographyProps={{
-                  noWrap: true,
-                  typography: 'subtitle2',
-                }}
-                secondaryTypographyProps={{
-                  mt: 0.5,
-                  component: 'span',
-                  alignItems: 'center',
-                  typography: 'caption',
-                  color: 'text.disabled',
-                  display: 'inline-flex',
-                }}
-              />
-              <Box
-                sx={{
-                  top: 0,
-                  right: 8,
-                  position: 'absolute',
-                  ...(smUp && {
-                    flexShrink: 0,
-                    position: 'unset',
-                  }),
-                }}
-              >
-
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => {
-                    handleOpen(e.idSede);
-                  }}
-                >
-                  Asignar <Iconify icon="lets-icons:add-duotone" />
-                </Button>
-              </Box>
-
-            </Stack>
+          {sedesData.map((e, index) => (
+            <SedeItem key={index} sx={sx} value={e} handleOpen={handleOpen} />
           ))}
         </>
       )}
@@ -176,4 +100,5 @@ SedeSnAsignar.propTypes = {
   sx: PropTypes.object,
   modalidadesData: PropTypes.any,
   puestosData: PropTypes.any,
+  sedesData: PropTypes.any,
 };

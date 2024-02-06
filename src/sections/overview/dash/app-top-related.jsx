@@ -45,16 +45,6 @@ function ApplicationItem({ app }) {
 
   return (
     <Stack direction="row" alignItems="center" spacing={2}>
-      <Avatar
-        variant="rounded"
-        sx={{
-          width: 48,
-          height: 48,
-          bgcolor: 'background.neutral',
-        }}
-      >
-        <Box component="img" src={shortcut} sx={{ width: 24, height: 24 }} />
-      </Avatar>
 
       <Box sx={{ flexGrow: 1, minWidth: 0 }}>
         <Typography variant="subtitle2" noWrap>
@@ -64,23 +54,20 @@ function ApplicationItem({ app }) {
         <Stack direction="row" alignItems="center" sx={{ mt: 0.5, color: 'text.secondary' }}>
           <Iconify
             width={14}
-            icon={system === 'Mac' ? 'mingcute:apple-fill' : 'mingcute:windows-fill'}
+            icon="gis:point"
           />
 
           <Typography variant="caption" sx={{ ml: 0.5, mr: 1 }}>
             {system}
           </Typography>
-
-          <Label color={price === 0 ? 'success' : 'error'}>
-            {price === 0 ? 'Free' : fCurrency(price)}
-          </Label>
+          
         </Stack>
       </Box>
 
       <Stack alignItems="flex-end">
-        <Rating readOnly size="small" precision={0.5} name="reviews" value={ratingNumber} />
+        <Rating readOnly size="small" precision={0.5} name="reviews" value={4.6} />
         <Typography variant="caption" sx={{ mt: 0.5, color: 'text.secondary' }}>
-          {fShortenNumber(totalReviews)} reviews
+          {fShortenNumber(totalReviews)} evaluaciones
         </Typography>
       </Stack>
     </Stack>

@@ -38,14 +38,14 @@ export default function ModalModalidad({ open, onClose, id, est, estatusVal, mod
 
   const handleEstatus = async (i) => {
 
-      try {
+    try {
 
-        const data = {
-          'idDetallePnt': id,
-          'modalidad': i,
-        };
+      const data = {
+        'idDetallePnt': id,
+        'modalidad': i,
+      };
 
-        console.log(data)
+      if (data?.modalidad !== '') {
 
         onClose();
 
@@ -61,10 +61,14 @@ export default function ModalModalidad({ open, onClose, id, est, estatusVal, mod
           enqueueSnackbar(update.msj, { variant: 'error' });
         }
 
-      } catch (error) {
-        console.error("Error en handleEstatus:", error);
-        enqueueSnackbar(`¡No se pudieron actualizar los datos de usuario!`, { variant: 'danger' });
+      } else {
+        enqueueSnackbar(`¡No se selecciono alguna opción!`, { variant: 'danger' });
       }
+
+    } catch (error) {
+      console.error("Error en handleEstatus:", error);
+      enqueueSnackbar(`¡No se pudieron actualizar los datos de usuario!`, { variant: 'danger' });
+    }
 
   }
 
@@ -84,7 +88,7 @@ export default function ModalModalidad({ open, onClose, id, est, estatusVal, mod
         <DialogTitle>¿Estás seguro que deseas cambiar la modalidad?</DialogTitle>
 
         <FormControl spacing={3} sx={{ p: 3 }}>
-       
+
           <InputLabel spacing={3} sx={{ p: 3 }} id="demo-simple-select-label">Modalidad</InputLabel>
           <Select
             labelId="demo-simple-select-label"
