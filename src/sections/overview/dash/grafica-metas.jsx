@@ -62,7 +62,7 @@ export default function GraficaMetas({ title, subheader, chart, ...other }) {
 
   return (
     <Card {...other}>
-      <CardHeader title={title} subheader={subheader} sx={{ mb: 8 }} />
+      <CardHeader title={title} subheader={subheader} sx={{ mb: 16.9 }} />
 
       <Chart
         dir="ltr"

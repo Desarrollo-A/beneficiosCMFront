@@ -105,29 +105,30 @@ export function AuthProvider({ children }) {
   }, [initialize]);
 
   // LOGIN
-  const login = useCallback(async (numempleado, password) => {
-    const data = JSON.stringify({ numempleado, password });
+// LOGIN
+const login = useCallback(async (numempleado, password) => {
+  const data = JSON.stringify({ numempleado, password });
 
-    const url = `${HOST}${endpoints.auth.login}`
+  const url = `${HOST}${endpoints.auth.login}`
 
-    const response = await instance.post(url, data);
+  const response = await instance.post(url, data);
 
-    if (response.data.result !== 1) {
-      return { result: 0, message: 'El usuario y/o contraseña no son correctos' };
-    } 
-    const { accessToken, user } = response.data;
-    setSession(accessToken);
+  if (response.data.result !== 1) {
+    return { result: 0, message: 'El usuario y/o contraseña no son correctos' };
+  } 
+  const { accessToken, user } = response.data;
+  setSession(accessToken);
 
-    return dispatch({
-      type: 'LOGIN',
-      payload: {
-        user: {
-          ...user,
-          accessToken,
-        },
+  return dispatch({
+    type: 'LOGIN',
+    payload: {
+      user: {
+        ...user,
+        accessToken,
       },
-    });
-  }, []);
+    },
+  });
+}, []);
   // REGISTER
   const register = useCallback(async (numEmpleado) => {
     const data = {
