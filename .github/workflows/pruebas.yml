@@ -1,8 +1,8 @@
-name: 🚀 Deploy production
-on: push
+name: 🚀 Deploy pruebas
+on: workflow_dispatch
 
 jobs:
-  compile-front-on-production:
+  compile-front-on-pruebas:
     name: 🎉 Deploy
     runs-on: ubuntu-latest
   
