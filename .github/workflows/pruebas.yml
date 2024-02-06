@@ -1,8 +1,5 @@
 name: Build Pruebas
-on:
-  push:
-    branches:
-      - pruebas
+on: workflow_dispatch
 
 jobs:
   compile-front-on-pruebas:
