@@ -15,12 +15,11 @@ jobs:
         with:
           node-version: 20.x
           cache: npm
-  
-      - name: ⬇️ Install
-        run: npm ci
 
-      - name: ⚙️ Build
-        run: npm run pruebas
+      - name: ⚙️ Build project
+        run: |
+          npm install
+          npm run pruebas
 
       - name: 📂 Sync files
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
