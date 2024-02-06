@@ -138,9 +138,16 @@ export function lastAppointment(usuario, beneficio) {
 }
 
 // Actualizar algun dato de cita como estatus de la cita, o su detalle de pago.
-export function updateAppointment(idUsuario, idCita, estatus, detalle, evaluacion) {
+export function updateAppointment(idUsuario, idCita, estatus, detalle, evaluacion, googleEventId) {
   const URL = [endpoints.calendarioColaborador.updateAppointment];
-  const update = fetcherPost(URL, { idUsuario, idCita, estatus, detalle, evaluacion });
+  const update = fetcherPost(URL, {
+    idUsuario,
+    idCita,
+    estatus,
+    detalle,
+    evaluacion,
+    googleEventId,
+  });
 
   return update;
 }
@@ -202,7 +209,8 @@ export function crearCita(
   estatusCita,
   creadoPor,
   modificadoPor,
-  detallePago
+  detallePago,
+  idGoogleEvent
 ) {
   const URL_CITA = [endpoints.calendarioColaborador.createAppointment];
   const axs = fetcherPost(URL_CITA, {
@@ -217,6 +225,7 @@ export function crearCita(
     creadoPor,
     modificadoPor,
     detallePago,
+    idGoogleEvent,
   });
 
   return axs;
@@ -358,4 +367,64 @@ export function sendMail(event, typeEmail, correo) {
   const mail = fetcherPost(URL, data);
 
   return mail;
+}
+
+export function insertGoogleCalendarEvent(
+  title,
+  start,
+  end,
+  location,
+  description,
+  attendees,
+  email
+) {
+  const URL = [endpoints.calendarioColaborador.insertGoogleEvent];
+
+  const guest = attendees
+    .filter((each) => each !== email)
+    .map((each) => ({ email: each, responseStatus: 'accepted' }));
+
+  attendees = [{ email, responseStatus: 'accepted' }, ...guest];
+
+  const insertEvent = fetcherPost(URL, {
+    title,
+    start,
+    end,
+    location,
+    description,
+    attendees,
+    email,
+  });
+
+  console.log({
+    title,
+    start,
+    end,
+    location,
+    description,
+    attendees,
+    email,
+  });
+  return insertEvent;
+}
+
+export function updateGoogleCalendarEvent(id, start, end, email, attendees) {
+  const URL = [endpoints.calendarioColaborador.updateGoogleEvent];
+
+  const guest = attendees
+    .filter((each) => each !== email)
+    .map((each) => ({ email: each, responseStatus: 'accepted' }));
+
+  attendees = [{ email, responseStatus: 'accepted' }, ...guest];
+
+  const updateEvent = fetcherPost(URL, { id, start, end, email, attendees });
+
+  return updateEvent;
+}
+
+export function deleteGoogleCalendarEvent(id, email) {
+  const URL = [endpoints.calendarioColaborador.deleteGoogleEvent];
+  const deleteEvent = fetcherPost(URL, { id, email });
+
+  return deleteEvent;
 }

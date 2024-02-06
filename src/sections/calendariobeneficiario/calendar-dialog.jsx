@@ -46,6 +46,9 @@ import {
   getCitasSinFinalizar,
   getOficinaByAtencion,
   registrarDetalleDePago,
+  insertGoogleCalendarEvent,
+  updateGoogleCalendarEvent,
+  deleteGoogleCalendarEvent,
 } from 'src/api/calendar-colaborador';
 
 import Iconify from 'src/components/iconify';
@@ -243,7 +246,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       idAtencionPorSede.data[0].idAtencionXSede,
       datosUser.idUsuario,
       null,
-      selectedValues.beneficio
+      selectedValues.beneficio,
+      null
     );
     if (!agendar.result) {
       enqueueSnackbar(agendar.msg, {
@@ -270,12 +274,34 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       });
       return onClose();
     }
+
+    // Evento de google
+    const startDate = dayjs(horarioSeleccionado);
+    const endDate = startDate.add(1, 'hour');
+
+    const newGoogleEvent = await insertGoogleCalendarEvent(
+      `Cita ${nombreBeneficio} - ${datosUser.nombre}`,
+      startDate.format('YYYY-MM-DDTHH:mm:ss'),
+      endDate.format('YYYY-MM-DDTHH:mm:ss'),
+      oficina.data[0].ubicación,
+      `Cita de ${datosUser.nombre} en ${nombreBeneficio}`,
+      [datosUser.correo, 'programador.analista34@ciudadmaderas.com'],
+      datosUser.correo
+    );
+    if (!newGoogleEvent.result) {
+      enqueueSnackbar('Error al conectar con la cuenta de google', {
+        variant: 'error',
+      });
+      return onClose();
+    }
+    // Mandar datos de google calendar
     const update = await updateAppointment(
       datosUser.idUsuario,
       agendar.data,
       1,
       registrarPago.data,
-      null
+      null,
+      newGoogleEvent.data.id
     );
     if (!update.result) {
       enqueueSnackbar('¡Ha surgido un error al intentar registrar el detalle de pago!', {
@@ -323,6 +349,18 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       enqueueSnackbar('¡Se ha cancelado la cita!', {
         variant: 'success',
       });
+
+      const deleteGoogleEvent = await deleteGoogleCalendarEvent(
+        currentEvent.idEventoGoogle,
+        datosUser.correo
+      );
+      if (!deleteGoogleEvent.result) {
+        enqueueSnackbar('¡No se pudo sincronizar el evento con el calendario de google!', {
+          variant: 'error',
+        });
+        appointmentMutate();
+        return onClose();
+      }
     }
     const scheduledAppointment = await consultarCita(currentEvent.id);
     if (!scheduledAppointment.result) {
@@ -366,7 +404,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         currentEvent.id,
         1,
         registrarPago.data,
-        null
+        null,
+        currentEvent.idEventoGoogle
       );
       setOpen(true);
       await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -403,7 +442,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     if (input === 'beneficio') {
       setErrorBeneficio(false);
       // HACER PROCESO DE DETALLE PACIENTE
-      const datosUltimaCita = await lastAppointment(datosUser.idSede, value);
+      const datosUltimaCita = await lastAppointment(datosUser.idUsuario, value);
       if (datosUltimaCita.result) {
         const modalitiesData = await getModalities(
           datosUser.idSede,
@@ -790,7 +829,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     atencionPorSede,
     idUsuario,
     detallePago,
-    beneficio
+    beneficio,
+    idGoogleEvent
   ) => {
     const registrarCita = await crearCita(
       titulo,
@@ -803,7 +843,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       1,
       idUsuario,
       idUsuario,
-      detallePago
+      detallePago,
+      idGoogleEvent
     );
     if (registrarCita.result) {
       const updateDetail = await updateDetailPacient(datosUser.idUsuario, beneficio);
@@ -940,13 +981,31 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       currentEvent.idAtencionXSede,
       datosUser.idUsuario,
       currentEvent.idDetalle,
-      selectedValues.beneficio
+      selectedValues.beneficio,
+      currentEvent.idEventoGoogle
     );
 
     if (!agendar.result) {
       return enqueueSnackbar(agendar.msg, {
         variant: 'error',
       });
+    }
+
+    const startDate = dayjs(horarioSeleccionado);
+    const endDate = startDate.add(1, 'hour');
+
+    const updateGoogleEvent = await updateGoogleCalendarEvent(
+      currentEvent.idEventoGoogle,
+      startDate.format('YYYY-MM-DDTHH:mm:ss'),
+      endDate.format('YYYY-MM-DDTHH:mm:ss'),
+      datosUser.correo,
+      [datosUser.correo, 'programador.analista34@ciudadmaderas.com', 'artturo.alarcon@gmail.com']
+    );
+    if (!updateGoogleEvent.result) {
+      enqueueSnackbar('No se pudo sincronizar el evento con la cuenta de google', {
+        variant: 'error',
+      });
+      return onClose();
     }
 
     const scheduledAppointment = await consultarCita(agendar.data);
@@ -957,6 +1016,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       onClose();
       return false;
     }
+
     const email = await sendMail(
       {
         ...scheduledAppointment.data[0],

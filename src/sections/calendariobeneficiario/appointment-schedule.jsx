@@ -63,9 +63,16 @@ export default function AppointmentSchedule({
           }}
         >
           <Stack spacing={3}>
-            <Typography variant="subtitle1">
-              {dayjs().locale('es').format('dddd, DD MMMM YYYY')}
-            </Typography>
+            {currentEvent?.estatus === 1 ? (
+              <Typography variant="subtitle1">
+                {dayjs(currentEvent.start).locale('es').format('dddd, DD MMMM YYYY HH:mm ')}
+              </Typography>
+            ) : (
+              <Typography variant="subtitle1">
+                {dayjs().locale('es').format('dddd, DD MMMM YYYY')}
+              </Typography>
+            )}
+
             <Stack direction="column" spacing={3} justifyContent="space-between">
               <FormControl error={!!errorBeneficio} fullWidth>
                 <InputLabel id="beneficio-input" name="beneficio">
