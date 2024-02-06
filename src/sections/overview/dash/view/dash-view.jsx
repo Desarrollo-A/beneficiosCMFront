@@ -304,6 +304,28 @@ export default function DashView() {
 
   const theme = useTheme();
 
+  const appRelated = ['Chrome', 'Drive', 'Dropbox', 'Evernote', 'Github'].map(
+    (name, index) => {
+      const system = [2, 4].includes(index) ? 'Windows' : 'Mac';
+  
+      const shortcut =
+        (name === 'Chrome' && '/assets/icons/app/ic_chrome.svg') ||
+        (name === 'Drive' && '/assets/icons/app/ic_drive.svg') ||
+        (name === 'Dropbox' && '/assets/icons/app/ic_dropbox.svg') ||
+        (name === 'Evernote' && '/assets/icons/app/ic_evernote.svg') ||
+        '/assets/icons/app/ic_github.svg';
+  
+      return {
+        /* id: _mock.id(index), */
+        name,
+        system,
+        shortcut,
+        /* ratingNumber: _mock.number.rating(index),
+        totalReviews: _mock.number.nativeL(index), */
+      };
+    }
+  );
+
   return (
     <>
 
@@ -482,7 +504,7 @@ export default function DashView() {
           )}
 
           {/* <Grid xs={12} md={6} lg={4}>
-            <AppTopRelated title="Top Related Applications" list={_appRelated} />
+            <AppTopRelated title="Evaluacion de especialistas" list={_appRelated} />
           </Grid> */}
 
         </Grid>

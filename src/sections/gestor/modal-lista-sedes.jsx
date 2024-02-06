@@ -24,9 +24,9 @@ import ModalAsignarSede from './modal-asignar-sede';
 
 // ----------------------------------------------------------------------
 
-export default function ModalListaSedes({ idPuesto, open, onClose, modalidadesData }) {
+export default function ModalListaSedes({ idPuesto, open, onClose, modalidadesData, sedesData }) {
 
-  const { sdData } = usePostGeneral(idPuesto, endpoints.gestor.getSedeNone, "sdData");
+  /* const { sdData } = usePostGeneral(idPuesto, endpoints.gestor.getSedeNone, "sdData"); */
 
   const modal = useBoolean();
 
@@ -63,8 +63,7 @@ export default function ModalListaSedes({ idPuesto, open, onClose, modalidadesDa
         <>
           <DialogContent>
 
-
-            {sdData.map((e, index) => (
+            {sedesData.map((e, index) => (
               <>
                 <ListItemText
                   key={`items[${index}].list`}
@@ -156,4 +155,5 @@ ModalListaSedes.propTypes = {
   onClose: PropTypes.any,
   open: PropTypes.bool,
   modalidadesData: PropTypes.any,
+  sedesData: PropTypes.any,
 };

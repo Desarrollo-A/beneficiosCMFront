@@ -1,5 +1,6 @@
 import * as Yup from 'yup';
 import { useMemo, useState, useEffect } from 'react';
+import { mutate } from 'swr';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
@@ -88,10 +89,8 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
           enqueueSnackbar(insert.msj, { variant: 'success' });
           resetForm();
 
-          /* router.push(paths.dashboard.encuestas.ver);
-          mutate(endpoints.encuestas.encuestaMinima);
-          mutate(endpoints.encuestas.getEncNotificacion);
-          mutate(endpoints.encuestas.getEstatusUno); */
+          mutate(endpoints.gestor.getAtencionXsede);
+          mutate(endpoints.gestor.getAtencionXsedeEsp);
 
         } else {
           enqueueSnackbar(insert.msj, { variant: 'error' });
@@ -145,7 +144,7 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
             <ConfirmDialog
               open={confirm.value}
               onClose={confirm.onFalse}
-              title="¿Deseas activar la encuesta?"
+              title="¿Deseas guardar los registros?"
               action={
                 <>
                   <Button variant="contained" onClick={() => {
@@ -157,7 +156,6 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
                   </Button>
                   <Button variant="contained" onClick={() => {
                     confirm.onFalse();
-                    handleCreateAndSend(0);
                   }}>
                     No
                   </Button>

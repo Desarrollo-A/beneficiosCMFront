@@ -149,7 +149,7 @@ export default function ToolbarAtencionXsede({
           </Select>
         </FormControl>
 
-        {rol === "1" || rol === 1 ? (
+        {rol === "4" || rol === 4 ? (
 
         <FormControl
           sx={{
@@ -185,7 +185,7 @@ export default function ToolbarAtencionXsede({
           </>
         )}
 
-        {rol === "3" ? (
+        {rol === "3" || rol === 3 || rol === "1" || rol === 1? (
 
         <FormControl
           sx={{

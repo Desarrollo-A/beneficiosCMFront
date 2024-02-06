@@ -40,16 +40,20 @@ export default function ModalEspecialista({ open, onClose, id, estatusVal, puest
 
   const handleEstatus = async (i) => {
 
-      try {
+    try {
 
-        const data = {
-          'idDetallePnt': id,
-          'espe': i,
-        };
+      const data = {
+        'idDetallePnt': id,
+        'espe': i,
+      };
+
+      if (data?.espe !== '') {
 
         onClose();
 
         const update = await updateEstatus(data);
+
+        console.log(data)
 
         if (update.estatus === true) {
           enqueueSnackbar(update.msj, { variant: 'success' });
@@ -61,10 +65,14 @@ export default function ModalEspecialista({ open, onClose, id, estatusVal, puest
           enqueueSnackbar(update.msj, { variant: 'error' });
         }
 
-      } catch (error) {
-        console.error("Error en handleEstatus:", error);
-        enqueueSnackbar(`¡No se pudieron actualizar los datos de usuario!`, { variant: 'danger' });
+      } else {
+        enqueueSnackbar(`¡No se selecciono alguna opción!`, { variant: 'danger' });
       }
+
+    } catch (error) {
+      console.error("Error en handleEstatus:", error);
+      enqueueSnackbar(`¡No se pudieron actualizar los datos de usuario!`, { variant: 'danger' });
+    }
 
   }
 
@@ -84,7 +92,7 @@ export default function ModalEspecialista({ open, onClose, id, estatusVal, puest
         <DialogTitle>¿Estás seguro que deseas cambiar al especialista?</DialogTitle>
 
         <FormControl spacing={3} sx={{ p: 3 }}>
-       
+
           <InputLabel spacing={3} sx={{ p: 3 }} id="demo-simple-select-label">Especialista</InputLabel>
           <Select
             labelId="demo-simple-select-label"

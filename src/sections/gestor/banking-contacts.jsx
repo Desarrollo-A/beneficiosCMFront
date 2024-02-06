@@ -17,7 +17,7 @@ import ModalListaSedes from './modal-lista-sedes';
 
 // ----------------------------------------------------------------------
 
-export default function BankingContacts({ title, subheader, list, modalidadesData, ...other }) {
+export default function BankingContacts({ title, subheader, list, modalidadesData, sedesData, ...other }) {
   const modal = useBoolean();
 
   const [ps, setPs] = useState(0);
@@ -31,7 +31,7 @@ export default function BankingContacts({ title, subheader, list, modalidadesDat
 
             <ListItemText primary={e.nombre} /* secondary={e.email} */ />
 
-            <ModalListaSedes idPuesto={ps} modalidadesData={modalidadesData} open={modal.value} onClose={modal.onFalse} />
+            <ModalListaSedes idPuesto={ps} modalidadesData={modalidadesData} sedesData={sedesData} open={modal.value} onClose={modal.onFalse} />
 
             <Tooltip title="Ver sedes">
               <IconButton onClick={() => {
@@ -53,4 +53,5 @@ BankingContacts.propTypes = {
   subheader: PropTypes.string,
   title: PropTypes.string,
   modalidadesData: PropTypes.any,
+  sedesData: PropTypes.any,
 };
