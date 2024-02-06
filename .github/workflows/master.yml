@@ -1,5 +1,8 @@
 name: 🚀 Deploy production
-on: push
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   compile-front-on-production:
