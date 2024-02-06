@@ -1,8 +1,10 @@
 import axios from 'axios';
 
+import { HOST } from 'src/config-global';
+
 const instance = axios.create({
-    baseURL: 'http://localhost/beneficiosCMBack/',
-    // baseURL: import.meta.env
+    // baseURL: 'http://localhost/beneficiosCMBack/',
+    baseURL: HOST
     // baseURL: 'https://prueba.gphsis.com/beneficiosmaderas/',
 
 });

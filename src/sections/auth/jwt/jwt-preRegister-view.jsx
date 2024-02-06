@@ -14,6 +14,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import InputAdornment from '@mui/material/InputAdornment';
 
+import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -21,7 +22,6 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import Servicios from 'src/utils/servicios';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { PATH_AFTER_LOGIN } from 'src/config-global';
 
 import Iconify from 'src/components/iconify';
 import FormProvider, {  RHFTextField } from 'src/components/hook-form';
@@ -71,13 +71,16 @@ const NewUserSchema = Yup.object().shape({
     setDatosEmpleado(temDatos);
      servicios.addRegistroEmpleado(dataSb => {
       if(dataSb.estatus === 1){
-        login?.(datosEmpleado.num_empleado, temDatos.confirmNewPassword)
+
+        login?.(temDatos.num_empleado, temDatos.password)
         .then(response=>{
           console.log(response);
           if(response.result === 0){
             setErrorMsg(response.message);
           }else{
-              router.push(PATH_AFTER_LOGIN);
+              console.log(paths.dashboard.general.dash)
+
+              router.push(paths.dashboard.general.dash);
           }
         })
       }
