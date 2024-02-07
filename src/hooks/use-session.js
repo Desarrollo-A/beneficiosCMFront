@@ -16,25 +16,30 @@ export function useSession() {
     const [checked, setChecked] = useState(false)
 
     useEffect(() => {
-        if(!checked){
-            setNeedFetching(true)
-        }
+        // if(!checked){
+        //     setNeedFetching(true)
+        // }
 
         if(!authenticated){
             navigate(paths.auth.jwt.login)
         }
-    }, [authenticated]);
-
-    useEffect(() => {
-        if (!needFetching) return;
 
         if(!authorizedLoading && !authorized){
             navigate(paths.dashboard.general.dash)
         }
 
-        setChecked(true)
+    }, [authenticated, authorized]);
+
+    // useEffect(() => {
+    //     //if (!needFetching) return;
+
+    //     if(!authorized){
+    //         navigate(paths.dashboard.general.dash)
+    //     }
+
+    //     //setChecked(true)
         
-    }, [authorized, needFetching])
+    // }, [authorized])
 
     return null;
 }
