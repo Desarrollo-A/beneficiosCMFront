@@ -246,6 +246,7 @@ export default function OficinasView() {
           onClose={modal.onFalse}
         />
 
+        { rol === 4 ?(
         <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Button
             variant="contained"
@@ -260,6 +261,9 @@ export default function OficinasView() {
             <Iconify icon="lucide:plus" />
           </Button>
         </Box>
+        ):(
+          null
+        )}
 
         <Card>
 
