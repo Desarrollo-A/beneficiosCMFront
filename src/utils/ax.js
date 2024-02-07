@@ -50,8 +50,8 @@ export const fetcherUpdate = async (args) => {
 
 export const rutas = {
   reportes: {
-    lista: '/reportesController/citas',
-    especialistas: '/generalController/especialistas',
-    observacion: '/reportesController/observacion',
+    lista: '/ReportesController/citas',
+    especialistas: '/GeneralController/especialistas',
+    observacion: '/ReportesController/observacion',
   }
 };
