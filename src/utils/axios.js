@@ -209,5 +209,8 @@ export const endpoints = {
     updateEspecialista: '/GestorController/updateEspecialista',
     getEsp: '/GestorController/getEsp',
     getAtencionXsedeEsp: '/GestorController/getAtencionXsedeEsp',
+    getOfi: '/GestorController/getOficinas',
+    updateOficina: '/GestorController/updateOficina',
+    insertOficinas: '/GestorController/insertOficinas'
   }
 };

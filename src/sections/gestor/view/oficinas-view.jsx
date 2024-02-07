@@ -4,6 +4,7 @@ import isEqual from 'lodash/isEqual';
 import autoTable from 'jspdf-autotable';
 import { useState, useEffect, useCallback } from 'react';
 
+import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Stack from '@mui/material/Stack';
@@ -16,12 +17,13 @@ import TableContainer from '@mui/material/TableContainer';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
+
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import { endpoints } from 'src/utils/axios';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { useGetGeneral, usePostGeneral } from 'src/api/general';
+import { usePostGeneral } from 'src/api/general';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -38,16 +40,18 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-import UserTableRow from '../user-table-row';
-import UserTableToolbar from '../user-table-toolbar';
-import UserTableFiltersResult from '../user-table-filters-result';
+import TableRowOficinas from '../oficinas-componets/table-row-oficinas';
+import ToolbarOficinas from '../oficinas-componets/toolbar-oficinas';
+import FiltersOficinas from '../oficinas-componets/filters-oficinas';
+import ModalAgregarOficinas from '../oficinas-componets/modal-agregar-oficinas';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'id', label: 'ID' },
-  { id: 'nombre', label: 'Nombre', with: 220 },
+  { id: 'idOficina', label: 'ID' },
+  { id: 'oficina', label: 'Oficina', with: 220 },
   { id: 'sede', label: 'Sede', with: 100 },
+  { id: 'ubicación', label: 'Ubicación', with: 220 },
   { id: 'estatus', label: 'Estatus', width: 100 },
   { id: '', width: 88 },
 ];
@@ -60,35 +64,24 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-function handleDownloadExcel(tableData, area) {
-
-  let estatus = "";
-
-  if(area === 158){
-    estatus = "estQB";
-  }else if(area === 537){
-    estatus = "estNut";
-  }else if(area === 585){
-    estatus = "estPsi";
-  }else if(area === 686){
-    estatus = "estGE";
-  }
+function handleDownloadExcel(tableData) {
 
   const data = [
     {
       sheet: "Historial Reportes",
       columns: [
-        { label: "ID", value: "id" },
-        { label: "Nombre", value: "nombre" },
+        { label: "ID", value: "idOficina" },
+        { label: "Oficina", value: "oficina" },
         { label: "Sede", value: "sede" },
-        { label: "Estatus", value: estatus },
+        { label: "Ubicación", value: "ubicación" },
+        { label: "Estatus", value: "estatus" },
       ],
       content: tableData,
     },
   ];
 
   const settings = {
-    fileName: "Historial Reportes",
+    fileName: "Oficinas",
     extraLength: 3,
     writeMode: "writeFile",
     writeOptions: {},
@@ -103,20 +96,20 @@ function handleDownloadPDF(tableData, headerBase) {
 
   let data = [];
 
-  data = tableData.map(item => ([item.id, item.nombre, item.sede, item.estNut || item.estPsi || item.estQB || item.estGE ]))
+  data = tableData.map(item => ([item.idOficina, item.oficina, item.sede, item.ubicación, item.estatus]))
 
   autoTable(doc, {
     head: [headerBase],
     body: data,
   })
-  doc.save('Reporte de pacientes.pdf')
+  doc.save('Oficinas.pdf')
 }
 
 // ----------------------------------------------------------------------
 
-export default function ReportePacientesView() {
+export default function OficinasView() {
 
-  const headerBase = ["ID", "Nombre", "Sede", "Estatus"];
+  const headerBase = ["ID", "Oficina", "Sede", "Ubicación", "Estatus"];
 
   const table = useTable();
 
@@ -130,19 +123,12 @@ export default function ReportePacientesView() {
 
   const rol = user.idRol
 
-  let puestos = 0;
+  const [userDt, setUserDt] = useState({
+    idRol: user.idRol,
+    idPuesto: user.idPuesto,
+  });
 
-  if (rol === "4" || rol === 4) {
-    puestos = 158;
-  } else {
-    puestos = user.idPuesto;
-  }
-
-  const [area, setArea] = useState(puestos);
-
-  const { pacientesData } = usePostGeneral(area, endpoints.reportes.pacientes, "pacientesData");
-
-  const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
+  const { oficinasData } = usePostGeneral(userDt, endpoints.gestor.getOfi, "oficinasData");
 
   const [tableData, setTableData] = useState([]);
 
@@ -219,16 +205,6 @@ export default function ReportePacientesView() {
     setFilters(defaultFilters);
   }, []);
 
-  useEffect(() => {
-    setTableData(pacientesData);
-  }, [pacientesData]);
-
-  const handleChangeId = (newAr) => {
-    setArea(newAr);
-
-    setEspecialistas(especialistasData);
-  }
-
   const handlePdf = async e => {
     e.preventDefault();
     handleDownloadPDF(
@@ -240,39 +216,63 @@ export default function ReportePacientesView() {
   const handleExcel = async e => {
     e.preventDefault();
     handleDownloadExcel(
-      tableData,
-      area
+      tableData
     );
   }
+
+  useEffect(() => {
+    setTableData(oficinasData);
+  }, [oficinasData]);
+
+  const modal = useBoolean();
 
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Pacientes"
+          heading="Oficinas"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Reportes', /* href: paths.dashboard.user.root */ },
-            { name: 'Pacientes' },
+            { name: 'Gestor', /* href: paths.dashboard.user.root */ },
+            { name: 'Oficinas' },
           ]}
           sx={{
-            mb: { xs: 3, md: 5 },
+            mb: { xs: 3, md: 0 },
           }}
         />
 
+        <ModalAgregarOficinas
+          open={modal.value}
+          onClose={modal.onFalse}
+        />
+
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Button
+            variant="contained"
+            spacing={2}
+            color='primary'
+            sx={{ mb: 3 }}
+            onClick={() => {
+              modal.onTrue();
+            }}
+          >
+            Agregar oficina
+            <Iconify icon="lucide:plus" />
+          </Button>
+        </Box>
+
         <Card>
 
-          <UserTableToolbar
+          <ToolbarOficinas
             filters={filters}
             onFilters={handleFilters}
             //
             roleOptions={_rp}
-            handleChangeId={handleChangeId}
             rol={rol}
           />
 
           {canReset && (
-            <UserTableFiltersResult
+            <FiltersOficinas
               filters={filters}
               onFilters={handleFilters}
               //
@@ -335,10 +335,10 @@ export default function ReportePacientesView() {
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
                     .map((row) => (
-                      <UserTableRow
-                        key={row.id}
+                      <TableRowOficinas
+                        key={row.idOficina}
                         row={row}
-                        area={area}
+                        rol={rol}
                         selected={table.selected.includes(row.id)}
                         onSelectRow={() => table.onSelectRow(row.id)}
                         onDeleteRow={() => handleDeleteRow(row.id)}
@@ -397,7 +397,7 @@ export default function ReportePacientesView() {
 // ----------------------------------------------------------------------
 
 function applyFilter({ inputData, comparator, filters }) {
-  const { name, status, role } = filters;
+  const { name } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
 
@@ -411,10 +411,10 @@ function applyFilter({ inputData, comparator, filters }) {
 
   if (name) {
     inputData = inputData.filter(
-      (user) =>
-        user.nombre.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        user.sede.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        user.correo.toLowerCase().indexOf(name.toLowerCase()) !== -1
+      (i) =>
+        i.oficina.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        i.sede.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        i.ubicación.toLowerCase().indexOf(name.toLowerCase()) !== -1
     );
   }
 

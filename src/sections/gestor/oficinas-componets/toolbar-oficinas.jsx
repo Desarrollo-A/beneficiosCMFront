@@ -9,6 +9,7 @@ import TextField from '@mui/material/TextField';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import InputAdornment from '@mui/material/InputAdornment';
+import Button from '@mui/material/Button';
 
 import { endpoints } from 'src/utils/axios';
 
@@ -18,7 +19,7 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function UserTableToolbar({
+export default function ToolbarOficinas({
   filters,
   onFilters,
   //
@@ -69,35 +70,6 @@ export default function UserTableToolbar({
       }}
     >
 
-      {rol === "4" || rol === 4 ? (
-        <FormControl
-          sx={{
-            flexShrink: 0,
-            width: { xs: 1, md: 200 },
-          }}>
-          <InputLabel id="demo-simple-select-label">Área</InputLabel>
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={area}
-            label="Área"
-            onChange={handleChange}
-          >
-            {especialistas.map((i) => (
-              <MenuItem key={i.idPuesto} value={i.idPuesto}>
-                {i.nombre}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-      ) : (
-
-        <>
-        </>
-
-      )}
-
       <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
         <TextField
           fullWidth
@@ -114,13 +86,14 @@ export default function UserTableToolbar({
         />
 
       </Stack>
+      
     </Stack>
 
 
   );
 }
 
-UserTableToolbar.propTypes = {
+ToolbarOficinas.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   handleChangeId: PropTypes.func,
