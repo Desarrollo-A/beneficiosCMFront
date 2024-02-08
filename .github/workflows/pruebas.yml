@@ -29,5 +29,5 @@ jobs:
           username: prohab
           ssh_private_key: ${{ secrets.SFTP_SSH_PRIVATE_KEY }}
           local_path: ./dist/*
-          remote_path: /mnt/data/aplicaciones/Prueba/git-test/
+          remote_path: /mnt/data/aplicaciones/Prueba/beneficiosmaderas/
           delete_remote_files: true
