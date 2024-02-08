@@ -23,7 +23,7 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { endpoints } from 'src/utils/axios';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { usePostGeneral } from 'src/api/general';
+import { useGetGeneral } from 'src/api/general';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -40,19 +40,18 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-import TableRowOficinas from '../oficinas-componets/table-row-oficinas';
-import ToolbarOficinas from '../oficinas-componets/toolbar-oficinas';
-import FiltersOficinas from '../oficinas-componets/filters-oficinas';
-import ModalAgregarOficinas from '../oficinas-componets/modal-agregar-oficinas';
+import TableRowSedes from '../sedes-componets/table-row-sedes';
+import ToolbarOficinas from '../sedes-componets/toolbar-sedes';
+import FiltersOficinas from '../sedes-componets/filters-sedes';
+import ModalAgregarSedes from '../sedes-componets/modal-agregar-sedes';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'idOficina', label: 'ID' },
-  { id: 'oficina', label: 'Oficina', with: 220 },
-  { id: 'sede', label: 'Sede', with: 100 },
-  { id: 'ubicación', label: 'Ubicación', with: 220 },
-  { id: 'estatus', label: 'Estatus', width: 100 },
+  { id: 'idSede', label: 'ID' },
+  { id: 'idSede', label: 'Sede', with: 220 },
+  { id: 'abreviacion', label: 'Abreviación', with: 100 },
+  { id: 'estatus', label: 'Estatus' },
   { id: '', width: 88 },
 ];
 
@@ -70,10 +69,9 @@ function handleDownloadExcel(tableData) {
     {
       sheet: "Historial Reportes",
       columns: [
-        { label: "ID", value: "idOficina" },
-        { label: "Oficina", value: "oficina" },
+        { label: "ID", value: "idSede" },
         { label: "Sede", value: "sede" },
-        { label: "Ubicación", value: "ubicación" },
+        { label: "Abreviación", value: "sede" },
         { label: "Estatus", value: "estatus" },
       ],
       content: tableData,
@@ -81,7 +79,7 @@ function handleDownloadExcel(tableData) {
   ];
 
   const settings = {
-    fileName: "Oficinas",
+    fileName: "Sedes",
     extraLength: 3,
     writeMode: "writeFile",
     writeOptions: {},
@@ -102,14 +100,14 @@ function handleDownloadPDF(tableData, headerBase) {
     head: [headerBase],
     body: data,
   })
-  doc.save('Oficinas.pdf')
+  doc.save('Sedes.pdf')
 }
 
 // ----------------------------------------------------------------------
 
-export default function OficinasView() {
+export default function SedesView() {
 
-  const headerBase = ["ID", "Oficina", "Sede", "Ubicación", "Estatus"];
+  const headerBase = ["ID", "Sede", "Abreviación", "Estatus"];
 
   const table = useTable();
 
@@ -128,7 +126,7 @@ export default function OficinasView() {
     idPuesto: user.idPuesto,
   });
 
-  const { oficinasData } = usePostGeneral(userDt, endpoints.gestor.getOfi, "oficinasData");
+  const { sedesData } = useGetGeneral(endpoints.gestor.getSedes, "sedesData");
 
   const [tableData, setTableData] = useState([]);
 
@@ -221,8 +219,8 @@ export default function OficinasView() {
   }
 
   useEffect(() => {
-    setTableData(oficinasData);
-  }, [oficinasData]);
+    setTableData(sedesData);
+  }, [sedesData]);
 
   const modal = useBoolean();
 
@@ -230,18 +228,18 @@ export default function OficinasView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Oficinas"
+          heading="Sedes"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Gestor', /* href: paths.dashboard.user.root */ },
-            { name: 'Oficinas' },
+            { name: 'Sedes' },
           ]}
           sx={{
             mb: { xs: 3, md: 0 },
           }}
         />
 
-        <ModalAgregarOficinas
+        <ModalAgregarSedes
           open={modal.value}
           onClose={modal.onFalse}
         />
@@ -257,7 +255,7 @@ export default function OficinasView() {
               modal.onTrue();
             }}
           >
-            Agregar oficina
+            Agregar sede
             <Iconify icon="lucide:plus" />
           </Button>
         </Box>
@@ -339,8 +337,8 @@ export default function OficinasView() {
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
                     .map((row) => (
-                      <TableRowOficinas
-                        key={row.idOficina}
+                      <TableRowSedes
+                        key={row.idSede}
                         row={row}
                         rol={rol}
                         selected={table.selected.includes(row.id)}
@@ -416,10 +414,9 @@ function applyFilter({ inputData, comparator, filters }) {
   if (name) {
     inputData = inputData.filter(
       (i) =>
-        i.oficina.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
         i.sede.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        i.ubicación.toLowerCase().indexOf(name.toLowerCase()) !== -1 || 
-        i.idOficina.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1
+        i.abreviacion.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        i.idSede.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1
     );
   }
 

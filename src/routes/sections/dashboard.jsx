@@ -22,6 +22,7 @@ const VerEncuestaDetallePage = lazy(() => import('src/pages/dashboard/encuestas/
 // GESTOR
 const AtencionXsedePage = lazy(() => import('src/pages/dashboard/gestor/atencionXsede-view'));
 const OficinasPage = lazy(() => import('src/pages/dashboard/gestor/oficinas-view'));
+const SedesPage = lazy(() => import('src/pages/dashboard/gestor/sedes-view'));
 // ----------------------------------------------------------------------
 const OverviewEcommercePage = lazy(() => import('src/pages/dashboard/ecommerce'));
 const OverviewAnalyticsPage = lazy(() => import('src/pages/dashboard/analytics'));
@@ -118,6 +119,7 @@ export const dashboardRoutes = [
         children: [
           { path: 'atencionxsede', element: <AtencionXsedePage /> },
           { path: 'oficinas', element: <OficinasPage /> },
+          { path: 'sedes', element: <SedesPage /> },
         ],
       },
       { path: 'dash', element: <DashPage /> },

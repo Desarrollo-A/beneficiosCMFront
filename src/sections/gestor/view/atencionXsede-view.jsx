@@ -40,10 +40,10 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-import SedesSnAsignar from '../sedes-sn-asignar';
-import RowsAtencionXsede from '../rows-atencionXsede';
-import ToolbarAtencionXsede from '../toolbar-atencionXsede';
-import FiltersAtencionXsede from '../filters-atencionXsede';
+import SedesSnAsignar from '../atencionxsede-componets/sedes-sn-asignar';
+import RowsAtencionXsede from '../atencionxsede-componets/rows-atencionXsede';
+import ToolbarAtencionXsede from '../atencionxsede-componets/toolbar-atencionXsede';
+import FiltersAtencionXsede from '../atencionxsede-componets/filters-atencionXsede';
 
 // ----------------------------------------------------------------------
 

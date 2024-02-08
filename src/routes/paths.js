@@ -128,6 +128,7 @@ export const paths = {
       root: `${ROOTS.DASHBOARD}/gestor/atencionXsede`,
       atencionxsede: `${ROOTS.DASHBOARD}/gestor/atencionXsede`,
       oficinas: `${ROOTS.DASHBOARD}/gestor/oficinas`,
+      sedes: `${ROOTS.DASHBOARD}/gestor/sedes`,
     },
     user: {
       root: `${ROOTS.DASHBOARD}/user`,

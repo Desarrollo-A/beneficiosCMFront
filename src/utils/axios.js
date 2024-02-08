@@ -211,6 +211,8 @@ export const endpoints = {
     getAtencionXsedeEsp: '/GestorController/getAtencionXsedeEsp',
     getOfi: '/GestorController/getOficinas',
     updateOficina: '/GestorController/updateOficina',
-    insertOficinas: '/GestorController/insertOficinas'
+    insertOficinas: '/GestorController/insertOficinas',
+    updateSede: '/GestorController/updateSede',
+    insertSedes: '/GestorController/insertSedes'
   }
 };
