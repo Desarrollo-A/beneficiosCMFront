@@ -94,7 +94,7 @@ function handleDownloadPDF(tableData, headerBase) {
 
   let data = [];
 
-  data = tableData.map(item => ([item.idOficina, item.oficina, item.sede, item.ubicación, item.estatus]))
+  data = tableData.map(item => ([item.idSede, item.sede, item.abreviacion, item.estatus]))
 
   autoTable(doc, {
     head: [headerBase],
