@@ -80,6 +80,8 @@ const PermissionDeniedPage = lazy(() => import('src/pages/dashboard/permission')
 // const BlankPage = lazy(() => import('src/pages/dashboard/blank'));
 const BlankPage = lazy(() => import('src/sections/_examples/extra/upload-view'));
 
+const AgendaPage = lazy(() => import('src/pages/dashboard/agenda'))
+
 // ----------------------------------------------------------------------
 
 export const dashboardRoutes = [
@@ -209,7 +211,8 @@ export const dashboardRoutes = [
       { path: 'kanban', element: <KanbanPage /> },
       { path: 'permission', element: <PermissionDeniedPage /> },
       { path: 'blank', element: <BlankPage /> },
-      { path: 'evaluacioncitas', element: <EvaluacionCitasPage /> }
+      { path: 'evaluacioncitas', element: <EvaluacionCitasPage /> },
+      { path: 'agenda', element: <AgendaPage /> },
     ],
   },
 ];

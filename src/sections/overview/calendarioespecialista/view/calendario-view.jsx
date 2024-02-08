@@ -29,7 +29,7 @@ import Lista from "./lista";
 import EventContent from './eventContent';
 import { StyledCalendar } from '../styles';
 import CalendarToolbar from '../calendar-tool';
-import { useEvent, useCalendar } from '../hooks';
+import { useCalendar } from '../hooks';
 // ----------------------------------------------------------------------
 
 const defaultFilters = {
