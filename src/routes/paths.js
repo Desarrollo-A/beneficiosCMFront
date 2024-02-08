@@ -126,7 +126,9 @@ export const paths = {
     },
     gestor: {
       root: `${ROOTS.DASHBOARD}/gestor/atencionXsede`,
-      contestar: `${ROOTS.DASHBOARD}/gestor/atencionXsede`,
+      atencionxsede: `${ROOTS.DASHBOARD}/gestor/atencionXsede`,
+      oficinas: `${ROOTS.DASHBOARD}/gestor/oficinas`,
+      sedes: `${ROOTS.DASHBOARD}/gestor/sedes`,
     },
     user: {
       root: `${ROOTS.DASHBOARD}/user`,

@@ -46,7 +46,7 @@ export default function DashView() {
   const rol = user.idRol
   let puestos = 0;
 
-  if (rol === "1" || rol === 1) {
+  if (rol === "4" || rol === 4) {
     idDt = 158;
     puestos = 158;
   } else {
@@ -366,7 +366,7 @@ export default function DashView() {
 
 
 
-          {rol === "1" || rol === 1 ? (
+          {rol === "4" || rol === 4 ? (
             <FormControl fullWidth>
               <InputLabel id="demo-simple-select-label">Área</InputLabel>
               <Select
@@ -434,7 +434,7 @@ export default function DashView() {
             </Grid>
           ))}
 
-          {rol === "1" || rol === 1 || rol === "3" || rol === 3 ? (
+          {rol === "1" || rol === 1 || rol === "3" || rol === 3 || rol === "4" || rol === 4 ? (
             <>
 
               {metasData.map((i, index) => (
