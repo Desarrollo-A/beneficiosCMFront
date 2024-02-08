@@ -19,16 +19,6 @@ export default function FilasTabla({ row, selected, rol, rel  }) {
 
   const quickEdit = useBoolean();
 
-  let sx = '';
-
-  if (sexo === 'Masculino') {
-    sx = 'H';
-  } else if (sexo === 'Femenino') {
-    sx = 'M';
-  }else if (sexo === null){
-    sx = '';
-  }
-
   let espe = Boolean(true);
 
   let paci = Boolean(true);
@@ -52,11 +42,13 @@ export default function FilasTabla({ row, selected, rol, rel  }) {
 
         <TableCell sx={{ whiteSpace: 'nowrap' }} style={{ display: paci ? '' : 'none' }}>{paciente}</TableCell>
 
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{oficina}</TableCell>
+
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{area}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{sede}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{sx}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{sexo}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{motivoCita}</TableCell>
 

@@ -49,8 +49,11 @@ export default function DashView() {
   if (rol === "4" || rol === 4) {
     idDt = 158;
     puestos = 158;
-  } else {
+  } else if (rol === "2" || rol === 2 || rol === "3" || rol === 3) {
     idDt = user.idUsuario;
+    puestos = user.idPuesto;
+  } else if (rol === "1" || rol === 1) {
+    idDt = user.idPuesto;
     puestos = user.idPuesto;
   }
 
@@ -307,14 +310,14 @@ export default function DashView() {
   const appRelated = ['Chrome', 'Drive', 'Dropbox', 'Evernote', 'Github'].map(
     (name, index) => {
       const system = [2, 4].includes(index) ? 'Windows' : 'Mac';
-  
+
       const shortcut =
         (name === 'Chrome' && '/assets/icons/app/ic_chrome.svg') ||
         (name === 'Drive' && '/assets/icons/app/ic_drive.svg') ||
         (name === 'Dropbox' && '/assets/icons/app/ic_dropbox.svg') ||
         (name === 'Evernote' && '/assets/icons/app/ic_evernote.svg') ||
         '/assets/icons/app/ic_github.svg';
-  
+
       return {
         /* id: _mock.id(index), */
         name,
