@@ -36,6 +36,36 @@ export function useGetSedesPresenciales(object) {
 
 // ----------------------------------------------------------------------
 
+export function useGetHorariosPresenciales(object) {
+  const params = new URLSearchParams(object).toString()
+  const URL = `${endpoints.especialistas.horarios}?${params}`
+
+  const accessToken = sessionStorage.getItem('accessToken');
+
+  const config = {
+    headers : {
+      token : accessToken
+    }
+  }
+
+  const { data, isLoading, error, isValidating } = useSWR([URL, config], fetcherGet);
+  
+  const memoizedValue = useMemo(
+    () => ({
+      horarios: data || [],
+      horariosLoading: isLoading,
+      horariosError: error,
+      horariosValidating: isValidating,
+      horariosEmpty: !isLoading && !data?.length,
+    }),
+    [data, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
+}
+
+// ----------------------------------------------------------------------
+
 export async function setHorarioPresencial(data) {
   const URL = endpoints.especialistas.horario;
 

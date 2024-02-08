@@ -9,12 +9,19 @@ import Button from '@mui/material/Button';
 import { useSettingsContext } from 'src/components/settings';
 import { Calendar } from 'src/components/calendar'
 
+import { useAuthContext } from 'src/auth/hooks';
+import { useGetHorariosPresenciales } from 'src/api/especialistas'
+
 import AgendaDialog from './agenda-dialog';
 
 // ----------------------------------------------------------------------
 
 export default function AgendaView(){
   const settings = useSettingsContext();
+
+  const { user } = useAuthContext();
+
+  const { horarios } = useGetHorariosPresenciales({idEspecialista : user.idUsuario});
 
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -56,6 +63,7 @@ export default function AgendaView(){
         <Card>
           <Calendar
             onSelectRange={onSelectRange}
+            events={horarios}
           />
         </Card>
         <AgendaDialog

@@ -108,6 +108,7 @@ export const endpoints = {
     modalities: 'CalendarioController/getModalidadesEspecialista',
     sedes: 'especialistas/sedes',
     horario: 'especialistas/horario',
+    horarios: 'especialistas/horarios',
   },
   calendario: {
     getAllEvents: 'CalendarioController/getAllEvents',
