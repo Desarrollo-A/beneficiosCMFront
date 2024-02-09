@@ -16,38 +16,42 @@ import { useRouter } from 'src/routes/hooks';
 import { endpoints } from 'src/utils/axios';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { usePost, useInsert  } from 'src/api/encuestas';
+import { usePost, useInsert } from 'src/api/encuestas';
 import { useGetGeneral, usePostGeneral } from 'src/api/general';
 
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, {
-  RHFTextField,
-  RHFRadioGroup,
-} from 'src/components/hook-form';
+import FormProvider, { RHFTextField, RHFRadioGroup } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 
 export default function FormularioEncuesta({ idEncuesta }) {
-
   const router = useRouter();
 
   const { user } = useAuthContext();
 
   const array = [idEncuesta, user.idUsuario];
 
-  const { getData } = usePostGeneral(user.idUsuario, endpoints.encuestas.getEncNotificacion, "getData");
+  const { getData } = usePostGeneral(
+    user.idUsuario,
+    endpoints.encuestas.getEncNotificacion,
+    'getData'
+  );
 
-  const validarData = usePost(array, endpoints.encuestas.getEcuestaValidacion, "validarData");
+  const validarData = usePost(array, endpoints.encuestas.getEcuestaValidacion, 'validarData');
 
-  const { encuestaData } = usePostGeneral(idEncuesta, endpoints.encuestas.getEncuesta, "encuestaData");
+  const { encuestaData } = usePostGeneral(
+    idEncuesta,
+    endpoints.encuestas.getEncuesta,
+    'encuestaData'
+  );
 
-  const { Resp1Data } = useGetGeneral(endpoints.encuestas.getResp1, "Resp1Data");
+  const { Resp1Data } = useGetGeneral(endpoints.encuestas.getResp1, 'Resp1Data');
 
-  const { Resp2Data } = useGetGeneral(endpoints.encuestas.getResp2, "Resp2Data");
+  const { Resp2Data } = useGetGeneral(endpoints.encuestas.getResp2, 'Resp2Data');
 
-  const { Resp3Data } = useGetGeneral(endpoints.encuestas.getResp3, "Resp3Data");
+  const { Resp3Data } = useGetGeneral(endpoints.encuestas.getResp3, 'Resp3Data');
 
-  const { Resp4Data } = useGetGeneral(endpoints.encuestas.getResp4, "Resp4Data");
+  const { Resp4Data } = useGetGeneral(endpoints.encuestas.getResp4, 'Resp4Data');
 
   const insertData = useInsert(endpoints.encuestas.encuestaInsert);
 
@@ -55,14 +59,13 @@ export default function FormularioEncuesta({ idEncuesta }) {
 
   let validacion;
 
-  if(getData.length === 0){
+  if (getData.length === 0) {
     validacion = false;
   } else {
     validacion = true;
   }
 
-  const methods = useForm({
-  });
+  const methods = useForm({});
 
   const {
     reset,
@@ -78,7 +81,6 @@ export default function FormularioEncuesta({ idEncuesta }) {
   };
 
   const onSubmit = handleSubmit(async (data) => {
-
     const newData = encuestaData.map((item, index) => {
       const respKey = `resp_${index}`;
 
@@ -87,7 +89,7 @@ export default function FormularioEncuesta({ idEncuesta }) {
         idUsuario: user.idUsuario,
         idEnc: idEncuesta,
         idArea: encuestaData[0]?.idArea,
-        resp: data[respKey]
+        resp: data[respKey],
       };
     });
 
@@ -96,7 +98,7 @@ export default function FormularioEncuesta({ idEncuesta }) {
 
       const insert = await insertData(newData);
 
-      console.log(newData)
+      console.log(newData);
 
       if (insert.estatus === true) {
         enqueueSnackbar(insert.msj, { variant: 'success' });
@@ -104,69 +106,56 @@ export default function FormularioEncuesta({ idEncuesta }) {
         mutate(endpoints.encuestas.getEncNotificacion);
         mutate(endpoints.encuestas.getEcuestaValidacion);
         router.replace(paths.dashboard.root);
-
       } else {
         enqueueSnackbar(insert.msj, { variant: 'error' });
       }
     } catch (error) {
-      console.error("Error en handleSubmit:", error);
-      enqueueSnackbar(`¡No se pudó actualizar los datos!`, { variant: 'danger' });
+      console.error('Error en handleSubmit:', error);
+      enqueueSnackbar(`¡No se pudo actualizar los datos!`, { variant: 'danger' });
     }
-
   });
 
-  return (
+  return validarData.validarData === true && validacion === true ? (
+    <FormProvider methods={methods} onSubmit={onSubmit} key={formKey}>
+      <Grid container spacing={3}>
+        <Grid xs={12} md={12}>
+          <Card sx={{ p: 3 }}>
+            <Box
+              rowGap={3}
+              columnGap={1}
+              display="grid"
+              gridTemplateColumns={{
+                xs: 'repeat(1, 1fr)',
+                sm: 'repeat(1, 1fr)',
+              }}
+            >
+              {encuestaData.map((item, index) => (
+                <Stack spacing={1} key={item.pregunta}>
+                  <Typography variant="subtitle2">{item.pregunta}</Typography>
 
-    validarData.validarData === true && validacion === true ? (
+                  {item.respuestas === '1' && (
+                    <RHFRadioGroup row spacing={4} name={`resp_${index}`} options={Resp1Data} />
+                  )}
 
-      <FormProvider methods={methods} onSubmit={onSubmit} key={formKey}>
-        <Grid container spacing={3}>
+                  {item.respuestas === '2' && (
+                    <RHFRadioGroup row spacing={4} name={`resp_${index}`} options={Resp2Data} />
+                  )}
 
-          <Grid xs={12} md={12}>
-            <Card sx={{ p: 3 }}>
-              <Box
-                rowGap={3}
-                columnGap={1}
-                display="grid"
-                gridTemplateColumns={{
-                  xs: 'repeat(1, 1fr)',
-                  sm: 'repeat(1, 1fr)',
-                }}
-              >
+                  {item.respuestas === '3' && (
+                    <RHFRadioGroup row spacing={4} name={`resp_${index}`} options={Resp3Data} />
+                  )}
 
-                {encuestaData.map((item, index) => (
+                  {item.respuestas === '4' && (
+                    <RHFRadioGroup row spacing={4} name={`resp_${index}`} options={Resp4Data} />
+                  )}
 
-                  <Stack spacing={1} key={item.pregunta}>
+                  {item.respuestas === '5' && <RHFTextField name={`resp_${index}`} />}
 
-                    <Typography variant="subtitle2" >
-                      {item.pregunta}
-                    </Typography>
+                  {item.respuestas === '6' && (
+                    <RHFTextField name={`resp_${index}`} multiline rows={4} />
+                  )}
 
-                    {item.respuestas === "1" && (
-                      <RHFRadioGroup row spacing={4} name={`resp_${index}`} options={Resp1Data} />
-                    )}
-
-                    {item.respuestas === "2" && (
-                      <RHFRadioGroup row spacing={4} name={`resp_${index}`} options={Resp2Data} />
-                    )}
-
-                    {item.respuestas === "3" && (
-                      <RHFRadioGroup row spacing={4} name={`resp_${index}`} options={Resp3Data} />
-                    )}
-
-                    {item.respuestas === "4" && (
-                      <RHFRadioGroup row spacing={4} name={`resp_${index}`} options={Resp4Data} />
-                    )}
-
-                    {item.respuestas === "5" && (
-                      <RHFTextField name={`resp_${index}`} />
-                    )}
-
-                    {item.respuestas === "6" && (
-                      <RHFTextField name={`resp_${index}`} multiline rows={4} />
-                    )}
-
-                    {/* <Controller
+                  {/* <Controller
                     name={`pgt_${index}`}
                     defaultValue={item.pregunta}
                     render={({ field }) =>
@@ -175,26 +164,21 @@ export default function FormularioEncuesta({ idEncuesta }) {
                   }/>
                     }
                   /> */}
+                </Stack>
+              ))}
+            </Box>
 
-                  </Stack>
-                ))}
-              </Box>
-
-              <Stack alignItems="flex-end" sx={{ mt: 3 }}>
-                <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                  Enviar
-                </LoadingButton>
-              </Stack>
-
-            </Card>
-          </Grid>
+            <Stack alignItems="flex-end" sx={{ mt: 3 }}>
+              <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+                Enviar
+              </LoadingButton>
+            </Stack>
+          </Card>
         </Grid>
-      </FormProvider>
-    ) : (
-      <Typography variant="subtitle2">
-        No disponible
-      </Typography>
-    )
+      </Grid>
+    </FormProvider>
+  ) : (
+    <Typography variant="subtitle2">No disponible</Typography>
   );
 }
 

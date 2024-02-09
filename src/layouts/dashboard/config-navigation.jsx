@@ -246,7 +246,7 @@ export function useNavData() {
             icon: ICONS.user,
             children: [
               { title: t('list'), path: paths.dashboard.usuarios.new },
-              { title: t('perfil'), path: paths.dashboard.usuarios.perfil },
+              { title: t('perfil'), path: paths.dashboard.usuariosexternos.perfil },
             ],
           },
 

@@ -9,28 +9,17 @@ import timezone from 'dayjs/plugin/timezone';
 import { yupResolver } from '@hookform/resolvers/yup';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 
-import Box from '@mui/material/Box';
 import Stack from '@mui/system/Stack';
 import Chip from '@mui/material/Chip';
 import Button from '@mui/material/Button';
-import Select from '@mui/material/Select';
 import Dialog from '@mui/material/Dialog';
 import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
-import Grid from '@mui/material/Unstable_Grid2';
-import InputLabel from '@mui/material/InputLabel';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-import FormControl from '@mui/material/FormControl';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import FormHelperText from '@mui/material/FormHelperText';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 import uuidv4 from 'src/utils/uuidv4';
 
@@ -57,6 +46,9 @@ import {
   getCitasSinFinalizar,
   getOficinaByAtencion,
   registrarDetalleDePago,
+  insertGoogleCalendarEvent,
+  updateGoogleCalendarEvent,
+  deleteGoogleCalendarEvent,
 } from 'src/api/calendar-colaborador';
 
 import Iconify from 'src/components/iconify';
@@ -136,7 +128,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     const año = horarioSeleccionado.substring(0, 4);
     const mes = horarioSeleccionado.substring(5, 7);
-    const dia = horarioSeleccionado.substring(8, 10);
+    // const dia = horarioSeleccionado.substring(8, 10);
 
     if (datosUser.fechaIngreso > fechaActual) {
       enqueueSnackbar('¡Existe un error con la fecha de antiguedad!', {
@@ -254,7 +246,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       idAtencionPorSede.data[0].idAtencionXSede,
       datosUser.idUsuario,
       null,
-      selectedValues.beneficio
+      selectedValues.beneficio,
+      null
     );
     if (!agendar.result) {
       enqueueSnackbar(agendar.msg, {
@@ -281,12 +274,34 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       });
       return onClose();
     }
+
+    // Evento de google
+    const startDate = dayjs(horarioSeleccionado);
+    const endDate = startDate.add(1, 'hour');
+
+    const newGoogleEvent = await insertGoogleCalendarEvent(
+      `Cita ${nombreBeneficio} - ${datosUser.nombre}`,
+      startDate.format('YYYY-MM-DDTHH:mm:ss'),
+      endDate.format('YYYY-MM-DDTHH:mm:ss'),
+      oficina.data[0].ubicación,
+      `Cita de ${datosUser.nombre} en ${nombreBeneficio}`,
+      [datosUser.correo, 'programador.analista34@ciudadmaderas.com'],
+      datosUser.correo
+    );
+    if (!newGoogleEvent.result) {
+      enqueueSnackbar('Error al conectar con la cuenta de google', {
+        variant: 'error',
+      });
+      return onClose();
+    }
+    // Mandar datos de google calendar
     const update = await updateAppointment(
       datosUser.idUsuario,
       agendar.data,
       1,
       registrarPago.data,
-      null
+      null,
+      newGoogleEvent.data.id
     );
     if (!update.result) {
       enqueueSnackbar('¡Ha surgido un error al intentar registrar el detalle de pago!', {
@@ -306,11 +321,13 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       onClose();
       return false;
     }
-    const email = await sendMail(
-      scheduledAppointment.data[0],
-      1,
-      'programador.analista36@ciudadmaderas.com'
-    );
+    const email = await sendMail(scheduledAppointment.data[0], 1, [
+      'programador.analista36@ciudadmaderas.com',
+      'programador.analista34@ciudadmaderas.com',
+      'programador.analista32@ciudadmaderas.com',
+      'programador.analista12@ciudadmaderas.com',
+      'tester.ti2@ciudadmaderas.com',
+    ]);
     if (!email.result) {
       console.error('No se pudo notificar al usuario');
     }
@@ -332,6 +349,18 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       enqueueSnackbar('¡Se ha cancelado la cita!', {
         variant: 'success',
       });
+
+      const deleteGoogleEvent = await deleteGoogleCalendarEvent(
+        currentEvent.idEventoGoogle,
+        datosUser.correo
+      );
+      if (!deleteGoogleEvent.result) {
+        enqueueSnackbar('¡No se pudo sincronizar el evento con el calendario de google!', {
+          variant: 'error',
+        });
+        appointmentMutate();
+        return onClose();
+      }
     }
     const scheduledAppointment = await consultarCita(currentEvent.id);
     if (!scheduledAppointment.result) {
@@ -341,11 +370,13 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       onClose();
       return false;
     }
-    const email = await sendMail(
-      scheduledAppointment.data[0],
-      2,
-      'programador.analista36@ciudadmaderas.com'
-    );
+    const email = await sendMail(scheduledAppointment.data[0], 2, [
+      'programador.analista36@ciudadmaderas.com',
+      'programador.analista34@ciudadmaderas.com',
+      'programador.analista32@ciudadmaderas.com',
+      'programador.analista12@ciudadmaderas.com',
+      'tester.ti2@ciudadmaderas.com',
+    ]);
     if (!email.result) {
       console.error('No se pudo notificar al usuario');
     }
@@ -373,7 +404,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         currentEvent.id,
         1,
         registrarPago.data,
-        null
+        null,
+        currentEvent.idEventoGoogle
       );
       setOpen(true);
       await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -410,7 +442,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     if (input === 'beneficio') {
       setErrorBeneficio(false);
       // HACER PROCESO DE DETALLE PACIENTE
-      const datosUltimaCita = await lastAppointment(datosUser.idSede, value);
+      const datosUltimaCita = await lastAppointment(datosUser.idUsuario, value);
       if (datosUltimaCita.result) {
         const modalitiesData = await getModalities(
           datosUser.idSede,
@@ -611,7 +643,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     // Le quitamos los registros del dia domingo y tambien sabados en el caso de que no lo trabaje el especialista.
     diasProximos = diasProximos.filter((date) => {
       const dayOfWeek = dayjs(date).day();
-      return dayOfWeek !== 0 && (horarioACubrir?.data[0]?.sabados || dayOfWeek !== 6);
+
+      return dayOfWeek !== 0 && (horarioACubrir?.data[0]?.sabados !== '0' || dayOfWeek !== 6);
     });
 
     // Traemos citas y horarios bloqueados por parte del usuario y especialsita
@@ -646,7 +679,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const fechasEn5minutos = diasLaborablesConHorario
       .map((item) => {
         const minutos = generarArregloMinutos(item.horaInicio, item.horaFin);
-
         return minutos.map((minuto) => ({
           fecha: item.fecha,
           diaSemana: item.diaSemana,
@@ -797,7 +829,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     atencionPorSede,
     idUsuario,
     detallePago,
-    beneficio
+    beneficio,
+    idGoogleEvent
   ) => {
     const registrarCita = await crearCita(
       titulo,
@@ -810,7 +843,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       1,
       idUsuario,
       idUsuario,
-      detallePago
+      detallePago,
+      idGoogleEvent
     );
     if (registrarCita.result) {
       const updateDetail = await updateDetailPacient(datosUser.idUsuario, beneficio);
@@ -860,7 +894,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     const año = horarioSeleccionado.substring(0, 4);
     const mes = horarioSeleccionado.substring(5, 7);
-    const dia = horarioSeleccionado.substring(8, 10);
+    // const dia = horarioSeleccionado.substring(8, 10);
 
     const checkInvoiceDetail = await checkInvoice(currentEvent.idDetalle);
 
@@ -947,13 +981,31 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       currentEvent.idAtencionXSede,
       datosUser.idUsuario,
       currentEvent.idDetalle,
-      selectedValues.beneficio
+      selectedValues.beneficio,
+      currentEvent.idEventoGoogle
     );
 
     if (!agendar.result) {
       return enqueueSnackbar(agendar.msg, {
         variant: 'error',
       });
+    }
+
+    const startDate = dayjs(horarioSeleccionado);
+    const endDate = startDate.add(1, 'hour');
+
+    const updateGoogleEvent = await updateGoogleCalendarEvent(
+      currentEvent.idEventoGoogle,
+      startDate.format('YYYY-MM-DDTHH:mm:ss'),
+      endDate.format('YYYY-MM-DDTHH:mm:ss'),
+      datosUser.correo,
+      [datosUser.correo, 'programador.analista34@ciudadmaderas.com', 'artturo.alarcon@gmail.com']
+    );
+    if (!updateGoogleEvent.result) {
+      enqueueSnackbar('No se pudo sincronizar el evento con la cuenta de google', {
+        variant: 'error',
+      });
+      return onClose();
     }
 
     const scheduledAppointment = await consultarCita(agendar.data);
@@ -964,6 +1016,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       onClose();
       return false;
     }
+
     const email = await sendMail(
       {
         ...scheduledAppointment.data[0],
@@ -971,7 +1024,13 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         oldEventEnd: currentEvent.end,
       },
       3,
-      'programador.analista36@ciudadmaderas.com'
+      [
+        'programador.analista36@ciudadmaderas.com',
+        'programador.analista34@ciudadmaderas.com',
+        'programador.analista32@ciudadmaderas.com',
+        'programador.analista12@ciudadmaderas.com',
+        'tester.ti2@ciudadmaderas.com',
+      ]
     );
     if (!email.result) {
       console.error('No se pudo notificar al usuario');

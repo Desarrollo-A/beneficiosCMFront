@@ -47,7 +47,7 @@ export default function PerfilUsuarioView() {
         heading="Perfil"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Usuarios', href: paths.dashboard.usuarios.root },
+          { name: 'Usuarios', href: paths.dashboard.usuariosexternos.root },
           { name: 'Perfil' },
         ]}
         sx={{
