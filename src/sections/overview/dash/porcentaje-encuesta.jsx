@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -13,15 +13,13 @@ import LinearProgress from '@mui/material/LinearProgress';
 
 import { endpoints } from 'src/utils/axios';
 
-import { useGetGeneral, usePostGeneral } from 'src/api/general';
-
-import { fPercent, fCurrency } from 'src/utils/format-number';
+import { usePostGeneral } from 'src/api/general';
 
 // ----------------------------------------------------------------------
 
 export default function EncuestaPorcentaje({ title, subheader, data, user, handleChangePg, selectPg, idEncuesta, idArea, idPregunta, handleChangeIdPg, ...other }) {
 
-  const { preguntaData } = usePostGeneral(user.puesto, endpoints.dashboard.getPregunta, "preguntaData");
+  const { preguntaData } = usePostGeneral(user.idPuesto, endpoints.dashboard.getPregunta, "preguntaData");
 
   const [pregunta, setPregunta] = useState(idPregunta);
 
@@ -96,9 +94,9 @@ EncuestaPorcentaje.propTypes = {
   handleChangePg: PropTypes.func,
   handleChangeIdPg: PropTypes.func,
   selectPg: PropTypes.string,
-  idEncuesta: PropTypes.number,
-  idArea: PropTypes.number,
-  idPregunta: PropTypes.number,
+  idEncuesta: PropTypes.any,
+  idArea: PropTypes.any,
+  idPregunta: PropTypes.any,
 };
 
 // ----------------------------------------------------------------------
@@ -113,11 +111,8 @@ function ProgressItem({ progress }) {
           {progress.label}
         </Typography>
 
-        <Typography variant="subtitle2">{fPercent(progress.value)}</Typography>
+        <Typography variant="subtitle2">{/* {fPercent(progress.value)} */}</Typography>
 
-        {/* <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          &nbsp;({fPercent(progress.value)})
-        </Typography> */}
       </Stack>
 
       <LinearProgress
@@ -134,5 +129,5 @@ function ProgressItem({ progress }) {
 }
 
 ProgressItem.propTypes = {
-  progress: PropTypes.object,
+  progress: PropTypes.any,
 };

@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import { Base64 } from 'js-base64';
 import { useState, useEffect } from 'react';
 
 import Stack from '@mui/material/Stack';
@@ -14,9 +13,10 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import { endpoints } from 'src/utils/axios';
 
 import { bgBlur } from 'src/theme/css';
+import { useAuthContext } from 'src/auth/hooks';
 import { usePostGeneral } from 'src/api/general';
 
-import Logo from 'src/components/logo';
+import Logo from 'src/components/logoMini';
 import SvgColor from 'src/components/svg-color';
 import { useSettingsContext } from 'src/components/settings';
 
@@ -25,12 +25,14 @@ import { NAV, HEADER } from '../config-layout';
 import SettingsButton from '../common/settings-button';
 import AccountPopover from '../common/account-popover';
 import NotifiEncuesta from '../common/notificacion-encuesta';
-import NotificationsPopover from '../common/notifications-popover';
 
 // ----------------------------------------------------------------------
-
 export default function Header({ onOpenNav }) {
   const theme = useTheme();
+
+  const { user: datosUser, authenticated } = useAuthContext();
+
+  const idUsr = authenticated ? datosUser.idUsuario: undefined;
 
   const settings = useSettingsContext();
 
@@ -119,11 +121,9 @@ export default function Header({ onOpenNav }) {
 
   const fechaActual = new Date().toISOString().slice(0, 10);
 
-  const idUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
-
   useEffect(() => {
     const array = {
-      idUsuario: idUser.idUsuario,
+      idUsuario: idUsr,
       vigenciaInicio: trimestreAnterior,
       vigenciaFin: trimestreActual,
       trimDefault: trimestre,
@@ -131,13 +131,19 @@ export default function Header({ onOpenNav }) {
     }
     
     setDataNot(array)
-  }, [idUser.idUsuario, 
+  }, [idUsr, 
       trimestreAnterior, 
       trimestreActual,
       trimestre,
       fechaActual])
 
-  const [dataNot, setDataNot] = useState([]);
+  const [dataNot, setDataNot] = useState({
+    idUsuario: idUsr,
+    vigenciaInicio: trimestreAnterior,
+    vigenciaFin: trimestreActual,
+    trimDefault: trimestre,
+    fechActual: fechaActual,
+  });
 
   const { getData } = usePostGeneral(dataNot, endpoints.encuestas.getEncNotificacion, "getData");
 
@@ -161,7 +167,7 @@ export default function Header({ onOpenNav }) {
         spacing={{ xs: 0.5, sm: 1 }}
       >
 
-        <NotificationsPopover />
+        {/* <NotificationsPopover /> */}
 
         {getData.length > 0 && <NotifiEncuesta data={getData} />}
 

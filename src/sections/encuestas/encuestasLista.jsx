@@ -140,9 +140,9 @@ export default function EncuestasLista({encuestas, estatusCt }) {
                           table.page * table.rowsPerPage,
                           table.page * table.rowsPerPage + table.rowsPerPage
                         )
-                        .map((usuario) => (
+                        .map((usuario, index) => (
                           <EncuestasTablaFilas
-                            key={`${usuario.id}`}
+                            key={index}
                             row={usuario}
                             selected={table.selected.includes(usuario.id)}
                             onSelectRow={() => table.onSelectRow(usuario.id)}

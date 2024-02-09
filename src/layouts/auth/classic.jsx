@@ -1,21 +1,15 @@
 import PropTypes from 'prop-types';
 
 import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
-import { alpha, useTheme } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 
 import { paths } from 'src/routes/paths';
-import { RouterLink } from 'src/routes/components';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
-import { bgGradient } from 'src/theme/css';
 import { useAuthContext } from 'src/auth/hooks';
 
-import Logo from 'src/components/logo';
 
 // ----------------------------------------------------------------------
 
@@ -53,16 +47,6 @@ export default function AuthClassicLayout({ children, image, title }) {
 
   const mdUp = useResponsive('up', 'md');
 
-  const renderLogo = (
-    <Logo
-      sx={{
-        zIndex: 9,
-        position: 'absolute',
-        m: { xs: 2, md: 5 },
-      }}
-    />
-  );
-
   const renderContent = (
     <Stack
       sx={{
@@ -85,23 +69,15 @@ export default function AuthClassicLayout({ children, image, title }) {
       alignItems="center"
       justifyContent="center"
       sx={{
-        ...bgGradient({
-          color: alpha(
-            theme.palette.background.default,
-            theme.palette.mode === 'light' ? 0.88 : 0.94
-          ),
-          imgUrl: '/assets/background/overlay_2.jpg',
-        }),
-      }}
-    >
-      <Typography variant="h3" sx={{ maxWidth: 480, textAlign: 'center' }}>
-        {title || 'Beneficios CM'}
-      </Typography>
-
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center center',
+        backgroundImage: `url(${import.meta.env.BASE_URL}assets/illustrations/mainLoginBG.jpg)`,
+      }}>
       <Box
         component="img"
         alt="auth"
-        src={image || '/assets/illustrations/illustration_dashboard.png'}
+        src={image || `${import.meta.env.BASE_URL}assets/img/unnamed.png`}
         sx={{
           maxWidth: {
             xs: 480,
@@ -110,28 +86,9 @@ export default function AuthClassicLayout({ children, image, title }) {
           },
         }}
       />
-
-      <Stack direction="row" spacing={2}>
-        {METHODS.map((option) => (
-          <Tooltip key={option.label} title={option.label}>
-            <Link component={RouterLink} href={option.path}>
-              <Box
-                component="img"
-                alt={option.label}
-                src={option.icon}
-                sx={{
-                  width: 32,
-                  height: 32,
-                  ...(method !== option.id && {
-                    filter: 'grayscale(100%)',
-                  }),
-                }}
-              />
-            </Link>
-          </Tooltip>
-        ))}
-      </Stack>
     </Stack>
+
+    
   );
 
   return (
@@ -142,7 +99,6 @@ export default function AuthClassicLayout({ children, image, title }) {
         minHeight: '100vh',
       }}
     >
-      {renderLogo}
 
       {mdUp && renderSection}
 

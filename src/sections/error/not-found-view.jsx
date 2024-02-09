@@ -18,14 +18,14 @@ export default function NotFoundView() {
       <MotionContainer>
         <m.div variants={varBounce().in}>
           <Typography variant="h3" sx={{ mb: 2 }}>
-            Sorry, Page Not Found!
+            Lo sentimos, ¡página no encontrada!
           </Typography>
         </m.div>
 
         <m.div variants={varBounce().in}>
           <Typography sx={{ color: 'text.secondary' }}>
-            Sorry, we couldn’t find the page you’re looking for. Perhaps you’ve mistyped the URL? Be
-            sure to check your spelling.
+            Lo sentimos, no pudimos encontrar la página que estás buscando. 
+            ¿Quizás has escrito mal la URL? Asegúrese de revisar su ortografía.
           </Typography>
         </m.div>
 

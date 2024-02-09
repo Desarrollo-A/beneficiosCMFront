@@ -3,9 +3,9 @@ import Stack from '@mui/material/Stack';
 
 import { useMockedUser } from 'src/hooks/use-mocked-user';
 
-import { hideScroll } from 'src/theme/css';
+import { bgBlur, hideScroll } from 'src/theme/css';
 
-import Logo from 'src/components/logo';
+import Logo from 'src/components/logoMini';
 import { NavSectionMini } from 'src/components/nav-section';
 
 import { NAV } from '../config-layout';
@@ -41,6 +41,9 @@ export default function NavMini() {
           width: NAV.W_MINI,
           borderRight: (theme) => `dashed 1px ${theme.palette.divider}`,
           ...hideScroll.x,
+          ...bgBlur({
+            color:'#161c24',
+          }),
         }}
       >
         <Logo sx={{ mx: 'auto', my: 2 }} />

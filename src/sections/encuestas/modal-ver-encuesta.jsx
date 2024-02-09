@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
+import Divider from '@mui/material/Divider';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -18,6 +19,8 @@ export default function UserQuickEditForm({ open, onClose, idEncuesta }) {
   const { encuestaData } = usePostGeneral(idEncuesta, endpoints.encuestas.getEncuesta, "encuestaData");
 
   const { Resp1Data } = useGetGeneral(endpoints.encuestas.getResp1, "Resp1Data");
+
+  console.log(Resp1Data)
 
   const { Resp2Data } = useGetGeneral(endpoints.encuestas.getResp2, "Resp2Data");
 
@@ -43,44 +46,46 @@ export default function UserQuickEditForm({ open, onClose, idEncuesta }) {
 
           <>
 
-            <DialogContent>
+            <DialogContent style={{fontWeight:'bold'}}>
               {item.pregunta}
             </DialogContent>
 
-            {item.respuestas === "1" && (
+            {item.respuestas === "1" || item.respuestas === 1 && (
               <DialogContent spacing={1}> Respuestas: {Resp1Data.map((i) => i.label).join(', ')} </DialogContent>
             )}
 
-            {item.respuestas === "2" && (
+            {item.respuestas === "2" || item.respuestas === 2 && (
               <DialogContent spacing={1}> Respuestas: {Resp2Data.map((i) => i.label).join(', ')} </DialogContent>
             )}
 
-            {item.respuestas === "3" && (
+            {item.respuestas === "3" || item.respuestas === 3 && (
               <DialogContent> Respuestas: {Resp3Data.map((i) => i.label).join(', ')} </DialogContent>
             )}
 
-            {item.respuestas === "4" && (
+            {item.respuestas === "4" || item.respuestas === 4 && (
               <DialogContent> Respuestas: {Resp4Data.map((i) => i.label).join(', ')} </DialogContent>
             )}
 
-            {item.respuestas === "5" && (
+            {item.respuestas === "5" || item.respuestas === 5 && (
               <DialogContent> Respuesta: Abierta corta </DialogContent>
             )}
 
-            {item.respuestas === "6" && (
+            {item.respuestas === "6" || item.respuestas === 6 && (
               <DialogContent> Respuestas: Abierta larga </DialogContent>
             )}
+
+            <Divider sx={{ my: 1, borderStyle: 'dashed' }} />
           </>
         ))}
 
       </Stack>
 
       <DialogActions>
-        <Button variant="outlined" onClick={onClose}>
+        <Button variant="contained" color="error" onClick={onClose}>
           Cerrar
         </Button>
       </DialogActions>
-      
+
     </Dialog>
 
   );

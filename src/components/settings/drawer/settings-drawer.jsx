@@ -139,7 +139,7 @@ export default function SettingsDrawer() {
     </div>
   );
 
-  const renderPresets = (
+  /* const renderPresets = (
     <div>
       <Typography variant="caption" component="div" sx={{ ...labelStyles }}>
         Temas
@@ -150,7 +150,7 @@ export default function SettingsDrawer() {
         onChange={(newValue) => settings.onUpdate('themeColorPresets', newValue)}
       />
     </div>
-  );
+  ); */
 
   return (
     <Drawer
@@ -183,7 +183,7 @@ export default function SettingsDrawer() {
 
           {renderStretch}
 
-          {renderPresets}
+          {/* {renderPresets} */}
         </Stack>
       </Scrollbar>
 

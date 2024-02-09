@@ -11,7 +11,7 @@ import { useOffSetTop } from 'src/hooks/use-off-set-top';
 
 import { bgBlur } from 'src/theme/css';
 
-import Logo from 'src/components/logo';
+import Logo from 'src/components/logoMini';
 
 import { HEADER } from '../config-layout';
 import HeaderShadow from './header-shadow';
@@ -52,14 +52,14 @@ export default function HeaderSimple() {
         <Stack direction="row" alignItems="center" spacing={1}>
           <SettingsButton />
 
-          <Link
+          {/* <Link
             href={paths.faqs}
             component={RouterLink}
             color="inherit"
             sx={{ typography: 'subtitle2' }}
           >
             Need help?
-          </Link>
+          </Link> */}
         </Stack>
       </Toolbar>
 

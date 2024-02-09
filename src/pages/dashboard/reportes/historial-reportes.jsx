@@ -1,8 +1,9 @@
 import { Helmet } from 'react-helmet-async';
 
+import { useSession } from 'src/hooks/use-session';
+
 import { HistorialReportesView } from 'src/sections/reportes/view';
 
-import { useSession } from 'src/hooks/use-session';
 
 // ----------------------------------------------------------------------
 

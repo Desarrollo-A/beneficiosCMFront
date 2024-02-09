@@ -2,8 +2,10 @@ import axios from 'axios';
 import { useMemo } from 'react';
 import useSWR, { mutate } from 'swr';
 
-import { fetcher, endpoints, fetcherPost } from 'src/utils/axios';
+import { fetcher, endpoints } from 'src/utils/axios';
 
+import { HOST } from 'src/config-global';
+ 
 // ----------------------------------------------------------------------
 
 const URL = endpoints.calendar;
@@ -65,7 +67,7 @@ export function GetCustomEvents() {
 
 export async function createCustom(fecha, eventData) {
 
-    return axios.post('http://localhost/beneficiosCMBack/calendarioController/save_occupied', {
+  return axios.post(`${HOST}/calendarioController/save_occupied`, {
         fecha,
         titulo: eventData.title,
         hora_inicio: eventData.hora_inicio,

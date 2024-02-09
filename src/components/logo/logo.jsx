@@ -20,15 +20,18 @@ const Logo = forwardRef(({ disabledLink = false, sx, ...other }, ref) => {
 
   // OR using local (public folder)
   // -------------------------------------------------------
-  // const logo = (
-  //   <Box
-  //     component="img"
-  //     src="/logo/logo_single.svg" => your path
-  //     sx={{ width: 40, height: 40, cursor: 'pointer', ...sx }}
-  //   />
-  // );
-
-  const logo = (
+   const logo = (
+    <div style={{margin:"30px"}}>
+     <Box
+       component="img"
+       src= {`${import.meta.env.BASE_URL}assets/img/unnamed.png`}
+       style={{marginTop:"0", marginLeft:"0", marginRight:"0"}}
+       sx={{ width: "100%", cursor: 'pointer', ...sx }}
+     />
+     </div>
+   );
+   
+  /* const logo = (
     <Box
       ref={ref}
       component="div"
@@ -74,7 +77,7 @@ const Logo = forwardRef(({ disabledLink = false, sx, ...other }, ref) => {
         </g>
       </svg>
     </Box>
-  );
+  ); */
 
   if (disabledLink) {
     return logo;

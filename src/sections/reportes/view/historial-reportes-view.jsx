@@ -1,6 +1,5 @@
 import JsPDF from 'jspdf';
 import Xlsx from 'json-as-xlsx';
-import { Base64 } from 'js-base64';
 import isEqual from 'lodash/isEqual';
 import autoTable from 'jspdf-autotable';
 import { useRef, useState, useEffect, useCallback } from 'react';
@@ -15,8 +14,6 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
 
-import { useAuthContext } from 'src/auth/hooks';
-
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
@@ -25,8 +22,8 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import uuidv4 from "src/utils/uuidv4";
 import { endpoints } from 'src/utils/axios';
 
+import { useAuthContext } from 'src/auth/hooks';
 import { useGetGeneral, usePostGeneral } from 'src/api/general';
-import { useGetReportes } from 'src/api/reportes';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -81,7 +78,7 @@ function handleDownloadExcel(datosTabla, rol) {
     },
   ];
 
-  if (rol === 1) {
+  if (rol === "1" || rol === 1) {
     const arr = baseArray[0].columns;
     arr.splice(1, 1);
 
@@ -93,7 +90,7 @@ function handleDownloadExcel(datosTabla, rol) {
       },
     ];
 
-  } else if (rol === 2) {
+  } else if (rol === "2" || rol === 2) {
     const arr = baseArray[0].columns;
     arr.splice(2, 1);
 
@@ -123,11 +120,11 @@ function handleDownloadPDF(datosTabla, header, rol) {
 
   let data = [];
 
-  if (rol === 1) {
+  if (rol === "1" || rol === 1) {
     data = datosTabla.map(item => ([item.idCita, item.paciente,
     item.oficina, item.area, item.sede, '', item.titulo, item.estatus, item.horario]))
   }
-  else if (rol === 2) {
+  else if (rol === "2" || rol === 2) {
     data = datosTabla.map(item => ([item.idCita, item.especialista,
       item.oficina, item.area, item.sede, '', item.titulo, item.estatus, item.horario]))
   } else {
@@ -146,9 +143,7 @@ export default function HistorialReportesView() {
 
   const { user } = useAuthContext();
 
-  console.log('user data', user)
-
-  const rol = 3;
+  const rol = user.idRol;
 
   let TABLE_HEAD = [];
 
@@ -193,7 +188,7 @@ export default function HistorialReportesView() {
     { id: '', width: 88 },
   ];
 
-  if (rol === 1) {
+  if (rol === "1") {
 
     TABLE_BASE.splice(1, 1);
     headerBase.splice(1, 1);
@@ -201,7 +196,7 @@ export default function HistorialReportesView() {
     TABLE_HEAD = TABLE_BASE;
     header = headerBase;
 
-  } else if (rol === 2) {
+  } else if (rol === "2") {
 
     TABLE_BASE.splice(2, 1);
     headerBase.splice(2, 1);
@@ -397,9 +392,9 @@ export default function HistorialReportesView() {
                       table.page * table.rowsPerPage,
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
-                    .map((row) => (
+                    .map((row, index) => (
                       <FilasTabla
-                        key={`route_${uuidv4()}`}
+                        key={index}
                         row={row}
                         selected={table.selected.includes(row.idCita)}
                         onSelectRow={() => table.onSelectRow(row.idCita)}

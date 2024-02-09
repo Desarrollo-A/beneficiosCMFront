@@ -1,11 +1,10 @@
-import { Base64 } from 'js-base64';
-
 import Container from '@mui/material/Container';
 
 import { paths } from 'src/routes/paths';
 
 import { endpoints } from 'src/utils/axios';
 
+import { useAuthContext } from 'src/auth/hooks';
 import { usePostGeneral } from 'src/api/general';
 
 import { useSettingsContext } from 'src/components/settings';
@@ -18,11 +17,11 @@ import EncuestasLista from '../encuestasLista';
 export default function VerEncuestasView() {
   const settings = useSettingsContext();
 
-  const user = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+  const { user } = useAuthContext();
 
-  const { getData } = usePostGeneral(user.puesto, endpoints.encuestas.getEncuestasCreadas, "getData");
+  const { getData } = usePostGeneral(user.idPuesto, endpoints.encuestas.getEncuestasCreadas, "getData");
 
-  const { EstatusData } = usePostGeneral(user.puesto, endpoints.encuestas.getEstatusUno, "EstatusData");
+  const { EstatusData } = usePostGeneral(user.idPuesto, endpoints.encuestas.getEstatusUno, "EstatusData");
 
   return (
     

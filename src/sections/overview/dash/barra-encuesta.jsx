@@ -1,6 +1,6 @@
 import Xlsx from 'json-as-xlsx';
 import PropTypes from 'prop-types';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -53,7 +53,7 @@ export default function EncuestaBarra({ title, subheader, chart, user, handleCha
 
   const [seriesData, setSeriesData] = useState('data');
 
-  const { preguntaData } = usePostGeneral(user.puesto, endpoints.dashboard.getPregunta, "preguntaData");
+  const { preguntaData } = usePostGeneral(user.idPuesto, endpoints.dashboard.getPregunta, "preguntaData");
 
   const [pregunta, setPregunta] = useState(idPregunta);
 
@@ -111,12 +111,6 @@ export default function EncuestaBarra({ title, subheader, chart, user, handleCha
       title
     );
   }
-
-  const [age, setAge] = useState('');
-
-  const handleChange = (event) => {
-    setAge(event.target.value);
-  };
 
   return (
     <>
@@ -232,8 +226,8 @@ EncuestaBarra.propTypes = {
   handleChangePg: PropTypes.func,
   user: PropTypes.object,
   selectPg: PropTypes.string,
-  idEncuesta: PropTypes.number,
+  idEncuesta: PropTypes.any,
   idArea: PropTypes.number,
-  idPregunta: PropTypes.number,
+  idPregunta: PropTypes.any,
   handleChangeIdPg: PropTypes.func,
 };

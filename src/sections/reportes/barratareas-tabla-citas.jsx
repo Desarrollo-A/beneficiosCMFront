@@ -1,4 +1,3 @@
-import { mutate } from 'swr';
 import PropTypes from 'prop-types';
 import { useState, useCallback } from 'react';
 
@@ -11,8 +10,6 @@ import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
-
-import { endpoints } from 'src/utils/axios';
 
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
@@ -88,9 +85,9 @@ export default function BarraTareasTabla({
           onChange={handleChangeStatus}
         >
           
-          {report.map((option) => (
+          {report.map((option, index) => (
             <MenuItem 
-              key={option.value} 
+              key={index} 
               value={option.value}
             >
               {option.label}
@@ -119,8 +116,8 @@ export default function BarraTareasTabla({
               },
             }}
           >
-            {roleOptions.map((option) => (
-              <MenuItem key={option} value={option}>
+            {roleOptions.map((option, index) => (
+              <MenuItem key={index} value={option}>
                 <Checkbox disableRipple size="small" checked={filters.area.includes(option)} />
                 {option}
               </MenuItem>
@@ -188,5 +185,5 @@ BarraTareasTabla.propTypes = {
   onFilters: PropTypes.func,
   roleOptions: PropTypes.array,
   handleChangeReport: PropTypes.func,
-  table: PropTypes.func,
+  table: PropTypes.any,
 };

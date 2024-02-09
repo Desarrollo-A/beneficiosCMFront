@@ -14,7 +14,7 @@ export function useRouter() {
       replace: (href) => navigate(href, { replace: true }),
       state: location.state,
     }),
-    [navigate]
+    [location.state, navigate]
   );
 
   return router;

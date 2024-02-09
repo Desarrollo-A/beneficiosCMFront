@@ -4,7 +4,8 @@ import useSWR, { mutate } from 'swr';
 import { useMemo, useEffect } from 'react';
 import { enqueueSnackbar } from 'notistack';
 
-import { endpoints, fetcherPost  } from 'src/utils/axios';
+import uuidv4 from 'src/utils/uuidv4';
+import { endpoints, fetcherPost } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -13,7 +14,7 @@ const get_all_events = endpoints.calendario.getAllEvents;
 const save_occupied = endpoints.calendario.saveOccupied;
 const update_occupied = endpoints.calendario.updateOccupied;
 const update_appointment = endpoints.calendario.updateAppointment;
-const delete_occupied = endpoints.calendario.deleteOccupied;
+const delete_event = endpoints.calendario.deleteOccupied;
 const cancel_appointment = endpoints.calendario.cancelAppointment;
 const create_appointment = endpoints.calendario.createAppointment;
 const appointment_drop = endpoints.calendario.appointmentDrop;
@@ -21,19 +22,29 @@ const occupied_drop = endpoints.calendario.occupiedDrop;
 const end_appointment = endpoints.calendario.endAppointment;
 const get_reasons = endpoints.calendario.getReasons;
 const get_pending_end = endpoints.calendario.getPendingEnd;
+const get_event_reasons = endpoints.calendario.getEventReasons;
+const registar_transaccion = endpoints.calendario.registrarTransaccion;
+const check_invoice = endpoints.calendario.checkInvoice;
+const sendMail = endpoints.calendario.mailEspecialista;
+const update_detalle_paciente = endpoints.calendario.updateDetallePaciente;
+const insert_google_event = endpoints.calendario.insertGoogleEvent;
+const insert_google_id = endpoints.calendario.insertGoogleId;
+const update_google_event = endpoints.calendario.updateGoogleEvent;
+const delete_google_event = endpoints.calendario.deleteGoogleEvent;
 
 const options = {
   revalidateIfStale: false,
   revalidateOnFocus: true,
   revalidateOnReconnect: true,
-  refreshInterval: 0
+  refreshInterval: 0,
 };
 
 const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
 
 // ----------------------------------------------------------------------
 
-export async function reRender(){ // se separa la funcion del mutate unicamente para cuando se crea el evento (previsto en update)
+export async function reRender() {
+  // se separa la funcion del mutate unicamente para cuando se crea el evento (previsto en update)
   mutate(get_all_events);
 }
 
@@ -41,28 +52,38 @@ export async function reRender(){ // se separa la funcion del mutate unicamente 
 
 export function GetCustomEvents(current) {
   const year = current.getFullYear();
-  const month = (current.getMonth() + 1); // para obtener el mes que se debe se suma 1, ya que el default da 0
-  
+  const month = current.getMonth() + 1; // para obtener el mes que se debe se suma 1, ya que el default da 0
+
   const dataValue = {
     year,
     month,
-    idUsuario: datosUser.idUsuario
-  }
+    idUsuario: datosUser.idUsuario,
+  };
 
-  const { data, isLoading, error, isValidating } = useSWR(get_all_events, url => fetcherPost(url, dataValue), options);
+  const { data, isLoading, error, isValidating } = useSWR(
+    get_all_events,
+    (url) => fetcherPost(url, dataValue),
+    options
+  );
 
-  useEffect(()=> { // esta función ayuda a que se de un trigger para traer de nuevo los eventos del mes, cada que cambia month
+  useEffect(() => {
+    // esta función ayuda a que se de un trigger para traer de nuevo los eventos del mes, cada que cambia month
     reRender();
-  },[month]);
+  }, [month]);
+  
+
+  if (data?.events?.length > 0) {
+    data.events = data.events.map(item => ({...item, id: item.id.toString()}));
+  }
 
   const memoizedValue = useMemo(() => {
     const events = data?.events?.map((event) => ({
       ...event,
       textColor: event?.color,
       type: event?.type,
-      fechaInicio: event.start
+      fechaInicio: event.start,
     }));
-    
+
     return {
       events: events || [],
       eventsLoading: isLoading,
@@ -71,7 +92,7 @@ export function GetCustomEvents(current) {
       eventsEmpty: !isLoading && !data?.events?.length,
     };
   }, [data?.events, error, isLoading, isValidating]);
-  
+
   return memoizedValue;
 }
 
@@ -79,20 +100,25 @@ export function GetCustomEvents(current) {
 
 export async function createCustom(eventData) {
   let create = '';
-  const fechaInicio = dayjs(`${eventData.fechaInicio} ${eventData.hora_inicio}`).format('YYYY/MM/DD HH:mm:ss'); 
-  const fechaFinal = dayjs(`${eventData.fechaFinal} ${eventData.hora_final}`).format('YYYY/MM/DD HH:mm:ss');
+  const fechaInicio = dayjs(`${eventData.fechaInicio} ${eventData.hora_inicio}`).format(
+    'YYYY/MM/DD HH:mm:ss'
+  );
+  const fechaFinal = dayjs(`${eventData.fechaFinal} ${eventData.hora_final}`).format(
+    'YYYY/MM/DD HH:mm:ss'
+  );
 
-    const dataValue = {
-        titulo: eventData.title,
-        idUnico: eventData.id,
-        idUsuario: datosUser.idUsuario,
-        fechaInicio,
-        fechaFinal,
-        idEspecialista: datosUser.idUsuario,
-    }
-    
-    create = fetcherPost(save_occupied, dataValue);
- 
+  const dataValue = {
+    titulo: eventData.title,
+    idUnico: eventData.id,
+    idUsuario: datosUser.idUsuario,
+    fechaInicio,
+    fechaFinal,
+    idEspecialista: datosUser.idUsuario,
+    modificadoPor: datosUser.idUsuario,
+  };
+
+  create = fetcherPost(save_occupied, dataValue);
+
   return create;
 }
 
@@ -100,72 +126,183 @@ export async function createCustom(eventData) {
 
 export async function updateCustom(eventData) {
   let update = '';
-  
-  const start = dayjs(`${eventData.fechaInicio} ${eventData.hora_inicio}`).format('YYYY/MM/DD HH:mm:ss'); // fecha a la que se movera
-  const end = dayjs(`${eventData.fechaFinal} ${eventData.hora_final}`).format('YYYY/MM/DD HH:mm:ss');
+
+  const start = dayjs(`${eventData.fechaInicio} ${eventData.hora_inicio}`).format(
+    'YYYY/MM/DD HH:mm:ss'
+  ); // fecha a la que se movera
+  const end = dayjs(`${eventData.fechaFinal} ${eventData.hora_final}`).format(
+    'YYYY/MM/DD HH:mm:ss'
+  );
   const now = dayjs(new Date()).format('YYYY/MM/DD HH:mm:ss');
-  const oldStart = dayjs(`${eventData.newDate} ${eventData.hora_inicio}`).format('YYYY/MM/DD HH:mm:ss'); // fecha original del evento
+  const oldStart = dayjs(`${eventData.newDate} ${eventData.hora_inicio}`).format(
+    'YYYY/MM/DD HH:mm:ss'
+  ); // fecha original del evento
 
   const dataValue = {
-        id: eventData.id,
-        fechaInicio: start,
-        fechaFinal: end,
-        titulo: eventData.title,
-        idUsuario: datosUser.idUsuario,
-        oldStart
-    }
+    id: eventData.id,
+    fechaInicio: start,
+    fechaFinal: end,
+    titulo: eventData.title,
+    idUsuario: datosUser.idUsuario,
+    oldStart,
+    modificadoPor: datosUser.idUsuario,
+  };
 
-    if(oldStart > now){
-      if(start > now){
-        update = fetcherPost(update_occupied, dataValue);
-      }
-      else{
-        update = { result: false, msg: "No se pueden mover las fechas a un dia anterior o actual" }
-      }
+  if (oldStart > now) {
+    if (start > now) {
+      update = fetcherPost(update_occupied, dataValue);
+    } else {
+      update = { result: false, msg: 'No se pueden mover las fechas a un dia anterior o actual' };
     }
-    else{
-      update = { result: false, msg: "Las citas u horarios pasados no se pueden mover" }
-    }
+  } else {
+    update = { result: false, msg: 'Las citas u horarios pasados no se pueden mover' };
+  }
 
-    return update;
+  return update;
 }
 
 // ----------------------------------------------------------------------
 
 export async function deleteEvent(eventId) {
+  const data = {
+    eventId,
+    modificadoPor: datosUser.idUsuario,
+    fechaModificacion: Date(),
+  };
 
-  const delEvent = fetcherPost(delete_occupied, eventId);
+  const delEvent = fetcherPost(delete_event, data);
 
   return delEvent;
 }
 
-
 // ----------------------------------------------------------------------
 
-export async function createAppointment(eventData){
+export async function createAppointment(eventData, modalitie) {
   let create = '';
-  const fechaInicio = dayjs(`${eventData.fechaInicio} ${eventData.hora_inicio}`).format('YYYY/MM/D HH:mm:ss'); 
-  const fechaFinal = dayjs(`${eventData.fechaFinal} ${eventData.hora_final}`).format('YYYY/MM/D HH:mm:ss');
+  let transaction = '';
+  let transactionId = 0;
+  let especialidad = '';
+  const fechaInicio = dayjs(`${eventData.fechaInicio} ${eventData.hora_inicio}`).format(
+    'YYYY/MM/D HH:mm:ss'
+  );
+  const fechaFinal = dayjs(`${eventData.fechaFinal} ${eventData.hora_final}`).format(
+    'YYYY/MM/D HH:mm:ss'
+  );
+  const fundacion = eventData.paciente.externo;
 
-  const start = dayjs(`${eventData.newDate} ${eventData.hora_inicio}`).format('YYYY/MM/DD HH:mm:ss'); // fecha a la que se movera
+  const start = dayjs(`${eventData.newDate} ${eventData.hora_inicio}`).format(
+    'YYYY/MM/DD HH:mm:ss'
+  ); // fecha a la que se movera
   const now = dayjs(new Date()).format('YYYY/MM/DD HH:mm:ss');
 
-  const data = {
-        idUsuario: datosUser.idUsuario,
-        idPaciente: eventData.paciente,
-        fechaInicio,
-        fechaFinal,
-        creadoPor: datosUser.idUsuario,
-        titulo: eventData.title,
-        modificadoPor: datosUser.idUsuario,
-        idCatalogo: eventData.idCatalogo
+  const fecha = dayjs(eventData.fechaInicio).format('DD/MM/YYYY');
+  const horaInicio = dayjs(fechaInicio).format('HH:mm a');
+  const horaFinal = dayjs(fechaFinal).format('HH:mm a');
+
+  switch (modalitie.especialidad) {
+    case 537:
+      especialidad = 'nutrición';
+      break;
+
+    case 585:
+      especialidad = 'psicología';
+      break;
+
+    case 686:
+      especialidad = 'guía espiritual';
+      break;
+
+    case 158:
+      especialidad = 'quantum balance';
+      break;
+
+    default:
+      especialidad = 'NA';
+      break;
+  }
+
+  const dataTransaction = {
+    usuario: eventData.paciente.idUsuario,
+    folio: uuidv4(),
+    concepto: 1,
+    cantidad: 0,
+    metodoPago: 3,
   };
 
-  if(start > now){
-    create = fetcherPost(create_appointment, data);
-  }
-  else{
-    create = { result: false, msg: "No se puede crear en dias anteriores" };
+  if (start > now) {
+    if (fundacion === 1) {
+      transaction = await fetcherPost(registar_transaccion, dataTransaction);
+
+      if (transaction.result) {
+        transactionId = transaction.data;
+      }
+    }
+
+    const data = {
+      idUsuario: datosUser.idUsuario,
+      idPaciente: eventData.paciente.idUsuario,
+      fechaInicio,
+      fechaFinal,
+      creadoPor: datosUser.idUsuario,
+      titulo: eventData.title,
+      modificadoPor: datosUser.idUsuario,
+      idCatalogo: modalitie.idAtencionXSede,
+      fundacion,
+      idDetalle: transactionId,
+      especialidad,
+      reagenda: 0,
+    };
+
+    const mailMessage = { // datos para enviar el mail
+      especialidad,
+      especialista: modalitie.especialista,
+      fecha,
+      horaInicio,
+      horaFinal,
+      view: 'email-appointment',
+      oficina: modalitie?.oficina || 'virtual',
+      sede: modalitie?.sede || 'virtual',
+      tituloEmail: 'Reservación',
+      temaEmail: 'Se ha agendado tu cita con: ',
+      correo: eventData.paciente.correo
+    };
+
+    const googleData = {
+      title: eventData.title,
+      start: dayjs(fechaInicio).format('YYYY-MM-DDTHH:mm:ss'),
+      end: dayjs(fechaFinal).format('YYYY-MM-DDTHH:mm:ss'),
+      location: `${modalitie?.sede}, ${modalitie?.oficina || 'virtual'}`,
+      description: `Cita agendada en: ${especialidad}`,
+      attendees: [
+        {
+          email: eventData.paciente.correo,
+          responseStatus: 'accepted'
+        },
+        {
+            email: 'programador.analista36@ciudadmaderas.com', // datosUser.correo,
+            responseStatus: 'needsAction'
+        },
+        ],
+      email: eventData.paciente.correo // datosUser.correo
+    }
+
+    create = await fetcherPost(create_appointment, data);
+
+    if (create.result && fundacion === 1) {
+      const googleEvent = await fetcherPost(insert_google_event, googleData);
+      fetcherPost(sendMail, mailMessage);
+
+      if(googleEvent.result){
+        const updateData = {
+          idCita: create.data,
+          idEventoGoogle: googleEvent.data.id
+        };
+
+        fetcherPost(insert_google_id, updateData);
+      }
+    }
+  } else {
+    create = { result: false, msg: 'No se puede agendar cita en dias anteriores' };
   }
 
   return create;
@@ -175,52 +312,97 @@ export async function createAppointment(eventData){
 
 export async function updateAppointment(eventData) {
   let update = '';
-  
-  const start = dayjs(`${eventData.fechaInicio} ${eventData.hora_inicio}`).format('YYYY/MM/DD HH:mm:ss'); // fecha a la que se movera
-  const end = dayjs(`${eventData.fechaFinal} ${eventData.hora_final}`).format('YYYY/MM/DD HH:mm:ss'); // fecha a la que se movera
+
+  const start = dayjs(`${eventData.fechaInicio} ${eventData.hora_inicio}`).format(
+    'YYYY/MM/DD HH:mm:ss'
+  ); // fecha a la que se movera
+  const end = dayjs(`${eventData.fechaFinal} ${eventData.hora_final}`).format(
+    'YYYY/MM/DD HH:mm:ss'
+  ); // fecha a la que se movera
   const now = dayjs(new Date()).format('YYYY/MM/DD HH:mm:ss');
 
   const dataValue = {
-        titulo: eventData.title,
-        id: eventData.id,
-        idUsuario: datosUser.idUsuario,
-        fechaInicio: start,
-        fechaFinal: end,
-        idPaciente : eventData.paciente
-    }
+    titulo: eventData.title,
+    id: eventData.id,
+    idUsuario: datosUser.idUsuario,
+    fechaInicio: start,
+    fechaFinal: end,
+    idPaciente: eventData.paciente,
+  };
 
-      if(start > now){
-        update = fetcherPost(update_appointment, dataValue);
-      }
-      else{
-        update = { result: false, msg: "No se pueden mover las fechas a un dia anterior o actual" }
-      }
+  if (start > now) {
+    update = fetcherPost(update_appointment, dataValue);
+  } else {
+    update = { result: false, msg: 'No se pueden mover las fechas a un dia anterior' };
+  }
 
-    return update;
+  return update;
 }
 
 // ----------------------------------------------------------------------
 
-export async function cancelAppointment(currentEvent, cancelType){
+export async function cancelAppointment(currentEvent, id, cancelType) {
   const startStamp = dayjs(currentEvent.start).format('YYYY/MM/DD HH:mm:ss');
+  let tituloEmail = '';
+  let imagen = '';
+
+  switch (cancelType) {
+    case 7:
+      tituloEmail = 'CANCELADO POR ESPECIALISTA';
+      imagen = 'cancel.png';
+      break;
+
+    case 3:
+      tituloEmail = 'PENALIZACIÓN';
+      imagen = 'penalization.png';
+      break;
+
+    default:
+      tituloEmail = 'CANCELACIÓN';
+      imagen = 'cancel.png';
+      break;
+  }
 
   const data = {
-    idCita: currentEvent.id,
-    startStamp,
-    estatus: currentEvent.estatus,
-    tipo: cancelType
+    idCita: id,
+    start: startStamp,
+    tipo: cancelType,
+    modificadoPor: datosUser.idUsuario,
   };
 
-  const delDate = fetcherPost(cancel_appointment, data);
+  const mailMessage = {
+    titulo: tituloEmail,
+    imagen,
+    fecha: dayjs(currentEvent?.start).format('DD/MM/YYYY'),
+    horaInicio: dayjs(currentEvent?.start).format('HH:mm a'),
+    horaFinal: dayjs(currentEvent?.end).format('HH:mm a'),
+    beneficio: currentEvent.beneficio,
+    especialista: currentEvent.especialista,
+    view: 'email-cancelar',
+    correo: currentEvent?.correo,
+  };
+
+  const delDate = await fetcherPost(cancel_appointment, data);
+
+  if (delDate.result) {
+    fetcherPost(sendMail, mailMessage);
+
+    const eventGoogleData = {
+      id: currentEvent?.idEventoGoogle,
+      email: currentEvent?.correo
+    };
+
+    fetcherPost(delete_google_event, eventGoogleData);
+  }
 
   return delDate;
 }
 
 // ----------------------------------------------------------------------
 
-export async function dropUpdate(args){
-  let update = ''; 
-  const type = args.type === "date" ? appointment_drop : occupied_drop;
+export async function dropUpdate(args) {
+  let update = '';
+  const type = args.type === 'date' ? appointment_drop : occupied_drop;
   const oldStart = dayjs(args.oldStart).format('YYYY/MM/DD HH:mm:ss'); // fecha original del evento
 
   const data = {
@@ -230,52 +412,208 @@ export async function dropUpdate(args){
     idUsuario: datosUser.idUsuario,
     idPaciente: args.idPaciente,
     oldStart,
-    estatus: args.estatus
-  }
- 
+    estatus: args.estatus,
+  };
+
   update = await fetcherPost(type, data);
 
-  if(update.result)
-    enqueueSnackbar(update.msg);
-  else{
-    enqueueSnackbar(update.msg, {variant: "error"});
+  if (update.result) enqueueSnackbar(update.msg);
+  else {
+    enqueueSnackbar(update.msg, { variant: 'error' });
     reRender(); // se utiliza el rerender aqui parta que pueda regresar el evento en caso de no quedar
   }
-
 }
 // ----------------------------------------------------------------------
 
-export async function endAppointment(id, reason){
+export async function endAppointment(currentEvent, reason) {
   const data = {
-    idCita: id,
+    // datos que se envian para la cancelación
+    idCita: currentEvent?.id,
     reason,
-    idUsuario: datosUser.idUsuario
-  }
+    idUsuario: datosUser.idUsuario,
+  };
 
-  const update = fetcherPost(end_appointment, data);
+  const mailData = { // datos que se envian al correo
+    idCita: currentEvent?.id,
+    tituloEmail: 'FINALIZACIÓN',
+    temaEmail: 'Se ha finalizado tu cita en: ',
+    especialidad: currentEvent?.beneficio,
+    especialista: currentEvent?.especialista,
+    sede: currentEvent?.sede,
+    oficina: currentEvent?.oficina || 'virtual',
+    fecha: dayjs(currentEvent?.start).format('DD/MM/YYYY'),
+    horaInicio: dayjs(currentEvent?.start).format('HH:mm A'),
+    horaFinal: dayjs(currentEvent?.end).format('HH:mm A'),
+    view: 'email-end',
+    correo: currentEvent?.correo,
+    link: 'https://prueba.gphsis.com/beneficiosmaderas/dashboard/calendariobeneficiario'
+  };
+
+  const update = await fetcherPost(end_appointment, data);
+  if (update.result) {
+    fetcherPost(sendMail, mailData);
+  }
 
   return update;
 }
 
 // ----------------------------------------------------------------------
 
-export function useGetMotivos(){
-  const data  = useSWR(get_reasons, url => fetcherPost(url, datosUser.idPuesto, {revalidateOnFocus: false, revalidateOnReconnect: true, refreshWhenHidden: false}));
+export function useGetMotivos() {
+  const data = useSWR(get_reasons, (url) =>
+    fetcherPost(url, datosUser.idPuesto, {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: true,
+      refreshWhenHidden: false,
+    })
+  );
 
-  const memoizedValue = useMemo(() =>({
-    data: data?.data || []
-  }), [data?.data]);
-  
+  const memoizedValue = useMemo(
+    () => ({
+      data: data?.data || [],
+    }),
+    [data?.data]
+  );
+
   return memoizedValue;
 }
 
+// ----------------------------------------------------------------------
 
-export function useGetPending(){
-  const data = useSWR(get_pending_end, url => fetcherPost(url, datosUser.idUsuario, { revalidateOnFocus: true, revalidateOnReconnect: true, refreshWhenHidden: false }));
+export function useGetPending() {
+  const { data, mutate: revalidate } = useSWR(get_pending_end, (url) =>
+    fetcherPost(url, datosUser?.idUsuario)
+  );
 
-  const momoizedValue = useMemo(() => ({
-    data: data?.data
-  }), [data?.data]);
+  const memoizedValue = useMemo(
+    () => ({
+      data: data || [],
+      pendingsMutate: revalidate,
+    }),
+    [data, revalidate]
+  );
 
-  return momoizedValue;
+  return memoizedValue;
+}
+
+// ----------------------------------------------------------------------
+
+export function useGetEventReasons(idCita) {
+  const { data, mutate: revalidate } = useSWR(get_event_reasons, (url) => fetcherPost(url, idCita));
+
+  const memoizedValue = useMemo(
+    () => ({
+      data: data || [],
+      reasonsMutate: revalidate,
+    }),
+    [data, revalidate]
+  );
+
+  return memoizedValue;
+}
+
+// ----------------------------------------------------------------------
+
+export async function reschedule(eventData, idDetalle, cancelType) {
+  let response = '';
+  const startStamp = dayjs(eventData.oldEventStart).format('YYYY/MM/DD HH:mm:ss');
+
+  const fechaInicio = dayjs(`${eventData.fechaInicio} ${eventData.hora_inicio}`).format(
+    'YYYY/MM/D HH:mm:ss'
+  );
+  const fechaFinal = dayjs(`${eventData.fechaInicio} ${eventData.hora_final}`).format(
+    'YYYY/MM/D HH:mm:ss'
+  );
+
+  const fecha = dayjs(eventData.fechaInicio).format('DD/MM/YYYY');
+  const horaInicio = dayjs(fechaInicio).format('HH:mm:ss');
+  const horaFinal = dayjs(fechaFinal).format('HH:mm:ss');
+
+  const data = {
+    idUsuario: datosUser.idUsuario,
+    idPaciente: eventData.paciente,
+    fechaInicio,
+    fechaFinal,
+    fechaCreacion: eventData.fechaCreacion,
+    creadoPor: datosUser.idUsuario,
+    titulo: eventData.title,
+    modificadoPor: datosUser.idUsuario,
+    idCatalogo: eventData.idAtencionXSede,
+    fundacion: eventData.fundacion,
+    idDetalle,
+    reagenda: 1,
+    idEventoGoogle: eventData.idEventoGoogle
+  };
+
+  const cancelData = {
+    idCita: eventData?.idCancelar,
+    tipo: cancelType,
+    start: startStamp,
+    modificadoPor: datosUser.idUsuario,
+  };
+
+  const mailReschedule = {
+    titulo: 'REAGENDAMIENTO DE CITA',
+    beneficio: eventData.beneficio,
+    especialista: eventData.especialista,
+    sede: eventData.sede,
+    oficina: eventData?.oficina || 'virtual',
+    fecha,
+    horaInicio,
+    horaFinal,
+    fechaOld: dayjs(eventData.oldEventStart).format('DD/MM/YYYY'),
+    horaInicioOld: dayjs(eventData.oldEventStart).format('HH:mm: a'),
+    horaFinalOld: dayjs(eventData.oldEventEnd).format('HH:mm: a'),
+    view: 'email-reschedule',
+    correo: eventData?.correo,
+  };
+
+  response = await fetcherPost(check_invoice, idDetalle);
+
+  if (response.result) {
+    response = await fetcherPost(create_appointment, data);
+
+    if (response.result) {
+      const del = await fetcherPost(cancel_appointment, cancelData);
+      if (del.result) {
+        fetcherPost(sendMail, mailReschedule);
+
+        const dataGoogle = {
+          start: dayjs(fechaInicio).format('YYYY-MM-DDTHH:mm:ss'),
+          end: dayjs(fechaFinal).format('YYYY-MM-DDTHH:mm:ss'),
+          id: eventData?.idEventoGoogle,
+          email: eventData?.correo,
+          attendees: [
+            {
+              email: 'programador.analista36@ciudadmaderas.com', // datosUser.correo,
+              responseStatus: 'accepted'
+            },
+            {
+              email: eventData.correo,
+              responseStatus: 'needsAction'
+            }
+          ]
+        }
+        
+        fetcherPost(update_google_event, dataGoogle);
+      }
+    }
+  }
+
+  return response;
+}
+
+// ----------------------------------------------------------------------
+
+export async function UpdateDetallePaciente(idPaciente) {
+  const beneficio = datosUser.idPuesto;
+
+  const data = {
+    usuario: idPaciente,
+    beneficio,
+  };
+
+  const update = fetcherPost(update_detalle_paciente, data);
+
+  return update;
 }

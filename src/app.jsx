@@ -6,6 +6,8 @@ import 'src/locales/i18n';
 
 // ----------------------------------------------------------------------
 
+import { GoogleOAuthProvider } from '@react-oauth/google';
+
 import Router from 'src/routes/sections';
 
 import ThemeProvider from 'src/theme';
@@ -31,16 +33,16 @@ import ContextGeneralProvider from './utils/contextGeneralProvider';
 
 export default function App() {
   const charAt = `
-
-  ░░░    ░░░
-  ▒▒▒▒  ▒▒▒▒
-  ▒▒ ▒▒▒▒ ▒▒
-  ▓▓  ▓▓  ▓▓
-  ██      ██
-
+  ██████╗ ███████╗███╗   ██╗███████╗███████╗██╗ ██████╗██╗ ██████╗ ███████╗     ██████╗███╗   ███╗
+  ██╔══██╗██╔════╝████╗  ██║██╔════╝██╔════╝██║██╔════╝██║██╔═══██╗██╔════╝    ██╔════╝████╗ ████║
+  ██████╔╝█████╗  ██╔██╗ ██║█████╗  █████╗  ██║██║     ██║██║   ██║███████╗    ██║     ██╔████╔██║
+  ██╔══██╗██╔══╝  ██║╚██╗██║██╔══╝  ██╔══╝  ██║██║     ██║██║   ██║╚════██║    ██║     ██║╚██╔╝██║
+  ██████╔╝███████╗██║ ╚████║███████╗██║     ██║╚██████╗██║╚██████╔╝███████║    ╚██████╗██║ ╚═╝ ██║
+  ╚═════╝ ╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝     ╚═╝ ╚═════╝╚═╝ ╚═════╝ ╚══════╝     ╚═════╝╚═╝     ╚═╝
+                                                                                                                                                                                                 
   `;
 
-  console.info(`%c${charAt}`, 'color: #5BE49B');
+  console.info(`%c${charAt}`, 'color: #B4A46C');
 
   useScrollToTop();
 
@@ -53,7 +55,7 @@ export default function App() {
             themeDirection: 'ltr', //  'rtl' | 'ltr'
             themeContrast: 'default', // 'default' | 'bold'
             themeLayout: 'vertical', // 'vertical' | 'horizontal' | 'mini'
-            themeColorPresets: 'default', // 'default' | 'cyan' | 'purple' | 'blue' | 'orange' | 'red'
+            themeColorPresets: 'blue', // 'default' | 'cyan' | 'purple' | 'blue' | 'orange' | 'red'
             themeStretch: false,
           }}
         >
@@ -64,7 +66,9 @@ export default function App() {
                   <SettingsDrawer />
                   <ProgressBar />
                   <ContextGeneralProvider>
-                  <Router />
+                    <GoogleOAuthProvider clientId="161969316544-ou10ee3mktbmp2og21po8rj2eke8ej9t.apps.googleusercontent.com">
+                      <Router />
+                    </GoogleOAuthProvider>
                   </ContextGeneralProvider>
                 </CheckoutProvider>
               </SnackbarProvider>

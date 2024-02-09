@@ -9,12 +9,12 @@ const MOCK_ID = _id[1];
 const MOCK_TITLE = _postTitles[2];
 
 const ROOTS = {
-  AUTH: '/auth',
+  AUTH: `${import.meta.env.BASE_URL}auth`,
   AUTH_DEMO: '/auth-demo',
-  DASHBOARD: '/dashboard',
+  DASHBOARD: `${import.meta.env.BASE_URL}dashboard`,
 };
 
-// ---------------------------------------------------------------------- 
+// ----------------------------------------------------------------------
 
 export const paths = {
   comingSoon: '/coming-soon',
@@ -97,23 +97,25 @@ export const paths = {
     chat: `${ROOTS.DASHBOARD}/chat`,
     blank: `${ROOTS.DASHBOARD}/blank`,
     kanban: `${ROOTS.DASHBOARD}/kanban`,
-    calendar: `${ROOTS.DASHBOARD}/calendar`,
+    calendar: `${ROOTS.DASHBOARD}/calendariobeneficiario`,
     fileManager: `${ROOTS.DASHBOARD}/file-manager`,
     permission: `${ROOTS.DASHBOARD}/permission`,
     general: {
       dash: `${ROOTS.DASHBOARD}/dash`,
-/*       encuestas: `${ROOTS.DASHBOARD}/encuestas`, */
+      /*       encuestas: `${ROOTS.DASHBOARD}/encuestas`, */
       app: `${ROOTS.DASHBOARD}/app`,
       ecommerce: `${ROOTS.DASHBOARD}/ecommerce`,
       analytics: `${ROOTS.DASHBOARD}/analytics`,
       banking: `${ROOTS.DASHBOARD}/banking`,
       booking: `${ROOTS.DASHBOARD}/booking`,
       file: `${ROOTS.DASHBOARD}/file`,
-      calendario: `${ROOTS.DASHBOARD}/calendario`
+      calendarioEspecialista: `${ROOTS.DASHBOARD}/calendarioespecialista`,
+      evaluacioncitas: `${ROOTS.DASHBOARD}/evaluacioncitas`,
     },
     reportes: {
       root: `${ROOTS.DASHBOARD}/reportes/historial`,
       historial: `${ROOTS.DASHBOARD}/reportes/historial`,
+      pacientes: `${ROOTS.DASHBOARD}/reportes/pacientes`,
     },
     encuestas: {
       root: `${ROOTS.DASHBOARD}/encuestas/ver`,
@@ -121,6 +123,12 @@ export const paths = {
       crear: `${ROOTS.DASHBOARD}/encuestas/crear`,
       ver: `${ROOTS.DASHBOARD}/encuestas/ver`,
       detalle: `${ROOTS.DASHBOARD}/encuestas/detalle`,
+    },
+    gestor: {
+      root: `${ROOTS.DASHBOARD}/gestor/atencionXsede`,
+      atencionxsede: `${ROOTS.DASHBOARD}/gestor/atencionXsede`,
+      oficinas: `${ROOTS.DASHBOARD}/gestor/oficinas`,
+      sedes: `${ROOTS.DASHBOARD}/gestor/sedes`,
     },
     user: {
       root: `${ROOTS.DASHBOARD}/user`,

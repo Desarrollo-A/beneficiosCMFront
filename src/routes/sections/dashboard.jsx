@@ -9,14 +9,20 @@ import { LoadingScreen } from 'src/components/loading-screen';
 // ----------------------------------------------------------------------
 // CITAS
 const HistorialReportesPage = lazy(() => import('src/pages/dashboard/reportes/historial-reportes'));
+const ReportePacientesPage = lazy(() => import('src/pages/dashboard/reportes/reporte-pacientes'));
+const EvaluacionCitasPage = lazy(() => import ('src/pages/dashboard/evaluacion-citas-view'));
 // OVERVIEW
 const IndexPage = lazy(() => import('src/pages/dashboard/app'));
 const DashPage = lazy(() => import('src/pages/dashboard/dash'));
 // ENCUESTAS
-const EncuestasPage = lazy(() => import('src/pages/dashboard/encuestas/encuestas-view'))
-const CrearEncuestaPage = lazy(() => import('src/pages/dashboard/encuestas/crear-view'))
-const VerEncuestasPage = lazy(() => import('src/pages/dashboard/encuestas/ver-view'))
-const VerEncuestaDetallePage = lazy(() => import('src/pages/dashboard/encuestas/ver-detalle-view'))
+const EncuestasPage = lazy(() => import('src/pages/dashboard/encuestas/encuestas-view'));
+const CrearEncuestaPage = lazy(() => import('src/pages/dashboard/encuestas/crear-view'));
+const VerEncuestasPage = lazy(() => import('src/pages/dashboard/encuestas/ver-view'));
+const VerEncuestaDetallePage = lazy(() => import('src/pages/dashboard/encuestas/ver-detalle-view'));
+// GESTOR
+const AtencionXsedePage = lazy(() => import('src/pages/dashboard/gestor/atencionXsede-view'));
+const OficinasPage = lazy(() => import('src/pages/dashboard/gestor/oficinas-view'));
+const SedesPage = lazy(() => import('src/pages/dashboard/gestor/sedes-view'));
 // ----------------------------------------------------------------------
 const OverviewEcommercePage = lazy(() => import('src/pages/dashboard/ecommerce'));
 const OverviewAnalyticsPage = lazy(() => import('src/pages/dashboard/analytics'));
@@ -80,7 +86,7 @@ const BlankPage = lazy(() => import('src/sections/_examples/extra/upload-view'))
 
 export const dashboardRoutes = [
   {
-    path: 'dashboard',
+    path: `${import.meta.env.BASE_URL}dashboard`,
     element: (
       <AuthGuard>
         <DashboardLayout>
@@ -96,6 +102,7 @@ export const dashboardRoutes = [
         path: 'reportes',
         children: [
           { path: 'historial', element: <HistorialReportesPage /> },
+          { path: 'pacientes', element: <ReportePacientesPage /> },
         ],
       },
       {
@@ -104,17 +111,25 @@ export const dashboardRoutes = [
           { path: 'contestar', element: <EncuestasPage /> },
           { path: 'crear', element: <CrearEncuestaPage /> },
           { path: 'ver', element: <VerEncuestasPage /> },
-          { path: 'detalle', element: <VerEncuestaDetallePage/> },
+          { path: 'detalle', element: <VerEncuestaDetallePage /> },
+        ],
+      },
+      {
+        path: 'gestor',
+        children: [
+          { path: 'atencionxsede', element: <AtencionXsedePage /> },
+          { path: 'oficinas', element: <OficinasPage /> },
+          { path: 'sedes', element: <SedesPage /> },
         ],
       },
       { path: 'dash', element: <DashPage /> },
-/*       { path: 'encuestas', element: <EncuestasPage /> }, */
+      /*       { path: 'encuestas', element: <EncuestasPage /> }, */
       { path: 'ecommerce', element: <OverviewEcommercePage /> },
       { path: 'analytics', element: <OverviewAnalyticsPage /> },
       { path: 'banking', element: <OverviewBankingPage /> },
       { path: 'booking', element: <OverviewBookingPage /> },
       { path: 'file', element: <OverviewFilePage /> },
-      { path: 'calendario', element: <CalendarioPage /> },
+      { path: 'calendarioespecialista', element: <CalendarioPage /> },
       {
         path: 'user',
         children: [
@@ -194,10 +209,11 @@ export const dashboardRoutes = [
       { path: 'file-manager', element: <FileManagerPage /> },
       { path: 'mail', element: <MailPage /> },
       { path: 'chat', element: <ChatPage /> },
-      { path: 'calendar', element: <CalendarPage /> },
+      { path: 'calendariobeneficiario', element: <CalendarPage /> },
       { path: 'kanban', element: <KanbanPage /> },
       { path: 'permission', element: <PermissionDeniedPage /> },
       { path: 'blank', element: <BlankPage /> },
+      { path: 'evaluacioncitas', element: <EvaluacionCitasPage /> }
     ],
   },
 ];
