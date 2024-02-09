@@ -1,6 +1,7 @@
 import Calendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import allLocales from '@fullcalendar/core/locales-all';
 
 import { StyledCalendar } from './styles';
 import CalendarToolbar from './calendar-toolbar';
@@ -11,6 +12,7 @@ import { useCalendar } from '../hooks';
 
 export default function CalendarView({
   onSelectRange,
+  onClickEvent,
   events = [],
 }){
 
@@ -26,7 +28,7 @@ export default function CalendarView({
     // onSelectRange,
     onDateToday,
     onChangeView,
-    onClickEvent, 
+    // onClickEvent, 
     openForm,
     onCloseForm,
     //
@@ -53,21 +55,23 @@ export default function CalendarView({
           // editable = {false} // en false para prevenir un drag del evento
           // droppable
           selectable
+          unselectAuto={true}
+          exclusive
           // eventConstraint={hours2}
           // businessHours={hours}
           // selectLongPressDelay={0}
-          // locales={allLocales}
+          locales={allLocales}
           locale='es'
           // rerenderDelay={10}
           // allDayMaintainDuration
           // eventResizableFromStart
           ref={calendarRef}
-          // dayMaxEventRows={3}
-          // eventDisplay="block"
+          dayMaxEventRows={1}
+          eventDisplay="block"
           events={events}
           headerToolbar={false}
-          select={(arg) => onSelectRange(arg.start, arg.end)}
-          // eventClick={onClickEvent}
+          select={(arg) => onSelectRange(arg.start, new Date(arg.end.setDate(arg.end.getDate() - 1)))}
+          eventClick={(info) => onClickEvent(info.event)}
           // height={ smUp ? 720 : 'auto' }
           // eventDrop={(arg) => {
           //   onEventUpdate(arg);

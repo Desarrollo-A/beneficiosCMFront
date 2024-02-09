@@ -12,3 +12,4 @@ export { default as RHFRadioGroup } from './rhf-radio-group';
 export { default as RHFDatePicker } from './rhf-date-picker';
 
 export { default as RHFAutocomplete } from './rhf-autocomplete';
+export { default as RHFHidden } from './rhf-hidden';

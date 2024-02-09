@@ -14,7 +14,7 @@ import { useTheme } from '@mui/material/styles';
 import LoadingButton from '@mui/lab/LoadingButton';
 
 import FormProvider from 'src/components/hook-form/form-provider';
-import { RHFSelect, RHFDatePicker } from 'src/components/hook-form';
+import { RHFSelect, RHFDatePicker, RHFHidden } from 'src/components/hook-form';
 import { useSnackbar } from 'src/components/snackbar';
 
 import { useAuthContext } from 'src/auth/hooks';
@@ -22,7 +22,7 @@ import { useGetSedesPresenciales, setHorarioPresencial } from 'src/api/especiali
 
 // -------------------------------------------------------------------
 
-export default function AgendaDialog({open, onClose, start, end, ...props}){
+export default function AgendaDialog({open, onClose, id, start, end, sede, ...props}){
 
   const theme = useTheme();
 
@@ -33,9 +33,11 @@ export default function AgendaDialog({open, onClose, start, end, ...props}){
   const { sedes } = useGetSedesPresenciales({idEspecialista : user.idUsuario});
 
   const formSchema = yup.object({
-    start: yup.string().transform(parseDateString).required(),
-    end: yup.string().transform(parseDateString).required(),
+    id : yup.number().nullable(true),
+    start: yup.string().transform(parseStartDate).required(),
+    end: yup.string().transform(parseEndDate).required(),
     sede : yup.number().required(),
+    especialista : yup.number(),
   });
 
   const methods = useForm({
@@ -46,7 +48,6 @@ export default function AgendaDialog({open, onClose, start, end, ...props}){
   const { reset, watch, handleSubmit } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
-    data.especialista = user.idUsuario
     console.log(data)
 
     let response = await setHorarioPresencial(data)
@@ -92,10 +93,12 @@ export default function AgendaDialog({open, onClose, start, end, ...props}){
 
               <Stack direction="column" spacing={2}>
                 <Stack direction="row" spacing={2}>
+                  <RHFHidden name="id" value={id} />
+                  <RHFHidden name="especialista" value={user.idUsuario} />
                   <RHFDatePicker name="start" label="Inicio" value={start} />
                   <RHFDatePicker name="end" label="Final" value={end} />
                 </Stack>
-                <RHFSelect name="sede" label="Sede">
+                <RHFSelect name="sede" label="Sede" value={sede}>
                   {sedes.map((sede, index) => (
                     <MenuItem key={index} value={sede.value}>
                       {sede.label}
@@ -124,6 +127,12 @@ export default function AgendaDialog({open, onClose, start, end, ...props}){
   )
 }
 
-function parseDateString(value, originalValue) {
-  return originalValue.toISOString()
+function parseStartDate(value, originalValue) {
+  //originalValue.setUTCHours(0,0,0,0);
+  return originalValue.toISOString();
+}
+
+function parseEndDate(value, originalValue) {
+  //originalValue.setUTCHours(23,59,59,0);
+  return originalValue.toISOString();
 }

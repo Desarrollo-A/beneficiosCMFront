@@ -48,7 +48,7 @@ export function useGetHorariosPresenciales(object) {
     }
   }
 
-  const { data, isLoading, error, isValidating } = useSWR([URL, config], fetcherGet);
+  const { data, isLoading, error, isValidating, mutate } = useSWR([URL, config], fetcherGet);
   
   const memoizedValue = useMemo(
     () => ({
@@ -57,6 +57,7 @@ export function useGetHorariosPresenciales(object) {
       horariosError: error,
       horariosValidating: isValidating,
       horariosEmpty: !isLoading && !data?.length,
+      horariosGet : mutate,
     }),
     [data, error, isLoading, isValidating]
   );

@@ -21,12 +21,14 @@ export default function AgendaView(){
 
   const { user } = useAuthContext();
 
-  const { horarios } = useGetHorariosPresenciales({idEspecialista : user.idUsuario});
+  const { horarios, horariosGet } = useGetHorariosPresenciales({idEspecialista : user.idUsuario});
 
   const [openDialog, setOpenDialog] = useState(false);
 
   const [start, setStart] = useState(new Date());
   const [end, setEnd] = useState(new Date());
+  const [sede, setSede] = useState();
+  const [id, setId] = useState();
 
   const addEvent = () => {
     setStart(new Date());
@@ -42,6 +44,19 @@ export default function AgendaView(){
 
   const onCloseDialog = () => {
     setOpenDialog(false);
+    setSede(null);
+    setId(null);
+    horariosGet({idEspecialista : user.idUsuario});
+  }
+
+  const onClickEvent = (event) => {
+    // console.log(event)
+
+    setStart(event.start);
+    setEnd(event.end);
+    setSede(event.extendedProps.sede);
+    setId(event.id);
+    setOpenDialog(true);
   }
 
   return(
@@ -63,14 +78,17 @@ export default function AgendaView(){
         <Card>
           <Calendar
             onSelectRange={onSelectRange}
+            onClickEvent={onClickEvent}
             events={horarios}
           />
         </Card>
         <AgendaDialog
           open={openDialog}
           onClose={onCloseDialog}
+          id={id}
           start={start}
           end={end}
+          sede={sede}
         />
       </Container>
     </>
