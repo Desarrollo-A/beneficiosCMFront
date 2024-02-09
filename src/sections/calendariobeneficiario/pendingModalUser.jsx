@@ -6,18 +6,31 @@ import localeData from 'dayjs/plugin/localeData';
 import { Dialog, DialogContent } from '@material-ui/core';
 
 import Card from '@mui/material/Card';
+import { LoadingButton } from '@mui/lab';
 import Rating from '@mui/material/Rating';
 import Avatar from '@mui/material/Avatar';
+import Divider from '@mui/material/Divider';
 import Tooltip from '@mui/material/Tooltip';
+import InputBase from '@mui/material/InputBase';
+import DialogTitle from '@mui/material/DialogTitle';
 import { alpha, useTheme } from '@mui/material/styles';
+import FormHelperText from '@mui/material/FormHelperText';
+import InputAdornment from '@mui/material/InputAdornment';
 import {
   Box,
+  Chip,
   Stack,
   Button,
+  Select,
   ListItem,
+  MenuItem,
+  TextField,
   Typography,
+  InputLabel,
   IconButton,
+  FormControl,
   ListItemText,
+  Autocomplete,
   DialogActions,
 } from '@mui/material';
 
@@ -25,6 +38,7 @@ import uuidv4 from 'src/utils/uuidv4';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { AvatarShape } from 'src/assets/illustrations';
+import { useGetEventReasons } from 'src/api/calendar-specialist';
 import {
   sendMail,
   consultarCita,
@@ -32,7 +46,6 @@ import {
   cancelAppointment,
   updateAppointment,
   registrarDetalleDePago,
-  deleteGoogleCalendarEvent,
 } from 'src/api/calendar-colaborador';
 
 import Image from 'src/components/image';
@@ -94,8 +107,7 @@ export default function PendingModalUser() {
         currentEvent.id,
         1,
         registrarPago.data,
-        null,
-        currentEvent.idEventoGoogle
+        null
       );
       if (update.result) {
         enqueueSnackbar('¡Se ha generado el pago con éxito!', {
@@ -134,18 +146,6 @@ export default function PendingModalUser() {
       enqueueSnackbar('¡Se ha cancelado la cita!', {
         variant: 'success',
       });
-
-      const deleteGoogleEvent = await deleteGoogleCalendarEvent(
-        currentEvent.idEventoGoogle,
-        datosUser.correo
-      );
-      if (!deleteGoogleEvent.result) {
-        enqueueSnackbar('¡No se pudo sincronizar el evento con el calendario de google!', {
-          variant: 'error',
-        });
-        pendingsMutate();
-        return onClose();
-      }
     }
     const scheduledAppointment = await consultarCita(currentEvent.id);
     if (!scheduledAppointment.result) {
@@ -155,13 +155,11 @@ export default function PendingModalUser() {
       onClose();
       return false;
     }
-    const email = await sendMail(scheduledAppointment.data[0], 2, [
-      'programador.analista36@ciudadmaderas.com',
-      'programador.analista34@ciudadmaderas.com',
-      'programador.analista32@ciudadmaderas.com',
-      'programador.analista12@ciudadmaderas.com',
-      'tester.ti2@ciudadmaderas.com',
-    ]);
+    const email = await sendMail(
+      scheduledAppointment.data[0],
+      2,
+      'programador.analista36@ciudadmaderas.com'
+    );
     if (!email.result) {
       console.error('No se pudo notificar al usuario');
     }
@@ -179,8 +177,7 @@ export default function PendingModalUser() {
       thisEvent.id,
       thisEvent.estatus,
       thisEvent.idDetalle,
-      valorRating * 2,
-      thisEvent.idEventoGoogle
+      valorRating * 2
     );
 
     if (update.result) {

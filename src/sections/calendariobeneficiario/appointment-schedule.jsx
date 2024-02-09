@@ -63,16 +63,9 @@ export default function AppointmentSchedule({
           }}
         >
           <Stack spacing={3}>
-            {currentEvent?.estatus === 1 ? (
-              <Typography variant="subtitle1">
-                {dayjs(currentEvent.start).locale('es').format('dddd, DD MMMM YYYY HH:mm ')}
-              </Typography>
-            ) : (
-              <Typography variant="subtitle1">
-                {dayjs().locale('es').format('dddd, DD MMMM YYYY')}
-              </Typography>
-            )}
-
+            <Typography variant="subtitle1">
+              {dayjs().locale('es').format('dddd, DD MMMM YYYY')}
+            </Typography>
             <Stack direction="column" spacing={3} justifyContent="space-between">
               <FormControl error={!!errorBeneficio} fullWidth>
                 <InputLabel id="beneficio-input" name="beneficio">
@@ -144,7 +137,51 @@ export default function AppointmentSchedule({
                 )}
               </FormControl>
             </Stack>
-            {selectedValues.modalidad === 1 && selectedValues.beneficio && (
+            {/* {selectedValues.modalidad && selectedValues.beneficio === 158 && (
+              <Stack sx={{ px: 1 }}>
+                Contacte al especialista seleccionado para agendar una cita de Quantum Balance:
+                <br />
+                {infoContact.result ? (
+                  <>
+                    <Stack
+                      sx={{
+                        flexDirection: 'row',
+                        px: { xs: 1, md: 2 },
+                        py: 1,
+                      }}
+                    >
+                      <Stack>
+                        <Iconify icon="ic:outline-email" width={30} sx={{ color: 'text.disabled' }} />
+                      </Stack>
+                      <Stack sx={{ flexDirection: 'col' }}>
+                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                          {infoContact.data[0].correo}
+                        </Typography>
+                      </Stack>
+                    </Stack>
+                    <Stack
+                      sx={{
+                        flexDirection: 'row',
+                        px: { xs: 1, md: 2 },
+                        py: 1,
+                      }}
+                    >
+                      <Stack>
+                        <Iconify icon="mdi:phone" width={30} sx={{ color: 'text.disabled' }} />
+                      </Stack>
+                      <Stack sx={{ flexDirection: 'col' }}>
+                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                          {infoContact.data[0].telPersonal}
+                        </Typography>
+                      </Stack>
+                    </Stack>
+                  </>
+                ) : (
+                  ' Cargando...'
+                )}
+              </Stack>
+            )} */}
+            {selectedValues.modalidad === 1 && selectedValues.beneficio /* !== 158 */ && (
               <Stack spacing={1} sx={{ p: { xs: 1, md: 1 } }}>
                 Dirección de la oficina :
                 {oficina && oficina.result ? (
