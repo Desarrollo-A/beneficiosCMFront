@@ -74,11 +74,11 @@ const NewUserSchema = Yup.object().shape({
 
         login?.(temDatos.num_empleado, temDatos.password)
         .then(response=>{
-          console.log(response);
+          // console.log(response);
           if(response.result === 0){
             setErrorMsg(response.message);
           }else{
-              console.log(paths.dashboard.general.dash)
+              // console.log(paths.dashboard.general.dash)
 
               router.push(paths.dashboard.general.dash);
           }
@@ -88,7 +88,7 @@ const NewUserSchema = Yup.object().shape({
       params:temDatos
     }
     );
-    console.log(errorMsg);
+    // console.log(errorMsg);
   });
 
   const styles = {
