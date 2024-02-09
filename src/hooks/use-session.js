@@ -3,33 +3,43 @@ import { useNavigate } from 'react-router-dom';
 
 import { useAuthContext } from 'src/auth/hooks';
 
-// import { useGetUserData } from 'src/api/user';
+import { useGetAuthorized } from 'src/api/user';
+
+import { paths } from 'src/routes/paths';
 
 export function useSession() {
     const navigate = useNavigate();
-    const { check, authenticated } = useAuthContext();
+    const { authenticated } = useAuthContext();
+    const { authorized, authorizedLoading } = useGetAuthorized();
 
     const [needFetching, setNeedFetching] = useState(false)
     const [checked, setChecked] = useState(false)
 
     useEffect(() => {
-        if(!checked){
-            setNeedFetching(true)
-        }
+        // if(!checked){
+        //     setNeedFetching(true)
+        // }
 
         if(!authenticated){
-            navigate('/')
+            navigate(paths.auth.jwt.login)
         }
-    }, [checked, authenticated, navigate]);
 
-    useEffect(() => {
-        if (!needFetching) return;
+        if(!authorizedLoading && !authorized){
+            navigate(paths.dashboard.general.dash)
+        }
 
-        check()
+    }, [authenticated, authorized]);
 
-        setChecked(true)
+    // useEffect(() => {
+    //     //if (!needFetching) return;
+
+    //     if(!authorized){
+    //         navigate(paths.dashboard.general.dash)
+    //     }
+
+    //     //setChecked(true)
         
-    }, [check, needFetching])
+    // }, [authorized])
 
     return null;
 }

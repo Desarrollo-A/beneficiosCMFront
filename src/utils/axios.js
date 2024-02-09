@@ -88,8 +88,9 @@ export const endpoints = {
     search: '/api/product/search',
   },
   user: {
-    session: 'usuario/session',
     list: 'Usuario/getUsersExternos',
+    session : 'usuario/session',
+    authorized : 'usuario/authorized',
     update: 'Usuario/updateUser',
     areas: 'Usuario/getAreas',
     batch: 'Usuario/insertBatchUsers',
@@ -220,6 +221,11 @@ export const endpoints = {
     updateOficina: '/GestorController/updateOficina',
     insertOficinas: '/GestorController/insertOficinas',
     updateSede: '/GestorController/updateSede',
-    insertSedes: '/GestorController/insertSedes',
+    insertSedes: '/GestorController/insertSedes'
   },
+  avisosPrivacidad : {
+    getEspecialidadToSelect : '/AvisosPrivacidadController/getEspecialidades',
+    getAvisoDePrivacidad : '/AvisosPrivacidadController/getAvisoPrivacidad',
+    actualizarArchivoPrivacidad: '/AvisosPrivacidadController/actualizarArchivoPrivacidad'
+  }
 };
