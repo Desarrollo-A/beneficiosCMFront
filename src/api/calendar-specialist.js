@@ -62,10 +62,6 @@ export function GetCustomEvents(current) {
     options
   );
 
-  if (data?.events?.length > 0) {
-    data.events = data.events.map((item) => ({ ...item, id: item.id.toString() }));
-  }
-
   useEffect(() => {
     // esta función ayuda a que se de un trigger para traer de nuevo los eventos del mes, cada que cambia month
     reRender();
@@ -260,7 +256,7 @@ export async function createAppointment(eventData, modalitie) {
       sede: modalitie?.sede || 'virtual',
       tituloEmail: 'Reservación',
       temaEmail: 'Se ha agendado tu cita con: ',
-      correo: eventData.paciente.correo,
+      correo: eventData.paciente.correo
     };
 
     create = await fetcherPost(create_appointment, data);
@@ -393,8 +389,7 @@ export async function endAppointment(currentEvent, reason) {
     idUsuario: datosUser.idUsuario,
   };
 
-  const mailData = {
-    // datos que se envian al correo
+  const mailData = { // datos que se envian al correo
     idCita: currentEvent?.id,
     tituloEmail: 'FINALIZACIÓN',
     temaEmail: 'Se ha finalizado tu cita en: ',
@@ -407,7 +402,7 @@ export async function endAppointment(currentEvent, reason) {
     horaFinal: dayjs(currentEvent?.end).format('HH:mm A'),
     view: 'email-end',
     correo: currentEvent?.correo,
-    link: 'https://prueba.gphsis.com/beneficiosmaderas/dashboard/calendariobeneficiario',
+    link: 'https://prueba.gphsis.com/beneficiosmaderas/dashboard/calendariobeneficiario'
   };
 
   const update = await fetcherPost(end_appointment, data);
@@ -461,11 +456,6 @@ export function useGetPending() {
 
 export function useGetEventReasons(idCita) {
   const { data, mutate: revalidate } = useSWR(get_event_reasons, (url) => fetcherPost(url, idCita));
-
-  useEffect(() => {
-    // esta función ayuda a que se de un trigger para traer de nuevo los eventos del mes, cada que cambia month
-    revalidate();
-  }, [idCita, revalidate]);
 
   const memoizedValue = useMemo(
     () => ({

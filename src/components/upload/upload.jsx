@@ -8,7 +8,7 @@ import { alpha } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 
-import xlsFile from 'src/images/file/users-file.png';
+import xlsFile  from 'src/images/file/users-file.png'
 import { UploadIllustration } from 'src/assets/illustrations';
 
 import Iconify from '../iconify';
@@ -70,7 +70,9 @@ export default function Upload({
     </Stack>
   );
 
-  const renderSinglePreview = <SingleFilePreview imgUrl={xlsFile} />;
+  const renderSinglePreview = (
+    <SingleFilePreview imgUrl={xlsFile} />
+  );
 
   const removeSinglePreview = hasFile && onDelete && (
     <IconButton
@@ -82,7 +84,7 @@ export default function Upload({
         zIndex: 9,
         position: 'absolute',
         color: (theme) => alpha(theme.palette.common.white, 0.8),
-        bgcolor: (theme) => alpha(theme.palette.grey[900], 0.72),
+        bgcolor: (theme) => alpha(theme.palette.grey[900],  0.72),
         '&:hover': {
           bgcolor: (theme) => alpha(theme.palette.grey[900], 0.48),
         },
@@ -153,7 +155,8 @@ export default function Upload({
           }),
         }}
       >
-        <input type="file" accept=".xls, .xlsx" {...getInputProps()} />
+        <input {...getInputProps()} />
+
         {hasFile ? renderSinglePreview : renderPlaceholder}
       </Box>
 

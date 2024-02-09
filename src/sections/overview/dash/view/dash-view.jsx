@@ -29,6 +29,7 @@ import EncuestaPorcentaje from '../porcentaje-encuesta';
 // ----------------------------------------------------------------------
 
 export default function DashView() {
+
   /* const { email } = useGetGeneral(endpoints.encuestas.sendMail, "email");
 
   console.log(email); */
@@ -37,12 +38,12 @@ export default function DashView() {
 
   const settings = useSettingsContext();
 
-  let idDt = '';
+  let idDt = "";
 
-  const rol = user.idRol;
+  const rol = user.idRol
   let puestos = 0;
 
-  if (rol === '1') {
+  if (rol === "1") {
     idDt = 158;
     puestos = 158;
   } else {
@@ -102,45 +103,26 @@ export default function DashView() {
     idData: idDt,
     idRol: user.idRol,
     inicio: trimStart,
-    fin: trimEnd,
+    fin: trimEnd
   });
 
   const [areas, setAreas] = useState(puestos);
 
-  const { preguntaData } = usePostGeneral(areas, endpoints.dashboard.getPregunta, 'preguntaData');
+  const { preguntaData } = usePostGeneral(areas, endpoints.dashboard.getPregunta, "preguntaData");
 
-  const { encValidData } = usePostGeneral(
-    areas,
-    endpoints.encuestas.getValidEncContestada,
-    'encValidData'
-  );
+  const { encValidData } = usePostGeneral(areas, endpoints.encuestas.getValidEncContestada, "encValidData");
 
-  const { especialistasData } = useGetGeneral(
-    endpoints.reportes.especialistas,
-    'especialistasData'
-  );
+  const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
 
-  const { pacientesData } = usePostGeneral(espe, endpoints.dashboard.getPacientes, 'pacientesData');
+  const { pacientesData } = usePostGeneral(espe, endpoints.dashboard.getPacientes, "pacientesData");
 
-  const { asistenciaData } = usePostGeneral(
-    espe,
-    endpoints.dashboard.getCtAsistidas,
-    'asistenciaData'
-  );
+  const { asistenciaData } = usePostGeneral(espe, endpoints.dashboard.getCtAsistidas, "asistenciaData");
 
-  const { canceladaData } = usePostGeneral(
-    espe,
-    endpoints.dashboard.getCtCanceladas,
-    'canceladaData'
-  );
+  const { canceladaData } = usePostGeneral(espe, endpoints.dashboard.getCtCanceladas, "canceladaData");
 
-  const { penalizadaData } = usePostGeneral(
-    espe,
-    endpoints.dashboard.getCtPenalizadas,
-    'penalizadaData'
-  );
+  const { penalizadaData } = usePostGeneral(espe, endpoints.dashboard.getCtPenalizadas, "penalizadaData");
 
-  const { metasData } = usePostGeneral(meta, endpoints.dashboard.getMetas, 'metasData');
+  const { metasData } = usePostGeneral(meta, endpoints.dashboard.getMetas, "metasData");
 
   const [pgDt, setPgDt] = useState('');
 
@@ -158,30 +140,21 @@ export default function DashView() {
 
   const handleChangePg = (newPg) => {
     setPregunta(newPg);
-  };
+  }
 
   const handleChangeIdPg = (newIdPg) => {
     setPg(newIdPg);
-  };
+  }
 
   const [selectPg, setSelectPg] = useState('');
 
-  const { respCountData } = usePostGeneral(
-    dflt,
-    endpoints.dashboard.getCountRespuestas,
-    'respCountData'
-  );
+  const { respCountData } = usePostGeneral(dflt, endpoints.dashboard.getCountRespuestas, "respCountData");
 
-  const { respData } = usePostGeneral(paramRes, endpoints.dashboard.getRespuestas, 'respData');
+  const { respData } = usePostGeneral(paramRes, endpoints.dashboard.getRespuestas, "respData");
 
-  const respArray = respData.flatMap((i) =>
-    JSON.parse(
-      `[${i.respuestas
-        .split(', ')
-        .flatMap((value) => `"${value}"`)
-        .join(', ')}]`
-    )
-  );
+  const respArray = respData.flatMap((i) => (
+    JSON.parse(`[${i.respuestas.split(', ').flatMap(value => `"${value}"`).join(', ')}]`
+    )));
 
   const resultArray = respArray.map((respuesta) => {
     const matchingObj = respCountData.find((obj) => obj.respuesta === respuesta);
@@ -195,39 +168,41 @@ export default function DashView() {
 
   useEffect(() => {
     if (preguntaData.length > 0) {
-      setIdEncuesta(preguntaData[0]?.idEncuesta);
+      setIdEncuesta(preguntaData[0]?.idEncuesta)
     }
-  }, [preguntaData]);
+  }, [preguntaData])
 
   useEffect(() => {
-    if (encValidData === true) {
-      if (preguntaData && Array.isArray(pregunta) && pregunta.length === 0) {
-        setDflt([
-          { idPregunta: preguntaData[0]?.idPregunta },
-          { idEncuesta: preguntaData[0]?.idEncuesta },
-          { respuestas: preguntaData[0]?.respuestas },
-          { pregunta: preguntaData[0]?.pregunta },
-        ]);
 
-        setParamRes([
-          { idPregunta: preguntaData[0]?.idPregunta },
-          { idEncuesta: preguntaData[0]?.idEncuesta },
-          { idArea: preguntaData[0]?.idArea },
-        ]);
+    if (encValidData === true) {
+
+      if (preguntaData && Array.isArray(pregunta) && pregunta.length === 0) {
+
+        setDflt([{ idPregunta: preguntaData[0]?.idPregunta },
+        { idEncuesta: preguntaData[0]?.idEncuesta },
+        { respuestas: preguntaData[0]?.respuestas },
+        { pregunta: preguntaData[0]?.pregunta }]);
+
+        setParamRes([{ idPregunta: preguntaData[0]?.idPregunta },
+        { idEncuesta: preguntaData[0]?.idEncuesta },
+        { idArea: preguntaData[0]?.idArea }]);
 
         setSelectPg(preguntaData[0]?.pregunta);
 
         setPgDt(preguntaData[0]?.respuestas);
+
       } else if (preguntaData && Array.isArray(pregunta) && pregunta.length > 0) {
+
         setDflt(pregunta);
 
-        setParamRes(pregunta);
+        setParamRes(pregunta)
 
         setSelectPg(pregunta[3]?.pregunta);
 
         setPgDt(respData[0]?.grupo);
+
       } else {
-        alert('Error');
+        alert("Error")
       }
     }
   }, [preguntaData, pregunta, respData, encValidData]);
@@ -238,34 +213,37 @@ export default function DashView() {
     } else if (preguntaData && Array.isArray(pregunta) && pregunta.length > 0) {
       setPg(pregunta[0]?.idPregunta);
     } else {
-      alert('Error');
+      alert("Error")
     }
   }, [preguntaData, pregunta]);
 
   useEffect(() => {
-    if (preguntaData && Array.isArray(pregunta) && pregunta.length === 0 && pgDt !== '3') {
+    if (preguntaData && Array.isArray(pregunta) && pregunta.length === 0 && pgDt !== "3") {
       setSn(0);
-    } else if (preguntaData && Array.isArray(pregunta) && pregunta.length === 0 && pgDt === '3') {
+    } else if (preguntaData && Array.isArray(pregunta) && pregunta.length === 0 && pgDt === "3") {
       setSn(1);
     } else if (pregunta.length > 0 && pgDt === 3) {
       setSn(1);
     } else if (pregunta.length > 0 && pgDt !== 3) {
       setSn(0);
     } else {
-      alert('Error');
+      alert("Error")
     }
   }, [preguntaData, pregunta, pgDt, resultArray]);
 
   const _dt = {
     percent: (index) => percent[index],
-  };
+  }
 
-  const _ecommerceSalesOverview = ['No', 'Si'].map((label, index) => ({
-    label,
-    value: _dt.percent(index) ?? 0,
-  }));
+  const _ecommerceSalesOverview = ['No', 'Si'].map(
+    (label, index) => ({
+      label,
+      value: _dt.percent(index) ?? 0,
+    })
+  );
 
   function metasDate() {
+
     let totMeta = 0;
 
     if (areas === 158 && user.idUsuario === 40) {
@@ -281,13 +259,14 @@ export default function DashView() {
     }
 
     return {
-      totalMeta: totMeta,
+      totalMeta: totMeta
     };
   }
 
   const { totalMeta } = metasDate();
 
   const handleChangeArea = (event) => {
+
     setAreas(event.target.value);
 
     setEspe({ idData: event.target.value, idRol: user.idRol });
@@ -297,16 +276,17 @@ export default function DashView() {
         idData: event.target.value,
         idRol: user.idRol,
         inicio: trimStart,
-        fin: trimEnd,
-      });
+        fin: trimEnd
+      })
     } else {
       setMeta({
         idData: event.target.value,
         idRol: user.idRol,
         inicio: firstDayMonth,
-        fin: lastDayMonth,
-      });
+        fin: lastDayMonth
+      })
     }
+
   };
 
   const [value, setValue] = useState(new Date());
@@ -323,13 +303,17 @@ export default function DashView() {
 
   return (
     <>
+
       <Container maxWidth={settings.themeStretch ? false : 'xl'}>
+
         <Grid container spacing={3}>
+
           <Grid xs={12} md={9}>
             <AppWelcome
               title={`Bienvenido 👋 \n ${user?.nombre}`}
               description="If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything."
               img={<SeoIllustration />}
+              
             />
           </Grid>
 
@@ -348,14 +332,16 @@ export default function DashView() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '360px',
+                width: '360px'
               }}
             >
-              <Clock value={value} />
+              <Clock value={value}/>
             </Card>
           </Grid>
+              
 
-          {rol === '1' ? (
+
+          {rol === "1" ? (
             <FormControl fullWidth>
               <InputLabel id="demo-simple-select-label">Área</InputLabel>
               <Select
@@ -372,8 +358,12 @@ export default function DashView() {
                 ))}
               </Select>
             </FormControl>
+
           ) : (
-            <></>
+
+            <>
+            </>
+
           )}
 
           {pacientesData.map((i, index) => (
@@ -382,12 +372,7 @@ export default function DashView() {
                 title={rol === '2' ? 'Total citas' : 'Total pacientes'}
                 total={i.pacientes}
                 color="info"
-                icon={
-                  <img
-                    alt="icon"
-                    src={`${import.meta.env.BASE_URL}assets/icons/glass/usuario.png`}
-                  />
-                }
+                icon={<img alt="icon" src= {`${import.meta.env.BASE_URL}assets/icons/glass/usuario.png`} />}
               />
             </Grid>
           ))}
@@ -397,9 +382,7 @@ export default function DashView() {
               <WidgetConteo
                 title="Total citas asistidas"
                 total={i.asistencia}
-                icon={
-                  <img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/check.png`} />
-                }
+                icon={<img alt="icon" src= {`${import.meta.env.BASE_URL}assets/icons/glass/check.png`} />}
               />
             </Grid>
           ))}
@@ -410,12 +393,7 @@ export default function DashView() {
                 title="Total citas canceladas"
                 total={i.cancelada}
                 color="warning"
-                icon={
-                  <img
-                    alt="icon"
-                    src={`${import.meta.env.BASE_URL}assets/icons/glass/cancelar.png`}
-                  />
-                }
+                icon={<img alt="icon" src= {`${import.meta.env.BASE_URL}assets/icons/glass/calendar.png`} />}
               />
             </Grid>
           ))}
@@ -426,15 +404,14 @@ export default function DashView() {
                 title="Total citas penalizadas"
                 total={i.penalizada}
                 color="error"
-                icon={
-                  <img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/dolar.png`} />
-                }
+                icon={<img alt="icon" src= {`${import.meta.env.BASE_URL}assets/icons/glass/dolar.png`}/>}
               />
             </Grid>
           ))}
 
-          {rol !== '2' ? (
+          {rol !== "2" ? (
             <>
+
               {metasData.map((i, index) => (
                 <Grid xs={12} sm={6} md={4} key={index}>
                   <GraficaMetas
@@ -462,7 +439,7 @@ export default function DashView() {
                             {
                               name: 'Total',
                               data: resultArray,
-                            },
+                            }
                           ],
                         },
                       ],
@@ -474,7 +451,9 @@ export default function DashView() {
                     handleChangeIdPg={handleChangeIdPg}
                   />
                 </Grid>
+
               ) : (
+
                 <Grid xs={12} sm={6} md={8}>
                   <EncuestaPorcentaje
                     idPregunta={pg}
@@ -487,12 +466,20 @@ export default function DashView() {
                     handleChangeIdPg={handleChangeIdPg}
                   />
                 </Grid>
+
               )}
+
             </>
+
           ) : (
-            <></>
+
+            <>
+            </>
+
           )}
+
         </Grid>
+
       </Container>
 
       {/* <Grid xs={12} md={6} lg={12}>
