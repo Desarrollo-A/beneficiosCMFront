@@ -76,7 +76,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
   const values = watch();
   const hourError = checkHour(values.start, defaultEnd, type, defaultInicio, defaultFecha, allDay);
   const selectedUser = userSelect(type, patient); // validacion si se selecciono paciente, solo al crear cita
-  const selectedModalitie = !!((type === 'date' && modalitie.id) || type === 'cancel');
+  const selectedModalitie = !!((type === 'date' && modalitie.id) || type === 'cancel' || (type === 'date' && patient.externo === 1));
   const dateError = type === 'cancel' && defaultInicio > defaultFecha; // validacion que la fecha final no sea menor a la fecha inicio
   const endValidation = allDay ? !defaultEnd : defaultEnd;
 
@@ -246,6 +246,9 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
         </Stack>
         <Stack direction="row" justifyContent="space-between " sx={{ p: { xs: 1, md: 2 } }}>
           <Typography variant="subtitle1">{dateTitle}</Typography>
+          {patient?.externo === 1 &&
+            <Typography color="error" variant="subtitle2">Para lamat solo aplican citas presenciales</Typography>
+          }
           {type === 'cancel' && (
             <FormControlLabel
               sx={{ mt: -0.85 }}
@@ -266,7 +269,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
                 handlePatient(value);
               }}
               options={userData.map((user) => ({
-                label: user.nombre,
+                label: user.nombreCompleto,
                 value: user.idUsuario,
                 idSede: user.idSede,
                 values: user,
@@ -275,7 +278,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
           </Stack>
         )}
         <Stack spacing={3} sx={{ p: { xs: 1, md: 2 } }}>
-          {type === 'date' ? (
+          {type === 'date' && patient?.externo !== 1 ? (
             <RHFAutocomplete
               name="tipoCita"
               label="Tipo de cita"
@@ -293,8 +296,12 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
               }))}
             />
           ) : (
-            <RHFTextField name="title" label="Título" />
+            ''
           )}
+
+          { type === 'cancel' &&
+            <RHFTextField name="title" label="Título" />
+          }
         </Stack>
 
         <Stack

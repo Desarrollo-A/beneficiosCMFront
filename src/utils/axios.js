@@ -219,5 +219,10 @@ export const endpoints = {
     insertOficinas: '/GestorController/insertOficinas',
     updateSede: '/GestorController/updateSede',
     insertSedes: '/GestorController/insertSedes'
+  },
+  avisosPrivacidad : {
+    getEspecialidadToSelect : '/AvisosPrivacidadController/getEspecialidades',
+    getAvisoDePrivacidad : '/AvisosPrivacidadController/getAvisoPrivacidad',
+    actualizarArchivoPrivacidad: '/AvisosPrivacidadController/actualizarArchivoPrivacidad'
   }
 };

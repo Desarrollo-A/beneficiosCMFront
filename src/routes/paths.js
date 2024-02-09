@@ -130,6 +130,9 @@ export const paths = {
       oficinas: `${ROOTS.DASHBOARD}/gestor/oficinas`,
       sedes: `${ROOTS.DASHBOARD}/gestor/sedes`,
     },
+    privacidad: {
+      aprivacidad: `${ROOTS.DASHBOARD}/privacidad/administrar`
+    },
     user: {
       root: `${ROOTS.DASHBOARD}/user`,
       new: `${ROOTS.DASHBOARD}/user/new`,

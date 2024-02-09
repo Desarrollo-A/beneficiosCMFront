@@ -99,7 +99,8 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
       oficina: currentEvent?.oficina,
       correo: currentEvent?.correo,
       fechaCreacion: currentEvent?.fechaCreacion,
-      idEventoGoogle: currentEvent?.idEventoGoogle
+      idEventoGoogle: currentEvent?.idEventoGoogle,
+      tipoPuesto: currentEvent?.tipoPuesto
     };
     switch (cancelType) {
       case 8:
@@ -345,7 +346,7 @@ CancelEventDialog.propTypes = {
   type: PropTypes.any,
   currentEvent: PropTypes.object,
   pastCheck: PropTypes.any,
-  reasons: PropTypes.array,
+  reasons: PropTypes.any,
   onClose: PropTypes.func,
   close: PropTypes.func,
   selectedDate: PropTypes.any,
