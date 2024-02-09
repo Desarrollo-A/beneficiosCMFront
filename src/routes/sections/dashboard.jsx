@@ -24,6 +24,9 @@ const AtencionXsedePage = lazy(() => import('src/pages/dashboard/gestor/atencion
 const OficinasPage = lazy(() => import('src/pages/dashboard/gestor/oficinas-view'));
 const SedesPage = lazy(() => import('src/pages/dashboard/gestor/sedes-view'));
 // ----------------------------------------------------------------------
+
+// AVISOS DE PRIVACIDAD
+const AvisosDePrivacidad = lazy(() => import('src/pages/dashboard/privacidad/aviso-privacidad'));
 const OverviewEcommercePage = lazy(() => import('src/pages/dashboard/ecommerce'));
 const OverviewAnalyticsPage = lazy(() => import('src/pages/dashboard/analytics'));
 const OverviewBankingPage = lazy(() => import('src/pages/dashboard/banking'));
@@ -120,6 +123,13 @@ export const dashboardRoutes = [
           { path: 'atencionxsede', element: <AtencionXsedePage /> },
           { path: 'oficinas', element: <OficinasPage /> },
           { path: 'sedes', element: <SedesPage /> },
+        ],
+      },
+      {
+        path: 'privacidad',
+        children: [
+          { path: 'administrar', element: <AvisosDePrivacidad /> },
+          { path: 'ver', element: <AvisosDePrivacidad /> }
         ],
       },
       { path: 'dash', element: <DashPage /> },
