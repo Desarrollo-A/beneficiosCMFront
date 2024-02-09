@@ -11,11 +11,15 @@ import { authDemoRoutes } from './auth-demo';
 import { dashboardRoutes } from './dashboard';
 import { componentsRoutes } from './components';
 
+import { useSession } from 'src/hooks/use-session';
+
 const JwtLoginPage = lazy(() => import('src/pages/auth/jwt/login'));
 
-// ---------------------------------------------------------------------- 
+// ----------------------------------------------------------------------
 
 export default function Router() {
+  useSession();
+
   return useRoutes([
     // SET INDEX PAGE WITH SKIP HOME PAGE
     // {
