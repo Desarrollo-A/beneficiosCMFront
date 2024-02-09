@@ -9,35 +9,6 @@ import { fetcher, endpoints, fetcherGet, fetcherPost } from 'src/utils/axios';
 // ----------------------------------------------------------------------
 const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
 
-export function useGetAuthorized(){
-  const location = useLocation();
-
-  const URL = `${endpoints.user.authorized}?path=${location.pathname}`
-
-  const accessToken = sessionStorage.getItem('accessToken');
-
-  let config = {
-    headers: {
-      token: accessToken,
-    }
-  }
-
-  const { data, isLoading, error, isValidating } = useSWR([URL, config], fetcherGet);
-  
-  const memoizedValue = useMemo(
-    () => ({
-      authorized: data?.authorized || false,
-      authorizedLoading: isLoading,
-      authorizedError: error,
-      authorizedValidating: isValidating,
-      authorizedEmpty: !isLoading && !data,
-    }),
-    [data, error, isLoading, isValidating]
-  );
-
-  return memoizedValue;
-}
-
 export function useGetUserData(){
   const URL = endpoints.user.session;
 
@@ -50,35 +21,6 @@ export function useGetUserData(){
       userError: error,
       userValidating: isValidating,
       userEmpty: !isLoading && !data,
-    }),
-    [data, error, isLoading, isValidating]
-  );
-
-  return memoizedValue;
-}
-
-export function useGetAuthorized(){
-  const location = useLocation();
-
-  const URL = `${endpoints.user.authorized}?path=${location.pathname}`
-
-  const accessToken = sessionStorage.getItem('accessToken');
-
-  let config = {
-    headers: {
-      token: accessToken,
-    }
-  }
-
-  const { data, isLoading, error, isValidating } = useSWR([URL, config], fetcherGet);
-  
-  const memoizedValue = useMemo(
-    () => ({
-      authorized: data?.authorized || false,
-      authorizedLoading: isLoading,
-      authorizedError: error,
-      authorizedValidating: isValidating,
-      authorizedEmpty: !isLoading && !data,
     }),
     [data, error, isLoading, isValidating]
   );
@@ -180,4 +122,33 @@ export function useBatchUsers() {
   };
 
   return batchUsers;
+}
+
+export function useGetAuthorized(){
+  const location = useLocation();
+
+  const URL = `${endpoints.user.authorized}?path=${location.pathname}`
+
+  const accessToken = sessionStorage.getItem('accessToken');
+
+  let config = {
+    headers: {
+      token: accessToken,
+    }
+  }
+
+  const { data, isLoading, error, isValidating } = useSWR([URL, config], fetcherGet);
+
+  const memoizedValue = useMemo(
+    () => ({
+      authorized: data?.authorized || false,
+      authorizedLoading: isLoading,
+      authorizedError: error,
+      authorizedValidating: isValidating,
+      authorizedEmpty: !isLoading && !data,
+    }),
+    [data, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
 }
