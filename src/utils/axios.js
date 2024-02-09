@@ -88,7 +88,8 @@ export const endpoints = {
     search: '/api/product/search',
   },
   user: {
-    session: 'usuario/session',
+    session : 'usuario/session',
+    authorized : 'usuario/authorized',
     list: 'Usuario/getUsers',
     update: 'Usuario/updateUser',
     areas: 'Usuario/getAreas',
