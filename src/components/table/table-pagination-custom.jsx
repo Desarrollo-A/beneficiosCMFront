@@ -27,7 +27,8 @@ export default function TablePaginationCustom({
         sx={{
           borderTopColor: 'transparent',
         }}
-        labelRowsPerPage={"Filas por página:"}
+        labelRowsPerPage="Filas por página:"
+        labelDisplayedRows={({ from, to, count }) => `${from} - ${to} de ${count}`}
       />
 
       {onChangeDense && (

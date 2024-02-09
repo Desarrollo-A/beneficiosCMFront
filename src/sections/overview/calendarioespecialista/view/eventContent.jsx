@@ -109,6 +109,7 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
       fechaFinal: type === 'date' ? fDate(defaultInicio) : fDate(defaultFecha),
       paciente: currentEvent?.idPaciente,
       estatus: currentEvent?.estatus,
+      idEventoGoogle: currentEvent?.idEventoGoogle
     };
 
     try {

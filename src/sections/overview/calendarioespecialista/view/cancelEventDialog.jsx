@@ -31,15 +31,7 @@ import {
   cancelAppointment,
 } from 'src/api/calendar-specialist';
 
-export default function CancelEventDialog({
-  type,
-  currentEvent,
-  pastCheck,
-  reasons,
-  onClose,
-  close,
-  selectedDate,
-}) {
+export default function CancelEventDialog({ type, currentEvent, pastCheck, reasons, onClose, close, selectedDate }) {
   dayjs.locale('es'); // valor para cambiar el idioma del dayjs
   const [assist, setAssist] = useState('');
   const [cancelType, setCancelType] = useState('');
@@ -106,6 +98,8 @@ export default function CancelEventDialog({
       sede: currentEvent?.sede,
       oficina: currentEvent?.oficina,
       correo: currentEvent?.correo,
+      fechaCreacion: currentEvent?.fechaCreacion,
+      idEventoGoogle: currentEvent?.idEventoGoogle
     };
     switch (cancelType) {
       case 8:

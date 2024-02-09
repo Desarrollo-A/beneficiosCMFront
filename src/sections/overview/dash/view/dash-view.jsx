@@ -11,6 +11,8 @@ import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import { alpha, useTheme } from '@mui/material/styles';
 
+
+import { _appAuthors, _appRelated, _appFeatured, _appInvoices, _appInstalled } from 'src/_mock';
 import { endpoints } from 'src/utils/axios';
 
 import { bgGradient } from 'src/theme/css';
@@ -24,6 +26,7 @@ import AppWelcome from '../app-welcome';
 import WidgetConteo from '../widget-conteo';
 import GraficaMetas from '../grafica-metas';
 import EncuestaBarra from '../barra-encuesta';
+import AppTopRelated from '../app-top-related';
 import EncuestaPorcentaje from '../porcentaje-encuesta';
 
 // ----------------------------------------------------------------------
@@ -43,7 +46,7 @@ export default function DashView() {
   const rol = user.idRol
   let puestos = 0;
 
-  if (rol === "1") {
+  if (rol === "4" || rol === 4) {
     idDt = 158;
     puestos = 158;
   } else {
@@ -301,6 +304,28 @@ export default function DashView() {
 
   const theme = useTheme();
 
+  const appRelated = ['Chrome', 'Drive', 'Dropbox', 'Evernote', 'Github'].map(
+    (name, index) => {
+      const system = [2, 4].includes(index) ? 'Windows' : 'Mac';
+  
+      const shortcut =
+        (name === 'Chrome' && '/assets/icons/app/ic_chrome.svg') ||
+        (name === 'Drive' && '/assets/icons/app/ic_drive.svg') ||
+        (name === 'Dropbox' && '/assets/icons/app/ic_dropbox.svg') ||
+        (name === 'Evernote' && '/assets/icons/app/ic_evernote.svg') ||
+        '/assets/icons/app/ic_github.svg';
+  
+      return {
+        /* id: _mock.id(index), */
+        name,
+        system,
+        shortcut,
+        /* ratingNumber: _mock.number.rating(index),
+        totalReviews: _mock.number.nativeL(index), */
+      };
+    }
+  );
+
   return (
     <>
 
@@ -313,7 +338,7 @@ export default function DashView() {
               title={`Bienvenido 👋 \n ${user?.nombre}`}
               description="If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything."
               img={<SeoIllustration />}
-              
+
             />
           </Grid>
 
@@ -335,13 +360,13 @@ export default function DashView() {
                 width: '360px'
               }}
             >
-              <Clock value={value}/>
+              <Clock value={value} />
             </Card>
           </Grid>
-              
 
 
-          {rol === "1" ? (
+
+          {rol === "4" || rol === 4 ? (
             <FormControl fullWidth>
               <InputLabel id="demo-simple-select-label">Área</InputLabel>
               <Select
@@ -369,10 +394,10 @@ export default function DashView() {
           {pacientesData.map((i, index) => (
             <Grid xs={12} sm={6} md={3} key={index}>
               <WidgetConteo
-                title={rol === '2' ? 'Total citas' : 'Total pacientes'}
+                title={rol === '2' || rol === 2 ? 'Total citas' : 'Total pacientes'}
                 total={i.pacientes}
                 color="info"
-                icon={<img alt="icon" src= {`${import.meta.env.BASE_URL}assets/icons/glass/usuario.png`} />}
+                icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/usuario.png`} />}
               />
             </Grid>
           ))}
@@ -382,7 +407,7 @@ export default function DashView() {
               <WidgetConteo
                 title="Total citas asistidas"
                 total={i.asistencia}
-                icon={<img alt="icon" src= {`${import.meta.env.BASE_URL}assets/icons/glass/check.png`} />}
+                icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/check.png`} />}
               />
             </Grid>
           ))}
@@ -393,7 +418,7 @@ export default function DashView() {
                 title="Total citas canceladas"
                 total={i.cancelada}
                 color="warning"
-                icon={<img alt="icon" src= {`${import.meta.env.BASE_URL}assets/icons/glass/calendar.png`} />}
+                icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/cancelar.png`} />}
               />
             </Grid>
           ))}
@@ -404,12 +429,12 @@ export default function DashView() {
                 title="Total citas penalizadas"
                 total={i.penalizada}
                 color="error"
-                icon={<img alt="icon" src= {`${import.meta.env.BASE_URL}assets/icons/glass/dolar.png`}/>}
+                icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/dolar.png`} />}
               />
             </Grid>
           ))}
 
-          {rol !== "2" ? (
+          {rol === "1" || rol === 1 || rol === "3" || rol === 3 || rol === "4" || rol === 4 ? (
             <>
 
               {metasData.map((i, index) => (
@@ -478,7 +503,13 @@ export default function DashView() {
 
           )}
 
+          {/* <Grid xs={12} md={6} lg={4}>
+            <AppTopRelated title="Evaluacion de especialistas" list={_appRelated} />
+          </Grid> */}
+
         </Grid>
+
+
 
       </Container>
 

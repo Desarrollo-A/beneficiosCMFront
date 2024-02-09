@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 import { useMemo , useState } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -13,6 +14,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import InputAdornment from '@mui/material/InputAdornment';
 
+import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -20,22 +22,19 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import Servicios from 'src/utils/servicios';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { PATH_AFTER_LOGIN } from 'src/config-global';
 
 import Iconify from 'src/components/iconify';
-import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, {  RHFTextField } from 'src/components/hook-form';
 // ----------------------------------------------------------------------
 
-export default function preRegisterUser({ currentUser }) {
+export default function PreRegisterUser({ currentUser }) {
   const { login } = useAuthContext();
-
-  const { enqueueSnackbar } = useSnackbar();
   const password = useBoolean();
   const passwordConfirm = useBoolean();
   const router = useRouter();
   const  location  = useLocation();
   const [datosEmpleado,setDatosEmpleado] = useState( location.state.data[0]);
+  const [errorMsg, setErrorMsg] = useState('');
 
 
 const servicios = Servicios();
@@ -70,15 +69,18 @@ const NewUserSchema = Yup.object().shape({
   const onSubmit = handleSubmit( (data) => {
     const temDatos = {...datosEmpleado,password:data.confirmNewPassword}
     setDatosEmpleado(temDatos);
-     servicios.addRegistroEmpleado(data => {
-      if(data.estatus === 1){
-        login?.(datosEmpleado.num_empleado, temDatos.confirmNewPassword)
+     servicios.addRegistroEmpleado(dataSb => {
+      if(dataSb.estatus === 1){
+
+        login?.(temDatos.num_empleado, temDatos.password)
         .then(response=>{
           console.log(response);
           if(response.result === 0){
-            setErrorMsg(typeof error === 'string' ? error : response.message);
+            setErrorMsg(response.message);
           }else{
-              router.push(returnTo || PATH_AFTER_LOGIN);
+              console.log(paths.dashboard.general.dash)
+
+              router.push(paths.dashboard.general.dash);
           }
         })
       }
@@ -86,6 +88,7 @@ const NewUserSchema = Yup.object().shape({
       params:temDatos
     }
     );
+    console.log(errorMsg);
   });
 
   const styles = {
@@ -157,3 +160,7 @@ const NewUserSchema = Yup.object().shape({
       </Grid>
   );
 }
+
+PreRegisterUser.propTypes = {
+  currentUser: PropTypes.object,
+};
