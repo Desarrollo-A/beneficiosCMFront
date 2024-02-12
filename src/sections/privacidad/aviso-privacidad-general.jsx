@@ -1,6 +1,6 @@
 import axios from 'axios';
 import * as React from 'react';
-import { useRef } from 'react';
+// import { useRef } from 'react';
 import { Base64 } from 'js-base64';
 
 import Select from '@mui/material/Select';
@@ -41,7 +41,7 @@ export default function AvisoPrivacidadGeneral() {
   const user = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
   const [archivoPrivacidad, setArchivoPrivacidad] = React.useState({archivo:'', idDocumento:0, nombreDocumento:''});
   const [existeRama, setExisteRama] = React.useState(false);
-  const fileInputRef = useRef(null);
+  // const fileInputRef = useRef(null);
   const [detalleEspecialidad, setDetalleEspecialidad] = React.useState({id:'', nombre:''});
   const [actualizarView, setAcualizarView] = React.useState(false);
   const [nombreArchivo, setNombreArchivo] = React.useState('');
@@ -111,9 +111,9 @@ export default function AvisoPrivacidadGeneral() {
     function NoHayArchivo(){
 
         
-        const manejarClick = () => {
-            fileInputRef.current.click();
-          };
+        // const manejarClick = () => {
+        //     fileInputRef.current.click();
+        //   };
 
         const manejarCambioArchivo = (event) => {
             // const archivoSeleccionado = event.target.files[0];
@@ -194,7 +194,7 @@ export default function AvisoPrivacidadGeneral() {
     if(existeRama === true){
         visorPdfFile = <NoHayArchivo/>      
     }
-
+console.log(especialidadesDisponibles[0]);
   return (
     <>
         <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -211,6 +211,7 @@ export default function AvisoPrivacidadGeneral() {
                             label="Tipo especialidad"
                             onChange={handleChange}
                             sx={{width: '100%'}}
+                            defaultValue={especialidadesDisponibles[0]}
                             >
                             {
                                 especialidadesDisponibles.map((elemento, index) => (

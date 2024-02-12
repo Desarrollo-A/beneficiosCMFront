@@ -1,32 +1,31 @@
+import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { useState, useCallback, useEffect } from 'react';
 
-import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
+// import Box from '@mui/material/Box';
+// import Paper from '@mui/material/Paper';
+// import Stack from '@mui/material/Stack';
 import Dialog from '@mui/material/Dialog';
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import ListItemText from '@mui/material/ListItemText';
-import Accordion from '@mui/material/Accordion';
-import AccordionActions from '@mui/material/AccordionActions';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
+// import Button from '@mui/material/Button';
+// import Accordion from '@mui/material/Accordion';
+// import ListItemText from '@mui/material/ListItemText';
+// import AccordionActions from '@mui/material/AccordionActions';
+// import AccordionSummary from '@mui/material/AccordionSummary';
+// import AccordionDetails from '@mui/material/AccordionDetails';
 
-import { endpoints } from 'src/utils/axios';
-
-import { usePostGeneral } from 'src/api/general';
 import { useBoolean } from 'src/hooks/use-boolean';
-import { useResponsive } from 'src/hooks/use-responsive';
+// import { useResponsive } from 'src/hooks/use-responsive';
 
-import { fData } from 'src/utils/format-number';
+// import { endpoints } from 'src/utils/axios';
+// import { fData } from 'src/utils/format-number';
 
 import { useAuthContext } from 'src/auth/hooks';
+// import { usePostGeneral } from 'src/api/general';
 
-import Iconify from 'src/components/iconify';
+// import Iconify from 'src/components/iconify';
 
+import SedeItem from './sede-item';
 import BankingContacts from './banking-contacts';
 import ModalAsignarSede from './modal-asignar-sede';
-import SedeItem from './sede-item';
 
 // ----------------------------------------------------------------------
 
@@ -36,16 +35,16 @@ export default function SedeSnAsignar({ onDelete, sx, modalidadesData, puestosDa
 
   /* const { sedData } = usePostGeneral(user.idPuesto, endpoints.gestor.getSedeNoneEsp, "sedData"); */
 
-  const smUp = useResponsive('up', 'sm');
+  // const smUp = useResponsive('up', 'sm');
 
-  const details = useBoolean();
+  // const details = useBoolean();
 
   const modal = useBoolean();
 
   const [sd, setSd] = useState(0);
 
   const [open2, setOpen2] = useState(false);
-  const [close2, setClose2] = useState(false);
+  const [close2] = useState(false); // setClose2
 
   const handleOpen = (idSede) => {
     setOpen2(true);

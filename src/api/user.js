@@ -1,13 +1,12 @@
 import useSWR from 'swr';
 import { useMemo } from 'react';
 import { Base64 } from 'js-base64';
-
 import { useLocation } from 'react-router-dom';
 
 import { fetcher, endpoints, fetcherGet, fetcherPost } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
-const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+const datosUser = sessionStorage.getItem('accessToken') ? JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2])): '';
 
 export function useGetUserData() {
   const URL = endpoints.user.session;

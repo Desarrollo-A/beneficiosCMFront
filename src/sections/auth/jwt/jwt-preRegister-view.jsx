@@ -88,7 +88,7 @@ const NewUserSchema = Yup.object().shape({
       params:temDatos
     }
     );
-    // console.log(errorMsg);
+    console.log(errorMsg);
   });
 
   const styles = {

@@ -20,7 +20,7 @@ import { usePostGeneral } from 'src/api/general';
 
 export default function HistorialCitas({ open, onClose, idUsuario, area }) {
 
-  const [data, setData] = useState({
+  const [data] = useState({ // setData
     idUser: idUsuario,
     espe: area
   });
@@ -69,7 +69,7 @@ HistorialCitas.propTypes = {
 };
 
 function OrderItem({ item, lastTimeline }) {
-  const { titulo, estatus, estatusCita, tipoCita, horario, especialista } = item;
+  const { titulo, estatus, estatusCita, horario, especialista } = item; // tipoCita
 
   return (
     <TimelineItem>

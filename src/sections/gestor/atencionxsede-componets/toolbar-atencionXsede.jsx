@@ -12,7 +12,7 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 
 import Iconify from 'src/components/iconify';
-import { usePopover } from 'src/components/custom-popover';
+// import { usePopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
 
@@ -27,7 +27,7 @@ export default function ToolbarAtencionXsede({
   rol,
   _puEs
 }) {
-  const popover = usePopover();
+  // const popover = usePopover();
 
   const handleFilterName = useCallback(
     (event) => {
