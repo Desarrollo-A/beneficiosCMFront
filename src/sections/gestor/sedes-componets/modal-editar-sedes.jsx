@@ -15,11 +15,11 @@ import DialogActions from '@mui/material/DialogActions';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import { useAuthContext } from 'src/auth/hooks';
 import { endpoints } from 'src/utils/axios';
 
 import { useUpdate } from 'src/api/reportes';
-import { useGetGeneral } from 'src/api/general';
+import { useAuthContext } from 'src/auth/hooks';
+// import { useGetGeneral } from 'src/api/general';
 
 import { useSnackbar } from 'src/components/snackbar';
 // ----------------------------------------------------------------------
@@ -32,7 +32,7 @@ export default function ModalEditarSedes({ open, onClose, idSede, sede, abreviac
 
   const updateEstatus = useUpdate(endpoints.gestor.updateSede);
 
-  const { sedesData } = useGetGeneral(endpoints.gestor.getSedes, "sedesData");
+  // const { sedesData } = useGetGeneral(endpoints.gestor.getSedes, "sedesData");
 
   const { enqueueSnackbar } = useSnackbar();
 

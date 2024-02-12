@@ -1,19 +1,18 @@
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
 import { useNavigate } from 'react-router-dom';
 
-import { useAuthContext } from 'src/auth/hooks';
-
-import { useGetAuthorized } from 'src/api/user';
-
 import { paths } from 'src/routes/paths';
+
+import { useAuthContext } from 'src/auth/hooks';
+import { useGetAuthorized } from 'src/api/user';
 
 export function useSession() {
     const navigate = useNavigate();
     const { authenticated } = useAuthContext();
     const { authorized, authorizedLoading } = useGetAuthorized();
 
-    const [needFetching, setNeedFetching] = useState(false)
-    const [checked, setChecked] = useState(false)
+   // const [needFetching, setNeedFetching] = useState(false)
+   // const [checked, setChecked] = useState(false)
 
     useEffect(() => {
         // if(!checked){

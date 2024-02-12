@@ -5,12 +5,12 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Drawer from '@mui/material/Drawer';
 
-import { bgBlur } from 'src/theme/css';
-
 import { usePathname } from 'src/routes/hooks';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 import { useMockedUser } from 'src/hooks/use-mocked-user';
+
+import { bgBlur } from 'src/theme/css';
 
 import Logo from 'src/components/logo';
 import Scrollbar from 'src/components/scrollbar';

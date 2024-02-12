@@ -25,7 +25,7 @@ import uuidv4 from 'src/utils/uuidv4';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { AvatarShape } from 'src/assets/illustrations';
-import { useGetEventReasons } from 'src/api/calendar-specialist';
+// import { useGetEventReasons } from 'src/api/calendar-specialist';
 import {
   sendMail,
   consultarCita,

@@ -10,15 +10,15 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
 import { useBoolean } from 'src/hooks/use-boolean';
-import { useResponsive } from 'src/hooks/use-responsive';
+// import { useResponsive } from 'src/hooks/use-responsive';
 
-import { endpoints } from 'src/utils/axios';
+// import { endpoints } from 'src/utils/axios';
 import { fData } from 'src/utils/format-number';
 
-import { usePostGeneral } from 'src/api/general';
+// import { usePostGeneral } from 'src/api/general';
 
 import Iconify from 'src/components/iconify';
-import { useSnackbar } from 'src/components/snackbar';
+// import { useSnackbar } from 'src/components/snackbar';
 
 import ModalAsignarSede from './modal-asignar-sede';
 
@@ -33,7 +33,7 @@ export default function ModalListaSedes({ idPuesto, open, onClose, modalidadesDa
   const [sd, setSd] = useState(0);
 
   const [open2, setOpen2] = useState(false);
-  const [close2, setClose2] = useState(false);
+  const [close2] = useState(false); // setClose2
 
   const handleOpen = (idSede) => {
     setSd(idSede);
