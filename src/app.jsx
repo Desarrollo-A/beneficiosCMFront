@@ -29,8 +29,6 @@ import ContextGeneralProvider from './utils/contextGeneralProvider';
 // import { AuthProvider } from 'src/auth/context/amplify';
 // import { AuthProvider } from 'src/auth/context/firebase';
 
-// Este es un nuevo comentario
-
 // ----------------------------------------------------------------------
 
 export default function App() {
