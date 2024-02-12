@@ -107,6 +107,9 @@ export const endpoints = {
   especialistas: {
     list: 'CalendarioController/getEspecialistaPorBeneficioYSede',
     modalities: 'CalendarioController/getModalidadesEspecialista',
+    sedes: 'especialistas/sedes',
+    horario: 'especialistas/horario',
+    horarios: 'especialistas/horarios',
   },
   calendario: {
     getAllEvents: 'CalendarioController/getAllEvents',
