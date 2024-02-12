@@ -9,7 +9,6 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
-import EditIcon from '@mui/icons-material/Edit';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -77,7 +76,7 @@ export default function AvisoPrivacidadGeneral({datos, enviarDatosAlPadre, idPue
                 style={{ display: user.idRol === 4  || user.idPuesto === idPuesto ? '' : 'none' }}
                 onClick={handleEditarArchivo}
                 size="small"
-                startIcon={<EditIcon />}
+                startIcon={<Iconify icon="eva:edit-fill" />}
               >
                 Editar documento
               </Button>
