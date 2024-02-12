@@ -22,7 +22,6 @@ import { Upload } from 'src/components/upload';
 import { useSnackbar } from 'src/components/snackbar';
 import { useSettingsContext } from 'src/components/settings';
 
-
 const Transition = React.forwardRef((props, ref) => <Slide direction="up" ref={ref} {...props} />); 
 
 export default function AvisoPrivacidadGeneral({datos, enviarDatosAlPadre, idPuesto}) {
