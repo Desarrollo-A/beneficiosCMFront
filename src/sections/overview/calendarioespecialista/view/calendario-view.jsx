@@ -15,15 +15,24 @@ import Card from '@mui/material/Card';
 import Dialog from '@mui/material/Dialog';
 import { useTheme } from '@mui/material/styles';
 import Container from '@mui/material/Container';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
 
 import { useResponsive } from 'src/hooks/use-responsive';
+import { useAuthContext } from 'src/auth/hooks';
 
 import { fTimestamp } from 'src/utils/format-time';
 
 import { useGetNameUser } from 'src/api/user';
 import { dropUpdate, useGetMotivos, GetCustomEvents } from 'src/api/calendar-specialist';
+import { useGetHorariosPresenciales } from 'src/api/especialistas'
 
 import { useSettingsContext } from 'src/components/settings';
+
+import AgendaDialog from './agenda-dialog';
+
+import { useEvent } from '../hooks';
 
 import Lista from "./lista";
 import EventContent from './eventContent';
@@ -40,6 +49,8 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 export default function CalendarioView(){
+    const { user } = useAuthContext();
+
     const smUp = useResponsive('up', 'sm');
     const settings = useSettingsContext();
     const [filters] = useState(defaultFilters);
@@ -47,6 +58,8 @@ export default function CalendarioView(){
     const [userData, setUserData] = useState('');
     const {data: reasons} = useGetMotivos('');
     const theme = useTheme();
+
+    const [presencialDialog, setOpenPresencialDialog] = useState(false);
 
     const dateError =
     filters.startDate && filters.endDate
@@ -76,10 +89,16 @@ export default function CalendarioView(){
 
     const { events, eventsLoading} = GetCustomEvents(date);
 
+    const { horarios, horariosGet } = useGetHorariosPresenciales({idEspecialista : user.idUsuario});
+
+    const [startPresencial, setStartPresencial] = useState(new Date());
+    const [endPresencial, setEndPresencial] = useState(new Date());
+    const [sedePresencial, setSedePresencial] = useState();
+
     const currentEvent = useEvent(events, selectEventId, openForm);
 
     const dataFiltered = applyFilter({
-        inputData: events,
+        inputData: events.concat(horarios),
         filters,
         dateError,
       });
@@ -118,9 +137,32 @@ export default function CalendarioView(){
     };
     
     const modalSize = (statusSizeMap[currentEvent?.estatus] || statusSizeMap[currentEvent?.type] )  || 'xs';
+
+    const addHorarioPresencial = () => {
+      setOpenPresencialDialog(true);
+    }
+
+    const onCloseHorariosDialog = () => {
+      setOpenPresencialDialog(false);
+
+      horariosGet({idEspecialista : user.idUsuario})
+    }
     
     return(
         <Container maxWidth={settings.themeStretch ? false : 'xl'}>
+          <Stack
+            alignItems="center"
+            justifyContent="space-between"
+            sx={{
+              mb: { xs: 3, md: 5 },
+              flexDirection: { sm: 'row', md: 'col' },
+            }}
+          >
+            <Typography variant="h4"> </Typography>
+            <Button color="inherit" variant="outlined" onClick={addHorarioPresencial}>
+              Establecer horario presencial
+            </Button>
+          </Stack>
           <Card>
             <StyledCalendar>
               <CalendarToolbar
@@ -193,6 +235,13 @@ export default function CalendarioView(){
               />
             }
           </Dialog>
+          <AgendaDialog
+            open={presencialDialog}
+            onClose={onCloseHorariosDialog}
+            start={startPresencial}
+            end={endPresencial}
+            sede={sedePresencial}
+          />
         </Container>
     );
 }
