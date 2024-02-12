@@ -25,7 +25,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 const OPTIONS = [
   {
     label: 'Perfil',
-    linkTo: paths.dashboard.usuarios.perfil,
+    linkTo: paths.dashboard.usuariosexternos.perfil,
   },
 ];
 
@@ -62,12 +62,12 @@ export default function AccountPopover() {
   };
 
   const login = useGoogleLogin({
-    onSuccess: tokenResponse => console.log(tokenResponse),
-    scope : "https://www.googleapis.com/auth/calendar",
-    flow : "auth-code"
+    onSuccess: (tokenResponse) => console.log(tokenResponse),
+    scope: 'https://www.googleapis.com/auth/calendar',
+    flow: 'auth-code',
   });
 
-  if(userData){
+  if (userData) {
     return (
       <>
         <IconButton
@@ -77,13 +77,13 @@ export default function AccountPopover() {
           variants={varHover(1.05)}
           onClick={popover.onOpen}
         >
-        <Iconify icon="solar:user-bold-duotone" width={24} />
+          <Iconify icon="solar:user-bold-duotone" width={24} />
         </IconButton>
 
         <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 240, p: 0 }}>
           <Box sx={{ p: 2, pb: 1.5 }}>
             <Typography variant="subtitle2" noWrap>
-              {`${userData.idUsuario} ${userData.nombre}`}
+              {userData.idUsuario} {userData.nombre}
             </Typography>
 
             <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
@@ -93,10 +93,8 @@ export default function AccountPopover() {
 
           <Divider sx={{ borderStyle: 'dashed' }} />
 
-          <Box sx={{ p:1, mb: 1, mt : 0 }}>
-            <MenuItem onClick={() => login()}>
-              Conectar cuenta de google
-            </MenuItem>
+          <Box sx={{ p: 1, mb: 1, mt: 0 }}>
+            <MenuItem onClick={() => login()}>Conectar cuenta de google</MenuItem>
           </Box>
 
           <Divider sx={{ borderStyle: 'dashed' }} />
@@ -121,5 +119,5 @@ export default function AccountPopover() {
       </>
     );
   }
-  return null
+  return null;
 }

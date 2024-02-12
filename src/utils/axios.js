@@ -88,8 +88,9 @@ export const endpoints = {
     search: '/api/product/search',
   },
   user: {
-    session: 'Usuario/session',
-    list: 'Usuario/getUsers',
+    list: 'Usuario/getUsersExternos',
+    session : 'usuario/session',
+    authorized : 'usuario/authorized',
     update: 'Usuario/updateUser',
     areas: 'Usuario/getAreas',
     batch: 'Usuario/insertBatchUsers',
@@ -131,7 +132,7 @@ export const endpoints = {
     insertGoogleEvent: 'CalendarioController/insertGoogleEvent',
     insertGoogleId: 'CalendarioController/insertGoogleId',
     updateGoogleEvent: 'CalendarioController/updateGoogleEvent',
-    deleteGoogleEvent: 'CalendarioController/deleteGoogleEvent'
+    deleteGoogleEvent: 'CalendarioController/deleteGoogleEvent',
   },
   calendarioColaborador: {
     isPrimeraCita: 'CalendarioController/isPrimeraCita',
@@ -204,20 +205,30 @@ export const endpoints = {
     getValidEncContestada: '/EncuestasController/getValidEncContestada',
     sendMail: '/EncuestasController/sendMail',
   },
-  gestor:{
-    getAtencionXsede: '/generalController/getAtencionXsede',
-    getSedes: '/generalController/getSedes',
-    getOficinas: '/generalController/getOficinas',
-    getModalidades: '/generalController/getModalidades',
-    getSinAsigSede: '/generalController/getSinAsigSede',
-    getOficinasVal: '/gestorController/getOficinasVal',
-    getEspecialistasVal: '/gestorController/getEspecialistasVal',
-    getSedeNone: '/gestorController/getSedeNone',
-    getSedeNoneEsp: '/gestorController/getSedeNoneEsp',
-    insertAtxSede: '/gestorController/insertAtxSede',
-    updateModalidad: '/gestorController/updateModalidad',
-    updateEspecialista: '/gestorController/updateEspecialista',
-    getEsp: '/gestorController/getEsp',
-    getAtencionXsedeEsp: '/gestorController/getAtencionXsedeEsp',
+  gestor: {
+    getAtencionXsede: '/GeneralController/getAtencionXsede',
+    getSedes: '/GeneralController/getSedes',
+    getOficinas: '/GeneralController/getOficinas',
+    getModalidades: '/GeneralController/getModalidades',
+    getSinAsigSede: '/GeneralController/getSinAsigSede',
+    getOficinasVal: '/GestorController/getOficinasVal',
+    getEspecialistasVal: '/GestorController/getEspecialistasVal',
+    getSedeNone: '/GestorController/getSedeNone',
+    getSedeNoneEsp: '/GestorController/getSedeNoneEsp',
+    insertAtxSede: '/GestorController/insertAtxSede',
+    updateModalidad: '/GestorController/updateModalidad',
+    updateEspecialista: '/GestorController/updateEspecialista',
+    getEsp: '/GestorController/getEsp',
+    getAtencionXsedeEsp: '/GestorController/getAtencionXsedeEsp',
+    getOfi: '/GestorController/getOficinas',
+    updateOficina: '/GestorController/updateOficina',
+    insertOficinas: '/GestorController/insertOficinas',
+    updateSede: '/GestorController/updateSede',
+    insertSedes: '/GestorController/insertSedes'
+  },
+  avisosPrivacidad : {
+    getEspecialidadToSelect : '/AvisosPrivacidadController/getEspecialidades',
+    getAvisoDePrivacidad : '/AvisosPrivacidadController/getAvisoPrivacidad',
+    actualizarArchivoPrivacidad: '/AvisosPrivacidadController/actualizarArchivoPrivacidad'
   }
 };

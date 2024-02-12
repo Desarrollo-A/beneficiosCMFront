@@ -19,9 +19,9 @@ export default function FiltersAtencionXsede({
   results,
   ...other
 }) {
-  const handleRemoveStatus = () => {
-    onFilters('status', 'all');
-  };
+  // const handleRemoveStatus = () => {
+  //   onFilters('status', 'all');
+  // };
 
   const handleRemoveSede = (inputValue) => {
     const newValue = filters.sede.filter((item) => item !== inputValue);

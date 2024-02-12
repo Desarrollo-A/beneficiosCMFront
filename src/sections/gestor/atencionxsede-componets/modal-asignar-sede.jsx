@@ -1,37 +1,26 @@
 import * as Yup from 'yup';
-import { useMemo, useState, useEffect } from 'react';
 import { mutate } from 'swr';
+import { useState } from 'react';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
-import Box from '@mui/material/Box';
-import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import MenuItem from '@mui/material/MenuItem';
-import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
-import { useInsert } from 'src/api/encuestas';
-
 import { useBoolean } from 'src/hooks/use-boolean';
-
-import { countries } from 'src/assets/data';
-import { USER_STATUS_OPTIONS } from 'src/_mock';
 
 import { endpoints } from 'src/utils/axios';
 
+import { useInsert } from 'src/api/encuestas';
 import { usePostGeneral } from 'src/api/general';
 
-import { ConfirmDialog } from 'src/components/custom-dialog';
-
-import Iconify from 'src/components/iconify';
+import FormProvider from 'src/components/hook-form';
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, { RHFSelect, RHFTextField, RHFAutocomplete } from 'src/components/hook-form';
+import { ConfirmDialog } from 'src/components/custom-dialog';
 
 import AddInsertSede from './add-insert-sede';
 
@@ -42,16 +31,28 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
 
   const loadingSend = useBoolean();
 
-  const [es, setEs] = useState({
+  const [es] = useState({ // setEs
     idSd: idSede,
     idPs: idPuesto
   });
+
+  const [esp, setEsp] = useState([]);
+
+  const [mod, setMod] = useState([]);
 
   const { oficinaData } = usePostGeneral(idSede, endpoints.gestor.getOficinasVal, "oficinaData");
 
   const { especiaData } = usePostGeneral(es, endpoints.gestor.getEspecialistasVal, "especiaData");
 
   const insertData = useInsert(endpoints.gestor.insertAtxSede);
+
+  const handleEsp = (newPg) => {
+    setEsp(newPg);
+  }
+
+  const handleMod = (newPg) => {
+    setMod(newPg);
+  }
 
   const NewInvoiceSchema = Yup.object().shape({
     items: Yup.mixed().nullable().required('Is required'),
@@ -77,13 +78,19 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
 
   const handleCreateAndSend = handleSubmit(async (data) => {
 
-    if (!isEmpty(data)) {
+    const combinedArray = {
+      ...mod,
+      ...esp,
+    };
+  
+
+    if (!isEmpty(combinedArray)) {
       try {
         await new Promise((resolve) => setTimeout(resolve, 500));
 
         loadingSend.onFalse();
 
-        const insert = await insertData(data);
+        const insert = await insertData(combinedArray);
 
         if (insert.estatus === true) {
           enqueueSnackbar(insert.msj, { variant: 'success' });
@@ -119,7 +126,13 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
           <>
             <DialogContent>
 
-              <AddInsertSede idSede={idSede} oficinaData={oficinaData} especiaData={especiaData} modalidadesData={modalidadesData} />
+              <AddInsertSede 
+              idSede={idSede} 
+              oficinaData={oficinaData} 
+              especiaData={especiaData} 
+              modalidadesData={modalidadesData}
+              handleMod={handleMod}
+              handleEsp={handleEsp} />
 
             </DialogContent>
 

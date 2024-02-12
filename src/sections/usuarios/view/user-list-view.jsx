@@ -12,7 +12,8 @@ import { paths } from 'src/routes/paths';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import { useGetUsers, useBatchUsers } from 'src/api/user';
+import { useAuthContext } from 'src/auth/hooks';
+import { batchUsers, useGetUsers } from 'src/api/user';
 
 import Iconify from 'src/components/iconify';
 import { Upload } from 'src/components/upload';
@@ -21,59 +22,38 @@ import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
 import UserList from '../userList';
+import { validarCorreo, validarTelefono } from '../../../utils/general';
 
 // ----------------------------------------------------------------------
 
 export default function UserListView() {
   const settings = useSettingsContext();
   const { enqueueSnackbar } = useSnackbar();
+  const { user: datosUser } = useAuthContext();
 
-  const { data: usersData, error: usersError, usersMutate } = useGetUsers();
+  const { data: usersData, usersMutate } = useGetUsers();
 
   const reader = new FileReader();
   const upload = useBoolean();
-  const batchUsers = useBatchUsers();
 
   const [file, setFile] = useState(null);
   const [userData, setUserData] = useState([]);
 
   useEffect(() => {
-    if (!usersError && usersData) {
+    if (usersData) {
       const obj = usersData.map((i) => ({
         id: i.idUsuario,
         contrato: i.numContrato,
         empleado: i.numEmpleado,
         nombre: i.nombre,
         telefono: i.telPersonal,
-        area: i.area,
-        puesto: i.puesto,
-        oficina: i.oficina,
-        sede: i.sede,
         correo: i.correo,
+        sexo: i.sexo,
         estatus: i.estatus,
       }));
       setUserData(obj);
     }
-  }, [usersData, usersError]);
-
-  useEffect(() => {
-    if (!usersError && usersData) {
-      const obj = usersData.map((i) => ({
-        id: i.idUsuario,
-        contrato: i.numContrato,
-        empleado: i.numEmpleado,
-        nombre: i.nombre,
-        telefono: i.telPersonal,
-        area: i.area,
-        puesto: i.puesto,
-        oficina: i.oficina,
-        sede: i.sede,
-        correo: i.correo,
-        estatus: i.estatus,
-      }));
-      setUserData(obj);
-    }
-  }, [usersData, usersError]);
+  }, [usersData]);
 
   const isExcelFile = (fileName) => {
     const boolean = /\.(xlsx|xls)$/.test(fileName);
@@ -85,7 +65,7 @@ export default function UserListView() {
       const newFile = acceptedFiles[0];
       if (newFile) {
         if (!isExcelFile(newFile.name)) {
-          enqueueSnackbar('El archivo no es un archivo Excel válido', { variant: 'warning' });
+          enqueueSnackbar('El archivo no tiene un formato válido', { variant: 'warning' });
           return;
         }
         setFile(
@@ -118,13 +98,10 @@ export default function UserListView() {
       }
 
       const requiredData = [
-        { cell: worksheet.A1, keyword: 'NOMBRE' },
-        { cell: worksheet.B1, keyword: 'TELÉFONO' },
-        { cell: worksheet.C1, keyword: 'ÁREA' },
-        { cell: worksheet.D1, keyword: 'PUESTO' },
-        { cell: worksheet.E1, keyword: 'OFICINA' },
-        { cell: worksheet.F1, keyword: 'SEDE' },
-        { cell: worksheet.G1, keyword: 'CORREO' },
+        { cell: worksheet.A1, keyword: 'NOMBRE COMPLETO', mandatory: true },
+        { cell: worksheet.B1, keyword: 'TELÉFONO PERSONAL', mandatory: false },
+        { cell: worksheet.C1, keyword: 'CORREO ELECTRÓNICO', mandatory: false },
+        { cell: worksheet.D1, keyword: 'SEXO', mandatory: true },
       ];
 
       let showError = requiredData.some((item) => {
@@ -132,6 +109,7 @@ export default function UserListView() {
           enqueueSnackbar(`El título ${item.cell.v} no coincide con ${item.keyword}`, {
             variant: 'warning',
           });
+
           return true; // Devolvemos true para indicar que se ha encontrado un error
         }
         return false; // Devolvemos false para indicar que no hay error en este elemento
@@ -142,35 +120,66 @@ export default function UserListView() {
       }
 
       showError = false;
+      const labels = ['A', 'B', 'C', 'D'];
+
       jsonData.forEach((row, index) => {
-        const labels = ['A', 'B', 'C', 'D', 'E', 'F', 'E'];
+        labels.forEach((label, index2) => {
+          const cellLabel = label + (index + 2); // A2 Y asi
 
-        labels.forEach((label) => {
-          const cellLabel = label + (index + 2);
+          const cellValue = row[requiredData[index2].keyword];
 
-          if (!worksheet[cellLabel]) {
+          if (cellValue === undefined && requiredData[index2].mandatory) {
+            enqueueSnackbar(`Asegúrese de que contenga información en la celda ${cellLabel}`, {
+              variant: 'warning',
+            });
+            showError = true;
+          } else if (label === 'A' && cellValue.length < 10) {
+            enqueueSnackbar(`El nombre tiene una longitud minima en la celda ${cellLabel}`, {
+              variant: 'warning',
+            });
+            showError = true;
+          } else if (label === 'B' && cellValue !== undefined) {
+            const isTelephoneNumberValid = validarTelefono(cellValue.toString());
+            if (!isTelephoneNumberValid) {
+              enqueueSnackbar(
+                `El número teléfonico tiene un formato incorrecto en la celda ${cellLabel}`,
+                { variant: 'warning' }
+              );
+              showError = true;
+            }
+          } else if (label === 'C' && cellValue !== undefined) {
+            const isEmailValid = validarCorreo(cellValue);
+            if (!isEmailValid) {
+              enqueueSnackbar(
+                `El correo electrónico tiene un formato incorrecto en la celda ${cellLabel}`,
+                { variant: 'warning' }
+              );
+              showError = true;
+            }
+          } else if (label === 'D' && !['F', 'M', 'f', 'm'].includes(cellValue)) {
             enqueueSnackbar(
-              `Asegúrese de que los registros contengan información en la celda ${cellLabel}`,
+              `El correo electrónico tiene un formato incorrecto en la celda ${cellLabel}`,
               { variant: 'warning' }
             );
             showError = true;
           }
         });
       });
+
       if (showError) {
+        handleCloseDialog();
         return;
       }
 
+      // enqueueSnackbar(`Todo bien`, { variant: 'success' });
+
       // Transformar las claves en el objeto JSON
       const transformedData = jsonData.map((row) => ({
-        nombre: row.NOMBRE,
-        telPersonal: row.TELÉFONO,
-        area: row.ÁREA,
-        puesto: row.PUESTO,
-        oficina: row.OFICINA,
-        sede: row.SEDE,
-        correo: row.CORREO,
-        creadoPor: 1,
+        nombre: row['NOMBRE COMPLETO'].toUpperCase(),
+        telPersonal: row['TELÉFONO PERSONAL'] ? row['TELÉFONO PERSONAL'] : '',
+        correo: row['CORREO ELECTRÓNICO'] ? row['CORREO ELECTRÓNICO'].toLowerCase() : '',
+        sexo: row.SEXO.toUpperCase(),
+        creadoPor: datosUser.idUsuario,
       }));
 
       const users = {
@@ -186,7 +195,7 @@ export default function UserListView() {
 
   const handleCreateUsers = async (users) => {
     try {
-      const update = await batchUsers(JSON.stringify(users));
+      const update = await batchUsers(users.nombreTabla, users.data);
       if (update.result) {
         enqueueSnackbar(`¡Los usuarios han sido registrados exitosamente!`, { variant: 'success' });
         usersMutate();
@@ -196,8 +205,8 @@ export default function UserListView() {
         });
       }
     } catch (error) {
-      console.error('Error en handleDeleteRow:', error);
-      enqueueSnackbar(`¡No se pudo actualizar los datos de usuario!`, { variant: 'danger' });
+      console.error('Error en handleCreateUsers:', error);
+      enqueueSnackbar(`¡No se pudo actualizar los datos de usuario!`, { variant: 'error' });
     }
     handleCloseDialog();
   };
@@ -217,18 +226,15 @@ export default function UserListView() {
               name: 'Dashboard',
               href: paths.dashboard.root,
             },
-            {
-              name: 'User',
-              href: paths.dashboard.usuarios.root,
-            },
-            { name: 'Listado de usuarios' },
+            { name: 'Listado de usuarios externos' },
           ]}
           sx={{
             mb: { xs: 3, md: 5 },
           }}
           action={
             <Button
-              variant="contained"
+              variant="outlined"
+              color="inherit"
               startIcon={<Iconify icon="eva:cloud-upload-fill" />}
               onClick={upload.onTrue}
             >
@@ -237,21 +243,35 @@ export default function UserListView() {
           }
         />
 
-        <UserList users={userData} usersMutate={usersMutate} />
+        <UserList userData={userData} usersMutate={usersMutate} />
       </Container>
       <Dialog fullWidth maxWidth="sm" open={upload.value} onClose={handleCloseDialog}>
-        <DialogTitle sx={{ p: (theme) => theme.spacing(3, 3, 2, 3) }}>
-          {' '}
-          Agregar usuarios{' '}
-        </DialogTitle>
+        <DialogTitle sx={{ p: (theme) => theme.spacing(3, 3, 2, 3) }}>Agregar usuarios</DialogTitle>
 
         <DialogContent dividers sx={{ pt: 1, pb: 0, border: 'none' }}>
-          <Upload file={file} onDrop={handleDropSingleFile} onDelete={() => setFile(null)} />
+          <Upload
+            file={file}
+            onDrop={handleDropSingleFile}
+            onDelete={() => setFile(null)}
+            accept={{
+              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': [],
+              'application/vnd.ms-excel': [],
+            }}
+          />
         </DialogContent>
 
         <DialogActions>
           <Button
             variant="contained"
+            color="error"
+            startIcon={<Iconify icon="eva:cloud-upload-fill" />}
+            onClick={handleCloseDialog}
+          >
+            Cerrar
+          </Button>
+          <Button
+            variant="contained"
+            color="success"
             startIcon={<Iconify icon="eva:cloud-upload-fill" />}
             onClick={handleUpload}
           >

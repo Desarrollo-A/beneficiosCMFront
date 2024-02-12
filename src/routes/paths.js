@@ -127,7 +127,12 @@ export const paths = {
     },
     gestor: {
       root: `${ROOTS.DASHBOARD}/gestor/atencionXsede`,
-      contestar: `${ROOTS.DASHBOARD}/gestor/atencionXsede`,
+      atencionxsede: `${ROOTS.DASHBOARD}/gestor/atencionXsede`,
+      oficinas: `${ROOTS.DASHBOARD}/gestor/oficinas`,
+      sedes: `${ROOTS.DASHBOARD}/gestor/sedes`,
+    },
+    privacidad: {
+      aprivacidad: `${ROOTS.DASHBOARD}/privacidad/administrar`
     },
     user: {
       root: `${ROOTS.DASHBOARD}/user`,
@@ -197,7 +202,7 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/tour/${MOCK_ID}/edit`,
       },
     },
-    usuarios: {
+    usuariosexternos: {
       root: `${ROOTS.DASHBOARD}/usuarios`,
       new: `${ROOTS.DASHBOARD}/usuarios/new`,
       perfil: `${ROOTS.DASHBOARD}/usuarios/perfil`,

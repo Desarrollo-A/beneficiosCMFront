@@ -11,14 +11,13 @@ import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import { alpha, useTheme } from '@mui/material/styles';
 
-
-import { _appAuthors, _appRelated, _appFeatured, _appInvoices, _appInstalled } from 'src/_mock';
 import { endpoints } from 'src/utils/axios';
 
 import { bgGradient } from 'src/theme/css';
 import { useAuthContext } from 'src/auth/hooks';
 import { SeoIllustration } from 'src/assets/illustrations';
 import { useGetGeneral, usePostGeneral } from 'src/api/general';
+// import { _appAuthors, _appRelated, _appFeatured, _appInvoices, _appInstalled } from 'src/_mock';
 
 import { useSettingsContext } from 'src/components/settings';
 
@@ -26,7 +25,7 @@ import AppWelcome from '../app-welcome';
 import WidgetConteo from '../widget-conteo';
 import GraficaMetas from '../grafica-metas';
 import EncuestaBarra from '../barra-encuesta';
-import AppTopRelated from '../app-top-related';
+// import AppTopRelated from '../app-top-related';
 import EncuestaPorcentaje from '../porcentaje-encuesta';
 
 // ----------------------------------------------------------------------
@@ -46,7 +45,7 @@ export default function DashView() {
   const rol = user.idRol
   let puestos = 0;
 
-  if (rol === "1" || rol === 1) {
+  if (rol === "4" || rol === 4) {
     idDt = 158;
     puestos = 158;
   } else {
@@ -304,27 +303,27 @@ export default function DashView() {
 
   const theme = useTheme();
 
-  const appRelated = ['Chrome', 'Drive', 'Dropbox', 'Evernote', 'Github'].map(
-    (name, index) => {
-      const system = [2, 4].includes(index) ? 'Windows' : 'Mac';
+  // const appRelated = ['Chrome', 'Drive', 'Dropbox', 'Evernote', 'Github'].map(
+  //   (name, index) => {
+  //     const system = [2, 4].includes(index) ? 'Windows' : 'Mac';
   
-      const shortcut =
-        (name === 'Chrome' && '/assets/icons/app/ic_chrome.svg') ||
-        (name === 'Drive' && '/assets/icons/app/ic_drive.svg') ||
-        (name === 'Dropbox' && '/assets/icons/app/ic_dropbox.svg') ||
-        (name === 'Evernote' && '/assets/icons/app/ic_evernote.svg') ||
-        '/assets/icons/app/ic_github.svg';
+  //     const shortcut =
+  //       (name === 'Chrome' && '/assets/icons/app/ic_chrome.svg') ||
+  //       (name === 'Drive' && '/assets/icons/app/ic_drive.svg') ||
+  //       (name === 'Dropbox' && '/assets/icons/app/ic_dropbox.svg') ||
+  //       (name === 'Evernote' && '/assets/icons/app/ic_evernote.svg') ||
+  //       '/assets/icons/app/ic_github.svg';
   
-      return {
-        /* id: _mock.id(index), */
-        name,
-        system,
-        shortcut,
-        /* ratingNumber: _mock.number.rating(index),
-        totalReviews: _mock.number.nativeL(index), */
-      };
-    }
-  );
+  //     return {
+  //       /* id: _mock.id(index), */
+  //       name,
+  //       system,
+  //       shortcut,
+  //       /* ratingNumber: _mock.number.rating(index),
+  //       totalReviews: _mock.number.nativeL(index), */
+  //     };
+  //   }
+  // );
 
   return (
     <>
@@ -366,7 +365,7 @@ export default function DashView() {
 
 
 
-          {rol === "1" || rol === 1 ? (
+          {rol === "4" || rol === 4 ? (
             <FormControl fullWidth>
               <InputLabel id="demo-simple-select-label">Área</InputLabel>
               <Select
@@ -434,7 +433,7 @@ export default function DashView() {
             </Grid>
           ))}
 
-          {rol === "1" || rol === 1 || rol === "3" || rol === 3 ? (
+          {rol === "1" || rol === 1 || rol === "3" || rol === 3 || rol === "4" || rol === 4 ? (
             <>
 
               {metasData.map((i, index) => (

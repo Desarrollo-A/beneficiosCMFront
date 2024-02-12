@@ -14,7 +14,7 @@ import Dialog, { dialogClasses } from '@mui/material/Dialog';
 import { useRouter } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
-import { useResponsive } from 'src/hooks/use-responsive';
+// import { useResponsive } from 'src/hooks/use-responsive';
 import { useEventListener } from 'src/hooks/use-event-listener';
 
 import Label from 'src/components/label';
@@ -35,7 +35,7 @@ function Searchbar() {
 
   const search = useBoolean();
 
-  const lgUp = useResponsive('up', 'lg');
+  // const lgUp = useResponsive('up', 'lg');
 
   const [searchQuery, setSearchQuery] = useState('');
 

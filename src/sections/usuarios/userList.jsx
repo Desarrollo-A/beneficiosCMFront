@@ -3,7 +3,7 @@ import Xlsx from 'json-as-xlsx';
 import PropTypes from 'prop-types';
 import isEqual from 'lodash/isEqual';
 import autoTable from 'jspdf-autotable';
-import { useRef, useState, useEffect, useCallback } from 'react';
+import { useRef, useState, useCallback } from 'react';
 
 import Card from '@mui/material/Card';
 import { Button } from '@mui/material';
@@ -14,7 +14,8 @@ import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import TableContainer from '@mui/material/TableContainer';
 
-import { useGetAreas, useUpdateUser } from 'src/api/user';
+import { updateUser } from 'src/api/user';
+import { useAuthContext } from 'src/auth/hooks';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -33,21 +34,17 @@ import UserTableRow from './user-table-row';
 import UserTableToolbar from './user-table-toolbar';
 import UserTableFiltersResult from './user-table-filters';
 
-const doc = new JsPDF();
-
 const TABLE_HEAD = [
   { id: '', label: 'ID' },
   { id: '', label: 'NOMBRE COMPLETO' },
   { id: '', label: 'TELÉFONO' },
-  { id: '', label: 'ÁREA' },
-  { id: '', label: 'OFICINA' },
-  { id: '', label: 'SEDE' },
   { id: '', label: 'CORREO' },
+  { id: '', label: 'SEXO' },
   { id: '', label: 'ESTATUS' },
   { id: '', label: '' },
 ];
 
-const HEADER = ['ID', 'USUARIO', 'TELÉFONO', 'ÁREA', 'OFICINA', 'SEDE', 'CORREO', 'ESTATUS'];
+const HEADER = ['ID', 'NOMBRE COMPLETO', 'TELÉFONO', 'CORREO', 'SEXO', 'ESTATUS'];
 
 const defaultFilters = {
   name: '',
@@ -61,12 +58,10 @@ const handleDownloadExcel = (dataFiltered) => {
       sheet: 'USUARIOS',
       columns: [
         { label: 'ID', value: 'id' },
-        { label: 'USUARIO', value: 'nombre' },
-        { label: 'TELÉFONO', value: 'telefono' },
-        { label: 'ÁREA', value: 'area' },
-        { label: 'OFICINA', value: 'oficina' },
-        { label: 'SEDE', value: 'sede' },
-        { label: 'CORREO', value: 'correo' },
+        { label: 'NOMBRE COMPLETO', value: 'nombre' },
+        { label: 'TELÉFONO', value: 'telefono' || 'No aplica' },
+        { label: 'CORREO', value: 'correo' || 'No aplica' },
+        { label: 'SEXO', value: 'sexo' },
         { label: 'ESTATUS', value: 'estatus' },
       ],
       content: dataFiltered,
@@ -84,50 +79,31 @@ const handleDownloadExcel = (dataFiltered) => {
 };
 
 const handleDownloadPDF = (dataFiltered) => {
+  const doc = new JsPDF();
   autoTable(doc, {
     head: [HEADER],
     body: dataFiltered.map((item) => [
       item.id,
       item.nombre,
-      item.telefono,
-      item.area,
-      item.oficina,
-      item.sede,
-      item.correo,
-      item.estatus,
+      item.telefono || 'No aplica',
+      item.correo || 'No aplica',
+      item.sexo === 'F' || item.sexo === 'f' ? 'FEMENINO' : 'MASCULINO',
+      item.estatus === 1 ? 'ACTIVO' : 'INACTIVO',
     ]),
   });
   doc.save('Usuarios.pdf');
 };
 
-export default function UserList({ users, usersMutate }) {
+export default function UserList({ userData, usersMutate }) {
   const table = useTable();
-  const updateUser = useUpdateUser();
+  const targetRef = useRef();
   const { enqueueSnackbar } = useSnackbar();
 
-  const targetRef = useRef();
+  const { user: datosUser } = useAuthContext();
 
   const [filters, setFilters] = useState(defaultFilters);
-  const [userData, setUserData] = useState(users || []);
-
-  const { data, areasError, areasMutate } = useGetAreas();
-  const [areas, setAreas] = useState([]);
-
-  // Utiliza useEffect con dependencia en las props 'usuarios'
-  useEffect(() => {
-    setUserData(users || []);
-  }, [users]);
-
-  useEffect(() => {
-    if (!areasError && data) {
-      setAreas(data);
-    } else {
-      setAreas([]);
-    }
-  }, [data, areasError]);
 
   const canReset = !isEqual(defaultFilters, filters);
-  const _rp = areas.flatMap((es) => es.area);
   const denseHeight = table.dense ? 52 : 72;
 
   const handleResetFilters = useCallback(() => {
@@ -153,35 +129,39 @@ export default function UserList({ users, usersMutate }) {
     [table]
   );
 
-  const handleDisableUser = async (id) => {
+  const handleDisableUser = async (id, estatus) => {
     try {
-      const update = await updateUser(
-        new URLSearchParams({
-          idUsuario: id,
-          estatus: 0,
-          modificadoPor: 1,
-        })
-      );
+      const update = await updateUser(id, {
+        estatus: estatus === 1 ? 0 : 1,
+        modificadoPor: datosUser.idUsuario,
+      });
       if (update.result) {
         enqueueSnackbar(`¡Se ha actualizado el usuario exitosamente!`, { variant: 'success' });
         usersMutate();
-        areasMutate();
       } else {
-        enqueueSnackbar(`¡No se pudo actualizar los datos de usuario!`, { variant: 'success' });
+        enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'success' });
       }
     } catch (error) {
       console.error('Error en handleDisableUser:', error);
-      enqueueSnackbar(`¡No se pudo actualizar los datos de usuario!`, { variant: 'danger' });
+      enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'danger' });
     }
   };
 
   const handleExcel = async (e) => {
     e.preventDefault();
+    if (dataFiltered.length === 0) {
+      enqueueSnackbar(`¡No hay datos para exportar!`, { variant: 'warning' });
+      return;
+    }
     handleDownloadExcel(dataFiltered);
   };
 
   const handlePdf = async (e) => {
     e.preventDefault();
+    if (dataFiltered.length === 0) {
+      enqueueSnackbar(`¡No hay datos para exportar!`, { variant: 'warning' });
+      return;
+    }
     handleDownloadPDF(dataFiltered);
   };
 
@@ -189,12 +169,7 @@ export default function UserList({ users, usersMutate }) {
     <Card>
       <CardHeader />
       <CardContent>
-        <UserTableToolbar
-          filters={filters}
-          onFilters={handleFilters}
-          //
-          roleOptions={_rp}
-        />
+        <UserTableToolbar filters={filters} onFilters={handleFilters} />
 
         {canReset && (
           <UserTableFiltersResult
@@ -254,8 +229,7 @@ export default function UserList({ users, usersMutate }) {
                       row={usuario}
                       selected={table.selected.includes(usuario.id)}
                       onSelectRow={() => table.onSelectRow(usuario.id)}
-                      onDeleteRow={() => handleDisableUser(usuario.id)}
-                      areasMutate={areasMutate}
+                      onDisableRow={() => handleDisableUser(usuario.id, usuario.estatus)}
                       usersMutate={usersMutate}
                     />
                   ))}
@@ -283,7 +257,7 @@ export default function UserList({ users, usersMutate }) {
 }
 
 UserList.propTypes = {
-  users: PropTypes.array,
+  userData: PropTypes.array,
   usersMutate: PropTypes.func,
 };
 
@@ -304,16 +278,17 @@ const applyFilter = ({ inputData, comparator, filters }) => {
     inputData = inputData.filter((user) => {
       const nameLower = name.toLowerCase();
       const estatus = user.estatus === 1 ? 'ACTIVO' : 'INACTIVO';
+      const sexo = user.sexo === 'F' ? 'FEMENINO' : 'MASCULINO';
+      const correo = user.correo || 'No aplica';
+      const telefono = user.telefono || 'No aplica';
       return (
         user.id.toString().toLowerCase().includes(nameLower) ||
         user.nombre.toLowerCase().includes(nameLower) ||
-        user.area.toString().toLowerCase().includes(nameLower) ||
-        user.oficina.toLowerCase().includes(nameLower) ||
-        user.sede.toString().toLowerCase().includes(nameLower) ||
-        user.correo.toString().toLowerCase().includes(nameLower) ||
+        correo.toString().toLowerCase().includes(nameLower) ||
         estatus.toString().toLowerCase().includes(nameLower) ||
-        (typeof user.telefono === 'string' && user.telefono.toLowerCase().includes(nameLower)) ||
-        (typeof user.telefono === 'number' && user.telefono.toString().includes(nameLower))
+        sexo.toString().toLowerCase().includes(nameLower) ||
+        (typeof telefono === 'string' && telefono.toLowerCase().includes(nameLower)) ||
+        (typeof telefono === 'number' && telefono.toString().includes(nameLower))
       );
     });
   }

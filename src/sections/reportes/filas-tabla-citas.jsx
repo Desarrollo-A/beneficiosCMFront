@@ -15,7 +15,7 @@ import UserQuickEditForm from './modal-editar-citas';
 // ----------------------------------------------------------------------
 
 export default function FilasTabla({ row, selected, rol, rel  }) {
-  const { idCita, especialista, oficina, area, sede, paciente, estatus, horario, observaciones, sexo, motivoCita } = row;
+  const { idCita, especialista, area, sede, paciente, estatus, horario, observaciones, sexo, motivoCita } = row; // oficina
 
   const quickEdit = useBoolean();
 

@@ -4,6 +4,8 @@ import { Navigate, useRoutes } from 'react-router-dom';
 import AuthClassicLayout from 'src/layouts/auth/classic';
 /* import MainLayout from 'src/layouts/main'; */
 
+import { useSession } from 'src/hooks/use-session';
+
 // import { PATH_AFTER_LOGIN } from 'src/config-global';
 import { authRoutes } from './auth';
 import { mainRoutes } from './main';
@@ -13,9 +15,11 @@ import { componentsRoutes } from './components';
 
 const JwtLoginPage = lazy(() => import('src/pages/auth/jwt/login'));
 
-// ---------------------------------------------------------------------- 
+// ----------------------------------------------------------------------
 
 export default function Router() {
+  useSession();
+
   return useRoutes([
     // SET INDEX PAGE WITH SKIP HOME PAGE
     // {
