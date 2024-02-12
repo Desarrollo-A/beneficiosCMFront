@@ -7,7 +7,7 @@ import { useLocation } from 'react-router-dom';
 import { fetcher, endpoints, fetcherGet, fetcherPost } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
-// const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
 
 export function useGetUserData() {
   const URL = endpoints.user.session;
@@ -136,7 +136,7 @@ export function useGetAuthorized(){
 
   const accessToken = sessionStorage.getItem('accessToken');
 
-  let config = {
+  const config = {
     headers: {
       token: accessToken,
     }
