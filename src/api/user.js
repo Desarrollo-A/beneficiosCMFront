@@ -1,68 +1,23 @@
 import useSWR from 'swr';
 import { useMemo } from 'react';
 import { Base64 } from 'js-base64';
-
 import { useLocation } from 'react-router-dom';
 
-import { fetcher, endpoints, fetcherGet, fetcherPost } from 'src/utils/axios';
+import { endpoints, fetcherGet, fetcherPost } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
 
-export function useGetUserData() {
-  const URL = endpoints.user.session;
-
-  const { data, isLoading, error, isValidating } = useSWR(URL, fetcherGet);
-
-  const memoizedValue = useMemo(
-    () => ({
-      user: data || [],
-      userLoading: isLoading,
-      userError: error,
-      userValidating: isValidating,
-      userEmpty: !isLoading && !data,
-    }),
-    [data, error, isLoading, isValidating]
-  );
-
-  return memoizedValue;
-}
-
 export function useGetUsers() {
   const URL = endpoints.user.list;
-
-  const { data, mutate, isLoading, error, isValidating } = useSWR(URL, fetcherGet);
-
-  const memoizedValue = useMemo(
-    () => ({
-      data: data?.data || [],
-      usersLoading: isLoading,
-      usersError: error,
-      usersValidating: isValidating,
-      usersEmpty: !isLoading && !data?.data?.length,
-      usersMutate: mutate,
-    }),
-    [data?.data, error, isLoading, isValidating, mutate]
-  );
-
-  return memoizedValue;
-}
-
-export function useGetAreas() {
-  const URL = endpoints.user.areas;
-
-  const { data, mutate, isLoading, error, isValidating } = useSWR(URL, fetcherGet);
+  const { data, mutate: revalidate } = useSWR(URL, (url) => fetcherPost(url, {}));
 
   const memoizedValue = useMemo(
     () => ({
       data: data?.data || [],
-      areasLoading: isLoading,
-      areasError: error,
-      areasValidating: isValidating,
-      areasEmpty: !isLoading && !data?.data?.length,
-      areasMutate: mutate,
+      usersMutate: revalidate,
     }),
-    [data?.data, error, isLoading, isValidating, mutate]
+    [data, revalidate]
   );
 
   return memoizedValue;
@@ -80,27 +35,6 @@ export function useGetNameUser() {
       usersMutate: mutate,
     }),
     [data?.data, mutate]
-  );
-
-  return memoizedValue;
-}
-
-export function useUpdateUserQuery(query) {
-  const URL = query ? [endpoints.user.update, { params: { query } }] : '';
-
-  const { data, isLoading, error, isValidating } = useSWR(URL, fetcher, {
-    keepPreviousData: true,
-  });
-
-  const memoizedValue = useMemo(
-    () => ({
-      updateResults: data?.results || [],
-      updateLoading: isLoading,
-      updateError: error,
-      updateValidating: isValidating,
-      updateEmpty: !isLoading && !data?.results.length,
-    }),
-    [data?.results, error, isLoading, isValidating]
   );
 
   return memoizedValue;
@@ -129,18 +63,18 @@ export function batchUsers(tabla, data) {
   return batch;
 }
 
-export function useGetAuthorized(){
+export function useGetAuthorized() {
   const location = useLocation();
 
-  const URL = `${endpoints.user.authorized}?path=${location.pathname}`
+  const URL = `${endpoints.user.authorized}?path=${location.pathname}`;
 
   const accessToken = sessionStorage.getItem('accessToken');
 
   const config = {
     headers: {
       token: accessToken,
-    }
-  }
+    },
+  };
 
   const { data, isLoading, error, isValidating } = useSWR([URL, config], fetcherGet);
 
