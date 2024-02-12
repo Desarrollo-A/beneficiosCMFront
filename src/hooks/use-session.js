@@ -24,11 +24,11 @@ export function useSession() {
             navigate(paths.auth.jwt.login)
         }
 
-        if(!authorizedLoading && !authorized){
+        if(authorizedLoading && authorized){
             navigate(paths.dashboard.general.dash)
         }
 
-    }, [authenticated, authorized]);
+    }, [authenticated, authorized, authorizedLoading, navigate]);
 
     // useEffect(() => {
     //     //if (!needFetching) return;

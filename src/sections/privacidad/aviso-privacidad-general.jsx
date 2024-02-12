@@ -44,6 +44,8 @@ export default function AvisoPrivacidadGeneral() {
   const fileInputRef = useRef(null);
   const [detalleEspecialidad, setDetalleEspecialidad] = React.useState({id:'', nombre:''});
   const [actualizarView, setAcualizarView] = React.useState(false);
+  const [nombreArchivo, setNombreArchivo] = React.useState('');
+  const [archivo, setArchivo] = React.useState(null);
 
   // funcion para hacer comunicacion bi-direccional entre
   // componente padre y componente hijo
@@ -108,8 +110,7 @@ export default function AvisoPrivacidadGeneral() {
     // eslint-disable-next-line react/no-unstable-nested-components
     function NoHayArchivo(){
 
-        const [nombreArchivo, setNombreArchivo] = React.useState('');
-        const [archivo, setArchivo] = React.useState(null);
+        
         const manejarClick = () => {
             fileInputRef.current.click();
           };
@@ -146,7 +147,9 @@ export default function AvisoPrivacidadGeneral() {
                 .then(data => {
                     if(data.code === 200){
                         setAcualizarView(true);      
-                        enqueueSnackbar(data.message, { variant: 'success', autoHideDuration:3000 });                                    
+                        enqueueSnackbar(data.message, { variant: 'success', autoHideDuration:3000 });      
+                        setNombreArchivo('');
+                        setArchivo(null);                              
                     }else{
                         enqueueSnackbar(data.message, { variant: 'error', autoHideDuration:3000 });                                              
                     }  
@@ -171,7 +174,7 @@ export default function AvisoPrivacidadGeneral() {
                             
                             {user.idRol === 4 || user.idPuesto === especialidadSelector.idPuesto ? 
                             <Grid xs={12} style={{ alignItems: 'center', height: '450px', width: '100%', alignContent: 'space-around', flexWrap: 'wrap', flexDirection: 'column', justifyContent: 'center'}} >
-                                <Upload onClick={manejarClick} onDrop={manejarCambioArchivo} accept={{ 'application/pdf': [] }} file={archivo} onDelete={() => eliminarArchivo()} />
+                                <Upload onDrop={manejarCambioArchivo} accept={{ 'application/pdf': [] }} file={archivo} onDelete={() => eliminarArchivo()} />
                             </Grid>
                             : <Typography align="center">Sin datos para mostrar </Typography>
                             }
