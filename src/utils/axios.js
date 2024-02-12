@@ -110,6 +110,7 @@ export const endpoints = {
     sedes: 'especialistas/sedes',
     horario: 'especialistas/horario',
     horarios: 'especialistas/horarios',
+    disponibles: 'especialistas/disponibles',
   },
   calendario: {
     getAllEvents: 'CalendarioController/getAllEvents',
