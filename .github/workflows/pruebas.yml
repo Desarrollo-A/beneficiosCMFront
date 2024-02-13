@@ -1,6 +1,9 @@
 name: 🚀 Deploy pruebas
 on: workflow_dispatch
 
+env:
+  NODE_ENV: pruebas
+
 jobs:
   compile-front-on-pruebas:
     name: 🎉 Deploy
