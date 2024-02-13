@@ -227,7 +227,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     if (tieneCitas.result === true) {
       tipoCita = 1;
     }
-    if (datosUser.tipoPuesto.toLowerCase() === 'operativa' || datosUser.idDepto === 13) {
+    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
       tipoCita = 1;
       precio = 0;
       metodoPago = 3;
@@ -417,7 +417,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const onPay = async () => {
     let precio = 50;
     let metodoPago = 1;
-    if (datosUser.tipoPuesto.toLowerCase() === 'operativa' || datosUser.idDepto === 13) {
+    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
       precio = 0;
       metodoPago = 3;
     }
