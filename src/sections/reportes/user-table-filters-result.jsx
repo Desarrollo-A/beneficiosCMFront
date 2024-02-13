@@ -10,7 +10,7 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function UserTableFiltersResult({
+export default function FiltersResumenTerapias({
   filters,
   onFilters,
   //
@@ -64,7 +64,7 @@ export default function UserTableFiltersResult({
   );
 }
 
-UserTableFiltersResult.propTypes = {
+FiltersResumenTerapias.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   onResetFilters: PropTypes.func,

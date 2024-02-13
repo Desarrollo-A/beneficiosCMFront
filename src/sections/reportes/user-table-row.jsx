@@ -16,7 +16,7 @@ import HistorialCitas from './modal-historial-citas'
 
 // ----------------------------------------------------------------------
 
-export default function UserTableRow({ row, area }) {
+export default function RowResumenTerapias({ row, area }) {
   const { id, nombre, correo, sede, estNut, estPsi, estQB, estGE } = row;
 
   const quickEditar = useBoolean();
@@ -91,7 +91,7 @@ export default function UserTableRow({ row, area }) {
   );
 }
 
-UserTableRow.propTypes = {
+RowResumenTerapias.propTypes = {
   row: PropTypes.object,
   area: PropTypes.any,
 };

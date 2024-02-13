@@ -8,9 +8,11 @@ import { LoadingScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
 // CITAS
+const EvaluacionCitasPage = lazy(() => import ('src/pages/dashboard/evaluacion-citas-view'));
+// REPORTES
 const HistorialReportesPage = lazy(() => import('src/pages/dashboard/reportes/historial-reportes'));
 const ReportePacientesPage = lazy(() => import('src/pages/dashboard/reportes/reporte-pacientes'));
-const EvaluacionCitasPage = lazy(() => import ('src/pages/dashboard/evaluacion-citas-view'));
+const ResumenTerapiasPage = lazy(() => import ('src/pages/dashboard/reportes/resumen-terapias'));
 // OVERVIEW
 const IndexPage = lazy(() => import('src/pages/dashboard/app'));
 const DashPage = lazy(() => import('src/pages/dashboard/dash'));
@@ -103,6 +105,7 @@ export const dashboardRoutes = [
         children: [
           { path: 'historial', element: <HistorialReportesPage /> },
           { path: 'pacientes', element: <ReportePacientesPage /> },
+          { path: 'resumenterapias', element: <ResumenTerapiasPage /> },
         ],
       },
       {
