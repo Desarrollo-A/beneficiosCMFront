@@ -73,7 +73,7 @@ export default function PendingModalUser() {
     setOpen3(false);
     let precio = 50;
     let metodoPago = 1;
-    if (datosUser.tipoPuesto.toLowerCase() === 'operativa' || datosUser.idDepto === 13) {
+    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
       precio = 0;
       metodoPago = 3;
     }
