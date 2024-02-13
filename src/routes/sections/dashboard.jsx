@@ -211,7 +211,7 @@ export const dashboardRoutes = [
         ],
       },
       {
-        path: 'usuariosexternos',
+        path: 'usuarios',
         children: [
           { element: <TestInsertBatch />, index: true },
           { path: 'new', element: <TestInsertBatch /> },
