@@ -48,8 +48,11 @@ export default function DashView() {
   if (rol === "4" || rol === 4) {
     idDt = 158;
     puestos = 158;
-  } else {
+  } else if (rol === "2" || rol === 2 || rol === "3" || rol === 3) {
     idDt = user.idUsuario;
+    puestos = user.idPuesto;
+  } else if (rol === "1" || rol === 1) {
+    idDt = user.idPuesto;
     puestos = user.idPuesto;
   }
 
@@ -302,6 +305,7 @@ export default function DashView() {
   }, []);
 
   const theme = useTheme();
+
 
   // const appRelated = ['Chrome', 'Drive', 'Dropbox', 'Evernote', 'Github'].map(
   //   (name, index) => {
