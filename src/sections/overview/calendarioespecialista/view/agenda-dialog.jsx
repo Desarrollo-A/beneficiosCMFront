@@ -1,24 +1,24 @@
+import * as yup from 'yup';
+import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
 
-import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
+import Dialog from '@mui/material/Dialog';
+import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import { useTheme } from '@mui/material/styles';
-
+import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-
-import FormProvider from 'src/components/hook-form/form-provider';
-import { RHFSelect, RHFDatePicker, RHFHidden } from 'src/components/hook-form';
-import { useSnackbar } from 'src/components/snackbar';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { useGetSedesPresenciales, setHorarioPresencial } from 'src/api/especialistas'
+import { setHorarioPresencial, useGetSedesPresenciales } from 'src/api/especialistas'
+
+import { useSnackbar } from 'src/components/snackbar';
+import FormProvider from 'src/components/hook-form/form-provider';
+import { RHFSelect, RHFHidden, RHFDatePicker } from 'src/components/hook-form';
 
 // -------------------------------------------------------------------
 
@@ -45,12 +45,12 @@ export default function AgendaDialog({open, onClose, id, start, end, sede, ...pr
     // defaultValues: currentEvent,
   });
 
-  const { reset, watch, handleSubmit } = methods;
+  const { handleSubmit } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
     console.log(data)
 
-    let response = await setHorarioPresencial(data)
+    const response = await setHorarioPresencial(data)
 
     if(response.status === 'error'){
       enqueueSnackbar(response.message, { variant: 'error'});
@@ -66,10 +66,9 @@ export default function AgendaDialog({open, onClose, id, start, end, sede, ...pr
   }
 
   return(
-    <>
       <Dialog
         fullWidth
-        maxWidth={'xs'}
+        maxWidth="xs"
         open={open}
         onClose={handleClose}
         transitionDuration={{
@@ -101,8 +100,8 @@ export default function AgendaDialog({open, onClose, id, start, end, sede, ...pr
                   <MenuItem key={0} value={0}>
                     Sin horario
                   </MenuItem>
-                  {sedes.map((sede, index) => (
-                    <MenuItem key={index} value={sede.value}>
+                  {sedes.map((s, index) => (
+                    <MenuItem key={index} value={s.value}>
                       {sede.label}
                     </MenuItem>
                   ))}
@@ -125,16 +124,24 @@ export default function AgendaDialog({open, onClose, id, start, end, sede, ...pr
           </DialogActions>
         </FormProvider>
       </Dialog>
-    </>
   )
 }
 
 function parseStartDate(value, originalValue) {
-  //originalValue.setUTCHours(0,0,0,0);
+  // originalValue.setUTCHours(0,0,0,0);
   return originalValue.toISOString();
 }
 
 function parseEndDate(value, originalValue) {
-  //originalValue.setUTCHours(23,59,59,0);
+  // originalValue.setUTCHours(23,59,59,0);
   return originalValue.toISOString();
 }
+
+AgendaDialog.propTypes = {
+  open:    PropTypes.any,
+  onClose: PropTypes.any,
+  id:      PropTypes.any,
+  start:   PropTypes.any,
+  end:     PropTypes.any,
+  sede:    PropTypes.any
+};

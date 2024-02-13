@@ -85,7 +85,7 @@ const PermissionDeniedPage = lazy(() => import('src/pages/dashboard/permission')
 // const BlankPage = lazy(() => import('src/pages/dashboard/blank'));
 const BlankPage = lazy(() => import('src/sections/_examples/extra/upload-view'));
 
-const AgendaPage = lazy(() => import('src/pages/dashboard/agenda'))
+// const AgendaPage = lazy(() => import('src/pages/dashboard/agenda'))
 
 // ----------------------------------------------------------------------
 

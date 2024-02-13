@@ -1,18 +1,20 @@
 import Calendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
-import interactionPlugin from '@fullcalendar/interaction';
 import allLocales from '@fullcalendar/core/locales-all';
-
-import { StyledCalendar } from './styles';
-import CalendarToolbar from './calendar-toolbar';
+import interactionPlugin from '@fullcalendar/interaction';
 
 import { useCalendar } from '../hooks';
+import { StyledCalendar } from './styles';
+import CalendarToolbar from './calendar-toolbar';
 
 // ----------------------------------------------------------------------
 
 export default function CalendarView({
+  // eslint-disable-next-line react/prop-types
   onSelectRange,
+  // eslint-disable-next-line react/prop-types
   onClickEvent,
+  // eslint-disable-next-line react/prop-types
   events = [],
 }){
 
@@ -20,25 +22,25 @@ export default function CalendarView({
     calendarRef,
     //
     view,
-    date,
+    // date,
     //
-    onDatePrev,
-    onDropEvent,
-    onDateNext,
+    // onDatePrev,
+    // onDropEvent,
+    // onDateNext,
     // onSelectRange,
-    onDateToday,
+    // onDateToday,
     onChangeView,
     // onClickEvent, 
-    openForm,
-    onCloseForm,
+    // openForm,
+    // onCloseForm,
     //
-    selectEventId,
-    selectedDate,
-    selectedEnd
+    // selectEventId,
+    // selectedDate,
+    // selectedEnd
   } = useCalendar();
 
   return(
-    <>
+    
       <StyledCalendar>
         <CalendarToolbar
           // date={date}
@@ -55,7 +57,7 @@ export default function CalendarView({
           // editable = {false} // en false para prevenir un drag del evento
           // droppable
           selectable
-          unselectAuto={true}
+          unselectAuto
           exclusive
           // eventConstraint={hours2}
           // businessHours={hours}
@@ -86,6 +88,6 @@ export default function CalendarView({
         />
 
       </StyledCalendar>
-    </>
+    
   )
 }
