@@ -157,11 +157,11 @@ export default function PendingModalUser() {
     }
     const email = await sendMail(scheduledAppointment.data[0], 2, [
       'programador.analista36@ciudadmaderas.com',
-      // 'programador.analista34@ciudadmaderas.com',
-      // 'programador.analista32@ciudadmaderas.com',
-      // 'programador.analista12@ciudadmaderas.com',
-      // 'tester.ti2@ciudadmaderas.com',
-      // 'tester.ti3@ciudadmaderas.com',
+      'programador.analista34@ciudadmaderas.com',
+      'programador.analista32@ciudadmaderas.com',
+      'programador.analista12@ciudadmaderas.com',
+      'tester.ti2@ciudadmaderas.com',
+      'tester.ti3@ciudadmaderas.com',
     ]);
     if (!email.result) {
       console.error('No se pudo notificar al usuario');
