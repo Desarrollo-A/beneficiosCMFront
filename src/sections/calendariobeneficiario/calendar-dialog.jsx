@@ -96,7 +96,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const [horarioSeleccionado, setHorarioSeleccionado] = useState('');
   const [event, setEvent] = useState({});
 
-  const [ virtual, setVirtual ] = useState(false);
+  const [virtual, setVirtual] = useState(false);
 
   const { user: datosUser } = useAuthContext();
 
@@ -104,7 +104,10 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
   // const [ especialista, setEspecialista ] = useState(0);
 
-  const { diasPresenciales } = useGetDiasPresenciales({especialista: selectedValues.especialista, sede: datosUser.idSede});
+  const { diasPresenciales } = useGetDiasPresenciales({
+    especialista: selectedValues.especialista,
+    sede: datosUser.idSede,
+  });
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -221,7 +224,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     if (tieneCitas.result === true) {
       tipoCita = 1;
     }
-    if (datosUser.tipoPuesto.toLowerCase() === 'operativa' || datosUser.idDepto === 13) {
+    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
       tipoCita = 1;
       precio = 0;
       metodoPago = 3;
@@ -402,7 +405,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const onPay = async () => {
     let precio = 50;
     let metodoPago = 1;
-    if (datosUser.tipoPuesto.toLowerCase() === 'operativa' || datosUser.idDepto === 13) {
+    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
       precio = 0;
       metodoPago = 3;
     }
@@ -488,10 +491,9 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       const data = await getSpecialists(datosUser.idSede, datosUser.idArea, value);
       setEspecialistas(data?.data);
     } else if (input === 'especialista') {
-
       console.log('especialista', value);
       // setEspecialista(value);
-      
+
       setErrorEspecialista(false);
       const modalitiesData = await getModalities(datosUser.idSede, value);
       setModalidades(modalitiesData?.data);
@@ -518,11 +520,10 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       }
       getHorariosDisponibles(selectedValues.beneficio, value);
     } else if (input === 'modalidad') {
-
       // console.log('modalidad', value)
-      if(value === 2){
+      if (value === 2) {
         setVirtual(true);
-      }else{
+      } else {
         setVirtual(false);
         // diasPresencialesGet();
       }

@@ -26,11 +26,11 @@ export function useSession() {
             }
         }
 
-        if(authorizedLoading && authorized){
-            navigate(paths.dashboard.general.dash)
-        }
+    if (authorizedLoading && authorized) {
+      navigate(paths.dashboard.general.dash);
+    }
+  }, [authenticated, authorized, authorizedLoading, navigate]);
 
     }, [authenticated, authorized, authorizedLoading, navigate, loading, location]);
-
-    return null;
+  return null;
 }
