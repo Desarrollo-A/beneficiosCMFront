@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 
 import { esES } from '@mui/x-date-pickers/locales';
 import CssBaseline from '@mui/material/CssBaseline';
-import { esES as dataGridesES } from '@mui/x-data-grid';
-import { esES as coreesES } from '@mui/material/locale';
+// import { esES as dataGridesES } from '@mui/x-data-grid';
+// import { esES as coreesES } from '@mui/material/locale';
 import { createTheme, ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 
 import { useLocales } from 'src/locales';

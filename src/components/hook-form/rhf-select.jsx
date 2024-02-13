@@ -20,6 +20,7 @@ export function RHFSelect({
   helperText,
   children,
   PaperPropsSx,
+  value,
   ...other
 }) {
   const { control } = useFormContext();
@@ -28,11 +29,14 @@ export function RHFSelect({
     <Controller
       name={name}
       control={control}
+      defaultValue={value}
+      shouldUnregister
       render={({ field, fieldState: { error } }) => (
         <TextField
           {...field}
           select
           fullWidth
+          value={field.value}
           SelectProps={{
             native,
             MenuProps: {

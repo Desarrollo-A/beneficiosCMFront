@@ -1,13 +1,22 @@
-import React, { useState, createContext } from 'react';
+import PropTypes from 'prop-types';
 import {Snackbar} from '@material-ui/core';
+import React, { useMemo, useState, createContext } from 'react';
+
 import { Alert } from '@mui/lab';
+
 import instance from './axiosBack';
 
 // create a context, with createContext api
 export const contextGeneral = createContext();
 
-const ContextGeneralProvider = (props) => {
-    const [cargando, setCargando] = useState(false);
+const status = {
+    '-1' : 'error',
+    '0' : 'info',
+    '1' : 'success'
+};
+
+const ContextGeneralProvider = ({ children }) => {
+    const [, setCargando] = useState(false); // cargando
     const [mensaje, setMensaje] = useState({});
     const cerrarMensaje = () => setMensaje({});
 
@@ -44,48 +53,32 @@ const ContextGeneralProvider = (props) => {
         });
     }
 
-    const llamarServidorRespuestaPDF=(ruta)=>(respuesta,body)=>{
-        setCargando(true);
-        instance.post(ruta,body,{
-        responseType: 'arraybuffer',
-        headers: {'Content-Type': 'application/json', Accept: 'application/pdf'
-        }
-      })
-        .then(response=>{
-            setCargando(false);
-            if(response.status===200){
-                    const url = window.URL.createObjectURL(new Blob([response.data]));
-                    const link = document.createElement('a');
-                    link.href = url;
-                    const date = new Date();
-                    const newStringDate =('0' + date.getDate()).slice(-2) +('0' + (date.getMonth() + 1)).slice(-2) +date.getFullYear().toString();
-                    link.setAttribute('download',newStringDate + '.pdf' ); 
-                    document.body.appendChild(link);
-                    setMensaje({ open: true, status: response.data.estatus, value: response.data.mensaje });
-                    respuesta(link,response.data.estatus,response.data.mensaje); 
-                }else{
-                setMensaje({ open: true, status: -1, value: "ERROR DESCONOCIDO" });
-                respuesta(-5,"ERROR DESCONOCIDO");
-            }
-        })
-        .catch(error=>{
-            // console.log(error);
-            setMensaje({ open: true, status: -1, value: "ERROR DE SERVIDOR" });
-            respuesta(-1,'Error de servidor');
-            setCargando(false);
-        });
-    }
+    const memoizedValue = useMemo(
+        () => ({
+            llamarServidor,
+            llamarServidorRespuesta,
+            setCargando,
+            setMensaje
+        }),
+        [setCargando, setMensaje]
+    );
+
+    console.log(mensaje)
 
     return (
-        <contextGeneral.Provider value={{llamarServidor,llamarServidorRespuesta,setCargando,setMensaje}}>
+        <contextGeneral.Provider value={memoizedValue}>
           <Snackbar open={mensaje.open} autoHideDuration={10000} onClose={cerrarMensaje}>
-                <Alert onClose={cerrarMensaje} variant="filled" severity={mensaje.status<0?'error':mensaje.status>0?'success':'info'}>
+                <Alert onClose={cerrarMensaje} variant="filled" severity={status[mensaje.status]}>
                 {mensaje.value}
                 </Alert>
             </Snackbar>
-            {props.children}
+            {children}
         </contextGeneral.Provider>
     );
+};
+
+ContextGeneralProvider.propTypes = {
+    children: PropTypes.node,
 };
 
 export default ContextGeneralProvider;

@@ -1,17 +1,12 @@
 import { m } from 'framer-motion';
-
 import { useGoogleLogin } from '@react-oauth/google';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
-import { alpha } from '@mui/material/styles';
 import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-
-import { Base64 } from 'js-base64';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
@@ -30,7 +25,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 const OPTIONS = [
   {
     label: 'Perfil',
-    linkTo: paths.dashboard.usuarios.perfil,
+    linkTo: paths.dashboard.usuariosexternos.perfil,
   },
 ];
 
@@ -39,9 +34,10 @@ const OPTIONS = [
 export default function AccountPopover() {
   const router = useRouter();
 
-  const userData = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+  // const userData = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+  const { user: userData } = useAuthContext();
 
-  const { user } = useMockedUser();
+  useMockedUser();
 
   const { logout } = useAuthContext();
 
@@ -53,7 +49,7 @@ export default function AccountPopover() {
     try {
       await logout();
       popover.onClose();
-      router.replace('/');
+      router.replace(import.meta.env.BASE_URL);
     } catch (error) {
       console.error(error);
       enqueueSnackbar('Unable to logout!', { variant: 'error' });
@@ -66,61 +62,62 @@ export default function AccountPopover() {
   };
 
   const login = useGoogleLogin({
-    onSuccess: tokenResponse => console.log(tokenResponse),
-    scope : "https://www.googleapis.com/auth/calendar",
-    flow : "auth-code"
+    onSuccess: (tokenResponse) => console.log(tokenResponse),
+    scope: 'https://www.googleapis.com/auth/calendar',
+    flow: 'auth-code',
   });
 
-  return (
-    <>
-      <IconButton
-        component={m.button}
-        whileTap="tap"
-        whileHover="hover"
-        variants={varHover(1.05)}
-        onClick={popover.onOpen}
-      >
-       <Iconify icon="solar:user-bold-duotone" width={24} />
-      </IconButton>
-
-      <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 240, p: 0 }}>
-        <Box sx={{ p: 2, pb: 1.5 }}>
-          <Typography variant="subtitle2" noWrap>
-            {userData.idUsuario}{' '}{userData.nombre}
-          </Typography>
-
-          <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {userData.correo}
-          </Typography>
-        </Box>
-
-        <Divider sx={{ borderStyle: 'dashed' }} />
-
-        <Box sx={{ p:1, mb: 1, mt : 0 }}>
-          <MenuItem onClick={() => login()}>
-            Conectar cuenta de google
-          </MenuItem>
-        </Box>
-
-        <Divider sx={{ borderStyle: 'dashed' }} />
-
-        <Stack sx={{ p: 1 }}>
-          {OPTIONS.map((option) => (
-            <MenuItem key={option.label} onClick={() => handleClickItem(option.linkTo)}>
-              {option.label}
-            </MenuItem>
-          ))}
-        </Stack>
-
-        <Divider sx={{ borderStyle: 'dashed' }} />
-
-        <MenuItem
-          onClick={handleLogout}
-          sx={{ m: 1, fontWeight: 'fontWeightBold', color: 'error.main' }}
+  if (userData) {
+    return (
+      <>
+        <IconButton
+          component={m.button}
+          whileTap="tap"
+          whileHover="hover"
+          variants={varHover(1.05)}
+          onClick={popover.onOpen}
         >
-          Cerrar sesión
-        </MenuItem>
-      </CustomPopover>
-    </>
-  );
+          <Iconify icon="solar:user-bold-duotone" width={24} />
+        </IconButton>
+
+        <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 240, p: 0 }}>
+          <Box sx={{ p: 2, pb: 1.5 }}>
+            <Typography variant="subtitle2" noWrap>
+              {userData.idUsuario} {userData.nombre}
+            </Typography>
+
+            <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
+              {userData.correo}
+            </Typography>
+          </Box>
+
+          <Divider sx={{ borderStyle: 'dashed' }} />
+
+          <Box sx={{ p: 1, mb: 1, mt: 0 }}>
+            <MenuItem onClick={() => login()}>Conectar cuenta de google</MenuItem>
+          </Box>
+
+          <Divider sx={{ borderStyle: 'dashed' }} />
+
+          <Stack sx={{ p: 1 }}>
+            {OPTIONS.map((option) => (
+              <MenuItem key={option.label} onClick={() => handleClickItem(option.linkTo)}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </Stack>
+
+          <Divider sx={{ borderStyle: 'dashed' }} />
+
+          <MenuItem
+            onClick={handleLogout}
+            sx={{ m: 1, fontWeight: 'fontWeightBold', color: 'error.main' }}
+          >
+            Cerrar sesión
+          </MenuItem>
+        </CustomPopover>
+      </>
+    );
+  }
+  return null;
 }

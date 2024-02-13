@@ -41,13 +41,13 @@ const defaultFilters = {
   estatus: 'all',
 };
 
-export default function EncuestasLista({encuestas, estatusCt }) {
+export default function EncuestasLista({ encuestas, estatusCt }) {
   const table = useTable();
   const updateUser = useUpdateUser();
   const { enqueueSnackbar } = useSnackbar();
 
   const targetRef = useRef();
-  
+
   const [filters, setFilters] = useState(defaultFilters);
   const [userData, setUserData] = useState(encuestas || []);
 
@@ -55,7 +55,6 @@ export default function EncuestasLista({encuestas, estatusCt }) {
     setUserData(encuestas || []);
   }, [encuestas]);
 
-  
   const canReset = !isEqual(defaultFilters, filters);
   const denseHeight = table.dense ? 52 : 72;
 
@@ -84,104 +83,105 @@ export default function EncuestasLista({encuestas, estatusCt }) {
 
   const handleDisableUser = async (id) => {
     try {
-      const update = await updateUser(new URLSearchParams({
-        'idUsuario': id,
-        'estatus': 0,
-        'modificadoPor': 1
-      }));
+      const update = await updateUser(
+        new URLSearchParams({
+          idUsuario: id,
+          estatus: 0,
+          modificadoPor: 1,
+        })
+      );
       if (update.result) {
         enqueueSnackbar(`¡Se ha actualizado el usuario exitosamente!`, { variant: 'success' });
       } else {
         enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'success' });
       }
     } catch (error) {
-      console.error("Error en handleDisableUser:", error);
+      console.error('Error en handleDisableUser:', error);
       enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'danger' });
     }
   };
 
   return (
-        <Card>
-            <CardHeader />
-            <CardContent>
-               <UserTableToolbar
-                filters={filters}
-                onFilters={handleFilters}
-                //
+    <Card>
+      <CardHeader />
+      <CardContent>
+        <UserTableToolbar
+          filters={filters}
+          onFilters={handleFilters}
+          //
+        />
+
+        {canReset && (
+          <UserTableFiltersResult
+            filters={filters}
+            onFilters={handleFilters}
+            //
+            onResetFilters={handleResetFilters}
+            //
+            results={dataFiltered.length}
+            sx={{ pb: 1, pt: 0 }}
+          />
+        )}
+
+        <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+          <Scrollbar>
+            <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }} ref={targetRef}>
+              <TableHeadCustom
+                order={table.order}
+                orderBy={table.orderBy}
+                headLabel={TABLE_HEAD}
+                rowCount={userData.length}
+                numSelected={table.selected.length}
+                onSort={table.onSort}
               />
 
-              {canReset && (
-                <UserTableFiltersResult
-                  filters={filters}
-                  onFilters={handleFilters}
-                  //
-                  onResetFilters={handleResetFilters}
-                  //
-                  results={dataFiltered.length}
-                  sx={{ pb: 1, pt: 0 }}
-                />
-              )}
-               
-              <TableContainer sx={{ position: 'relative', overflow: 'unset' }} >
-                <Scrollbar>
-                  <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }} ref={targetRef}>
-                    <TableHeadCustom
-                      order={table.order}
-                      orderBy={table.orderBy}
-                      headLabel={TABLE_HEAD}
-                      rowCount={userData.length}
-                      numSelected={table.selected.length}
-                      onSort={table.onSort}
+              <TableBody>
+                {dataFiltered
+                  .slice(
+                    table.page * table.rowsPerPage,
+                    table.page * table.rowsPerPage + table.rowsPerPage
+                  )
+                  .map((usuario, index) => (
+                    <EncuestasTablaFilas
+                      key={index}
+                      row={usuario}
+                      selected={table.selected.includes(usuario.id)}
+                      onSelectRow={() => table.onSelectRow(usuario.id)}
+                      onDeleteRow={() => handleDisableUser(usuario.id)}
+                      est={estatusCt}
                     />
+                  ))}
 
-                    <TableBody>
-                      {dataFiltered
-                        .slice(
-                          table.page * table.rowsPerPage,
-                          table.page * table.rowsPerPage + table.rowsPerPage
-                        )
-                        .map((usuario, index) => (
-                          <EncuestasTablaFilas
-                            key={index}
-                            row={usuario}
-                            selected={table.selected.includes(usuario.id)}
-                            onSelectRow={() => table.onSelectRow(usuario.id)}
-                            onDeleteRow={() => handleDisableUser(usuario.id)}
-                            est={estatusCt}
-                          />
-                        ))}
+                <TableEmptyRows
+                  height={denseHeight}
+                  emptyRows={emptyRows(table.page, table.rowsPerPage, userData.length)}
+                />
+                <TableNoData notFound={notFound} />
+              </TableBody>
+            </Table>
+          </Scrollbar>
+        </TableContainer>
 
-                      <TableEmptyRows
-                        height={denseHeight}
-                        emptyRows={emptyRows(table.page, table.rowsPerPage, userData.length)}
-                      />
-                      <TableNoData notFound={notFound} />
-                    </TableBody>
-                  </Table>
-                </Scrollbar>
-              </TableContainer>
-                        
-              <TablePaginationCustom
-                count={dataFiltered.length}
-                page={table.page}
-                rowsPerPage={table.rowsPerPage}
-                onPageChange={table.onChangePage}
-                onRowsPerPageChange={table.onChangeRowsPerPage}
-              />
-            </CardContent>
-        </Card>
-        
+        <TablePaginationCustom
+          count={dataFiltered.length}
+          page={table.page}
+          rowsPerPage={table.rowsPerPage}
+          onPageChange={table.onChangePage}
+          onRowsPerPageChange={table.onChangeRowsPerPage}
+        />
+      </CardContent>
+    </Card>
   );
 }
 
 EncuestasLista.propTypes = {
   encuestas: PropTypes.array,
   estatusCt: PropTypes.array,
-}
+};
 
 const applyFilter = ({ inputData, comparator, filters }) => {
   const { name, area } = filters;
-  
+
   const stabilizedThis = inputData.map((el, index) => [el, index]);
 
   stabilizedThis.sort((a, b) => {
@@ -207,4 +207,4 @@ const applyFilter = ({ inputData, comparator, filters }) => {
   }
 
   return inputData;
-}
+};

@@ -104,32 +104,31 @@ export function AuthProvider({ children }) {
     initialize();
   }, [initialize]);
 
-  // LOGIN
-  const login = useCallback(async (numempleado, password) => {
-    const data = JSON.stringify({ numempleado, password });
+// LOGIN
+const login = useCallback(async (numempleado, password) => {
+  const data = JSON.stringify({ numempleado, password });
 
-    const url = `${HOST}${endpoints.auth.login}`
+  const url = `${HOST}${endpoints.auth.login}`
 
-    const response = await instance.post(url, data);
+  const response = await instance.post(url, data);
 
-    if (response.data.result === 1) {
-      const { accessToken, user } = response.data;
-      setSession(accessToken);
+  if (response.data.result !== 1) {
+    return { result: 0, message: 'El usuario y/o contraseña no son correctos' };
+  } 
+  const { accessToken, user } = response.data;
+  setSession(accessToken);
 
-      dispatch({
-        type: 'LOGIN',
-        payload: {
-          user: {
-            ...user,
-            accessToken,
-          },
-        },
-      });
-    } else {
-      return { result: 0, message: 'El usuario y/o contraseña no son correctos' };
-    }
-  }, []);
-
+  return dispatch({
+    type: 'LOGIN',
+    payload: {
+      user: {
+        ...user,
+        accessToken,
+      },
+    },
+  });
+}, []);
+  
   // REGISTER
   const register = useCallback(async (numEmpleado) => {
     const data = {
@@ -159,8 +158,6 @@ export function AuthProvider({ children }) {
   // LOGOUT
   const logout = useCallback(async () => {
     setSession(null);
-
-    const response = await instance.post(endpoints.auth.logout);
     dispatch({
       type: 'LOGOUT',
     });
@@ -185,7 +182,7 @@ export function AuthProvider({ children }) {
       logout,
       check : initialize,
     }),
-    [login, logout, register, state.user, status]
+    [login, logout, register, state.user, status, initialize]
   );
 
   return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;

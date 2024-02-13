@@ -1,6 +1,6 @@
+import React from 'react';
 import { mutate } from 'swr';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import Box from '@mui/material/Box';
@@ -9,8 +9,8 @@ import Button from '@mui/material/Button';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemButton from '@mui/material/ListItemButton';
 
-import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
+// import { paths } from 'src/routes/paths';
+// import { useRouter } from 'src/routes/hooks';
 
 import { endpoints } from 'src/utils/axios';
 
@@ -18,7 +18,7 @@ import { endpoints } from 'src/utils/axios';
 
 export default function NotificationEncuesta({ notification }) {
 
-  const router = useRouter();
+  // const router = useRouter();
 
   const renderText = (
     <ListItemText

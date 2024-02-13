@@ -9,7 +9,7 @@ import { endpoints } from 'src/utils/axios';
 
 import { usePostGeneral } from 'src/api/general';
 
-import { useSnackbar } from 'src/components/snackbar';
+// import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, {
   RHFTextField
 } from 'src/components/hook-form';

@@ -1,0 +1,33 @@
+name: 🚀 Deploy pruebas
+on: workflow_dispatch
+
+jobs:
+  compile-front-on-pruebas:
+    name: 🎉 Deploy
+    runs-on: ubuntu-latest
+  
+    steps:
+      - name: 🚚 Checkout
+        uses: actions/checkout@v4
+  
+      - name: 🛠️ Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+          cache: npm
+
+      - name: ⚙️ Build project
+        run: |
+          npm install --legacy-peer-deps
+          npm run pruebas
+
+      - name: 📂 Sync files
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.1
+        with:
+          server: 104.198.134.0
+          port: 22
+          username: prohab
+          ssh_private_key: ${{ secrets.SFTP_SSH_PRIVATE_KEY }}
+          local_path: ./dist/*
+          remote_path: /mnt/data/aplicaciones/Prueba/beneficiosmaderas/
+          delete_remote_files: true

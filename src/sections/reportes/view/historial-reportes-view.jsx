@@ -19,7 +19,7 @@ import { useRouter } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import uuidv4 from "src/utils/uuidv4";
+// import uuidv4 from "src/utils/uuidv4";
 import { endpoints } from 'src/utils/axios';
 
 import { useAuthContext } from 'src/auth/hooks';
@@ -78,7 +78,7 @@ function handleDownloadExcel(datosTabla, rol) {
     },
   ];
 
-  if (rol === "1") {
+  if (rol === "1" || rol === 1) {
     const arr = baseArray[0].columns;
     arr.splice(1, 1);
 
@@ -90,7 +90,7 @@ function handleDownloadExcel(datosTabla, rol) {
       },
     ];
 
-  } else if (rol === "2") {
+  } else if (rol === "2" || rol === 2) {
     const arr = baseArray[0].columns;
     arr.splice(2, 1);
 
@@ -120,11 +120,11 @@ function handleDownloadPDF(datosTabla, header, rol) {
 
   let data = [];
 
-  if (rol === "1") {
+  if (rol === "1" || rol === 1) {
     data = datosTabla.map(item => ([item.idCita, item.paciente,
     item.oficina, item.area, item.sede, '', item.titulo, item.estatus, item.horario]))
   }
-  else if (rol === "2") {
+  else if (rol === "2" || rol === 2) {
     data = datosTabla.map(item => ([item.idCita, item.especialista,
       item.oficina, item.area, item.sede, '', item.titulo, item.estatus, item.horario]))
   } else {

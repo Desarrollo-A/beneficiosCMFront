@@ -336,3 +336,63 @@ export function sendMail(event, typeEmail, correo) {
 
   return mail;
 }
+
+export function insertGoogleCalendarEvent(
+  title,
+  start,
+  end,
+  location,
+  description,
+  attendees,
+  email
+) {
+  const URL = [endpoints.calendarioColaborador.insertGoogleEvent];
+
+  const guest = attendees
+    .filter((each) => each !== email)
+    .map((each) => ({ email: each, responseStatus: 'accepted' }));
+
+  attendees = [{ email, responseStatus: 'accepted' }, ...guest];
+
+  const insertEvent = fetcherPost(URL, {
+    title,
+    start,
+    end,
+    location,
+    description,
+    attendees,
+    email,
+  });
+
+  console.log({
+    title,
+    start,
+    end,
+    location,
+    description,
+    attendees,
+    email,
+  });
+  return insertEvent;
+}
+
+export function updateGoogleCalendarEvent(id, start, end, email, attendees) {
+  const URL = [endpoints.calendarioColaborador.updateGoogleEvent];
+
+  const guest = attendees
+    .filter((each) => each !== email)
+    .map((each) => ({ email: each, responseStatus: 'accepted' }));
+
+  attendees = [{ email, responseStatus: 'accepted' }, ...guest];
+
+  const updateEvent = fetcherPost(URL, { id, start, end, email, attendees });
+
+  return updateEvent;
+}
+
+export function deleteGoogleCalendarEvent(id, email) {
+  const URL = [endpoints.calendarioColaborador.deleteGoogleEvent];
+  const deleteEvent = fetcherPost(URL, { id, email });
+
+  return deleteEvent;
+}

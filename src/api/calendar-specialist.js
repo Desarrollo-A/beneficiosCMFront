@@ -27,6 +27,10 @@ const registar_transaccion = endpoints.calendario.registrarTransaccion;
 const check_invoice = endpoints.calendario.checkInvoice;
 const sendMail = endpoints.calendario.mailEspecialista;
 const update_detalle_paciente = endpoints.calendario.updateDetallePaciente;
+const insert_google_event = endpoints.calendario.insertGoogleEvent;
+const insert_google_id = endpoints.calendario.insertGoogleId;
+const update_google_event = endpoints.calendario.updateGoogleEvent;
+const delete_google_event = endpoints.calendario.deleteGoogleEvent;
 
 const options = {
   revalidateIfStale: false,
@@ -62,10 +66,19 @@ export function GetCustomEvents(current) {
     options
   );
 
+  if (data?.events?.length > 0) {
+    data.events = data.events.map((item) => ({ ...item, id: item.id.toString() }));
+  }
+
   useEffect(() => {
     // esta función ayuda a que se de un trigger para traer de nuevo los eventos del mes, cada que cambia month
     reRender();
   }, [month]);
+  
+
+  if (data?.events?.length > 0) {
+    data.events = data.events.map(item => ({...item, id: item.id.toString()}));
+  }
 
   const memoizedValue = useMemo(() => {
     const events = data?.events?.map((event) => ({
@@ -173,6 +186,9 @@ export async function createAppointment(eventData, modalitie) {
   let transaction = '';
   let transactionId = 0;
   let especialidad = '';
+  let sede = modalitie?.sede || 'virtual';
+  let oficina = (modalitie?.oficina || 'virtual');
+
   const fechaInicio = dayjs(`${eventData.fechaInicio} ${eventData.hora_inicio}`).format(
     'YYYY/MM/D HH:mm:ss'
   );
@@ -190,7 +206,7 @@ export async function createAppointment(eventData, modalitie) {
   const horaInicio = dayjs(fechaInicio).format('HH:mm a');
   const horaFinal = dayjs(fechaFinal).format('HH:mm a');
 
-  switch (modalitie.especialidad) {
+  switch (datosUser.idPuesto) {
     case 537:
       especialidad = 'nutrición';
       break;
@@ -212,6 +228,11 @@ export async function createAppointment(eventData, modalitie) {
       break;
   }
 
+  if(fundacion === 1){
+    sede = 'Querétaro';
+    oficina = 'Confirmado por especialista';
+  }
+
   const dataTransaction = {
     usuario: eventData.paciente.idUsuario,
     folio: uuidv4(),
@@ -221,7 +242,7 @@ export async function createAppointment(eventData, modalitie) {
   };
 
   if (start > now) {
-    if (fundacion === 1) {
+    if (fundacion === 1 || eventData.paciente.tipoPuesto === 'Operativa') {
       transaction = await fetcherPost(registar_transaccion, dataTransaction);
 
       if (transaction.result) {
@@ -242,27 +263,56 @@ export async function createAppointment(eventData, modalitie) {
       idDetalle: transactionId,
       especialidad,
       reagenda: 0,
+      tipoPuesto: eventData.paciente.tipoPuesto
     };
 
-    const mailMessage = {
-      // datos para enviar el mail
+    const mailMessage = { // datos para enviar el mail
       especialidad,
-      especialista: modalitie.especialista,
+      especialista: datosUser.nombre,
       fecha,
       horaInicio,
       horaFinal,
       view: 'email-appointment',
-      oficina: modalitie?.oficina || 'virtual',
-      sede: modalitie?.sede || 'virtual',
+      oficina,
+      sede,
       tituloEmail: 'Reservación',
       temaEmail: 'Se ha agendado tu cita con: ',
-      correo: eventData.paciente.correo
+      correo:  eventData.paciente.correo,
     };
+
+    const googleData = {
+      title: eventData.title,
+      start: dayjs(fechaInicio).format('YYYY-MM-DDTHH:mm:ss'),
+      end: dayjs(fechaFinal).format('YYYY-MM-DDTHH:mm:ss'),
+      location: `${oficina}, ${sede}`,
+      description: `Cita agendada en: ${especialidad}`,
+      attendees: [
+        {
+          email: eventData.paciente.correo,
+          responseStatus: 'accepted'
+        },
+        {
+            email: datosUser.correo,
+            responseStatus: 'needsAction'
+        },
+        ],
+      email: datosUser.correo
+    }
 
     create = await fetcherPost(create_appointment, data);
 
-    if (create.result && fundacion === 1) {
+    if (create.result && fundacion === 1 || create.result && eventData.paciente.tipoPuesto === 'Operativa') {
+      const googleEvent = await fetcherPost(insert_google_event, googleData);
       fetcherPost(sendMail, mailMessage);
+
+      if(googleEvent.result){
+        const updateData = {
+          idCita: create.data,
+          idEventoGoogle: googleEvent.data.id
+        };
+
+        fetcherPost(insert_google_id, updateData);
+      }
     }
   } else {
     create = { result: false, msg: 'No se puede agendar cita en dias anteriores' };
@@ -328,7 +378,7 @@ export async function cancelAppointment(currentEvent, id, cancelType) {
 
   const data = {
     idCita: id,
-    startStamp,
+    start: startStamp,
     tipo: cancelType,
     modificadoPor: datosUser.idUsuario,
   };
@@ -349,6 +399,13 @@ export async function cancelAppointment(currentEvent, id, cancelType) {
 
   if (delDate.result) {
     fetcherPost(sendMail, mailMessage);
+
+    const eventGoogleData = {
+      id: currentEvent?.idEventoGoogle,
+      email: currentEvent?.correo
+    };
+
+    fetcherPost(delete_google_event, eventGoogleData);
   }
 
   return delDate;
@@ -382,6 +439,15 @@ export async function dropUpdate(args) {
 // ----------------------------------------------------------------------
 
 export async function endAppointment(currentEvent, reason) {
+  let sede = currentEvent?.sede || 'virtual';
+  let oficina = currentEvent?.oficina || 'virtual';
+  const fundacion = currentEvent?.externo;
+
+  if(fundacion === 1){
+    sede = 'Querétaro';
+    oficina = 'Confirmado por especialista';
+  }
+  
   const data = {
     // datos que se envian para la cancelación
     idCita: currentEvent?.id,
@@ -389,20 +455,21 @@ export async function endAppointment(currentEvent, reason) {
     idUsuario: datosUser.idUsuario,
   };
 
-  const mailData = { // datos que se envian al correo
+  const mailData = {
+    // datos que se envian al correo
     idCita: currentEvent?.id,
     tituloEmail: 'FINALIZACIÓN',
     temaEmail: 'Se ha finalizado tu cita en: ',
     especialidad: currentEvent?.beneficio,
     especialista: currentEvent?.especialista,
-    sede: currentEvent?.sede,
-    oficina: currentEvent?.oficina || 'virtual',
+    sede,
+    oficina,
     fecha: dayjs(currentEvent?.start).format('DD/MM/YYYY'),
     horaInicio: dayjs(currentEvent?.start).format('HH:mm A'),
     horaFinal: dayjs(currentEvent?.end).format('HH:mm A'),
     view: 'email-end',
     correo: currentEvent?.correo,
-    link: 'https://prueba.gphsis.com/beneficiosmaderas/dashboard/calendariobeneficiario'
+    link: 'https://prueba.gphsis.com/beneficiosmaderas/dashboard/calendariobeneficiario',
   };
 
   const update = await fetcherPost(end_appointment, data);
@@ -457,6 +524,11 @@ export function useGetPending() {
 export function useGetEventReasons(idCita) {
   const { data, mutate: revalidate } = useSWR(get_event_reasons, (url) => fetcherPost(url, idCita));
 
+  useEffect(() => {
+    // esta función ayuda a que se de un trigger para traer de nuevo los eventos del mes, cada que cambia month
+    revalidate();
+  }, [idCita, revalidate]);
+
   const memoizedValue = useMemo(
     () => ({
       data: data || [],
@@ -472,6 +544,10 @@ export function useGetEventReasons(idCita) {
 
 export async function reschedule(eventData, idDetalle, cancelType) {
   let response = '';
+  const  {fundacion} = eventData; // para verificar si es fundacion Lamat 
+  let sede = eventData?.sede || 'virtual';
+  let oficina = eventData?.oficina || 'virtual';
+
   const startStamp = dayjs(eventData.oldEventStart).format('YYYY/MM/DD HH:mm:ss');
 
   const fechaInicio = dayjs(`${eventData.fechaInicio} ${eventData.hora_inicio}`).format(
@@ -485,24 +561,32 @@ export async function reschedule(eventData, idDetalle, cancelType) {
   const horaInicio = dayjs(fechaInicio).format('HH:mm:ss');
   const horaFinal = dayjs(fechaFinal).format('HH:mm:ss');
 
+  if(fundacion === 1){
+    sede = 'Querétaro';
+    oficina = 'Confirmado por especialista';
+  }
+
   const data = {
     idUsuario: datosUser.idUsuario,
     idPaciente: eventData.paciente,
     fechaInicio,
     fechaFinal,
+    fechaCreacion: eventData.fechaCreacion,
     creadoPor: datosUser.idUsuario,
     titulo: eventData.title,
     modificadoPor: datosUser.idUsuario,
     idCatalogo: eventData.idAtencionXSede,
-    fundacion: eventData.fundacion,
+    fundacion,
     idDetalle,
     reagenda: 1,
+    tipoPuesto: eventData.tipoPuesto,
+    idEventoGoogle: eventData.idEventoGoogle
   };
 
   const cancelData = {
     idCita: eventData?.idCancelar,
     tipo: cancelType,
-    startStamp,
+    start: startStamp,
     modificadoPor: datosUser.idUsuario,
   };
 
@@ -510,8 +594,8 @@ export async function reschedule(eventData, idDetalle, cancelType) {
     titulo: 'REAGENDAMIENTO DE CITA',
     beneficio: eventData.beneficio,
     especialista: eventData.especialista,
-    sede: eventData.sede,
-    oficina: eventData?.oficina || 'virtual',
+    sede,
+    oficina,
     fecha,
     horaInicio,
     horaFinal,
@@ -528,9 +612,28 @@ export async function reschedule(eventData, idDetalle, cancelType) {
     response = await fetcherPost(create_appointment, data);
 
     if (response.result) {
-      response = await fetcherPost(cancel_appointment, cancelData);
-      if (response.result) {
+      const del = await fetcherPost(cancel_appointment, cancelData);
+      if (del.result) {
         fetcherPost(sendMail, mailReschedule);
+
+        const dataGoogle = {
+          start: dayjs(fechaInicio).format('YYYY-MM-DDTHH:mm:ss'),
+          end: dayjs(fechaFinal).format('YYYY-MM-DDTHH:mm:ss'),
+          id: eventData?.idEventoGoogle,
+          email: eventData?.correo,
+          attendees: [
+            {
+              email: datosUser.correo,
+              responseStatus: 'accepted'
+            },
+            {
+              email: eventData.correo,
+              responseStatus: 'needsAction'
+            }
+          ]
+        }
+        
+        fetcherPost(update_google_event, dataGoogle);
       }
     }
   }

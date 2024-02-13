@@ -2,7 +2,6 @@ import 'dayjs/locale/es';
 import dayjs from 'dayjs';
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { enqueueSnackbar } from 'notistack';
 import { Dialog, DialogContent } from '@material-ui/core';
 
 import Tooltip from '@mui/material/Tooltip';
@@ -11,20 +10,11 @@ import FormHelperText from '@mui/material/FormHelperText';
 import InputAdornment from '@mui/material/InputAdornment';
 import { Chip, Stack, Button, TextField, Typography, DialogActions } from '@mui/material';
 
-import uuidv4 from 'src/utils/uuidv4';
-
 import { useAuthContext } from 'src/auth/hooks';
-import { AvatarShape } from 'src/assets/illustrations';
-import { useGetEventReasons } from 'src/api/calendar-specialist';
-import {
-  useGetPendientes,
-  cancelAppointment,
-  updateAppointment,
-  registrarDetalleDePago,
-} from 'src/api/calendar-colaborador';
+import { updateGoogleCalendarEvent } from 'src/api/calendar-colaborador';
 
-import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
+import { useSnackbar } from 'src/components/snackbar';
 
 export default function CalendarPreview({ event, open, handleClose }) {
   const [email, setEmail] = useState('');
@@ -32,6 +22,9 @@ export default function CalendarPreview({ event, open, handleClose }) {
   const [errorMessage, setErrorMessage] = useState('Formato de correo erróneo');
   const [errorEmail, setErrorEmail] = useState(false);
   const [sendEmails, setSendEmails] = useState(false);
+
+  const { enqueueSnackbar } = useSnackbar();
+  const { user: datosUser } = useAuthContext();
 
   const handleSendEmails = () => {
     setSendEmails(!sendEmails);
@@ -50,19 +43,44 @@ export default function CalendarPreview({ event, open, handleClose }) {
     }
 
     // Verificar si el nuevo correo ya existe en el arreglo
-    if (emails.some((emailObj) => emailObj.email.toLowerCase() === newEmail.toLowerCase())) {
+    if (emails.some((emailObj) => emailObj.toLowerCase() === newEmail.toLowerCase())) {
       setErrorMessage('Correo ya registrado');
       return setErrorEmail(true);
     }
 
-    setEmails([...emails, { email: newEmail }]);
+    setEmails([...emails, newEmail]);
     setEmail('');
     setErrorEmail(false);
     return '';
   };
 
+  const sendNotifications = async () => {
+    const startDate = dayjs(event.start);
+    const endDate = startDate.add(1, 'hour');
+
+    const updateGoogleEvent = await updateGoogleCalendarEvent(
+      event.idEventoGoogle,
+      startDate.format('YYYY-MM-DDTHH:mm:ss'),
+      endDate.format('YYYY-MM-DDTHH:mm:ss'),
+      datosUser.correo,
+      [datosUser.correo, 'programador.analista34@ciudadmaderas.com', ...emails]
+    );
+    if (!updateGoogleEvent.result) {
+      enqueueSnackbar('No se pudo sincronizar el evento con la cuenta de google', {
+        variant: 'error',
+      });
+      handleClose();
+      return false;
+    }
+    enqueueSnackbar('¡Invitaciones enviadas correctamente!', {
+      variant: 'success',
+    });
+    handleClose();
+    return true;
+  };
+
   const deleteEmail = (removedEmail) => {
-    const newEmails = emails.filter((each) => each.email !== removedEmail);
+    const newEmails = emails.filter((each) => each !== removedEmail);
     setEmails(newEmails);
   };
 
@@ -360,9 +378,9 @@ export default function CalendarPreview({ event, open, handleClose }) {
             >
               {emails.length > 0 &&
                 emails.map((each) => (
-                  <Tooltip title={each.email} key={each.email}>
+                  <Tooltip title={each} key={each}>
                     <Chip
-                      label={each.email}
+                      label={each}
                       variant="outlined"
                       sx={{
                         backgroundColor: '#e0e0e0',
@@ -388,7 +406,7 @@ export default function CalendarPreview({ event, open, handleClose }) {
                           />
                         </Stack>
                       }
-                      onDelete={() => deleteEmail(each.email)}
+                      onDelete={() => deleteEmail(each)}
                     />
                   </Tooltip>
                 ))}
@@ -400,11 +418,7 @@ export default function CalendarPreview({ event, open, handleClose }) {
         <Button variant="contained" color="error" onClick={handleClose}>
           Cerrar
         </Button>
-        <Button
-          variant="contained"
-          color="success"
-          onClick={() => alert(`Función de notificar a: ${JSON.stringify(emails)}`)}
-        >
+        <Button variant="contained" color="success" onClick={() => sendNotifications()}>
           Notificar
         </Button>
       </DialogActions>
