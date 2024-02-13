@@ -1049,6 +1049,10 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       [
         'programador.analista36@ciudadmaderas.com', // datosUser.correo Sustituir correo de analista
         'programador.analista34@ciudadmaderas.com',
+        'programador.analista32@ciudadmaderas.com',
+        'programador.analista12@ciudadmaderas.com',
+        'tester.ti2@ciudadmaderas.com',
+        'tester.ti3@ciudadmaderas.com',
       ]
     );
     if (!updateGoogleEvent.result) {
