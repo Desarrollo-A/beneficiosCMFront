@@ -66,10 +66,6 @@ export function getHorariosOcupados(especialista, usuario, fechaInicio, fechaFin
   const URL = [endpoints.calendarioColaborador.getAllEventsWithRange];
   const horarios = fetcherPost(URL, { especialista, usuario, fechaInicio, fechaFin });
 
-  if (horarios?.data?.length > 0) {
-    horarios.data = horarios.data.map((item) => ({ ...item, id: item.id.toString() }));
-  }
-
   return horarios;
 }
 
@@ -138,16 +134,9 @@ export function lastAppointment(usuario, beneficio) {
 }
 
 // Actualizar algun dato de cita como estatus de la cita, o su detalle de pago.
-export function updateAppointment(idUsuario, idCita, estatus, detalle, evaluacion, googleEventId) {
+export function updateAppointment(idUsuario, idCita, estatus, detalle, evaluacion) {
   const URL = [endpoints.calendarioColaborador.updateAppointment];
-  const update = fetcherPost(URL, {
-    idUsuario,
-    idCita,
-    estatus,
-    detalle,
-    evaluacion,
-    googleEventId,
-  });
+  const update = fetcherPost(URL, { idUsuario, idCita, estatus, detalle, evaluacion });
 
   return update;
 }
@@ -175,17 +164,6 @@ export function useGetPendientes() {
     fetcherPost(url, { idUsuario: datosUser?.idUsuario })
   );
 
-  if (data?.data?.pago?.length > 0) {
-    data.data.pago = data.data.pago.map((item) => ({ ...item, id: item.id.toString() }));
-  }
-
-  if (data?.data?.evaluacion?.length > 0) {
-    data.data.evaluacion = data.data.evaluacion.map((item) => ({
-      ...item,
-      id: item.id.toString(),
-    }));
-  }
-
   const memoizedValue = useMemo(
     () => ({
       data: data || [],
@@ -209,8 +187,7 @@ export function crearCita(
   estatusCita,
   creadoPor,
   modificadoPor,
-  detallePago,
-  idGoogleEvent
+  detallePago
 ) {
   const URL_CITA = [endpoints.calendarioColaborador.createAppointment];
   const axs = fetcherPost(URL_CITA, {
@@ -225,7 +202,6 @@ export function crearCita(
     creadoPor,
     modificadoPor,
     detallePago,
-    idGoogleEvent,
   });
 
   return axs;
@@ -250,10 +226,6 @@ export function useGetAppointmentsByUser(current) {
     error,
     isValidating,
   } = useSWR(URL_APPOINTMENTS, (url) => fetcherPost(url, dataValue));
-
-  if (data?.data?.length > 0) {
-    data.data = data.data.map((item) => ({ ...item, id: item.id.toString() }));
-  }
 
   useEffect(() => {
     revalidate();
@@ -295,10 +267,6 @@ export function cancelAppointment(currentEvent, id, cancelType) {
 export function consultarCita(idCita) {
   const URL = [endpoints.calendarioColaborador.getCitaById];
   const cita = fetcherPost(URL, { idCita });
-
-  if (cita?.data?.length > 0) {
-    cita.data = cita.data.map((item) => ({ ...item, id: item.id.toString() }));
-  }
 
   return cita;
 }

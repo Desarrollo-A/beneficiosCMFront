@@ -27,7 +27,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
   const { enqueueSnackbar } = useSnackbar();
 
   const { user } = useAuthContext();
-
+  
   const updateObservacion = useUpdate(endpoints.reportes.observacion);
 
   const idUsr = user.idUsuario;
@@ -60,6 +60,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
+
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
       reset();
@@ -74,8 +75,10 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
         enqueueSnackbar(update.msj, { variant: 'error' });
       }
     } catch (error) {
-      console.error('Error en handleSubmit:', error);
-      enqueueSnackbar(`¡No se pudo actualizar los datos!`, { variant: 'danger' });
+
+      console.error("Error en handleSubmit:", error);
+      enqueueSnackbar(`¡No se pudó actualizar los datos!`, { variant: 'danger' });
+
     }
   });
 
@@ -90,13 +93,17 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
       }}
     >
       <FormProvider methods={methods} onSubmit={onSubmit}>
+
         <DialogTitle>Justificación de penalización</DialogTitle>
 
         <DialogContent>
+
           ¿Estás seguro que deseas justificar la cita seleccionada?
-          <Stack spacing={3} sx={{ p: 3 }}>
-            <RHFTextField name="descripcion" label="Observaciones" multiline rows={4} />
-          </Stack>
+
+        <Stack spacing={3} sx={{ p: 3 }}>
+        <RHFTextField name="descripcion" label="Observaciones" multiline rows={4} />
+        </Stack>
+
         </DialogContent>
 
         <RHFTextField name="idCita" value={idCita} style={{ display: 'none' }} />
@@ -110,8 +117,10 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
             Guardar
           </LoadingButton>
         </DialogActions>
+        
       </FormProvider>
     </Dialog>
+
   );
 }
 

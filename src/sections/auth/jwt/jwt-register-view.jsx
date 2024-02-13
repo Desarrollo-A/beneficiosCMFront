@@ -65,7 +65,7 @@ export default function JwtRegisterView() {
     try {
       await register?.(data.email, data.firstName, data.lastName);
 
-      router.push(returnTo || PATH_AFTER_LOGIN,{ state: {userdata: datosResponse}} );
+      router.push(returnTo || PATH_AFTER_LOGIN,{ state: {userdata: data}} );
     } catch (error) {
       console.error(error);
       reset();
@@ -75,11 +75,11 @@ export default function JwtRegisterView() {
 
   const validarNumEmpleado = () => {
     if(numEmpleado.trim() === ''){
-        console.log('Ingresar número de empleado válido');
+       //  console.log('Ingresar número de empleado válido');
     }else{
       // Conectar axios con CH
       const datos = Base64.encode(JSON.stringify({num_empleado : numEmpleado}));
-      console.log(datos);
+      // console.log(datos);
 
       const config = {
         headers : {
@@ -94,8 +94,9 @@ export default function JwtRegisterView() {
       .then(response=>{
         let datosResponse = Base64.decode(JSON.stringify(response.data));
         datosResponse = JSON.parse(datosResponse);
-        if(datosResponse.resultado === 0){
-          setErrorMsg(typeof error === 'string' ? error : 'Número de empleado no encontrado');
+        // if(datosResponse.resultado === 0){ // se cambio ya que este no daba el resultado
+        if(datosResponse.data.length === 0){
+          setErrorMsg('Número de empleado no encontrado');
         }else{
           navigate(PATH_AFTER_REGISTRO,{state:datosResponse});
           location(PATH_AFTER_REGISTRO,{state:datosResponse});

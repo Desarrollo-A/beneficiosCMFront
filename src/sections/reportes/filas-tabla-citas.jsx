@@ -15,29 +15,19 @@ import UserQuickEditForm from './modal-editar-citas';
 // ----------------------------------------------------------------------
 
 export default function FilasTabla({ row, selected, rol, rel  }) {
-  const { idCita, especialista, oficina, area, sede, paciente, estatus, horario, observaciones, sexo, motivoCita } = row;
+  const { idCita, especialista, area, sede, paciente, oficina, estatus, horario, observaciones, sexo, motivoCita } = row; // oficina
 
   const quickEdit = useBoolean();
-
-  let sx = '';
-
-  if (sexo === 'Masculino') {
-    sx = 'H';
-  } else if (sexo === 'Femenino') {
-    sx = 'M';
-  }else if (sexo === null){
-    sx = '';
-  }
 
   let espe = Boolean(true);
 
   let paci = Boolean(true);
 
-  if (rol === 1) {
+  if (rol === 1 || rol === "1") {
     espe = false
   }
 
-  if (rol === 2) {
+  if (rol === 2 || rol === "2") {
     paci = false
   }
 
@@ -52,11 +42,13 @@ export default function FilasTabla({ row, selected, rol, rel  }) {
 
         <TableCell sx={{ whiteSpace: 'nowrap' }} style={{ display: paci ? '' : 'none' }}>{paciente}</TableCell>
 
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{oficina}</TableCell>
+
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{area}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{sede}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{sx}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{sexo}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{motivoCita}</TableCell>
 
@@ -78,7 +70,7 @@ export default function FilasTabla({ row, selected, rol, rel  }) {
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{horario}</TableCell>
 
-        {estatus === 'Penalización' && observaciones === null && rol === 3 ? (
+        {estatus === 'Penalización' && observaciones === null && rol === 3 || rol === "3" ? (
           <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }} >
             <Tooltip title="Justificar" placement="top" arrow>
               <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>

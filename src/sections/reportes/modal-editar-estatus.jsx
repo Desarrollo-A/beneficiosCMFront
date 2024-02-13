@@ -48,8 +48,6 @@ export default function EditarEstatus({ open, onClose, id, est, estatusVal }) {
           'area': est,
         };
 
-        console.log(data)
-
         onClose();
 
         const update = await updateEstatus(data);

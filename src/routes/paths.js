@@ -98,6 +98,7 @@ export const paths = {
     blank: `${ROOTS.DASHBOARD}/blank`,
     kanban: `${ROOTS.DASHBOARD}/kanban`,
     calendar: `${ROOTS.DASHBOARD}/calendariobeneficiario`,
+    agenda: `${ROOTS.DASHBOARD}/agenda`,
     fileManager: `${ROOTS.DASHBOARD}/file-manager`,
     permission: `${ROOTS.DASHBOARD}/permission`,
     general: {
@@ -123,6 +124,15 @@ export const paths = {
       crear: `${ROOTS.DASHBOARD}/encuestas/crear`,
       ver: `${ROOTS.DASHBOARD}/encuestas/ver`,
       detalle: `${ROOTS.DASHBOARD}/encuestas/detalle`,
+    },
+    gestor: {
+      root: `${ROOTS.DASHBOARD}/gestor/atencionXsede`,
+      atencionxsede: `${ROOTS.DASHBOARD}/gestor/atencionXsede`,
+      oficinas: `${ROOTS.DASHBOARD}/gestor/oficinas`,
+      sedes: `${ROOTS.DASHBOARD}/gestor/sedes`,
+    },
+    privacidad: {
+      aprivacidad: `${ROOTS.DASHBOARD}/privacidad/administrar`
     },
     user: {
       root: `${ROOTS.DASHBOARD}/user`,

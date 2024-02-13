@@ -109,6 +109,7 @@ export default function UserListView() {
           enqueueSnackbar(`El título ${item.cell.v} no coincide con ${item.keyword}`, {
             variant: 'warning',
           });
+
           return true; // Devolvemos true para indicar que se ha encontrado un error
         }
         return false; // Devolvemos false para indicar que no hay error en este elemento
@@ -186,7 +187,6 @@ export default function UserListView() {
         data: transformedData,
       };
 
-      // handleCloseDialog();
       handleCreateUsers(users);
     };
 
@@ -233,8 +233,8 @@ export default function UserListView() {
           }}
           action={
             <Button
-              color="inherit"
               variant="outlined"
+              color="inherit"
               startIcon={<Iconify icon="eva:cloud-upload-fill" />}
               onClick={upload.onTrue}
             >

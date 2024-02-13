@@ -153,7 +153,8 @@ export default function Upload({
           }),
         }}
       >
-        <input type="file" accept=".xls, .xlsx" {...getInputProps()} />
+        <input {...getInputProps()} />
+
         {hasFile ? renderSinglePreview : renderPlaceholder}
       </Box>
 

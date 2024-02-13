@@ -19,7 +19,14 @@ const EncuestasPage = lazy(() => import('src/pages/dashboard/encuestas/encuestas
 const CrearEncuestaPage = lazy(() => import('src/pages/dashboard/encuestas/crear-view'));
 const VerEncuestasPage = lazy(() => import('src/pages/dashboard/encuestas/ver-view'));
 const VerEncuestaDetallePage = lazy(() => import('src/pages/dashboard/encuestas/ver-detalle-view'));
+// GESTOR
+const AtencionXsedePage = lazy(() => import('src/pages/dashboard/gestor/atencionXsede-view'));
+const OficinasPage = lazy(() => import('src/pages/dashboard/gestor/oficinas-view'));
+const SedesPage = lazy(() => import('src/pages/dashboard/gestor/sedes-view'));
 // ----------------------------------------------------------------------
+
+// AVISOS DE PRIVACIDAD
+const AvisosDePrivacidad = lazy(() => import('src/pages/dashboard/privacidad/aviso-privacidad'));
 const OverviewEcommercePage = lazy(() => import('src/pages/dashboard/ecommerce'));
 const OverviewAnalyticsPage = lazy(() => import('src/pages/dashboard/analytics'));
 const OverviewBankingPage = lazy(() => import('src/pages/dashboard/banking'));
@@ -78,6 +85,8 @@ const PermissionDeniedPage = lazy(() => import('src/pages/dashboard/permission')
 // const BlankPage = lazy(() => import('src/pages/dashboard/blank'));
 const BlankPage = lazy(() => import('src/sections/_examples/extra/upload-view'));
 
+// const AgendaPage = lazy(() => import('src/pages/dashboard/agenda'))
+
 // ----------------------------------------------------------------------
 
 export const dashboardRoutes = [
@@ -108,6 +117,21 @@ export const dashboardRoutes = [
           { path: 'crear', element: <CrearEncuestaPage /> },
           { path: 'ver', element: <VerEncuestasPage /> },
           { path: 'detalle', element: <VerEncuestaDetallePage /> },
+        ],
+      },
+      {
+        path: 'gestor',
+        children: [
+          { path: 'atencionxsede', element: <AtencionXsedePage /> },
+          { path: 'oficinas', element: <OficinasPage /> },
+          { path: 'sedes', element: <SedesPage /> },
+        ],
+      },
+      {
+        path: 'privacidad',
+        children: [
+          { path: 'administrar', element: <AvisosDePrivacidad /> },
+          { path: 'ver', element: <AvisosDePrivacidad /> }
         ],
       },
       { path: 'dash', element: <DashPage /> },

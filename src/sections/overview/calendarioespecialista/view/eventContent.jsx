@@ -62,6 +62,14 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
     end: !allDay ? yup.date().required() : '',
   });
 
+  let sede = currentEvent?.sede || 'Virtual';
+  let oficina = currentEvent?.oficina || 'Virtual';
+
+  if(currentEvent?.externo === 1){
+    sede = 'Quéretaro';
+    oficina = 'Confirmado por especialista';
+  }
+
   const methods = useForm({
     resolver: yupResolver(formSchema),
     defaultValues: currentEvent,
@@ -109,6 +117,7 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
       fechaFinal: type === 'date' ? fDate(defaultInicio) : fDate(defaultFecha),
       paciente: currentEvent?.idPaciente,
       estatus: currentEvent?.estatus,
+      idEventoGoogle: currentEvent?.idEventoGoogle
     };
 
     try {
@@ -339,12 +348,12 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
 
               <Stack direction="row" alignItems="center" spacing={2} sx={{ px: { xs: 1, md: 2 }, py: 1 }} >
                 <Iconify icon="mdi:world"  width={30}  sx={{ color: 'text.disabled' }}/>
-                <Typography fontSize="90%">{currentEvent?.sede}</Typography>
+                <Typography fontSize="90%">{sede}</Typography>
               </Stack>
 
               <Stack direction="row" alignItems="center" spacing={2} sx={{ px: { xs: 1, md: 2 }, py: 1 }} >
                 <Iconify icon="ic:outline-place" width={30}  sx={{ color: 'text.disabled' }}/>
-                <Typography fontSize="90%">{currentEvent?.oficina ? currentEvent?.oficina : 'En linea'}</Typography>
+                <Typography fontSize="90%">{oficina}</Typography>
               </Stack>
 
               <Stack direction="row" alignItems="center" spacing={2} sx={{ px: { xs: 1, md: 2 }, py: 1 }} >

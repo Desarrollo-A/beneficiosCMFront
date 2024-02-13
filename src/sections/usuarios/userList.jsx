@@ -98,6 +98,7 @@ export default function UserList({ userData, usersMutate }) {
   const table = useTable();
   const targetRef = useRef();
   const { enqueueSnackbar } = useSnackbar();
+
   const { user: datosUser } = useAuthContext();
 
   const [filters, setFilters] = useState(defaultFilters);
@@ -157,8 +158,6 @@ export default function UserList({ userData, usersMutate }) {
 
   const handlePdf = async (e) => {
     e.preventDefault();
-
-    // alert(JSON.stringify(dataFiltered));
     if (dataFiltered.length === 0) {
       enqueueSnackbar(`¡No hay datos para exportar!`, { variant: 'warning' });
       return;

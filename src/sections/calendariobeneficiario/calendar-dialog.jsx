@@ -51,6 +51,8 @@ import {
   deleteGoogleCalendarEvent,
 } from 'src/api/calendar-colaborador';
 
+import { useGetDiasPresenciales } from 'src/api/especialistas';
+
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider from 'src/components/hook-form/form-provider';
@@ -66,6 +68,8 @@ dayjs.extend(isSameOrBefore);
 let initialValue = dayjs().tz('America/Mexico_City'); // Objeto con todo los datos de fecha y hora
 const lastDayOfNextMonth = initialValue.add(2, 'month').startOf('month').subtract(1, 'day');
 initialValue = initialValue.hour() < 15 ? initialValue : initialValue.add(1, 'day');
+
+// ----------------------------------------------------------------------
 
 export default function CalendarDialog({ currentEvent, onClose, selectedDate, appointmentMutate }) {
   const [selectedValues, setSelectedValues] = useState({
@@ -93,9 +97,15 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const [horarioSeleccionado, setHorarioSeleccionado] = useState('');
   const [event, setEvent] = useState({});
 
+  const [ virtual, setVirtual ] = useState(false);
+
   const { user: datosUser } = useAuthContext();
 
   const { data: benefits } = useGetBenefits(datosUser.idSede);
+
+  //const [ especialista, setEspecialista ] = useState(0);
+
+  const { diasPresenciales, diasPresencialesGet } = useGetDiasPresenciales({especialista: selectedValues.especialista, sede: datosUser.idSede});
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -128,7 +138,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     const año = horarioSeleccionado.substring(0, 4);
     const mes = horarioSeleccionado.substring(5, 7);
-    // const dia = horarioSeleccionado.substring(8, 10);
 
     if (datosUser.fechaIngreso > fechaActual) {
       enqueueSnackbar('¡Existe un error con la fecha de antiguedad!', {
@@ -294,6 +303,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       });
       return onClose();
     }
+
     // Mandar datos de google calendar
     const update = await updateAppointment(
       datosUser.idUsuario,
@@ -303,6 +313,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       null,
       newGoogleEvent.data.id
     );
+
     if (!update.result) {
       enqueueSnackbar('¡Ha surgido un error al intentar registrar el detalle de pago!', {
         variant: 'error',
@@ -321,6 +332,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       onClose();
       return false;
     }
+
     const email = await sendMail(scheduledAppointment.data[0], 1, [
       'programador.analista36@ciudadmaderas.com',
       'programador.analista34@ciudadmaderas.com',
@@ -328,6 +340,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       'programador.analista12@ciudadmaderas.com',
       'tester.ti2@ciudadmaderas.com',
     ]);
+
     if (!email.result) {
       console.error('No se pudo notificar al usuario');
     }
@@ -362,6 +375,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         return onClose();
       }
     }
+
     const scheduledAppointment = await consultarCita(currentEvent.id);
     if (!scheduledAppointment.result) {
       enqueueSnackbar('¡Surgió un error al poder mostrar el preview de la cita!', {
@@ -370,6 +384,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       onClose();
       return false;
     }
+
     const email = await sendMail(scheduledAppointment.data[0], 2, [
       'programador.analista36@ciudadmaderas.com',
       'programador.analista34@ciudadmaderas.com',
@@ -377,6 +392,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       'programador.analista12@ciudadmaderas.com',
       'tester.ti2@ciudadmaderas.com',
     ]);
+
     if (!email.result) {
       console.error('No se pudo notificar al usuario');
     }
@@ -473,6 +489,10 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       const data = await getSpecialists(datosUser.idSede, datosUser.idArea, value);
       setEspecialistas(data?.data);
     } else if (input === 'especialista') {
+
+      console.log('especialista', value);
+      //setEspecialista(value);
+      
       setErrorEspecialista(false);
       const modalitiesData = await getModalities(datosUser.idSede, value);
       setModalidades(modalitiesData?.data);
@@ -499,6 +519,15 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       }
       getHorariosDisponibles(selectedValues.beneficio, value);
     } else if (input === 'modalidad') {
+
+      // console.log('modalidad', value)
+      if(value === 2){
+        setVirtual(true);
+      }else{
+        setVirtual(false);
+        //diasPresencialesGet();
+      }
+
       setSelectedValues({
         ...selectedValues,
         modalidad: value,
@@ -679,6 +708,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const fechasEn5minutos = diasLaborablesConHorario
       .map((item) => {
         const minutos = generarArregloMinutos(item.horaInicio, item.horaFin);
+
         return minutos.map((minuto) => ({
           fecha: item.fecha,
           diaSemana: item.diaSemana,
@@ -816,8 +846,10 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const formattedDate = date.format('YYYY-MM-DD');
     const isDisabledFromSQLServer = diasOcupados.includes(formattedDate);
 
+    const noPresencial = virtual ? false : !diasPresenciales.includes(formattedDate);
+
     // Deshabilitar la fecha si es un fin de semana o está en la lista de fechas deshabilitadas
-    return isWeekendDay || isDisabledFromSQLServer;
+    return isWeekendDay || isDisabledFromSQLServer || noPresencial;
   };
 
   const agendarCita = async (
@@ -1016,7 +1048,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       onClose();
       return false;
     }
-
     const email = await sendMail(
       {
         ...scheduledAppointment.data[0],

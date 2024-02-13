@@ -29,6 +29,7 @@ export default function UserQuickEditForm({
   popoverOnClose,
 }) {
   const { enqueueSnackbar } = useSnackbar();
+
   const { user: datosUser } = useAuthContext();
 
   const NewUserSchema = Yup.object().shape({
@@ -153,9 +154,6 @@ export default function UserQuickEditForm({
                 ACTIVO
               </MenuItem>
             </RHFSelect>
-
-            {/* <Box sx={{ display: { xs: 'none', sm: 'block' } }} /> */}
-
             <RHFTextField name="nombre" label="Nombre" defaultValue={currentUser.nombre} />
             <RHFSelect
               name="sexo"

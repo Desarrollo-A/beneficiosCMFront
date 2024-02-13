@@ -69,7 +69,7 @@ export default function UserTableToolbar({
       }}
     >
 
-      {rol === "1" ? (
+      {rol === "4" || rol === 4 ? (
         <FormControl
           sx={{
             flexShrink: 0,
