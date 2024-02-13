@@ -11,15 +11,14 @@ export function useSession() {
     const { authenticated, loading } = useAuthContext();
     const { authorized, authorizedLoading } = useGetAuthorized();
 
-    let location = useLocation();
-
-    const except = [
-        paths.auth.jwt.login,
-        paths.auth.jwt.register,
-        paths.auth.jwt.preRegister
-    ]
+    const location = useLocation();
 
     useEffect(() => {
+        const except = [
+            paths.auth.jwt.login,
+            paths.auth.jwt.register,
+            paths.auth.jwt.preRegister
+        ]
 
         if(!loading && !authenticated){
             if(!except.includes(location.pathname)){
