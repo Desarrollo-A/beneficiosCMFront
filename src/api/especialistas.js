@@ -90,7 +90,7 @@ export function useGetDiasPresenciales(object) {
       diasPresencialesEmpty: !isLoading && !data?.length,
       diasPresencialesGet : mutate,
     }),
-    [data, error, isLoading, isValidating]
+    [data, error, isLoading, isValidating, mutate]
   );
 
   return memoizedValue;
@@ -98,7 +98,7 @@ export function useGetDiasPresenciales(object) {
 
 // ----------------------------------------------------------------------
 
-export function useGetDiasPresenciales(object) {
+export function useGetDiasPresenciales2(object) {
   const params = new URLSearchParams(object).toString()
   const URL = `${endpoints.especialistas.disponibles}?${params}`
 
@@ -121,7 +121,7 @@ export function useGetDiasPresenciales(object) {
       diasPresencialesEmpty: !isLoading && !data?.length,
       diasPresencialesGet : mutate,
     }),
-    [data, error, isLoading, isValidating]
+    [data, error, isLoading, isValidating, mutate]
   );
 
   return memoizedValue;
