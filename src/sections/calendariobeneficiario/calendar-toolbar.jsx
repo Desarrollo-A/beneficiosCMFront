@@ -9,8 +9,6 @@ import LinearProgress from '@mui/material/LinearProgress';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
-import { fDate } from 'src/utils/format-time';
-
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 

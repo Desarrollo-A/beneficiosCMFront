@@ -1,22 +1,22 @@
-import { useFieldArray, useFormContext } from 'react-hook-form';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
+// import { useFieldArray, useFormContext } from 'react-hook-form';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
+// import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
 
+// import { useBoolean } from 'src/hooks/use-boolean';
+
+// import { endpoints } from 'src/utils/axios';
+
 import { useAuthContext } from 'src/auth/hooks';
-import { useBoolean } from 'src/hooks/use-boolean';
+// import { useGetGeneral } from 'src/api/general';
 
-import { endpoints } from 'src/utils/axios';
-
-import { useGetGeneral } from 'src/api/general';
-
-import Iconify from 'src/components/iconify';
-import { RHFSelect, RHFTextField } from 'src/components/hook-form';
-import { useState } from 'react';
+// import Iconify from 'src/components/iconify';
+import { RHFSelect } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 
@@ -24,7 +24,7 @@ export default function AddInsertSede({ idSede, especiaData, oficinaData, modali
 
   const { user } = useAuthContext();
 
-  const { control } = useFormContext();
+  // const { control } = useFormContext();
 
   const [select, setSelect] = useState(0);
 
@@ -34,22 +34,27 @@ export default function AddInsertSede({ idSede, especiaData, oficinaData, modali
 
   const [bol, setBol] = useState(false);
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: 'items',
-  });
+  // const { fields, append, remove } = useFieldArray({
+  //   control,
+  //   name: 'items',
+  // });
 
-  const handleAdd = () => {
-    append({
-      especialista: '',
-      sede: idSede,
-      usuario: user.idUsuario,
-    });
-  };
+  // const { append, remove } = useFieldArray({
+  //   control,
+  //   name: 'items',
+  // });
 
-  const handleRemove = (index) => {
-    remove(index);
-  };
+  // const handleAdd = () => {
+  //   append({
+  //     especialista: '',
+  //     sede: idSede,
+  //     usuario: user.idUsuario,
+  //   });
+  // };
+
+  // const handleRemove = (index) => {
+  //   remove(index);
+  // };
 
   const handleChangeOfi = (e) => {
     setSelect(e.target.value);

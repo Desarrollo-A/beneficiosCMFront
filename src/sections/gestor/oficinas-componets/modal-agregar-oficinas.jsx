@@ -15,12 +15,11 @@ import DialogActions from '@mui/material/DialogActions';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import { useInsert } from 'src/api/encuestas';
-
-import { useAuthContext } from 'src/auth/hooks';
 import { endpoints } from 'src/utils/axios';
 
-import { useUpdate } from 'src/api/reportes';
+// import { useUpdate } from 'src/api/reportes';
+import { useInsert } from 'src/api/encuestas';
+import { useAuthContext } from 'src/auth/hooks';
 import { useGetGeneral } from 'src/api/general';
 
 import { useSnackbar } from 'src/components/snackbar';

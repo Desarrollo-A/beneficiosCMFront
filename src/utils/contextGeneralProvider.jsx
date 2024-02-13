@@ -16,7 +16,7 @@ const status = {
 };
 
 const ContextGeneralProvider = ({ children }) => {
-    const [cargando, setCargando] = useState(false);
+    const [, setCargando] = useState(false); // cargando
     const [mensaje, setMensaje] = useState({});
     const cerrarMensaje = () => setMensaje({});
 

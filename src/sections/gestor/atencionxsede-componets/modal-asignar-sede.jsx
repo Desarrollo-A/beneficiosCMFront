@@ -31,7 +31,7 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
 
   const loadingSend = useBoolean();
 
-  const [es, setEs] = useState({
+  const [es] = useState({ // setEs
     idSd: idSede,
     idPs: idPuesto
   });

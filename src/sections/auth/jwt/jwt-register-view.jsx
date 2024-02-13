@@ -75,11 +75,11 @@ export default function JwtRegisterView() {
 
   const validarNumEmpleado = () => {
     if(numEmpleado.trim() === ''){
-        console.log('Ingresar número de empleado válido');
+       //  console.log('Ingresar número de empleado válido');
     }else{
       // Conectar axios con CH
       const datos = Base64.encode(JSON.stringify({num_empleado : numEmpleado}));
-      console.log(datos);
+      // console.log(datos);
 
       const config = {
         headers : {
@@ -94,7 +94,8 @@ export default function JwtRegisterView() {
       .then(response=>{
         let datosResponse = Base64.decode(JSON.stringify(response.data));
         datosResponse = JSON.parse(datosResponse);
-        if(datosResponse.resultado === 0){
+        // if(datosResponse.resultado === 0){ // se cambio ya que este no daba el resultado
+        if(datosResponse.data.length === 0){
           setErrorMsg('Número de empleado no encontrado');
         }else{
           navigate(PATH_AFTER_REGISTRO,{state:datosResponse});

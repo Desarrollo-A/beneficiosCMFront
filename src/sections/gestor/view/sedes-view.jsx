@@ -121,10 +121,10 @@ export default function SedesView() {
 
   const rol = user.idRol
 
-  const [userDt, setUserDt] = useState({
-    idRol: user.idRol,
-    idPuesto: user.idPuesto,
-  });
+  // const [userDt, setUserDt] = useState({
+  //   idRol: user.idRol,
+  //   idPuesto: user.idPuesto,
+  // });
 
   const { sedesData } = useGetGeneral(endpoints.gestor.getSedes, "sedesData");
 
@@ -132,7 +132,7 @@ export default function SedesView() {
 
   const [filters, setFilters] = useState(defaultFilters);
 
-  const [especialistas, setEspecialistas] = useState([]);
+  const [especialistas] = useState([]); // setEspecialistas
 
   const _rp = especialistas.flatMap((es) => (es.nombre));
 
@@ -192,12 +192,12 @@ export default function SedesView() {
     [router]
   );
 
-  const handleFilterStatus = useCallback(
-    (event, newValue) => {
-      handleFilters('status', newValue);
-    },
-    [handleFilters]
-  );
+  // const handleFilterStatus = useCallback(
+  //   (event, newValue) => {
+  //     handleFilters('status', newValue);
+  //   },
+  //   [handleFilters]
+  // );
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
