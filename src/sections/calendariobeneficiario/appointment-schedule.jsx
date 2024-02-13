@@ -72,6 +72,7 @@ export default function AppointmentSchedule({
                 {dayjs().locale('es').format('dddd, DD MMMM YYYY')}
               </Typography>
             )}
+
             <Stack direction="column" spacing={3} justifyContent="space-between">
               <FormControl error={!!errorBeneficio} fullWidth>
                 <InputLabel id="beneficio-input" name="beneficio">
@@ -143,7 +144,6 @@ export default function AppointmentSchedule({
                 )}
               </FormControl>
             </Stack>
-
             {selectedValues.modalidad === 1 && selectedValues.beneficio && (
               <Stack spacing={1} sx={{ p: { xs: 1, md: 1 } }}>
                 Dirección de la oficina :

@@ -25,7 +25,6 @@ import uuidv4 from 'src/utils/uuidv4';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { AvatarShape } from 'src/assets/illustrations';
-// import { useGetEventReasons } from 'src/api/calendar-specialist';
 import {
   sendMail,
   consultarCita,
@@ -148,7 +147,6 @@ export default function PendingModalUser() {
         return onClose();
       }
     }
-
     const scheduledAppointment = await consultarCita(currentEvent.id);
     if (!scheduledAppointment.result) {
       enqueueSnackbar('¡Surgió un error al poder mostrar el preview de la cita!', {
@@ -157,7 +155,6 @@ export default function PendingModalUser() {
       onClose();
       return false;
     }
-
     const email = await sendMail(scheduledAppointment.data[0], 2, [
       'programador.analista36@ciudadmaderas.com',
       'programador.analista34@ciudadmaderas.com',
@@ -165,7 +162,6 @@ export default function PendingModalUser() {
       'programador.analista12@ciudadmaderas.com',
       'tester.ti2@ciudadmaderas.com',
     ]);
-
     if (!email.result) {
       console.error('No se pudo notificar al usuario');
     }
