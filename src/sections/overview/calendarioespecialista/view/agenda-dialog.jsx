@@ -102,7 +102,7 @@ export default function AgendaDialog({open, onClose, id, start, end, sede, ...pr
                   </MenuItem>
                   {sedes.map((s, index) => (
                     <MenuItem key={index} value={s.value}>
-                      {sede.label}
+                      {s.label}
                     </MenuItem>
                   ))}
                 </RHFSelect>
