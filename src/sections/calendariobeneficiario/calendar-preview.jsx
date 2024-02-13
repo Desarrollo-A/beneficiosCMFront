@@ -62,8 +62,12 @@ export default function CalendarPreview({ event, open, handleClose }) {
       event.idEventoGoogle,
       startDate.format('YYYY-MM-DDTHH:mm:ss'),
       endDate.format('YYYY-MM-DDTHH:mm:ss'),
-      datosUser.correo,
-      [datosUser.correo, 'programador.analista34@ciudadmaderas.com', ...emails]
+      'programador.analista36@ciudadmaderas.com', // datosUser.correo, Sustituir correo de analista.
+      [
+        'programador.analista36@ciudadmaderas.com', // datosUser.correo Sustituir correo de analista.
+        'programador.analista34@ciudadmaderas.com',
+        ...emails,
+      ]
     );
     if (!updateGoogleEvent.result) {
       enqueueSnackbar('No se pudo sincronizar el evento con la cuenta de google', {
