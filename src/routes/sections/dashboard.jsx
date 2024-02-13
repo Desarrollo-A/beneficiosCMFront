@@ -10,7 +10,7 @@ import { LoadingScreen } from 'src/components/loading-screen';
 // CITAS
 const HistorialReportesPage = lazy(() => import('src/pages/dashboard/reportes/historial-reportes'));
 const ReportePacientesPage = lazy(() => import('src/pages/dashboard/reportes/reporte-pacientes'));
-const EvaluacionCitasPage = lazy(() => import ('src/pages/dashboard/evaluacion-citas-view'));
+const EvaluacionCitasPage = lazy(() => import('src/pages/dashboard/evaluacion-citas-view'));
 // OVERVIEW
 const IndexPage = lazy(() => import('src/pages/dashboard/app'));
 const DashPage = lazy(() => import('src/pages/dashboard/dash'));
@@ -24,6 +24,9 @@ const AtencionXsedePage = lazy(() => import('src/pages/dashboard/gestor/atencion
 const OficinasPage = lazy(() => import('src/pages/dashboard/gestor/oficinas-view'));
 const SedesPage = lazy(() => import('src/pages/dashboard/gestor/sedes-view'));
 // ----------------------------------------------------------------------
+
+// AVISOS DE PRIVACIDAD
+const AvisosDePrivacidad = lazy(() => import('src/pages/dashboard/privacidad/aviso-privacidad'));
 const OverviewEcommercePage = lazy(() => import('src/pages/dashboard/ecommerce'));
 const OverviewAnalyticsPage = lazy(() => import('src/pages/dashboard/analytics'));
 const OverviewBankingPage = lazy(() => import('src/pages/dashboard/banking'));
@@ -82,6 +85,8 @@ const PermissionDeniedPage = lazy(() => import('src/pages/dashboard/permission')
 // const BlankPage = lazy(() => import('src/pages/dashboard/blank'));
 const BlankPage = lazy(() => import('src/sections/_examples/extra/upload-view'));
 
+const AgendaPage = lazy(() => import('src/pages/dashboard/agenda'))
+
 // ----------------------------------------------------------------------
 
 export const dashboardRoutes = [
@@ -120,6 +125,13 @@ export const dashboardRoutes = [
           { path: 'atencionxsede', element: <AtencionXsedePage /> },
           { path: 'oficinas', element: <OficinasPage /> },
           { path: 'sedes', element: <SedesPage /> },
+        ],
+      },
+      {
+        path: 'privacidad',
+        children: [
+          { path: 'administrar', element: <AvisosDePrivacidad /> },
+          { path: 'ver', element: <AvisosDePrivacidad /> }
         ],
       },
       { path: 'dash', element: <DashPage /> },
@@ -199,7 +211,7 @@ export const dashboardRoutes = [
         ],
       },
       {
-        path: 'usuarios',
+        path: 'usuariosexternos',
         children: [
           { element: <TestInsertBatch />, index: true },
           { path: 'new', element: <TestInsertBatch /> },
@@ -213,7 +225,7 @@ export const dashboardRoutes = [
       { path: 'kanban', element: <KanbanPage /> },
       { path: 'permission', element: <PermissionDeniedPage /> },
       { path: 'blank', element: <BlankPage /> },
-      { path: 'evaluacioncitas', element: <EvaluacionCitasPage /> }
+      { path: 'evaluacioncitas', element: <EvaluacionCitasPage /> },
     ],
   },
 ];

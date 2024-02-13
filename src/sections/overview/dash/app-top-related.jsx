@@ -4,13 +4,13 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Rating from '@mui/material/Rating';
-import Avatar from '@mui/material/Avatar';
+// import Avatar from '@mui/material/Avatar';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
 
-import { fCurrency, fShortenNumber } from 'src/utils/format-number';
+import { fShortenNumber } from 'src/utils/format-number'; // fCurrency
 
-import Label from 'src/components/label';
+// import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
@@ -41,7 +41,7 @@ AppTopRelated.propTypes = {
 // ----------------------------------------------------------------------
 
 function ApplicationItem({ app }) {
-  const { shortcut, system, price, ratingNumber, totalReviews, name } = app;
+  const { system, totalReviews, name } = app; // shortcut, price, ratingNumber
 
   return (
     <Stack direction="row" alignItems="center" spacing={2}>

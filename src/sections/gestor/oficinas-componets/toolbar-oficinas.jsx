@@ -1,15 +1,15 @@
-import { mutate } from 'swr';
+// import { mutate } from 'swr';
 import PropTypes from 'prop-types';
 import { useState, useEffect, useCallback } from 'react';
 
 import Stack from '@mui/material/Stack';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
+// import Select from '@mui/material/Select';
+// import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
+// import InputLabel from '@mui/material/InputLabel';
+// import FormControl from '@mui/material/FormControl';
 import InputAdornment from '@mui/material/InputAdornment';
-import Button from '@mui/material/Button';
+// import Button from '@mui/material/Button';
 
 import { endpoints } from 'src/utils/axios';
 
@@ -36,7 +36,7 @@ export default function ToolbarOficinas({
 
   const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
 
-  const [especialistas, setEspecialistas] = useState([]);
+  const [, setEspecialistas] = useState([]); // especialistas
 
   useEffect(() => {
     if (especialistasData.length) {
@@ -44,16 +44,16 @@ export default function ToolbarOficinas({
     }
   }, [especialistasData]);
 
-  const [area, setArea] = useState(158);
+  // const [, setArea] = useState(158); // area
 
-  const handleChange = useCallback(
-    (event) => {
-      setArea(event.target.value);
-      handleChangeId(event.target.value);
-      mutate(endpoints.reportes.pacientes);
-    },
-    [handleChangeId]
-  );
+  // const handleChange = useCallback(
+  //   (event) => {
+  //     setArea(event.target.value);
+  //     handleChangeId(event.target.value);
+  //     mutate(endpoints.reportes.pacientes);
+  //   },
+  //   [handleChangeId]
+  // );
 
   return (
 

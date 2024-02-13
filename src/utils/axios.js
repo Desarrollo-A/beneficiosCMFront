@@ -88,8 +88,9 @@ export const endpoints = {
     search: '/api/product/search',
   },
   user: {
-    session: 'Usuario/session',
-    list: 'Usuario/getUsers',
+    list: 'Usuario/getUsersExternos',
+    session : 'usuario/session',
+    authorized : 'usuario/authorized',
     update: 'Usuario/updateUser',
     areas: 'Usuario/getAreas',
     batch: 'Usuario/insertBatchUsers',
@@ -106,6 +107,9 @@ export const endpoints = {
   especialistas: {
     list: 'CalendarioController/getEspecialistaPorBeneficioYSede',
     modalities: 'CalendarioController/getModalidadesEspecialista',
+    sedes: 'especialistas/sedes',
+    horario: 'especialistas/horario',
+    horarios: 'especialistas/horarios',
   },
   calendario: {
     getAllEvents: 'CalendarioController/getAllEvents',
@@ -128,7 +132,7 @@ export const endpoints = {
     insertGoogleEvent: 'CalendarioController/insertGoogleEvent',
     insertGoogleId: 'CalendarioController/insertGoogleId',
     updateGoogleEvent: 'CalendarioController/updateGoogleEvent',
-    deleteGoogleEvent: 'CalendarioController/deleteGoogleEvent'
+    deleteGoogleEvent: 'CalendarioController/deleteGoogleEvent',
   },
   calendarioColaborador: {
     isPrimeraCita: 'CalendarioController/isPrimeraCita',
@@ -201,7 +205,7 @@ export const endpoints = {
     getValidEncContestada: '/EncuestasController/getValidEncContestada',
     sendMail: '/EncuestasController/sendMail',
   },
-  gestor:{
+  gestor: {
     getAtencionXsede: '/GeneralController/getAtencionXsede',
     getSedes: '/GeneralController/getSedes',
     getOficinas: '/GeneralController/getOficinas',
@@ -221,5 +225,10 @@ export const endpoints = {
     insertOficinas: '/GestorController/insertOficinas',
     updateSede: '/GestorController/updateSede',
     insertSedes: '/GestorController/insertSedes'
+  },
+  avisosPrivacidad : {
+    getEspecialidadToSelect : '/AvisosPrivacidadController/getEspecialidades',
+    getAvisoDePrivacidad : '/AvisosPrivacidadController/getAvisoPrivacidad',
+    actualizarArchivoPrivacidad: '/AvisosPrivacidadController/actualizarArchivoPrivacidad'
   }
 };

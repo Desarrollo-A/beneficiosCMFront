@@ -1,9 +1,7 @@
+import { memo } from 'react';
 import PropTypes from 'prop-types';
-import { memo, useState, useCallback } from 'react';
 
 import Stack from '@mui/material/Stack';
-import Collapse from '@mui/material/Collapse';
-import ListSubheader from '@mui/material/ListSubheader';
 
 import NavList from './nav-list';
 
@@ -34,15 +32,15 @@ export default memo(NavSectionVertical);
 // ----------------------------------------------------------------------
 
 function Group({ subheader, items, slotProps }) {
-  const [open, setOpen] = useState(true);
+  // const [open, setOpen] = useState(true);
 
-  const handleToggle = useCallback(() => {
-    setOpen((prev) => !prev);
-  }, []);
+  // const handleToggle = useCallback(() => {
+  //   setOpen((prev) => !prev);
+  // }, []);
 
-  const renderContent = items.map((list) => (
-    <NavList key={list.title} data={list} depth={1} slotProps={slotProps} />
-  ));
+  // const renderContent = items.map((list) => (
+  //   <NavList key={list.title} data={list} depth={1} slotProps={slotProps} />
+  // ));
 
   return (
     <Stack sx={{ px: 2 }}>

@@ -40,9 +40,9 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-import TableRowOficinas from '../oficinas-componets/table-row-oficinas';
 import ToolbarOficinas from '../oficinas-componets/toolbar-oficinas';
 import FiltersOficinas from '../oficinas-componets/filters-oficinas';
+import TableRowOficinas from '../oficinas-componets/table-row-oficinas';
 import ModalAgregarOficinas from '../oficinas-componets/modal-agregar-oficinas';
 
 // ----------------------------------------------------------------------
@@ -123,7 +123,7 @@ export default function OficinasView() {
 
   const rol = user.idRol
 
-  const [userDt, setUserDt] = useState({
+  const [userDt] = useState({ // setUserDt
     idRol: user.idRol,
     idPuesto: user.idPuesto,
   });
@@ -134,7 +134,7 @@ export default function OficinasView() {
 
   const [filters, setFilters] = useState(defaultFilters);
 
-  const [especialistas, setEspecialistas] = useState([]);
+  const [especialistas] = useState([]); // setEspecialistas
 
   const _rp = especialistas.flatMap((es) => (es.nombre));
 
@@ -194,12 +194,12 @@ export default function OficinasView() {
     [router]
   );
 
-  const handleFilterStatus = useCallback(
-    (event, newValue) => {
-      handleFilters('status', newValue);
-    },
-    [handleFilters]
-  );
+  // const handleFilterStatus = useCallback(
+  //   (event, newValue) => {
+  //     handleFilters('status', newValue);
+  //   },
+  //   [handleFilters]
+  // );
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
