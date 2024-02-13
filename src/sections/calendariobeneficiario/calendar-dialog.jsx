@@ -301,11 +301,11 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       `Cita de ${datosUser.nombre} en ${nombreBeneficio}`,
       [
         'programador.analista36@ciudadmaderas.com', // datosUser.correo Sustituir correo de analista
-        'programador.analista34@ciudadmaderas.com',
-        'programador.analista32@ciudadmaderas.com',
-        'programador.analista12@ciudadmaderas.com',
-        'tester.ti2@ciudadmaderas.com',
-        'tester.ti3@ciudadmaderas.com',
+        // 'programador.analista34@ciudadmaderas.com',
+        // 'programador.analista32@ciudadmaderas.com',
+        // 'programador.analista12@ciudadmaderas.com',
+        // 'tester.ti2@ciudadmaderas.com',
+        // 'tester.ti3@ciudadmaderas.com',
       ], // Sustituir valores de correos
       'programador.analista36@ciudadmaderas.com' // datosUser.correo
     );
@@ -347,11 +347,11 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     const email = await sendMail(scheduledAppointment.data[0], 1, [
       'programador.analista36@ciudadmaderas.com',
-      'programador.analista34@ciudadmaderas.com',
-      'programador.analista32@ciudadmaderas.com',
-      'programador.analista12@ciudadmaderas.com',
-      'tester.ti2@ciudadmaderas.com',
-      'tester.ti3@ciudadmaderas.com',
+      // 'programador.analista34@ciudadmaderas.com',
+      // 'programador.analista32@ciudadmaderas.com',
+      // 'programador.analista12@ciudadmaderas.com',
+      // 'tester.ti2@ciudadmaderas.com',
+      // 'tester.ti3@ciudadmaderas.com',
     ]);
 
     if (!email.result) {
@@ -687,6 +687,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
       return dayOfWeek !== 0 && (horarioACubrir?.data[0]?.sabados !== '0' || dayOfWeek !== 6);
     });
+    console.log('Todos los dias', diasProximos);
 
     // Traemos citas y horarios bloqueados por parte del usuario y especialsita
     const horariosOcupados = await getHorariosOcupados(
@@ -695,6 +696,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       initialValue.format('YYYY-MM-DD'),
       lastDayOfNextMonth.format('YYYY-MM-DD')
     );
+    console.log('Horarios no disponibles', horariosOcupados);
 
     // Dias laborables con horario.
     const diasLaborablesConHorario = diasProximos.map((item) => {
@@ -716,6 +718,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
       return elemento;
     });
+    console.log('Dias con horario laboral', diasLaborablesConHorario);
 
     const fechasEn5minutos = diasLaborablesConHorario
       .map((item) => {
@@ -752,9 +755,11 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     // Este proceso solo es para quitar en el calendario visualmente los dias que no están ///
     // ///////////////////////////////////////////////////////////////////////////////////////
     const diasDisponibles = obtenerSoloFechas(registrosCadaHora);
+    console.log('Dias a mostrar', diasDisponibles);
     setDiasHabilitados(diasDisponibles);
 
     const diasOcupadosFiltro = filtradoDias(diasProximos, diasDisponibles);
+    console.log('Dias a quitar', diasOcupadosFiltro);
 
     const year = initialValue.year();
 
@@ -770,7 +775,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
             `${year}-09-16`,
             `${year}-11-20`,
             `${year}-12-01`,
-            `${year}-03-21`,
+            `${year}-12-25`,
             `${year + 1}-01-01`,
             `${year + 1}-02-05`,
             `${year + 1}-03-21`,
@@ -778,12 +783,14 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
             `${year + 1}-09-16`,
             `${year + 1}-11-20`,
             `${year + 1}-12-01`,
-            `${year + 1}-03-21`,
+            `${year + 1}-12-25`,
           ];
 
+    console.log('Festivos a quitar', diasFestivos);
     const diasADeshabilitar = new Set([...diasOcupadosFiltro, ...diasFestivos]);
 
     setDiasOcupados([...diasADeshabilitar]);
+    console.log('Todo a quitar', [diasADeshabilitar]);
     setIsLoading(false);
   };
 
