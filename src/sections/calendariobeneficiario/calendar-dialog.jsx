@@ -24,6 +24,7 @@ import DialogContent from '@mui/material/DialogContent';
 import uuidv4 from 'src/utils/uuidv4';
 
 import { useAuthContext } from 'src/auth/hooks';
+import { useGetDiasPresenciales } from 'src/api/especialistas';
 import { useGetEventReasons } from 'src/api/calendar-specialist';
 import {
   sendMail,
@@ -50,8 +51,6 @@ import {
   updateGoogleCalendarEvent,
   deleteGoogleCalendarEvent,
 } from 'src/api/calendar-colaborador';
-
-import { useGetDiasPresenciales } from 'src/api/especialistas';
 
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
@@ -103,9 +102,9 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
   const { data: benefits } = useGetBenefits(datosUser.idSede);
 
-  //const [ especialista, setEspecialista ] = useState(0);
+  // const [ especialista, setEspecialista ] = useState(0);
 
-  const { diasPresenciales, diasPresencialesGet } = useGetDiasPresenciales({especialista: selectedValues.especialista, sede: datosUser.idSede});
+  const { diasPresenciales } = useGetDiasPresenciales({especialista: selectedValues.especialista, sede: datosUser.idSede});
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -491,7 +490,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     } else if (input === 'especialista') {
 
       console.log('especialista', value);
-      //setEspecialista(value);
+      // setEspecialista(value);
       
       setErrorEspecialista(false);
       const modalitiesData = await getModalities(datosUser.idSede, value);
@@ -525,7 +524,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         setVirtual(true);
       }else{
         setVirtual(false);
-        //diasPresencialesGet();
+        // diasPresencialesGet();
       }
 
       setSelectedValues({
