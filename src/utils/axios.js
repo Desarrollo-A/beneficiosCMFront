@@ -166,6 +166,11 @@ export const endpoints = {
     citas: '/GeneralController/getAppointmentHistory',
     getEstatusPaciente: '/GeneralController/getEstatusPaciente',
     updateEstatusPaciente: '/GeneralController/updateEstatusPaciente',
+    getResumenTerapias: '/ReportesController/getResumenTerapias',
+    getEspeQua: '/ReportesController/getEspeQua',
+    getCierrePacientes: '/ReportesController/getCierrePacientes',
+    getCierreIngresos: '/ReportesController/getCierreIngresos',
+    getSelectEspe: '/ReportesController/getSelectEspe'
   },
   dashboard: {
     usersCount: '/GeneralController/usrCount',
