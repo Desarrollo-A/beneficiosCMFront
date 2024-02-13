@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect } from "react"
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import { paths } from 'src/routes/paths';
 
@@ -7,37 +7,30 @@ import { useAuthContext } from 'src/auth/hooks';
 import { useGetAuthorized } from 'src/api/user';
 
 export function useSession() {
-  const navigate = useNavigate();
-  const { authenticated } = useAuthContext();
-  const { authorized, authorizedLoading } = useGetAuthorized();
+    const navigate = useNavigate();
+    const { authenticated, loading } = useAuthContext();
+    const { authorized, authorizedLoading } = useGetAuthorized();
 
-  // const [needFetching, setNeedFetching] = useState(false)
-  // const [checked, setChecked] = useState(false)
+    const location = useLocation();
 
-  useEffect(() => {
-    // if(!checked){
-    //     setNeedFetching(true)
-    // }
+    useEffect(() => {
+        const except = [
+            paths.auth.jwt.login,
+            paths.auth.jwt.register,
+            paths.auth.jwt.preRegister
+        ]
 
-    if (!authenticated) {
-      navigate(paths.auth.jwt.login);
-    }
+        if(!loading && !authenticated){
+            if(!except.includes(location.pathname)){
+                navigate(paths.auth.jwt.login)
+            }
+        }
 
     if (authorizedLoading && authorized) {
       navigate(paths.dashboard.general.dash);
     }
   }, [authenticated, authorized, authorizedLoading, navigate]);
 
-  // useEffect(() => {
-  //     //if (!needFetching) return;
-
-  //     if(!authorized){
-  //         navigate(paths.dashboard.general.dash)
-  //     }
-
-  //     //setChecked(true)
-
-  // }, [authorized])
-
+    }, [authenticated, authorized, authorizedLoading, navigate, loading, location]);
   return null;
 }

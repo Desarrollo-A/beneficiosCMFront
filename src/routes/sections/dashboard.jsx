@@ -12,7 +12,6 @@ const HistorialReportesPage = lazy(() => import('src/pages/dashboard/reportes/hi
 const ReportePacientesPage = lazy(() => import('src/pages/dashboard/reportes/reporte-pacientes'));
 const EvaluacionCitasPage = lazy(() => import('src/pages/dashboard/evaluacion-citas-view'));
 // OVERVIEW
-const IndexPage = lazy(() => import('src/pages/dashboard/app'));
 const DashPage = lazy(() => import('src/pages/dashboard/dash'));
 // ENCUESTAS
 const EncuestasPage = lazy(() => import('src/pages/dashboard/encuestas/encuestas-view'));
@@ -102,7 +101,7 @@ export const dashboardRoutes = [
       </AuthGuard>
     ),
     children: [
-      { element: <IndexPage />, index: true },
+      { element: <DashPage />, index: true },
       {
         path: 'reportes',
         children: [
@@ -211,7 +210,7 @@ export const dashboardRoutes = [
         ],
       },
       {
-        path: 'usuariosexternos',
+        path: 'usuarios',
         children: [
           { element: <TestInsertBatch />, index: true },
           { path: 'new', element: <TestInsertBatch /> },
