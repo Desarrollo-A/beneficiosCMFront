@@ -18,7 +18,7 @@ const JwtLoginPage = lazy(() => import('src/pages/auth/jwt/login'));
 // ----------------------------------------------------------------------
 
 export default function Router() {
-  useSession();
+  // useSession();
 
   return useRoutes([
     // SET INDEX PAGE WITH SKIP HOME PAGE
