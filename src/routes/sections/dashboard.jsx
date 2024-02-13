@@ -131,7 +131,7 @@ export const dashboardRoutes = [
         path: 'privacidad',
         children: [
           { path: 'administrar', element: <AvisosDePrivacidad /> },
-          { path: 'ver', element: <AvisosDePrivacidad /> }
+          { path: 'ver', element: <AvisosDePrivacidad /> },
         ],
       },
       { path: 'dash', element: <DashPage /> },
@@ -211,7 +211,7 @@ export const dashboardRoutes = [
         ],
       },
       {
-        path: 'usuarios',
+        path: 'usuariosexternos',
         children: [
           { element: <TestInsertBatch />, index: true },
           { path: 'new', element: <TestInsertBatch /> },

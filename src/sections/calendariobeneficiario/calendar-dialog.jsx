@@ -96,7 +96,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const [horarioSeleccionado, setHorarioSeleccionado] = useState('');
   const [event, setEvent] = useState({});
 
-  const [ virtual, setVirtual ] = useState(false);
+  const [virtual, setVirtual] = useState(false);
 
   const { user: datosUser } = useAuthContext();
 
@@ -104,7 +104,10 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
   // const [ especialista, setEspecialista ] = useState(0);
 
-  const { diasPresenciales } = useGetDiasPresenciales({especialista: selectedValues.especialista, sede: datosUser.idSede});
+  const { diasPresenciales } = useGetDiasPresenciales({
+    especialista: selectedValues.especialista,
+    sede: datosUser.idSede,
+  });
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -139,7 +142,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const mes = horarioSeleccionado.substring(5, 7);
 
     if (datosUser.fechaIngreso > fechaActual) {
-      enqueueSnackbar('¡Existe un error con la fecha de antiguedad!', {
+      enqueueSnackbar('¡Existe un error con la fecha de antigüedad!', {
         variant: 'error',
       });
       onClose();
@@ -204,9 +207,12 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const citasFinalizadas = await getCitasFinalizadas(datosUser.idUsuario, mes, año);
 
     if (citasFinalizadas.result === true && citasFinalizadas?.data.length >= 2) {
-      enqueueSnackbar('Ya cuentas con la cantidad maxima de beneficios brindados en el mes', {
-        variant: 'error',
-      });
+      enqueueSnackbar(
+        'Ya cuentas con la cantidad máxima de beneficios brindados en el mes seleccionado',
+        {
+          variant: 'error',
+        }
+      );
       onClose();
       return false;
     }
@@ -293,8 +299,15 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       endDate.format('YYYY-MM-DDTHH:mm:ss'),
       oficina.data[0].ubicación,
       `Cita de ${datosUser.nombre} en ${nombreBeneficio}`,
-      [datosUser.correo, 'programador.analista34@ciudadmaderas.com'],
-      datosUser.correo
+      [
+        'programador.analista36@ciudadmaderas.com', // datosUser.correo Sustituir correo de analista
+        'programador.analista34@ciudadmaderas.com',
+        'programador.analista32@ciudadmaderas.com',
+        'programador.analista12@ciudadmaderas.com',
+        'tester.ti2@ciudadmaderas.com',
+        'tester.ti3@ciudadmaderas.com',
+      ], // Sustituir valores de correos
+      'programador.analista36@ciudadmaderas.com' // datosUser.correo
     );
     if (!newGoogleEvent.result) {
       enqueueSnackbar('Error al conectar con la cuenta de google', {
@@ -325,7 +338,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     appointmentMutate();
     const scheduledAppointment = await consultarCita(agendar.data);
     if (!scheduledAppointment.result) {
-      enqueueSnackbar('¡Surgió un error al poder mostrar el preview de la cita!', {
+      enqueueSnackbar('¡Surgió un error al poder mostrar la previsualización de la cita!', {
         variant: 'error',
       });
       onClose();
@@ -334,10 +347,11 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     const email = await sendMail(scheduledAppointment.data[0], 1, [
       'programador.analista36@ciudadmaderas.com',
-      'programador.analista34@ciudadmaderas.com',
-      'programador.analista32@ciudadmaderas.com',
-      'programador.analista12@ciudadmaderas.com',
-      'tester.ti2@ciudadmaderas.com',
+      // 'programador.analista34@ciudadmaderas.com',
+      // 'programador.analista32@ciudadmaderas.com',
+      // 'programador.analista12@ciudadmaderas.com',
+      // 'tester.ti2@ciudadmaderas.com',
+      // 'tester.ti3@ciudadmaderas.com',
     ]);
 
     if (!email.result) {
@@ -364,7 +378,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
       const deleteGoogleEvent = await deleteGoogleCalendarEvent(
         currentEvent.idEventoGoogle,
-        datosUser.correo
+        'programador.analista36@ciudadmaderas.com' // datosUser.correo Sustituir correo de analista
       );
       if (!deleteGoogleEvent.result) {
         enqueueSnackbar('¡No se pudo sincronizar el evento con el calendario de google!', {
@@ -377,7 +391,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     const scheduledAppointment = await consultarCita(currentEvent.id);
     if (!scheduledAppointment.result) {
-      enqueueSnackbar('¡Surgió un error al poder mostrar el preview de la cita!', {
+      enqueueSnackbar('¡Surgió un error al poder mostrar la previsualización de la cita!', {
         variant: 'error',
       });
       onClose();
@@ -386,10 +400,11 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     const email = await sendMail(scheduledAppointment.data[0], 2, [
       'programador.analista36@ciudadmaderas.com',
-      'programador.analista34@ciudadmaderas.com',
-      'programador.analista32@ciudadmaderas.com',
-      'programador.analista12@ciudadmaderas.com',
-      'tester.ti2@ciudadmaderas.com',
+      // 'programador.analista34@ciudadmaderas.com',
+      // 'programador.analista32@ciudadmaderas.com',
+      // 'programador.analista12@ciudadmaderas.com',
+      // 'tester.ti2@ciudadmaderas.com',
+      // 'tester.ti3@ciudadmaderas.com',
     ]);
 
     if (!email.result) {
@@ -432,7 +447,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         return onClose();
       }
       if (!update.result) {
-        enqueueSnackbar('¡Se obtuvó un error al intentar generar el pago de cita!', {
+        enqueueSnackbar('¡Se obtuvo un error al intentar generar el pago de cita!', {
           variant: 'error',
         });
         return onClose();
@@ -488,10 +503,9 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       const data = await getSpecialists(datosUser.idSede, datosUser.idArea, value);
       setEspecialistas(data?.data);
     } else if (input === 'especialista') {
-
       console.log('especialista', value);
       // setEspecialista(value);
-      
+
       setErrorEspecialista(false);
       const modalitiesData = await getModalities(datosUser.idSede, value);
       setModalidades(modalitiesData?.data);
@@ -518,11 +532,10 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       }
       getHorariosDisponibles(selectedValues.beneficio, value);
     } else if (input === 'modalidad') {
-
       // console.log('modalidad', value)
-      if(value === 2){
+      if (value === 2) {
         setVirtual(true);
-      }else{
+      } else {
         setVirtual(false);
         // diasPresencialesGet();
       }
@@ -880,7 +893,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     if (registrarCita.result) {
       const updateDetail = await updateDetailPacient(datosUser.idUsuario, beneficio);
       if (!updateDetail.result) {
-        enqueueSnackbar('¡Ha surgidó un error al actualizar el estado del beneficio en uso!', {
+        enqueueSnackbar('¡Ha surgido un error al actualizar el estado del beneficio en uso!', {
           variant: 'error',
         });
         return registrarCita;
@@ -937,7 +950,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     }
 
     if (datosUser.fechaIngreso > fechaActual) {
-      enqueueSnackbar('¡Existe un error con la fecha de antiguedad!', {
+      enqueueSnackbar('¡Existe un error con la fecha de antigüedad!', {
         variant: 'error',
       });
       return onClose();
@@ -979,9 +992,12 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const citasFinalizadas = await getCitasFinalizadas(datosUser.idUsuario, mes, año);
 
     if (citasFinalizadas.result === true && citasFinalizadas?.data.length >= 2) {
-      enqueueSnackbar('Ya cuentas con la cantidad maxima de beneficios brindados en el mes', {
-        variant: 'error',
-      });
+      enqueueSnackbar(
+        'Ya cuentas con la cantidad máxima  de beneficios brindados en el mes seleccionado',
+        {
+          variant: 'error',
+        }
+      );
       return onClose();
     }
 
@@ -1029,8 +1045,11 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       currentEvent.idEventoGoogle,
       startDate.format('YYYY-MM-DDTHH:mm:ss'),
       endDate.format('YYYY-MM-DDTHH:mm:ss'),
-      datosUser.correo,
-      [datosUser.correo, 'programador.analista34@ciudadmaderas.com', 'artturo.alarcon@gmail.com']
+      'programador.analista36@ciudadmaderas.com', // datosUser.correo, Sustituir correo de analista
+      [
+        'programador.analista36@ciudadmaderas.com', // datosUser.correo Sustituir correo de analista
+        'programador.analista34@ciudadmaderas.com',
+      ]
     );
     if (!updateGoogleEvent.result) {
       enqueueSnackbar('No se pudo sincronizar el evento con la cuenta de google', {
@@ -1041,7 +1060,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     const scheduledAppointment = await consultarCita(agendar.data);
     if (!scheduledAppointment.result) {
-      enqueueSnackbar('¡Surgió un error al poder mostrar el preview de la cita!', {
+      enqueueSnackbar('¡Surgió un error al poder mostrar la previsualización de la cita!', {
         variant: 'error',
       });
       onClose();
@@ -1056,10 +1075,11 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       3,
       [
         'programador.analista36@ciudadmaderas.com',
-        'programador.analista34@ciudadmaderas.com',
-        'programador.analista32@ciudadmaderas.com',
-        'programador.analista12@ciudadmaderas.com',
-        'tester.ti2@ciudadmaderas.com',
+        // 'programador.analista34@ciudadmaderas.com',
+        // 'programador.analista32@ciudadmaderas.com',
+        // 'programador.analista12@ciudadmaderas.com',
+        // 'tester.ti2@ciudadmaderas.com',
+        // 'tester.ti3@ciudadmaderas.com',
       ]
     );
     if (!email.result) {

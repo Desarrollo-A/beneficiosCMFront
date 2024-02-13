@@ -74,10 +74,9 @@ export function GetCustomEvents(current) {
     // esta función ayuda a que se de un trigger para traer de nuevo los eventos del mes, cada que cambia month
     reRender();
   }, [month]);
-  
 
   if (data?.events?.length > 0) {
-    data.events = data.events.map(item => ({...item, id: item.id.toString()}));
+    data.events = data.events.map((item) => ({ ...item, id: item.id.toString() }));
   }
 
   const memoizedValue = useMemo(() => {
@@ -187,7 +186,7 @@ export async function createAppointment(eventData, modalitie) {
   let transactionId = 0;
   let especialidad = '';
   let sede = modalitie?.sede || 'virtual';
-  let oficina = (modalitie?.oficina || 'virtual');
+  let oficina = modalitie?.oficina || 'virtual';
 
   const fechaInicio = dayjs(`${eventData.fechaInicio} ${eventData.hora_inicio}`).format(
     'YYYY/MM/D HH:mm:ss'
@@ -228,7 +227,7 @@ export async function createAppointment(eventData, modalitie) {
       break;
   }
 
-  if(fundacion === 1){
+  if (fundacion === 1) {
     sede = 'Querétaro';
     oficina = 'Confirmado por especialista';
   }
@@ -263,10 +262,11 @@ export async function createAppointment(eventData, modalitie) {
       idDetalle: transactionId,
       especialidad,
       reagenda: 0,
-      tipoPuesto: eventData.paciente.tipoPuesto
+      tipoPuesto: eventData.paciente.tipoPuesto,
     };
 
-    const mailMessage = { // datos para enviar el mail
+    const mailMessage = {
+      // datos para enviar el mail
       especialidad,
       especialista: datosUser.nombre,
       fecha,
@@ -277,7 +277,7 @@ export async function createAppointment(eventData, modalitie) {
       sede,
       tituloEmail: 'Reservación',
       temaEmail: 'Se ha agendado tu cita con: ',
-      correo:  eventData.paciente.correo,
+      correo: eventData.paciente.correo,
     };
 
     const googleData = {
@@ -288,27 +288,47 @@ export async function createAppointment(eventData, modalitie) {
       description: `Cita agendada en: ${especialidad}`,
       attendees: [
         {
-          email: eventData.paciente.correo,
-          responseStatus: 'accepted'
+          email: 'programador.analista36@ciudadmaderas.com', // eventData.paciente.correo Sustituir correo
+          responseStatus: 'accepted',
         },
         {
-            email: datosUser.correo,
-            responseStatus: 'needsAction'
+          email: 'programador.analista34@ciudadmaderas.com', // datosUser.correo Sustituir correo
+          responseStatus: 'accepted',
         },
-        ],
-      email: datosUser.correo
-    }
+        {
+          email: 'programador.analista32@ciudadmaderas.com', // Estan para pruebas
+          responseStatus: 'accepted',
+        },
+        {
+          email: 'programador.analista12@ciudadmaderas.com', // Estan para pruebas
+          responseStatus: 'accepted',
+        },
+        {
+          email: 'tester.ti2@ciudadmaderas.com', // Estan para pruebas
+          responseStatus: 'accepted',
+        },
+        {
+          email: 'tester.ti3@ciudadmaderas.com', // Estan para pruebas
+          responseStatus: 'accepted',
+        },
+      ],
+
+      email: datosUser.correo,
+    };
 
     create = await fetcherPost(create_appointment, data);
 
-    if (create.result && fundacion === 1 || create.result && eventData.paciente.tipoPuesto === 'Operativa') {
+    if (
+      (create.result && fundacion === 1) ||
+      (create.result && eventData.paciente.tipoPuesto === 'Operativa')
+    ) {
       const googleEvent = await fetcherPost(insert_google_event, googleData);
       fetcherPost(sendMail, mailMessage);
 
-      if(googleEvent.result){
+      if (googleEvent.result) {
         const updateData = {
           idCita: create.data,
-          idEventoGoogle: googleEvent.data.id
+          idEventoGoogle: googleEvent.data.id,
         };
 
         fetcherPost(insert_google_id, updateData);
@@ -402,7 +422,7 @@ export async function cancelAppointment(currentEvent, id, cancelType) {
 
     const eventGoogleData = {
       id: currentEvent?.idEventoGoogle,
-      email: currentEvent?.correo
+      email: currentEvent?.correo,
     };
 
     fetcherPost(delete_google_event, eventGoogleData);
@@ -443,11 +463,11 @@ export async function endAppointment(currentEvent, reason) {
   let oficina = currentEvent?.oficina || 'virtual';
   const fundacion = currentEvent?.externo;
 
-  if(fundacion === 1){
+  if (fundacion === 1) {
     sede = 'Querétaro';
     oficina = 'Confirmado por especialista';
   }
-  
+
   const data = {
     // datos que se envian para la cancelación
     idCita: currentEvent?.id,
@@ -544,7 +564,7 @@ export function useGetEventReasons(idCita) {
 
 export async function reschedule(eventData, idDetalle, cancelType) {
   let response = '';
-  const  {fundacion} = eventData; // para verificar si es fundacion Lamat 
+  const { fundacion } = eventData; // para verificar si es fundacion Lamat
   let sede = eventData?.sede || 'virtual';
   let oficina = eventData?.oficina || 'virtual';
 
@@ -561,7 +581,7 @@ export async function reschedule(eventData, idDetalle, cancelType) {
   const horaInicio = dayjs(fechaInicio).format('HH:mm:ss');
   const horaFinal = dayjs(fechaFinal).format('HH:mm:ss');
 
-  if(fundacion === 1){
+  if (fundacion === 1) {
     sede = 'Querétaro';
     oficina = 'Confirmado por especialista';
   }
@@ -580,7 +600,7 @@ export async function reschedule(eventData, idDetalle, cancelType) {
     idDetalle,
     reagenda: 1,
     tipoPuesto: eventData.tipoPuesto,
-    idEventoGoogle: eventData.idEventoGoogle
+    idEventoGoogle: eventData.idEventoGoogle,
   };
 
   const cancelData = {
@@ -623,16 +643,32 @@ export async function reschedule(eventData, idDetalle, cancelType) {
           email: eventData?.correo,
           attendees: [
             {
-              email: datosUser.correo,
-              responseStatus: 'accepted'
+              email: 'programador.analista36@ciudadmaderas.com', // eventData.correo Sustituir correo
+              responseStatus: 'accepted',
             },
             {
-              email: eventData.correo,
-              responseStatus: 'needsAction'
-            }
-          ]
-        }
-        
+              email: 'programador.analista34@ciudadmaderas.com', // datosUser.correo Sustituir correo
+              responseStatus: 'accepted',
+            },
+            {
+              email: 'programador.analista32@ciudadmaderas.com', // Estan para pruebas
+              responseStatus: 'accepted',
+            },
+            {
+              email: 'programador.analista12@ciudadmaderas.com', // Estan para pruebas
+              responseStatus: 'accepted',
+            },
+            {
+              email: 'tester.ti2@ciudadmaderas.com', // Estan para pruebas
+              responseStatus: 'accepted',
+            },
+            {
+              email: 'tester.ti3@ciudadmaderas.com', // Estan para pruebas
+              responseStatus: 'accepted',
+            },
+          ],
+        };
+
         fetcherPost(update_google_event, dataGoogle);
       }
     }
