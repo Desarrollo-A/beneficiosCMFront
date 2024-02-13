@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import { paths } from 'src/routes/paths';
 
@@ -11,34 +11,27 @@ export function useSession() {
     const { authenticated, loading } = useAuthContext();
     const { authorized, authorizedLoading } = useGetAuthorized();
 
-   // const [needFetching, setNeedFetching] = useState(false)
-   // const [checked, setChecked] = useState(false)
+    let location = useLocation();
+
+    const except = [
+        paths.auth.jwt.login,
+        paths.auth.jwt.register,
+        paths.auth.jwt.preRegister
+    ]
 
     useEffect(() => {
-        // if(!checked){
-        //     setNeedFetching(true)
-        // }
 
         if(!loading && !authenticated){
-            navigate(paths.auth.jwt.login)
+            if(!except.includes(location.pathname)){
+                navigate(paths.auth.jwt.login)
+            }
         }
 
         if(authorizedLoading && authorized){
             navigate(paths.dashboard.general.dash)
         }
 
-    }, [authenticated, authorized, authorizedLoading, navigate, loading]);
-
-    // useEffect(() => {
-    //     //if (!needFetching) return;
-
-    //     if(!authorized){
-    //         navigate(paths.dashboard.general.dash)
-    //     }
-
-    //     //setChecked(true)
-        
-    // }, [authorized])
+    }, [authenticated, authorized, authorizedLoading, navigate, loading, location]);
 
     return null;
 }
