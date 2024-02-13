@@ -102,7 +102,7 @@ export const dashboardRoutes = [
       </AuthGuard>
     ),
     children: [
-      { element: <IndexPage />, index: true },
+      { element: <DashPage />, index: true },
       {
         path: 'reportes',
         children: [

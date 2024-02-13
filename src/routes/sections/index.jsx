@@ -13,6 +13,8 @@ import { authDemoRoutes } from './auth-demo';
 import { dashboardRoutes } from './dashboard';
 import { componentsRoutes } from './components';
 
+import { PATH_AFTER_LOGIN } from 'src/config-global';
+
 const JwtLoginPage = lazy(() => import('src/pages/auth/jwt/login'));
 
 // ----------------------------------------------------------------------
@@ -22,26 +24,26 @@ export default function Router() {
 
   return useRoutes([
     // SET INDEX PAGE WITH SKIP HOME PAGE
-    // {
-    //   path: '/',
-    //   element: <Navigate to={PATH_AFTER_LOGIN} replace />,
-    // },
+    {
+      path: '/',
+      element: <Navigate to={PATH_AFTER_LOGIN} replace />,
+    },
 
     // ----------------------------------------------------------------------
 
     // SET INDEX PAGE WITH HOME PAGE
-    {
-      path: import.meta.env.BASE_URL,
-      element: (
-        <AuthClassicLayout>
-          <JwtLoginPage />
-        </AuthClassicLayout>
-      ),
-    },
+    // {
+    //   path: import.meta.env.BASE_URL,
+    //   element: (
+    //     <AuthClassicLayout>
+    //       <JwtLoginPage />
+    //     </AuthClassicLayout>
+    //   ),
+    // },
 
     // Auth routes
     ...authRoutes,
-    ...authDemoRoutes,
+    //...authDemoRoutes,
 
     // Dashboard routes
     ...dashboardRoutes,

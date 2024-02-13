@@ -8,7 +8,7 @@ import { useGetAuthorized } from 'src/api/user';
 
 export function useSession() {
     const navigate = useNavigate();
-    const { authenticated } = useAuthContext();
+    const { authenticated, loading } = useAuthContext();
     const { authorized, authorizedLoading } = useGetAuthorized();
 
    // const [needFetching, setNeedFetching] = useState(false)
@@ -19,7 +19,7 @@ export function useSession() {
         //     setNeedFetching(true)
         // }
 
-        if(!authenticated){
+        if(!loading && !authenticated){
             navigate(paths.auth.jwt.login)
         }
 
@@ -27,7 +27,7 @@ export function useSession() {
             navigate(paths.dashboard.general.dash)
         }
 
-    }, [authenticated, authorized, authorizedLoading, navigate]);
+    }, [authenticated, authorized, authorizedLoading, navigate, loading]);
 
     // useEffect(() => {
     //     //if (!needFetching) return;
