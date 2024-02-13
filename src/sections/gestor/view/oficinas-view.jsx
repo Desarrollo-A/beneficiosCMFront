@@ -338,9 +338,9 @@ export default function OficinasView() {
                       table.page * table.rowsPerPage,
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
-                    .map((row) => (
+                    .map((row, index) => (
                       <TableRowOficinas
-                        key={row.idOficina}
+                        key={index}
                         row={row}
                         rol={rol}
                         selected={table.selected.includes(row.id)}
