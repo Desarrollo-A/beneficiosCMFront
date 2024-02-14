@@ -59,6 +59,8 @@ import FormProvider from 'src/components/hook-form/form-provider';
 import CalendarPreview from './calendar-preview';
 import AppointmentSchedule from './appointment-schedule';
 
+import { useGetSedesPresenciales } from 'src/api/especialistas'
+
 dayjs.locale('es');
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -102,7 +104,9 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
   const { data: benefits } = useGetBenefits(datosUser.idSede);
 
-  // const [ especialista, setEspecialista ] = useState(0);
+  const [ especialista, setEspecialista ] = useState(0);
+
+  const { sedes } = useGetSedesPresenciales({idEspecialista : especialista});
 
   const { diasPresenciales } = useGetDiasPresenciales({
     especialista: selectedValues.especialista,
@@ -504,7 +508,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       setEspecialistas(data?.data);
     } else if (input === 'especialista') {
       console.log('especialista', value);
-      // setEspecialista(value);
+      setEspecialista(value);
 
       setErrorEspecialista(false);
       const modalitiesData = await getModalities(datosUser.idSede, value);
@@ -858,7 +862,9 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const formattedDate = date.format('YYYY-MM-DD');
     const isDisabledFromSQLServer = diasOcupados.includes(formattedDate);
 
-    const noPresencial = virtual ? false : !diasPresenciales.includes(formattedDate);
+    console.log('sedes', sedes.length)
+
+    const noPresencial = virtual ? false : sedes.length > 1 ? !diasPresenciales.includes(formattedDate) : false;
 
     // Deshabilitar la fecha si es un fin de semana o está en la lista de fechas deshabilitadas
     return isWeekendDay || isDisabledFromSQLServer || noPresencial;

@@ -27,6 +27,7 @@ import { useGetNameUser } from 'src/api/user';
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetHorariosPresenciales } from 'src/api/especialistas'
 import { dropUpdate, useGetMotivos, GetCustomEvents } from 'src/api/calendar-specialist';
+import { useGetSedesPresenciales } from 'src/api/especialistas'
 
 import { useSettingsContext } from 'src/components/settings';
 
@@ -47,6 +48,8 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 export default function CalendarioView(){
     const { user } = useAuthContext();
+
+    const { sedes } = useGetSedesPresenciales({idEspecialista : user.idUsuario});
 
     const smUp = useResponsive('up', 'sm');
     const settings = useSettingsContext();
@@ -147,19 +150,21 @@ export default function CalendarioView(){
     
     return(
         <Container maxWidth={settings.themeStretch ? false : 'xl'}>
-          <Stack
-            alignItems="center"
-            justifyContent="space-between"
-            sx={{
-              mb: { xs: 3, md: 5 },
-              flexDirection: { sm: 'row', md: 'col' },
-            }}
-          >
-            <Typography variant="h4"> </Typography>
-            <Button color="inherit" variant="outlined" onClick={addHorarioPresencial}>
-              Establecer horario presencial
-            </Button>
-          </Stack>
+          {sedes.length > 1 ?
+            <Stack
+              alignItems="center"
+              justifyContent="space-between"
+              sx={{
+                mb: { xs: 3, md: 5 },
+                flexDirection: { sm: 'row', md: 'col' },
+              }}
+            >
+              <Typography variant="h4"> </Typography>
+              <Button color="inherit" variant="outlined" onClick={addHorarioPresencial}>
+                Establecer horario presencial
+              </Button>
+            </Stack>
+          : null}
           <Card>
             <StyledCalendar>
               <CalendarToolbar
