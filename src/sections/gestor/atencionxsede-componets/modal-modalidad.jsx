@@ -75,12 +75,10 @@ export default function ModalModalidad({ open, onClose, id, est, estatusVal, mod
   return (
     <Dialog
       fullWidth
-      maxWidth={false}
+      maxWidth="sm"
       open={open}
       onClose={onClose}
-      PaperProps={{
-        sx: { maxWidth: 720 },
-      }}
+      
     >
 
       <Stack spacing={1} >

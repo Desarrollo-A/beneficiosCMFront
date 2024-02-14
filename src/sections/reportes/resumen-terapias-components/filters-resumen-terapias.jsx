@@ -7,11 +7,10 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 
 import Iconify from 'src/components/iconify';
-import { shortDateLabel } from 'src/components/custom-date-range-picker';
 
 // ----------------------------------------------------------------------
 
-export default function FiltrosTabla({
+export default function UserTableFiltersResult({
   filters,
   onFilters,
   //
@@ -20,21 +19,8 @@ export default function FiltrosTabla({
   results,
   ...other
 }) {
-
-  const shortLabel = shortDateLabel(filters.startDate, filters.endDate);
-
   const handleRemoveStatus = () => {
-    onFilters('estatus', 'all');
-  };
-
-  const handleRemoveRole = (inputValue) => {
-    const newValue = filters.area.filter((item) => item !== inputValue);
-    onFilters('area', newValue);
-  };
-
-  const handleRemoveDate = () => {
-    onFilters('startDate', null);
-    onFilters('endDate', null);
+    onFilters('status', 'all');
   };
 
   const handleRemoveEspe = (inputValue) => {
@@ -52,17 +38,9 @@ export default function FiltrosTabla({
       </Box>
 
       <Stack flexGrow={1} spacing={1} direction="row" flexWrap="wrap" alignItems="center">
-        {filters.estatus !== 'all' && (
-          <Block label="Estatus:">
-            <Chip size="small" label={filters.estatus} onDelete={handleRemoveStatus} />
-          </Block>
-        )}
-
-        {!!filters.area.length && (
-          <Block label="Área:">
-            {filters.area.map((item) => (
-              <Chip key={item} label={item} size="small" onDelete={() => handleRemoveRole(item)} />
-            ))}
+        {filters.status !== 'all' && (
+          <Block label="Status:">
+            <Chip size="small" label={filters.status} onDelete={handleRemoveStatus} />
           </Block>
         )}
 
@@ -74,25 +52,19 @@ export default function FiltrosTabla({
           </Block>
         )}
 
-        {filters.startDate && filters.endDate && (
-          <Block label="Fecha:">
-            <Chip size="small" label={shortLabel} onDelete={handleRemoveDate} />
-          </Block>
-        )}
-
         <Button
           color="error"
           onClick={onResetFilters}
           startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
         >
-          Limpiar
+          Borrar
         </Button>
       </Stack>
     </Stack>
   );
 }
 
-FiltrosTabla.propTypes = {
+UserTableFiltersResult.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   onResetFilters: PropTypes.func,
