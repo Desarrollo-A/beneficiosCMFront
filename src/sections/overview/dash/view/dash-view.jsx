@@ -17,6 +17,8 @@ import { bgGradient } from 'src/theme/css';
 import { useAuthContext } from 'src/auth/hooks';
 import { SeoIllustration } from 'src/assets/illustrations';
 import { useGetGeneral, usePostGeneral } from 'src/api/general';
+import { useGetMeta } from 'src/api/especialistas';
+
 // import { _appAuthors, _appRelated, _appFeatured, _appInvoices, _appInstalled } from 'src/_mock';
 
 import { useSettingsContext } from 'src/components/settings';
@@ -127,7 +129,9 @@ export default function DashView() {
 
   const { penalizadaData } = usePostGeneral(espe, endpoints.dashboard.getCtPenalizadas, "penalizadaData");
 
-  const { metasData } = usePostGeneral(meta, endpoints.dashboard.getMetas, "metasData");
+  //const { metasData } = usePostGeneral(meta, endpoints.dashboard.getMetas, "metasData");
+
+  const { meta: metaData } = useGetMeta({especialista : user.idUsuario})
 
   const [pgDt, setPgDt] = useState('');
 
@@ -440,19 +444,11 @@ export default function DashView() {
           {rol === "1" || rol === 1 || rol === "3" || rol === 3 || rol === "4" || rol === 4 ? (
             <>
 
-              {metasData.map((i, index) => (
-                <Grid xs={12} sm={6} md={4} key={index}>
-                  <GraficaMetas
-                    title="Meta de citas"
-                    chart={{
-                      series: [
-                        { label: 'Citas', value: i.citas },
-                        { label: 'Faltantes', value: totalMeta - i.citas },
-                      ],
-                    }}
-                  />
+              {user.idRol === 3 && metaData ?
+                <Grid xs={12} sm={6} md={4}>
+                  <GraficaMetas data={metaData} />
                 </Grid>
-              ))}
+              : null}
 
               {sn === 0 ? (
                 <Grid xs={12} sm={6} md={8}>

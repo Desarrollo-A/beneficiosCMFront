@@ -13,18 +13,10 @@ import Chart, { useChart } from 'src/components/chart';
 
 // ----------------------------------------------------------------------
 
-export default function GraficaMetas({ title, subheader, chart, ...other }) {
+export default function GraficaMetas({ data, ...other }) {
   const theme = useTheme();
 
-  const {
-    colors = [theme.palette.primary.light, theme.palette.primary.main],
-    series,
-    options,
-  } = chart;
-
-  const total = sumBy(series, 'value');
-
-  const chartSeries = (series.filter((i) => i.label === 'Citas')[0].value / total) * 100;
+  const { total, meta } = data;
 
   const chartOptions = useChart({
 
@@ -38,8 +30,8 @@ export default function GraficaMetas({ title, subheader, chart, ...other }) {
       type: 'gradient',
       gradient: {
         colorStops: [
-          { offset: 0, color: colors[0], opacity: 1 },
-          { offset: 100, color: colors[1], opacity: 1 },
+          { offset: 0, color: theme.palette.primary.light, opacity: 1 },
+          { offset: 100, color: theme.palette.primary.main, opacity: 1 },
         ],
       },
     },
@@ -50,33 +42,50 @@ export default function GraficaMetas({ title, subheader, chart, ...other }) {
           name: { offsetY: -16 },
           value: { offsetY: 10 },
           total: {
-            label: "Total",
+            label: "Citas",
             text:`${total}`,
             formatter: () => fNumber(total),
           },
         },
       },
     },
-    ...options,
   });
 
   return (
     <Card {...other}>
-      <CardHeader title={title} subheader={subheader} sx={{ mb: 16.9 }} />
+      <CardHeader title='Meta de citas' sx={{ mb: 16.9 }} />
 
       <Chart
         dir="ltr"
         type="radialBar"
-        series={[chartSeries]}
+        series={[total]}
         options={chartOptions}
         width="100%"
         height={310}
       />
 
       <Stack spacing={2} sx={{ p: 5 }}>
-        {series.map((item) => (
-          <Stack
-            key={item.label}
+        <Stack
+          spacing={1}
+          direction="row"
+          alignItems="center"
+          sx={{
+            typography: 'subtitle2',
+          }}
+        >
+          <Box
+            sx={{
+              width: 16,
+              height: 16,
+              bgcolor: alpha(theme.palette.grey[500], 0.16),
+              borderRadius: 0.75,
+              bgcolor: theme.palette.primary.main,
+            }}
+          />
+          <Box sx={{ color: 'text.secondary', flexGrow: 1 }}>Meta</Box>
+          {meta} citas
+        </Stack>
+        <Stack
             spacing={1}
             direction="row"
             alignItems="center"
@@ -90,15 +99,12 @@ export default function GraficaMetas({ title, subheader, chart, ...other }) {
                 height: 16,
                 bgcolor: alpha(theme.palette.grey[500], 0.16),
                 borderRadius: 0.75,
-                ...(item.label === 'Citas' && {
-                  bgcolor: colors[1],
-                }),
+                //bgcolor: colors[1],
               }}
             />
-            <Box sx={{ color: 'text.secondary', flexGrow: 1 }}>{item.label}</Box>
-            {item.value} Total
+            <Box sx={{ color: 'text.secondary', flexGrow: 1 }}>Faltan</Box>
+            {meta - total} citas
           </Stack>
-        ))}
       </Stack>
     </Card>
   );

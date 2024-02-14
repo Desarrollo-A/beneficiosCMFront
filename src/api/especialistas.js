@@ -3,6 +3,35 @@ import { useMemo } from 'react';
 
 import axios, { endpoints, fetcherGet } from 'src/utils/axios';
 
+// ----------------------------------------------------------------------
+
+export function useGetMeta(object) {
+  const params = new URLSearchParams(object).toString()
+  const URL = `${endpoints.especialistas.meta}?${params}`
+
+  const accessToken = sessionStorage.getItem('accessToken');
+
+  const config = {
+    headers : {
+      token : accessToken
+    }
+  }
+
+  const { data, isLoading, error, isValidating } = useSWR([URL, config], fetcherGet);
+  
+  const memoizedValue = useMemo(
+    () => ({
+      meta: data || undefined,
+      metaLoading: isLoading,
+      metaError: error,
+      metaValidating: isValidating,
+      metaEmpty: !isLoading && !data,
+    }),
+    [data, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
+}
 
 // ----------------------------------------------------------------------
 
