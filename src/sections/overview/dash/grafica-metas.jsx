@@ -1,4 +1,3 @@
-import sumBy from 'lodash/sumBy';
 import PropTypes from 'prop-types';
 
 import Box from '@mui/material/Box';
@@ -77,7 +76,6 @@ export default function GraficaMetas({ data, ...other }) {
             sx={{
               width: 16,
               height: 16,
-              bgcolor: alpha(theme.palette.grey[500], 0.16),
               borderRadius: 0.75,
               bgcolor: theme.palette.primary.main,
             }}
@@ -99,7 +97,7 @@ export default function GraficaMetas({ data, ...other }) {
                 height: 16,
                 bgcolor: alpha(theme.palette.grey[500], 0.16),
                 borderRadius: 0.75,
-                //bgcolor: colors[1],
+                // bgcolor: colors[1],
               }}
             />
             <Box sx={{ color: 'text.secondary', flexGrow: 1 }}>Faltan</Box>
@@ -114,4 +112,5 @@ GraficaMetas.propTypes = {
   chart: PropTypes.object,
   subheader: PropTypes.string,
   title: PropTypes.string,
+  data: PropTypes.any
 };

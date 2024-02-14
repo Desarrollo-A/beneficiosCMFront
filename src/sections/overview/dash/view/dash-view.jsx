@@ -15,9 +15,9 @@ import { endpoints } from 'src/utils/axios';
 
 import { bgGradient } from 'src/theme/css';
 import { useAuthContext } from 'src/auth/hooks';
+import { useGetMeta } from 'src/api/especialistas';
 import { SeoIllustration } from 'src/assets/illustrations';
 import { useGetGeneral, usePostGeneral } from 'src/api/general';
-import { useGetMeta } from 'src/api/especialistas';
 
 // import { _appAuthors, _appRelated, _appFeatured, _appInvoices, _appInstalled } from 'src/_mock';
 
@@ -129,7 +129,7 @@ export default function DashView() {
 
   const { penalizadaData } = usePostGeneral(espe, endpoints.dashboard.getCtPenalizadas, "penalizadaData");
 
-  //const { metasData } = usePostGeneral(meta, endpoints.dashboard.getMetas, "metasData");
+  // const { metasData } = usePostGeneral(meta, endpoints.dashboard.getMetas, "metasData");
 
   const { meta: metaData } = useGetMeta({especialista : user.idUsuario})
 

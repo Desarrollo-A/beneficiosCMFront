@@ -25,9 +25,8 @@ import { fTimestamp } from 'src/utils/format-time';
 
 import { useGetNameUser } from 'src/api/user';
 import { useAuthContext } from 'src/auth/hooks';
-import { useGetHorariosPresenciales } from 'src/api/especialistas'
 import { dropUpdate, useGetMotivos, GetCustomEvents } from 'src/api/calendar-specialist';
-import { useGetSedesPresenciales } from 'src/api/especialistas'
+import { useGetSedesPresenciales, useGetHorariosPresenciales } from 'src/api/especialistas'
 
 import { useSettingsContext } from 'src/components/settings';
 

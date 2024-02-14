@@ -30,7 +30,6 @@ export default function FilasTabla({ row, selected, rol, rel }) {
     motivoCita,
     metodoPago,
     estatusCita,
-    fechaModificacion,
     pagoGenerado
   } = row;
   const quickEdit = useBoolean();
@@ -46,21 +45,6 @@ export default function FilasTabla({ row, selected, rol, rel }) {
   if (rol === 2 || rol === "2") {
     paci = false
   }
-
-  function indicador(secondDate) {
-    const currentDate = new Date();
-
-    const currentMonth = currentDate.getMonth();
-    const secondDateMonth = secondDate.getMonth();
-
-    // Calcular la diferencia en meses entre la fecha actual y la segunda fecha
-    const monthDifference = currentMonth - secondDateMonth;
-    return monthDifference >= 2;
-  }
-
-  // Ejemplo de uso
-  const secondDate = new Date(fechaModificacion); // Suponiendo que esta es la segunda fecha
-  const result = indicador(secondDate);
 
   return (
     <>

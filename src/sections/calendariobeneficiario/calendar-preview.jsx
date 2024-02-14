@@ -10,7 +10,6 @@ import FormHelperText from '@mui/material/FormHelperText';
 import InputAdornment from '@mui/material/InputAdornment';
 import { Chip, Stack, Button, TextField, Typography, DialogActions } from '@mui/material';
 
-import { useAuthContext } from 'src/auth/hooks';
 import { updateGoogleCalendarEvent } from 'src/api/calendar-colaborador';
 
 import Iconify from 'src/components/iconify';
@@ -24,7 +23,6 @@ export default function CalendarPreview({ event, open, handleClose }) {
   const [sendEmails, setSendEmails] = useState(false);
 
   const { enqueueSnackbar } = useSnackbar();
-  const { user: datosUser } = useAuthContext();
 
   const handleSendEmails = () => {
     setSendEmails(!sendEmails);
