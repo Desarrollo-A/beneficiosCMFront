@@ -23,6 +23,11 @@ export default function UserTableFiltersResult({
     onFilters('estatus', 'all');
   };
 
+  const handleRemoveRole = (inputValue) => {
+    const newValue = filters.area.filter((item) => item !== inputValue);
+    onFilters('area', newValue);
+  };
+
   return (
     <Stack spacing={1.5} {...other}>
       <Box sx={{ typography: 'body2' }}>
@@ -36,6 +41,14 @@ export default function UserTableFiltersResult({
         {filters.estatus !== 'all' && (
           <Block label="Estatus:">
             <Chip size="small" label={filters.estatus} onDelete={handleRemoveStatus} />
+          </Block>
+        )}
+
+        {!!filters.area.length && (
+          <Block label="Área:">
+            {filters.area.map((item) => (
+              <Chip key={item} label={item} size="small" onDelete={() => handleRemoveRole(item)} />
+            ))}
           </Block>
         )}
 
