@@ -111,6 +111,7 @@ export const endpoints = {
     horario: 'especialistas/horario',
     horarios: 'especialistas/horarios',
     disponibles: 'especialistas/disponibles',
+    meta: 'especialistas/meta',
   },
   calendario: {
     getAllEvents: 'CalendarioController/getAllEvents',
