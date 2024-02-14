@@ -33,7 +33,6 @@ export default function FilasTabla({ row, selected, rol, rel }) {
     fechaModificacion,
     pagoGenerado
   } = row;
-
   const quickEdit = useBoolean();
 
   let espe = Boolean(true);

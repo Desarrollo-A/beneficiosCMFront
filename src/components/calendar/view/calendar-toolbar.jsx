@@ -74,7 +74,7 @@ export default function CalendarToolbar({
             <Iconify icon="eva:arrow-ios-back-fill" />
           </IconButton>
 
-          <Typography variant="h6"></Typography>
+          <Typography variant="h6" />
 
           <IconButton onClick={onNextDate}>
             <Iconify icon="eva:arrow-ios-forward-fill" />

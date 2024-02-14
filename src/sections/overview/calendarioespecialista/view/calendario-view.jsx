@@ -12,33 +12,30 @@ import interactionPlugin from '@fullcalendar/interaction';
 // import { useGoogleLogin } from '@react-oauth/google';
 
 import Card from '@mui/material/Card';
+import Stack from '@mui/material/Stack';
 import Dialog from '@mui/material/Dialog';
+import Button from '@mui/material/Button';
 import { useTheme } from '@mui/material/styles';
 import Container from '@mui/material/Container';
-import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
 
 import { useResponsive } from 'src/hooks/use-responsive';
-import { useAuthContext } from 'src/auth/hooks';
 
 import { fTimestamp } from 'src/utils/format-time';
 
 import { useGetNameUser } from 'src/api/user';
-import { dropUpdate, useGetMotivos, GetCustomEvents } from 'src/api/calendar-specialist';
+import { useAuthContext } from 'src/auth/hooks';
 import { useGetHorariosPresenciales } from 'src/api/especialistas'
+import { dropUpdate, useGetMotivos, GetCustomEvents } from 'src/api/calendar-specialist';
 
 import { useSettingsContext } from 'src/components/settings';
 
-import AgendaDialog from './agenda-dialog';
-
-import { useEvent } from '../hooks';
-
 import Lista from "./lista";
 import EventContent from './eventContent';
+import AgendaDialog from './agenda-dialog';
 import { StyledCalendar } from '../styles';
 import CalendarToolbar from '../calendar-tool';
-import { useCalendar } from '../hooks';
+import { useEvent , useCalendar } from '../hooks';
 // ----------------------------------------------------------------------
 
 const defaultFilters = {
@@ -91,9 +88,9 @@ export default function CalendarioView(){
 
     const { horarios, horariosGet } = useGetHorariosPresenciales({idEspecialista : user.idUsuario});
 
-    const [startPresencial, setStartPresencial] = useState(new Date());
-    const [endPresencial, setEndPresencial] = useState(new Date());
-    const [sedePresencial, setSedePresencial] = useState();
+    const [startPresencial] = useState(new Date());
+    const [endPresencial] = useState(new Date());
+    const [sedePresencial] = useState();
 
     const currentEvent = useEvent(events, selectEventId, openForm);
 

@@ -1,8 +1,8 @@
 import useSWR from 'swr';
 import { useMemo } from 'react';
 
-import axios from 'src/utils/axios';
-import { endpoints, fetcherGet } from 'src/utils/axios';
+import axios, { endpoints, fetcherGet } from 'src/utils/axios';
+
 
 // ----------------------------------------------------------------------
 
@@ -59,7 +59,69 @@ export function useGetHorariosPresenciales(object) {
       horariosEmpty: !isLoading && !data?.length,
       horariosGet : mutate,
     }),
-    [data, error, isLoading, isValidating]
+    [data, error, isLoading, isValidating, mutate]
+  );
+
+  return memoizedValue;
+}
+
+// ----------------------------------------------------------------------
+
+export function useGetDiasPresenciales(object) {
+  const params = new URLSearchParams(object).toString()
+  const URL = `${endpoints.especialistas.disponibles}?${params}`
+
+  const accessToken = sessionStorage.getItem('accessToken');
+
+  const config = {
+    headers : {
+      token : accessToken
+    }
+  }
+
+  const { data, isLoading, error, isValidating, mutate } = useSWR([URL, config], fetcherGet);
+  
+  const memoizedValue = useMemo(
+    () => ({
+      diasPresenciales: data || [],
+      diasPresencialesLoading: isLoading,
+      diasPresencialesError: error,
+      diasPresencialesValidating: isValidating,
+      diasPresencialesEmpty: !isLoading && !data?.length,
+      diasPresencialesGet : mutate,
+    }),
+    [data, error, isLoading, isValidating, mutate]
+  );
+
+  return memoizedValue;
+}
+
+// ----------------------------------------------------------------------
+
+export function useGetDiasPresenciales2(object) {
+  const params = new URLSearchParams(object).toString()
+  const URL = `${endpoints.especialistas.disponibles}?${params}`
+
+  const accessToken = sessionStorage.getItem('accessToken');
+
+  const config = {
+    headers : {
+      token : accessToken
+    }
+  }
+
+  const { data, isLoading, error, isValidating, mutate } = useSWR([URL, config], fetcherGet);
+  
+  const memoizedValue = useMemo(
+    () => ({
+      diasPresenciales: data || [],
+      diasPresencialesLoading: isLoading,
+      diasPresencialesError: error,
+      diasPresencialesValidating: isValidating,
+      diasPresencialesEmpty: !isLoading && !data?.length,
+      diasPresencialesGet : mutate,
+    }),
+    [data, error, isLoading, isValidating, mutate]
   );
 
   return memoizedValue;
@@ -73,7 +135,7 @@ export async function setHorarioPresencial(data) {
   /**
    * Work on server
    */
-  //const data = { conversationData };
+  // const data = { conversationData };
   const res = await axios.post(URL, data);
 
   return res.data;
