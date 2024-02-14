@@ -862,7 +862,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const formattedDate = date.format('YYYY-MM-DD');
     const isDisabledFromSQLServer = diasOcupados.includes(formattedDate);
 
-    console.log('sedes', sedes.length)
+    //console.log('sedes', sedes.length)
 
     const noPresencial = virtual ? false : sedes.length > 1 ? !diasPresenciales.includes(formattedDate) : false;
 
