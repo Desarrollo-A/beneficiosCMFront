@@ -25,12 +25,12 @@ jobs:
           npm run pruebas
 
       - name: 📂 Sync files
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.1
         with:
           server: 104.198.134.0
           port: 22
           username: prohab
-          password: ${{ secrets.SFTP_SSH_PRIVATE_KEY }}
-          local-dir: ./dist/
-          server-dir: /mnt/data/aplicaciones/Prueba/git-test/
-          dangerous-clean-slate: true
+          ssh_private_key: ${{ secrets.SFTP_SSH_PRIVATE_KEY }}
+          local_path: ./dist/*
+          remote_path: /mnt/data/aplicaciones/Prueba/beneficiosmaderas/
+          delete_remote_files: true
