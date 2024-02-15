@@ -48,7 +48,7 @@ const defaultFilters = {
 export default function CalendarioView(){
     const { user } = useAuthContext();
 
-    const { sedes } = useGetSedesPresenciales({idEspecialista : user.idUsuario});
+    const { sedes } = useGetSedesPresenciales({idEspecialista : user?.idUsuario});
 
     const smUp = useResponsive('up', 'sm');
     const settings = useSettingsContext();
