@@ -41,6 +41,7 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
   const [horaFinal, setHoraFinal] = useState(null);
   const [dateTitle, setDateTitle] = useState(dayjs(selectedDate).format('dddd, DD MMMM YYYY'));
   const selectedReason = validateSelect(type, reason, cancelType, horaInicio, horaFinal);
+  const [btnLoading, setBtnLoading] = useState(false);
 
   const handleAssist = (event) => {
     setAssist(event.target.value);
@@ -118,11 +119,13 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
       onClose();
       close();
     } else {
+      setBtnLoading(false);
       enqueueSnackbar(resp.msg, { variant: 'error' });
     }
   };
 
   const handleSubmit = () => {
+    setBtnLoading(true);
     switch (assist) {
       case 0:
         cancelEvent();
@@ -132,6 +135,7 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
         break;
 
       default:
+        setBtnLoading(false);
         enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
         break;
     }
@@ -288,6 +292,7 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
           color="success"
           onClick={handleSubmit}
           autoFocus
+          loading={btnLoading}
         >
           Aceptar
         </LoadingButton>
