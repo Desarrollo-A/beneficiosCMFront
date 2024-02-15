@@ -7,7 +7,10 @@ import { useMemo, useEffect } from 'react';
 import { endpoints, fetcherPost } from 'src/utils/axios';
 
 // Se hizo el intento con el useAuthContext pero se manda a declarar más veces y da mas errores debido a su uso como componente
-const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+const session = sessionStorage.getItem('accessToken');
+const datosUser = sessionStorage.getItem('accessToken')
+  ? JSON.parse(Base64.decode(session.split('.')[2]))
+  : '';
 
 // ----------------------------------------------------------------------
 
@@ -382,7 +385,7 @@ export function insertGoogleCalendarEvent(
 
   const guest = attendees
     .filter((each) => each !== email)
-    .map((each) => ({ email: each, responseStatus: 'accepted' }));
+    .map((each) => ({ email: each, responseStatus: 'accepted' })); // needsAction
 
   attendees = [{ email, responseStatus: 'accepted' }, ...guest];
 
@@ -413,7 +416,7 @@ export function updateGoogleCalendarEvent(id, start, end, email, attendees) {
 
   const guest = attendees
     .filter((each) => each !== email)
-    .map((each) => ({ email: each, responseStatus: 'accepted' }));
+    .map((each) => ({ email: each, responseStatus: 'accepted' })); // needsAction
 
   attendees = [{ email, responseStatus: 'accepted' }, ...guest];
 
