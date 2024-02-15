@@ -76,6 +76,13 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
   const dateError = type === 'cancel' && defaultInicio > defaultFecha; // validacion que la fecha final no sea menor a la fecha inicio
   const endValidation = allDay ? !defaultEnd : defaultEnd;
 
+  const esp = { // idioma de los botones
+    okButtonLabel: "Seleccionar",
+    cancelButtonLabel: "Cancelar",
+    datePickerToolbarTitle: 'Selecciona una fecha',
+    timePickerToolbarTitle: 'Selecciona un horario'
+  };
+
   const handleChangeType = useCallback(
     (event, newType) => {
       // handle para el cambio entre ocupar una hora o hacer cita solo quantum balance
@@ -323,7 +330,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
           spacing={2}
           sx={{ p: { xs: 1, md: 2 } }}
         >
-          <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
+          <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns} localeText={esp}>
             <Controller
               name="fechaInicio"
               render={({ field }) => (
@@ -364,6 +371,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
             spacing={2}
             sx={{ p: { xs: 1, md: 2 } }}
           >
+            <LocalizationProvider localeText={esp}>
             <Controller
               name="start"
               render={({ field }) => (
@@ -396,6 +404,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
                 />
               )}
             />
+            </LocalizationProvider>
           </Stack>
         )}
       </DialogContent>

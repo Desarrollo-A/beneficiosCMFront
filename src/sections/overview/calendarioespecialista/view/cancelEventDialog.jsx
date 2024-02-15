@@ -31,7 +31,14 @@ import {
   cancelAppointment,
 } from 'src/api/calendar-specialist';
 
-export default function CancelEventDialog({ type, currentEvent, pastCheck, reasons, onClose, close, selectedDate }) {
+export default function CancelEventDialog({
+  currentEvent,
+  pastCheck,
+  reasons,
+  onClose,
+  close,
+  selectedDate,
+}) {
   dayjs.locale('es'); // valor para cambiar el idioma del dayjs
   const [assist, setAssist] = useState('');
   const [cancelType, setCancelType] = useState('');
@@ -42,6 +49,13 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
   const [dateTitle, setDateTitle] = useState(dayjs(selectedDate).format('dddd, DD MMMM YYYY'));
   const selectedReason = validateSelect(type, reason, cancelType, horaInicio, horaFinal);
   const [btnLoading, setBtnLoading] = useState(false);
+
+  const esp = {
+    // idioma de los botones
+    okButtonLabel: 'Seleccionar',
+    cancelButtonLabel: 'Cancelar',
+    datePickerToolbarTitle: 'Selecciona una fecha',
+  };
 
   const handleAssist = (event) => {
     setAssist(event.target.value);
@@ -101,7 +115,7 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
       correo: currentEvent?.correo,
       fechaCreacion: currentEvent?.fechaCreacion,
       idEventoGoogle: currentEvent?.idEventoGoogle,
-      tipoPuesto: currentEvent?.tipoPuesto
+      tipoPuesto: currentEvent?.tipoPuesto,
     };
     switch (cancelType) {
       case 8:
@@ -243,7 +257,7 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
               <Typography variant="subtitle1">{dateTitle}</Typography>
             </Stack>
 
-            <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
+            <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns} localeText={esp}>
               <MobileDatePicker
                 label="Fecha inicial"
                 sx={{ width: '100%' }}
@@ -256,27 +270,29 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
             </LocalizationProvider>
 
             <Stack direction="row" justifyContent="space-between" spacing={2} sx={{ mt: 2 }}>
-              <MobileTimePicker
-                sx={{ width: '100%' }}
-                label="Hora de inicio"
-                value={horaInicio}
-                onChange={(value) => {
-                  handleHourChange(value);
-                }}
-              />
+              <LocalizationProvider localeText={esp}>
+                <MobileTimePicker
+                  sx={{ width: '100%' }}
+                  label="Hora de inicio"
+                  value={horaInicio}
+                  onChange={(value) => {
+                    handleHourChange(value);
+                  }}
+                />
 
-              <MobileTimePicker
-                sx={{ width: '100%' }}
-                label="Hora de finalización"
-                value={horaFinal}
-                disabled={type === 'date'}
-                slotProps={{
-                  textField: {
-                    error: hourError.result,
-                    helperText: hourError.result && hourError.msg,
-                  },
-                }}
-              />
+                <MobileTimePicker
+                  sx={{ width: '100%' }}
+                  label="Hora de finalización"
+                  value={horaFinal}
+                  disabled={type === 'date'}
+                  slotProps={{
+                    textField: {
+                      error: hourError.result,
+                      helperText: hourError.result && hourError.msg,
+                    },
+                  }}
+                />
+              </LocalizationProvider>
             </Stack>
           </Stack>
         )}
