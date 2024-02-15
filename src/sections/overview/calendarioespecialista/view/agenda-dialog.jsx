@@ -62,49 +62,49 @@ export default function AgendaDialog({ open, onClose, id, start, end, sede, ...p
 
   const handleClose = (event, reason) => {
     onClose();
-  };
+  }
 
-  return (
-    <Dialog
-      fullWidth
-      maxWidth="xs"
-      open={open}
-      onClose={handleClose}
-      transitionDuration={{
-        enter: theme.transitions.duration.shortest,
-        exit: theme.transitions.duration.shortest - 1000,
-      }}
-    >
-      <FormProvider methods={methods} onSubmit={onSubmit}>
-        <DialogContent sx={{ p: { xs: 1, md: 2 } }}>
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            useFlexGap
-            flexWrap="wrap"
-            spacing={2}
-            sx={{ p: { xs: 1, md: 2 } }}
-          >
-            <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center' }}>
-              Establecer horario presencial
-            </Typography>
+  return(
+      <Dialog
+        fullWidth
+        maxWidth="xs"
+        open={open}
+        onClose={handleClose}
+        transitionDuration={{
+          enter: theme.transitions.duration.shortest,
+          exit: theme.transitions.duration.shortest - 1000,
+        }}
+      >
+        <FormProvider methods={methods} onSubmit={onSubmit}>
+          <DialogContent sx={{ p: { xs: 1, md: 2 } }}>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              useFlexGap
+              flexWrap="wrap"
+              spacing={2}
+              sx={{ p: { xs: 1, md: 2 } }}
+            >
+              <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center' }}>
+                Establecer horario presencial
+              </Typography>
 
-            <Stack direction="column" spacing={2}>
-              <Stack direction="row" spacing={2}>
-                <RHFHidden name="especialista" value={user.idUsuario} />
-                <RHFDatePicker name="start" label="Inicio" value={start} />
-                <RHFDatePicker name="end" label="Final" value={end} />
-              </Stack>
-              <RHFSelect name="sede" label="Sede" value={sede}>
-                <MenuItem key={0} value={0}>
-                  Sin horario
-                </MenuItem>
-                {sedes.map((s, index) => (
-                  <MenuItem key={index} value={s.value}>
-                    {s.label}
+              <Stack direction="column" spacing={2}>
+                <Stack direction="row" spacing={2}>
+                  <RHFHidden name="especialista" value={user.idUsuario} />
+                  <RHFDatePicker name="start" label="Inicio" value={start} />
+                  <RHFDatePicker name="end" label="Final" value={end} />
+                </Stack>
+                <RHFSelect name="sede" label="Sede" value=''>
+                  <MenuItem key={0} value={0}>
+                    Sin horario
                   </MenuItem>
-                ))}
-              </RHFSelect>
+                  {sedes.map((s, index) => (
+                    <MenuItem key={index} value={s.value}>
+                      {s.label}
+                    </MenuItem>
+                  ))}
+                </RHFSelect>
             </Stack>
           </Stack>
         </DialogContent>
