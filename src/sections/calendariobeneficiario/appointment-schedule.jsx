@@ -39,17 +39,15 @@ export default function AppointmentSchedule({
   errorEspecialista,
   modalidades,
   errorModalidad,
-  infoContact,
   oficina,
   isLoading,
   handleDateChange,
   shouldDisableDate,
   horariosDisponibles,
   horarioSeleccionado,
-  setHorarioSeleccionado,
   errorHorarioSeleccionado,
   currentEvent,
-  Items,
+  handleHorarioSeleccionado,
 }) {
   return (
     <Grid sx={{ display: 'flex' }}>
@@ -145,31 +143,53 @@ export default function AppointmentSchedule({
               </FormControl>
             </Stack>
             {selectedValues.modalidad === 1 && selectedValues.beneficio && (
-              <Stack spacing={1} sx={{ p: { xs: 1, md: 1 } }}>
-                Dirección de la oficina :
-                {oficina && oficina.result ? (
-                  <Stack
-                    sx={{
-                      flexDirection: 'row',
-                    }}
-                  >
-                    <Stack>
-                      <Iconify
-                        icon="mdi:office-building-marker"
-                        width={30}
-                        sx={{ color: 'text.disabled' }}
-                      />
+              <>
+                <Stack spacing={1} sx={{ p: { xs: 1, md: 1 } }}>
+                  Dirección de la oficina :
+                  {oficina && oficina.result ? (
+                    <Stack
+                      sx={{
+                        flexDirection: 'row',
+                      }}
+                    >
+                      <Stack>
+                        <Iconify
+                          icon="mdi:office-building-marker"
+                          width={30}
+                          sx={{ color: 'text.disabled' }}
+                        />
+                      </Stack>
+                      <Stack sx={{ flexDirection: 'col' }}>
+                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                          {oficina.data[0].ubicación}
+                        </Typography>
+                      </Stack>
                     </Stack>
-                    <Stack sx={{ flexDirection: 'col' }}>
-                      <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                        {oficina.data[0].ubicación}
-                      </Typography>
-                    </Stack>
+                  ) : (
+                    ' Cargando...'
+                  )}
+                </Stack>
+                <Stack
+                  sx={{
+                    flexDirection: 'row',
+                    p: { xs: 1, md: 1 },
+                    alignItems: 'center',
+                  }}
+                >
+                  <Stack>
+                    <Iconify
+                      icon="mdi:timer-edit-outline"
+                      width={30}
+                      sx={{ color: 'text.disabled' }}
+                    />
                   </Stack>
-                ) : (
-                  ' Cargando...'
-                )}
-              </Stack>
+                  <Stack sx={{ flexDirection: 'col' }}>
+                    <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                      Se considerará como inasistencia la llegada tardía despues de 10 minutos.
+                    </Typography>
+                  </Stack>
+                </Stack>
+              </>
             )}
           </Stack>
         </Box>
@@ -206,7 +226,7 @@ export default function AppointmentSchedule({
                 label="Horarios disponibles"
                 name="Horarios disponibles"
                 value={horarioSeleccionado}
-                onChange={(e) => setHorarioSeleccionado(e.target.value)}
+                onChange={(e) => handleHorarioSeleccionado(e.target.value)}
                 disabled={horariosDisponibles.length === 0}
               >
                 {horariosDisponibles.map((e, index) => (
@@ -239,15 +259,13 @@ AppointmentSchedule.propTypes = {
   errorEspecialista: PropTypes.bool,
   modalidades: PropTypes.array,
   errorModalidad: PropTypes.bool,
-  infoContact: PropTypes.object,
   oficina: PropTypes.object,
   isLoading: PropTypes.bool,
   handleDateChange: PropTypes.func,
   shouldDisableDate: PropTypes.func,
   horariosDisponibles: PropTypes.array,
   horarioSeleccionado: PropTypes.string,
-  setHorarioSeleccionado: PropTypes.func,
   errorHorarioSeleccionado: PropTypes.bool,
   currentEvent: PropTypes.object,
-  Items: PropTypes.any,
+  handleHorarioSeleccionado: PropTypes.func,
 };
