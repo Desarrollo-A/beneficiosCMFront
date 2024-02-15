@@ -14,7 +14,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { setHorarioPresencial, useGetSedesPresenciales } from 'src/api/especialistas'
+import { setHorarioPresencial, useGetSedesPresenciales } from 'src/api/especialistas';
 
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider from 'src/components/hook-form/form-provider';
@@ -22,22 +22,21 @@ import { RHFSelect, RHFHidden, RHFDatePicker } from 'src/components/hook-form';
 
 // -------------------------------------------------------------------
 
-export default function AgendaDialog({open, onClose, id, start, end, sede, ...props}){
-
+export default function AgendaDialog({ open, onClose, id, start, end, sede, ...props }) {
   const theme = useTheme();
 
   const { enqueueSnackbar } = useSnackbar();
 
   const { user } = useAuthContext();
 
-  const { sedes } = useGetSedesPresenciales({idEspecialista : user.idUsuario});
+  const { sedes } = useGetSedesPresenciales({ idEspecialista: user.idUsuario });
 
   const formSchema = yup.object({
-    id : yup.number().nullable(true),
+    id: yup.number().nullable(true),
     start: yup.string().transform(parseStartDate).required(),
     end: yup.string().transform(parseEndDate).required(),
-    sede : yup.number().required(),
-    especialista : yup.number(),
+    sede: yup.number().required(),
+    especialista: yup.number(),
   });
 
   const methods = useForm({
@@ -48,18 +47,18 @@ export default function AgendaDialog({open, onClose, id, start, end, sede, ...pr
   const { handleSubmit } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
-    console.log(data)
+    console.log(data);
 
-    const response = await setHorarioPresencial(data)
+    const response = await setHorarioPresencial(data);
 
-    if(response.status === 'error'){
-      enqueueSnackbar(response.message, { variant: 'error'});
-    }else{
+    if (response.status === 'error') {
+      enqueueSnackbar(response.message, { variant: 'error' });
+    } else {
       enqueueSnackbar(response.message);
 
       onClose();
     }
-  })
+  });
 
   const handleClose = (event, reason) => {
     onClose();
@@ -106,25 +105,20 @@ export default function AgendaDialog({open, onClose, id, start, end, sede, ...pr
                     </MenuItem>
                   ))}
                 </RHFSelect>
-              </Stack>
-              
             </Stack>
-          </DialogContent>
-          <DialogActions>
-            <Button variant="contained" color="error" onClick={handleClose}>
-              Cerrar
-            </Button>
-              <LoadingButton
-                type="submit"
-                variant="contained"
-                color="success"
-              >
-                Guardar
-              </LoadingButton>
-          </DialogActions>
-        </FormProvider>
-      </Dialog>
-  )
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" color="error" onClick={handleClose}>
+            Cerrar
+          </Button>
+          <LoadingButton type="submit" variant="contained" color="success">
+            Guardar
+          </LoadingButton>
+        </DialogActions>
+      </FormProvider>
+    </Dialog>
+  );
 }
 
 function parseStartDate(value, originalValue) {
@@ -138,10 +132,10 @@ function parseEndDate(value, originalValue) {
 }
 
 AgendaDialog.propTypes = {
-  open:    PropTypes.any,
+  open: PropTypes.any,
   onClose: PropTypes.any,
-  id:      PropTypes.any,
-  start:   PropTypes.any,
-  end:     PropTypes.any,
-  sede:    PropTypes.any
+  id: PropTypes.any,
+  start: PropTypes.any,
+  end: PropTypes.any,
+  sede: PropTypes.any,
 };

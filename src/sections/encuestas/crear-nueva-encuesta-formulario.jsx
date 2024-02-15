@@ -44,6 +44,8 @@ export default function InvoiceNewEditForm() {
 
   const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
 
+  const [btnLoad, setBtnLoad] = useState(false);
+
   const router = useRouter();
 
   const loadingSend = useBoolean();
@@ -107,17 +109,25 @@ export default function InvoiceNewEditForm() {
           mutate(endpoints.encuestas.getEncNotificacion);
           mutate(endpoints.encuestas.getEstatusUno);
 
+          setBtnLoad(false);
+
         } else {
           enqueueSnackbar(insert.msj, { variant: 'error' });
+
+          setBtnLoad(false);
         }
 
       } catch (error) {
         console.error(error);
         loadingSend.onFalse();
+
+        setBtnLoad(false);
       }
 
     } else {
       enqueueSnackbar("Faltan Datos", { variant: 'error' });
+
+      setBtnLoad(false);
     }
 
   });
@@ -198,7 +208,8 @@ export default function InvoiceNewEditForm() {
             }}>
               Si
             </Button>
-            <Button variant="contained" onClick={() => {
+            <Button variant="contained" loading={btnLoad} onClick={() => {
+              setBtnLoad(true);
               confirm.onFalse();
               handleCreateAndSend(0);
             }}>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import Box from '@mui/material/Box';
@@ -10,15 +10,12 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
 import { useBoolean } from 'src/hooks/use-boolean';
-// import { useResponsive } from 'src/hooks/use-responsive';
 
-// import { endpoints } from 'src/utils/axios';
 import { fData } from 'src/utils/format-number';
 
-// import { usePostGeneral } from 'src/api/general';
-
 import Iconify from 'src/components/iconify';
-// import { useSnackbar } from 'src/components/snackbar';
+
+import { usePopover } from 'src/components/custom-popover';
 
 import ModalAsignarSede from './modal-asignar-sede';
 
@@ -26,14 +23,13 @@ import ModalAsignarSede from './modal-asignar-sede';
 
 export default function ModalListaSedes({ idPuesto, open, onClose, modalidadesData, sedesData }) {
 
-  /* const { sdData } = usePostGeneral(idPuesto, endpoints.gestor.getSedeNone, "sdData"); */
+  const popover = usePopover();
 
   const modal = useBoolean();
 
   const [sd, setSd] = useState(0);
 
   const [open2, setOpen2] = useState(false);
-  const [close2] = useState(false); // setClose2
 
   const handleOpen = (idSede) => {
     setSd(idSede);
@@ -63,11 +59,9 @@ export default function ModalListaSedes({ idPuesto, open, onClose, modalidadesDa
         <>
           <DialogContent>
 
-            {sedesData.map((e, index) => (
-              <>
+            {sedesData.map((e) => (
+              <React.Fragment key={e.idSede}>
                 <ListItemText
-                  key={`items[${index}].list`}
-                  /*  onClick={details.onTrue} */
                   primary={e.sede}
                   secondary={
                     <>
@@ -111,22 +105,12 @@ export default function ModalListaSedes({ idPuesto, open, onClose, modalidadesDa
                 >
                   Asignar <Iconify icon="lets-icons:add-duotone" />
                 </Button>
-              </>
+              </React.Fragment>
             ))}
 
           </DialogContent>
 
           <DialogActions>
-
-            {/* <Button
-                variant="contained"
-                color="success"
-                loading={loadingSend.value && isSubmitting}
-                onClick={() => {
-                  confirm.onTrue();
-                }}>
-                Guardar
-              </Button> */}
             <Button variant="contained" color="error" onClick={onClose}>
               Cerrar
             </Button>
@@ -139,7 +123,7 @@ export default function ModalListaSedes({ idPuesto, open, onClose, modalidadesDa
         fullWidth
         maxWidth={false}
         open={open2}
-        onClose={close2}
+        onClose={popover.onClose}
         PaperProps={{
           sx: { maxWidth: 720 },
         }}

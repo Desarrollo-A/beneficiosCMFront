@@ -26,6 +26,7 @@ import { useSettingsContext } from 'src/components/settings';
 import AppWelcome from '../app-welcome';
 import WidgetConteo from '../widget-conteo';
 import GraficaMetas from '../grafica-metas';
+import GraficaMetasArea from '../grafica-metas-area';
 import EncuestaBarra from '../barra-encuesta';
 // import AppTopRelated from '../app-top-related';
 import EncuestaPorcentaje from '../porcentaje-encuesta';
@@ -443,7 +444,11 @@ export default function DashView() {
 
           {rol === "1" || rol === 1 || rol === "3" || rol === 3 || rol === "4" || rol === 4 ? (
             <>
-
+              {user.idRol === 1 && user.idAreaBeneficio ?
+                <Grid xs={12}>
+                  <GraficaMetasArea />
+                </Grid>
+              : null }
               {user.idRol === 3 && metaData ?
                 <Grid xs={12} sm={6} md={4}>
                   <GraficaMetas data={metaData} />
