@@ -63,7 +63,7 @@ export default function AppointmentSchedule({
           <Stack spacing={3}>
             {currentEvent?.estatus === 1 ? (
               <Typography variant="subtitle1">
-                {dayjs(currentEvent.start).locale('es').format('dddd, DD MMMM YYYY HH:mm ')}
+                {dayjs(currentEvent?.start).locale('es').format('dddd, DD MMMM YYYY HH:mm ')}
               </Typography>
             ) : (
               <Typography variant="subtitle1">
@@ -83,9 +83,9 @@ export default function AppointmentSchedule({
                   value={selectedValues.beneficio || ''}
                   defaultValue=""
                   onChange={(e) => handleChange('beneficio', e.target.value)}
-                  disabled={!!(beneficios.length === 0 || currentEvent?.id)}
+                  disabled={!!(beneficios?.length === 0 || currentEvent?.id)}
                 >
-                  {beneficios.map((e) => (
+                  {beneficios?.map((e) => (
                     <MenuItem key={e.idPuesto} value={e.idPuesto}>
                       {e.puesto.toUpperCase()}
                     </MenuItem>
@@ -105,9 +105,9 @@ export default function AppointmentSchedule({
                   value={selectedValues.especialista}
                   defaultValue=""
                   onChange={(e) => handleChange('especialista', e.target.value)}
-                  disabled={!!(especialistas.length === 0 || currentEvent?.id)}
+                  disabled={!!(especialistas?.length === 0 || currentEvent?.id)}
                 >
-                  {especialistas.map((e, index) => (
+                  {especialistas?.map((e, index) => (
                     <MenuItem key={e.id} value={e.id}>
                       {e.especialista.toUpperCase()}
                     </MenuItem>
@@ -129,9 +129,9 @@ export default function AppointmentSchedule({
                   defaultValue=""
                   value={selectedValues.modalidad}
                   onChange={(e) => handleChange('modalidad', e.target.value)}
-                  disabled={!!(modalidades.length === 0 || currentEvent?.id)}
+                  disabled={!!(modalidades?.length === 0 || currentEvent?.id)}
                 >
-                  {modalidades.map((e, index) => (
+                  {modalidades?.map((e, index) => (
                     <MenuItem key={e.tipoCita} value={e.tipoCita}>
                       {e.modalidad.toUpperCase()}
                     </MenuItem>
