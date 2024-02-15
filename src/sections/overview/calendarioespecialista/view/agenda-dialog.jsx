@@ -1,5 +1,6 @@
 import * as yup from 'yup';
 import PropTypes from 'prop-types';
+import { es } from 'date-fns/locale';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -12,6 +13,8 @@ import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { setHorarioPresencial, useGetSedesPresenciales } from 'src/api/especialistas';
@@ -24,6 +27,13 @@ import { RHFSelect, RHFHidden, RHFDatePicker } from 'src/components/hook-form';
 
 export default function AgendaDialog({ open, onClose, id, start, end, sede, ...props }) {
   const theme = useTheme();
+
+  const espa = {
+    // idioma de los botones
+    okButtonLabel: 'Seleccionar',
+    cancelButtonLabel: 'Cancelar',
+    datePickerToolbarTitle: 'Selecciona una fecha',
+  };
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -62,49 +72,55 @@ export default function AgendaDialog({ open, onClose, id, start, end, sede, ...p
 
   const handleClose = (event, reason) => {
     onClose();
-  }
+  };
 
-  return(
-      <Dialog
-        fullWidth
-        maxWidth="xs"
-        open={open}
-        onClose={handleClose}
-        transitionDuration={{
-          enter: theme.transitions.duration.shortest,
-          exit: theme.transitions.duration.shortest - 1000,
-        }}
-      >
-        <FormProvider methods={methods} onSubmit={onSubmit}>
-          <DialogContent sx={{ p: { xs: 1, md: 2 } }}>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              useFlexGap
-              flexWrap="wrap"
-              spacing={2}
-              sx={{ p: { xs: 1, md: 2 } }}
-            >
-              <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center' }}>
-                Establecer horario presencial
-              </Typography>
+  return (
+    <Dialog
+      fullWidth
+      maxWidth="xs"
+      open={open}
+      onClose={handleClose}
+      transitionDuration={{
+        enter: theme.transitions.duration.shortest,
+        exit: theme.transitions.duration.shortest - 1000,
+      }}
+    >
+      <FormProvider methods={methods} onSubmit={onSubmit}>
+        <DialogContent sx={{ p: { xs: 1, md: 2 } }}>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            useFlexGap
+            flexWrap="wrap"
+            spacing={2}
+            sx={{ p: { xs: 1, md: 2 } }}
+          >
+            <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center' }}>
+              Establecer horario presencial
+            </Typography>
 
-              <Stack direction="column" spacing={2}>
-                <Stack direction="row" spacing={2}>
-                  <RHFHidden name="especialista" value={user.idUsuario} />
+            <Stack direction="column" spacing={2}>
+              <Stack direction="row" spacing={2}>
+                <RHFHidden name="especialista" value={user.idUsuario} />
+                <LocalizationProvider
+                  adapterLocale={es}
+                  dateAdapter={AdapterDateFns}
+                  localeText={espa}
+                >
                   <RHFDatePicker name="start" label="Inicio" value={start} />
                   <RHFDatePicker name="end" label="Final" value={end} />
-                </Stack>
-                <RHFSelect name="sede" label="Sede" value=''>
-                  <MenuItem key={0} value={0}>
-                    Sin horario
+                </LocalizationProvider>
+              </Stack>
+              <RHFSelect name="sede" label="Sede" value="">
+                <MenuItem key={0} value={0}>
+                  Sin horario
+                </MenuItem>
+                {sedes.map((s, index) => (
+                  <MenuItem key={index} value={s.value}>
+                    {s.label}
                   </MenuItem>
-                  {sedes.map((s, index) => (
-                    <MenuItem key={index} value={s.value}>
-                      {s.label}
-                    </MenuItem>
-                  ))}
-                </RHFSelect>
+                ))}
+              </RHFSelect>
             </Stack>
           </Stack>
         </DialogContent>

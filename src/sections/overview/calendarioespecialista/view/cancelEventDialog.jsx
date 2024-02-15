@@ -43,6 +43,12 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
   const selectedReason = validateSelect(type, reason, cancelType, horaInicio, horaFinal);
   const [btnLoading, setBtnLoading] = useState(false);
 
+  const esp = { // idioma de los botones
+    okButtonLabel: "Seleccionar",
+    cancelButtonLabel: "Cancelar",
+    datePickerToolbarTitle: 'Selecciona una fecha'
+  };
+
   const handleAssist = (event) => {
     setAssist(event.target.value);
     setReason([]);
@@ -243,7 +249,7 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
               <Typography variant="subtitle1">{dateTitle}</Typography>
             </Stack>
 
-            <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
+            <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns} localeText={esp}>
               <MobileDatePicker
                 label="Fecha inicial"
                 sx={{ width: '100%' }}
@@ -256,6 +262,7 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
             </LocalizationProvider>
 
             <Stack direction="row" justifyContent="space-between" spacing={2} sx={{ mt: 2 }}>
+            <LocalizationProvider  localeText={esp}>
               <MobileTimePicker
                 sx={{ width: '100%' }}
                 label="Hora de inicio"
@@ -277,6 +284,7 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
                   },
                 }}
               />
+              </LocalizationProvider>
             </Stack>
           </Stack>
         )}
