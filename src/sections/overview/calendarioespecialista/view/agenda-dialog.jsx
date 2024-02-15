@@ -96,7 +96,7 @@ export default function AgendaDialog({open, onClose, id, start, end, sede, ...pr
                   <RHFDatePicker name="start" label="Inicio" value={start} />
                   <RHFDatePicker name="end" label="Final" value={end} />
                 </Stack>
-                <RHFSelect name="sede" label="Sede" value={sede}>
+                <RHFSelect name="sede" label="Sede" value=''>
                   <MenuItem key={0} value={0}>
                     Sin horario
                   </MenuItem>
