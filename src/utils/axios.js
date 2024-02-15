@@ -113,6 +113,9 @@ export const endpoints = {
     disponibles: 'especialistas/disponibles',
     meta: 'especialistas/meta',
   },
+  areas: {
+    citas: 'areas/citas',
+  },
   calendario: {
     getAllEvents: 'CalendarioController/getAllEvents',
     saveOccupied: 'CalendarioController/saveOccupied',
