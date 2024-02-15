@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useCallback } from 'react';
+import { useState, useCallback } from 'react';
 
 import Stack from '@mui/material/Stack';
 import Select from '@mui/material/Select';
@@ -28,6 +28,8 @@ export default function UserTableToolbar({
     [onFilters]
   );
 
+  const [area, setArea] = useState(158);
+
   const handleFilterRole = useCallback(
     (event) => {
       onFilters(
@@ -35,6 +37,7 @@ export default function UserTableToolbar({
          event.target.value
       );
       handleChangeId(event.target.value);
+      setArea(event.target.value);
     },
     [onFilters, handleChangeId]
   );
@@ -63,7 +66,7 @@ export default function UserTableToolbar({
           <InputLabel>Área</InputLabel>
 
           <Select
-            value={filters.area}
+            value={area}
             onChange={handleFilterRole}
             input={<OutlinedInput label="Área" />}
             MenuProps={{

@@ -20,6 +20,7 @@ import { useUpdate } from 'src/api/reportes';
 import { useGetGeneral } from 'src/api/general';
 
 import { useSnackbar } from 'src/components/snackbar';
+import { LoadingButton } from '@mui/lab';
 // ----------------------------------------------------------------------
 
 export default function EditarEstatus({ open, onClose, id, est, estatusVal }) {
@@ -29,6 +30,8 @@ export default function EditarEstatus({ open, onClose, id, est, estatusVal }) {
   const { enqueueSnackbar } = useSnackbar();
 
   const [estatus, setEstatus] = useState('');
+
+  const [btnLoad, setBtnLoad] = useState(false);
 
   const handleChange = (event) => {
     setEstatus(event.target.value);
@@ -66,6 +69,8 @@ export default function EditarEstatus({ open, onClose, id, est, estatusVal }) {
         console.error("Error en handleEstatus:", error);
         enqueueSnackbar(`¡No se pudieron actualizar los datos de usuario!`, { variant: 'danger' });
       }
+
+      setBtnLoad(false);
 
   }
 
@@ -111,12 +116,13 @@ export default function EditarEstatus({ open, onClose, id, est, estatusVal }) {
         <Button variant="contained" color="error" onClick={onClose}>
           Cerrar
         </Button>
-        <Button variant="contained" color="success" onClick={() => {
+        <LoadingButton variant="contained" color="success" loading={btnLoad} onClick={() => {
+          setBtnLoad(true);
           handleEstatus(estatus);
           confirm.onFalse();
         }}>
           Guardar
-        </Button>
+        </LoadingButton>
       </DialogActions>
 
     </Dialog>
