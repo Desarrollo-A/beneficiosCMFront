@@ -9,7 +9,12 @@ import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import TableContainer from '@mui/material/TableContainer';
 
+import { endpoints } from 'src/utils/axios';
+
+import { useAuthContext } from 'src/auth/hooks';
+
 import { useUpdateUser } from 'src/api/user';
+import { useGetGeneral, usePostGeneral } from 'src/api/general';
 
 import Scrollbar from 'src/components/scrollbar';
 import { useSnackbar } from 'src/components/snackbar';
@@ -46,14 +51,40 @@ export default function EncuestasLista({ encuestas, estatusCt }) {
   const updateUser = useUpdateUser();
   const { enqueueSnackbar } = useSnackbar();
 
-  const targetRef = useRef();
+  const { user } = useAuthContext();
 
-  const [filters, setFilters] = useState(defaultFilters);
-  const [userData, setUserData] = useState(encuestas || []);
+  let puestos = 0;
+
+  if (user.idRol === "4" || user.idRol === 4) {
+    puestos = 158;
+  } else {
+    puestos = user.idPuesto;
+  }
+
+  const [area, setArea] = useState(puestos);
 
   useEffect(() => {
-    setUserData(encuestas || []);
-  }, [encuestas]);
+    setArea(area);
+  }, [area ]);
+
+  const { getData } = usePostGeneral(area, endpoints.encuestas.getEncuestasCreadas, "getData");
+
+  const { EstatusData } = usePostGeneral(area, endpoints.encuestas.getEstatusUno, "EstatusData");
+
+  const targetRef = useRef();
+
+  const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
+
+  const [especialistas, setEspecialistas] = useState([]);
+
+  const _rp = especialistas.flatMap((es) => (es.nombre));
+
+  const [filters, setFilters] = useState(defaultFilters);
+  const [userData, setUserData] = useState(getData || []);
+
+  useEffect(() => {
+    setUserData(getData || []);
+  }, [getData]);
 
   const canReset = !isEqual(defaultFilters, filters);
   const denseHeight = table.dense ? 52 : 72;
@@ -101,6 +132,16 @@ export default function EncuestasLista({ encuestas, estatusCt }) {
     }
   };
 
+  useEffect(() => {
+    if (especialistasData.length) {
+      setEspecialistas(especialistasData);
+    }
+  }, [especialistasData]);
+
+  const handleChangeId = (newAr) => {
+    setArea(newAr);
+  }
+
   return (
     <Card>
       <CardHeader />
@@ -108,6 +149,8 @@ export default function EncuestasLista({ encuestas, estatusCt }) {
         <UserTableToolbar
           filters={filters}
           onFilters={handleFilters}
+          roleOptions={especialistas}
+          handleChangeId={handleChangeId}
           //
         />
 
@@ -148,7 +191,7 @@ export default function EncuestasLista({ encuestas, estatusCt }) {
                       selected={table.selected.includes(usuario.id)}
                       onSelectRow={() => table.onSelectRow(usuario.id)}
                       onDeleteRow={() => handleDisableUser(usuario.id)}
-                      est={estatusCt}
+                      est={EstatusData}
                     />
                   ))}
 

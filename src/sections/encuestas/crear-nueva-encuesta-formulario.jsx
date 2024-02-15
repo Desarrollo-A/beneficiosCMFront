@@ -11,6 +11,7 @@ import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
+import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 
@@ -22,11 +23,12 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { endpoints } from 'src/utils/axios';
 
 import { useInsert } from 'src/api/encuestas';
+import { useGetGeneral } from 'src/api/general';
 import { useAuthContext } from 'src/auth/hooks';
 
-import FormProvider from 'src/components/hook-form';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
+import FormProvider, { RHFSelect } from 'src/components/hook-form';
 
 import InvoiceNewEditDetails from './crear-nueva-ecuesta-detalles';
 
@@ -39,6 +41,8 @@ export default function InvoiceNewEditForm() {
   const { enqueueSnackbar } = useSnackbar();
 
   const insertData = useInsert(endpoints.encuestas.encuestaCreate);
+
+  const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
 
   const router = useRouter();
 
@@ -75,9 +79,11 @@ export default function InvoiceNewEditForm() {
     setFormKey((prevKey) => prevKey + 1);
   };
 
+  const rol = user.idRol;
+
   const handleCreateAndSend = handleSubmit(async (data, est) => {
 
-    const estatus = {estatus: est}
+    const estatus = { estatus: est }
 
     const dataValue = {
       ...estatus,
@@ -129,29 +135,34 @@ export default function InvoiceNewEditForm() {
             Preguntas:
           </Typography>
 
-          {/* <Stack divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3}>
+          <Stack divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3}>
 
-            <RHFSelect
-              name="area"
-              size="small"
-              label="Área"
-              InputLabelProps={{ shrink: true }}
-              sx={{
-                maxWidth: { md: 160 },
-              }}
-            >
-              <Divider sx={{ borderStyle: 'dashed' }} />
+            {rol === 4 ? (
+              <RHFSelect
+                name="area"
+                size="small"
+                label="Área"
+                InputLabelProps={{ shrink: true }}
+                sx={{
+                  maxWidth: { md: 160 },
+                }}
+              >
+                <Divider sx={{ borderStyle: 'dashed' }} />
 
-              {areasData.map((res) => (
-                <MenuItem
-                  key={res.idPuesto}
-                  value={res.idPuesto}
-                >
-                  {res.puesto}
-                </MenuItem>
-              ))}
-            </RHFSelect>
-            </Stack> */}
+                {especialistasData.map((res) => (
+                  <MenuItem
+                    key={res.idPuesto}
+                    value={res.idPuesto}
+                  >
+                    {res.nombre}
+                  </MenuItem>
+                ))}
+              </RHFSelect>
+            ) : (
+              null
+            )}
+
+          </Stack>
 
           <Divider sx={{ my: 3, borderStyle: 'dashed' }} />
 
@@ -161,19 +172,19 @@ export default function InvoiceNewEditForm() {
 
       </Card>
 
-        <Stack justifyContent="flex-end" direction="row" spacing={2} sx={{ mt: 3 }}>
+      <Stack justifyContent="flex-end" direction="row" spacing={2} sx={{ mt: 3 }}>
 
-          <LoadingButton
-            size="large"
-            variant="contained"
-            loading={loadingSend.value && isSubmitting}
-            onClick={() => {
-              confirm.onTrue();
-            }}
-          >
-            Crear
-          </LoadingButton>
-        </Stack>
+        <LoadingButton
+          size="large"
+          variant="contained"
+          loading={loadingSend.value && isSubmitting}
+          onClick={() => {
+            confirm.onTrue();
+          }}
+        >
+          Crear
+        </LoadingButton>
+      </Stack>
 
       <ConfirmDialog
         open={confirm.value}
@@ -181,18 +192,18 @@ export default function InvoiceNewEditForm() {
         title="¿Deseas activar la encuesta?"
         action={
           <>
-          <Button variant="contained" onClick={() => {
-            handleCreateAndSend(1);
-            confirm.onFalse();
-          }}>
-            Si
-          </Button>
-          <Button variant="contained" onClick={() => {
-            confirm.onFalse();
-            handleCreateAndSend(0);
-          }}>
-            No
-          </Button>
+            <Button variant="contained" onClick={() => {
+              handleCreateAndSend(1);
+              confirm.onFalse();
+            }}>
+              Si
+            </Button>
+            <Button variant="contained" onClick={() => {
+              confirm.onFalse();
+              handleCreateAndSend(0);
+            }}>
+              No
+            </Button>
           </>
         }
       />

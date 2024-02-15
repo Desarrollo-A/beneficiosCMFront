@@ -24,8 +24,8 @@ import DialogContent from '@mui/material/DialogContent';
 import uuidv4 from 'src/utils/uuidv4';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { useGetDiasPresenciales } from 'src/api/especialistas';
 import { useGetEventReasons } from 'src/api/calendar-specialist';
+import { useGetDiasPresenciales, useGetSedesPresenciales } from 'src/api/especialistas';
 import {
   sendMail,
   crearCita,
@@ -103,6 +103,10 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const { user: datosUser } = useAuthContext();
 
   const { data: benefits } = useGetBenefits(datosUser.idSede);
+
+  const [especialista, setEspecialista] = useState(0);
+
+  const { sedes } = useGetSedesPresenciales({ idEspecialista: especialista });
 
   const { diasPresenciales } = useGetDiasPresenciales({
     especialista: selectedValues.especialista,
@@ -506,7 +510,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       setEspecialistas(data?.data);
     } else if (input === 'especialista') {
       console.log('especialista', value);
-      // setEspecialista(value);
+      setEspecialista(value);
 
       setErrorEspecialista(false);
       const modalitiesData = await getModalities(datosUser.idSede, value);
@@ -674,7 +678,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     return registrosFecha;
   };
 
-  const getHorariosDisponibles = async (beneficio, especialista) => {
+  const getHorariosDisponibles = async (beneficio, especialistah) => {
     setIsLoading(true);
     // Consultamos el horario del especialista segun su beneficio.
     const horarioACubrir = await getHorario(beneficio);
@@ -693,7 +697,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     // Traemos citas y horarios bloqueados por parte del usuario y especialsita
     const horariosOcupados = await getHorariosOcupados(
-      especialista,
+      especialistah,
       datosUser.idUsuario,
       initialValue.format('YYYY-MM-DD'),
       lastDayOfNextMonth.format('YYYY-MM-DD')
@@ -873,7 +877,13 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const formattedDate = date.format('YYYY-MM-DD');
     const isDisabledFromSQLServer = diasOcupados.includes(formattedDate);
 
-    const noPresencial = virtual ? false : !diasPresenciales.includes(formattedDate);
+    // console.log('sedes', sedes.length)
+    let noPresencial = false;
+    if (!virtual) {
+      if (sedes.length > 1) {
+        noPresencial = !diasPresenciales.includes(formattedDate);
+      }
+    }
 
     // Deshabilitar la fecha si es un fin de semana o está en la lista de fechas deshabilitadas
     return isWeekendDay || isDisabledFromSQLServer || noPresencial;
@@ -881,7 +891,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
   const agendarCita = async (
     titulo,
-    especialista,
+    especialistah,
     observaciones,
     horarioCita,
     tipoCita,
@@ -893,7 +903,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   ) => {
     const registrarCita = await crearCita(
       titulo,
-      especialista,
+      especialistah,
       idUsuario,
       observaciones,
       horarioCita,

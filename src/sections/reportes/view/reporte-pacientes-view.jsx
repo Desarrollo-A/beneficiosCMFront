@@ -48,7 +48,9 @@ import UserTableFiltersResult from '../user-table-filters-result';
 const TABLE_HEAD = [
   { id: 'id', label: 'ID' },
   { id: 'nombre', label: 'Nombre', with: 220 },
+  { id: 'depto', label: 'Departamento', with: 100 },
   { id: 'sede', label: 'Sede', with: 100 },
+  { id: 'puesto', label: 'Puesto', with: 100 },
   { id: 'estatus', label: 'Estatus', width: 100 },
   { id: '', width: 88 },
 ];
@@ -79,9 +81,11 @@ function handleDownloadExcel(tableData, area) {
     {
       sheet: "Historial Reportes",
       columns: [
-        { label: "ID", value: "id" },
+        { label: "ID", value: "idUsuario" },
         { label: "Nombre", value: "nombre" },
+        { label: "Departamento", value: "depto" },
         { label: "Sede", value: "sede" },
+        { label: "Puesto", value: "puesto" },
         { label: "Estatus", value: estatus },
       ],
       content: tableData,
@@ -104,7 +108,7 @@ function handleDownloadPDF(tableData, headerBase) {
 
   let data = [];
 
-  data = tableData.map(item => ([item.id, item.nombre, item.sede, item.estNut || item.estPsi || item.estQB || item.estGE ]))
+  data = tableData.map(item => ([item.idUsuario, item.nombre, item.depto, item.sede, item.puesto, item.estNut || item.estPsi || item.estQB || item.estGE ]))
 
   autoTable(doc, {
     head: [headerBase],
@@ -117,7 +121,7 @@ function handleDownloadPDF(tableData, headerBase) {
 
 export default function ReportePacientesView() {
 
-  const headerBase = ["ID", "Nombre", "Sede", "Estatus"];
+  const headerBase = ["ID", "Nombre", "Departamento", "Sede", "Puesto", "Estatus"];
 
   const table = useTable();
 
@@ -129,7 +133,9 @@ export default function ReportePacientesView() {
 
   const { user } = useAuthContext();
 
-  const rol = user.idRol
+  const rol = user.idRol;
+
+  const idUs = user.idUsuario;
 
   let puestos = 0;
 
@@ -141,7 +147,21 @@ export default function ReportePacientesView() {
 
   const [area, setArea] = useState(puestos);
 
-  const { pacientesData } = usePostGeneral(area, endpoints.reportes.pacientes, "pacientesData");
+  const [dt, setDt] = useState({
+    idRol: user.idRol,
+    esp: area,
+    idUs: user.idUsuario,
+  });
+
+  useEffect(() => {
+    setDt({
+      idRol: user.idRol,
+      esp: area,
+      idUs: user.idUsuario,
+    });
+  }, [area, user ]);
+
+  const { pacientesData } = usePostGeneral(dt, endpoints.reportes.pacientes, "pacientesData");
 
   const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
 
@@ -340,6 +360,8 @@ export default function ReportePacientesView() {
                         key={row.id}
                         row={row}
                         area={area}
+                        idUs={idUs}
+                        rol={rol}
                         selected={table.selected.includes(row.id)}
                         onSelectRow={() => table.onSelectRow(row.id)}
                         onDeleteRow={() => handleDeleteRow(row.id)}

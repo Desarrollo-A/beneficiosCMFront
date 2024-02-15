@@ -14,9 +14,24 @@ import UserQuickEditForm from './modal-editar-citas';
 
 // ----------------------------------------------------------------------
 
-export default function FilasTabla({ row, selected, rol, rel  }) {
-  const { idCita, especialista, area, sede, paciente, oficina, estatus, horario, observaciones, sexo, motivoCita } = row; // oficina
-
+export default function FilasTabla({ row, selected, rol, rel }) {
+  const {
+    idCita,
+    idColab,
+    especialista,
+    oficina,
+    area,
+    sede,
+    paciente,
+    estatus,
+    horario,
+    observaciones,
+    sexo,
+    motivoCita,
+    metodoPago,
+    estatusCita,
+    pagoGenerado
+  } = row;
   const quickEdit = useBoolean();
 
   let espe = Boolean(true);
@@ -36,7 +51,7 @@ export default function FilasTabla({ row, selected, rol, rel  }) {
 
       <TableRow hover selected={selected}>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{idCita}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{idColab}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }} style={{ display: espe ? '' : 'none' }}>{especialista}</TableCell>
 
@@ -51,6 +66,10 @@ export default function FilasTabla({ row, selected, rol, rel  }) {
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{sexo}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{motivoCita}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{pagoGenerado}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{metodoPago !== null ? metodoPago : 'Pendiente de pago'}</TableCell>
 
         <TableCell>
           <Label
@@ -70,7 +89,7 @@ export default function FilasTabla({ row, selected, rol, rel  }) {
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{horario}</TableCell>
 
-        {estatus === 'Penalización' && observaciones === null && rol === 3 || rol === "3" ? (
+        {estatusCita === 3 && (observaciones === null || observaciones === "") ? (
           <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }} >
             <Tooltip title="Justificar" placement="top" arrow>
               <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>
@@ -81,14 +100,26 @@ export default function FilasTabla({ row, selected, rol, rel  }) {
           </TableCell>
         ) : (
 
-        <TableCell>
-          ㅤ
-        </TableCell>
+          <TableCell>
+            ㅤ
+          </TableCell>
         )}
+
+        {/* {result === false && (estatusCita === 2 || estatusCita === 7) ? (
+
+          <TableCell sx={{ whiteSpace: 'nowrap' }}>
+            <Tooltip title="Hay saldo a favor" placement="top" arrow>
+              <Iconify icon="tabler:alert-circle" sx={{color:"blue"}}/>
+            </Tooltip>
+          </TableCell>
+
+        ) : (
+          null
+        )} */}
 
       </TableRow>
 
-      <UserQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} idCita={idCita} row={row} rel={rel}/>
+      <UserQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} idCita={idCita} row={row} rel={rel} />
 
     </>
   );

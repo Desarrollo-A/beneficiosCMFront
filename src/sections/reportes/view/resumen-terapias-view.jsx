@@ -2,12 +2,11 @@ import JsPDF from 'jspdf';
 import Xlsx from 'json-as-xlsx';
 import isEqual from 'lodash/isEqual';
 import autoTable from 'jspdf-autotable';
-import { useRef, useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import Container from '@mui/material/Container';
@@ -17,17 +16,13 @@ import TableContainer from '@mui/material/TableContainer';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-import { useBoolean } from 'src/hooks/use-boolean';
-
 import { endpoints } from 'src/utils/axios';
-import { fTimestamp } from 'src/utils/format-time';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetGeneral, usePostGeneral } from 'src/api/general';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
-import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
@@ -40,161 +35,17 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-import FilasTabla from '../filas-tabla-citas';
-import FiltrosTabla from '../filtros-tabla-citas';
-import BarraTareasTabla from '../barratareas-tabla-citas';
+import RowResumenTerapias from '../resumen-terapias-components/row-esumen-terapias';
+import ToolbarResumenTerapias from '../resumen-terapias-components/toolbar-esumen-terapias';
+import FiltersResumenTerapias from '../resumen-terapias-components/filters-resumen-terapias';
 
 // ----------------------------------------------------------------------
 
-const diaActual = new Date();
-
-const currentDate = new Date();
-const diaMesUno = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-
-const defaultFilters = {
-  name: '',
-  area: [],
-  estatus: 'all',
-  startDate: diaMesUno,
-  endDate: diaActual,
-  especialista: [],
-};
-
-// ----------------------------------------------------------------------
-const doc = new JsPDF('l', 'pt');
-
-function handleDownloadExcel(datosTabla, rol) {
-
-  let data = [];
-
-  const baseArray = [
-    {
-      sheet: "Historial Reportes",
-      columns: [
-        { label: "ID Colaborador", value: "idColab" },
-        { label: "Paciente", value: "paciente" },
-        { label: "Especialista", value: "especialista" },
-        { label: "Horario cita", value: "horario" },
-        { label: "Oficina", value: "oficina" },
-        { label: "Departamento", value: "area" },
-        { label: "Sede", value: "sede" },
-        { label: "Sexo", value: "sexo" },
-        { label: "Motivo consulta", value: "motivoCita" },
-        { label: "Pago generado", value: "pagoGenerado" },
-        { label: "Método de pago", value: "metodoPago" },
-        { label: "Estatus", value: "estatus" },
-      ],
-      content: datosTabla,
-    },
-  ];
-
-  if (rol === "1" || rol === 1) {
-    const arr = baseArray[0].columns;
-    arr.splice(1, 1);
-
-    data = [
-      {
-        sheet: "Historial Reportes",
-        columns: arr,
-        content: datosTabla,
-      },
-    ];
-
-  } else if (rol === "2" || rol === 2) {
-    const arr = baseArray[0].columns;
-    arr.splice(2, 1);
-
-    data = [
-      {
-        sheet: "Historial Reportes",
-        columns: arr,
-        content: datosTabla,
-      },
-    ];
-
-  } else {
-    data = baseArray;
-  }
-
-  const settings = {
-    fileName: "Historial Reportes",
-    extraLength: 3,
-    writeMode: "writeFile",
-    writeOptions: {},
-    RTL: false,
-  }
-  Xlsx(data, settings)
-}
-
-function handleDownloadPDF(datosTabla, header, rol) {
-
-  let data = [];
-
-  if (rol === "1" || rol === 1) {
-    data = datosTabla.map(item => ([item.idColab, item.paciente,
-    item.oficina, item.area, item.sede, item.sexo, item.horario, item.motivoCita, item.pagoGenerado, item.metodoPago, item.estatus]))
-  }
-  else if (rol === "2" || rol === 2) {
-    data = datosTabla.map(item => ([item.idColab, item.especialista,
-    item.oficina, item.area, item.sede, item.sexo, item.estatus, item.horario]))
-  } else {
-    data = datosTabla.map(item => ([item.idColab, item.especialista, item.paciente,
-    item.oficina, item.area, item.sede, item.sexo, item.horario, item.motivoCita, item.pagoGenerado, item.metodoPago, item.estatus,]))
-  }
-
-  autoTable(doc, {
-    head: [header],
-    body: data,
-  })
-  doc.save('Historial Reportes.pdf')
-}
-// ----------------------------------------------------------------------
-export default function HistorialReportesView() {
-
-  const { user } = useAuthContext();
-
-  const rol = user.idRol;
-
-  let TABLE_HEAD = [];
-
-  let header = [];
-
-  const headerBase = ["ID Colaborador", "Especialista", "Paciente", "Oficina", "Departamento", "Sede", "Sexo", "Motivo consulta", "Pago Generado", "Método de pago", "Estatus",
-    "Horario cita"];
-
-  const [dataValue, setReportData] = useState('general');
-
-  const { reportesData } = usePostGeneral(dataValue, endpoints.reportes.lista, "reportesData");
-
-  const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
-
-  const [datosTabla, setDatosTabla] = useState([]);
-
-  const [especialistas, setEspecialistas] = useState([]);
-
-  const _rp = especialistas.flatMap((es) => (es.nombre));
-
-  const table = useTable();
-
-  const settings = useSettingsContext();
-
-  const router = useRouter();
-
-  const confirm = useBoolean();
-
-  const [filters, setFilters] = useState(defaultFilters);
-
-  const dateError =
-    filters.startDate && filters.endDate
-      ? filters.startDate.getTime() > filters.endDate.getTime()
-      : false;
-
-  const TABLE_BASE = [
+const TABLE_HEAD = [
     { id: '', label: 'ID Colaborador' },
     { id: '', label: 'Especialista' },
     { id: '', label: 'Paciente' },
     { id: '', label: 'Oficina' },
-    { id: '', label: 'Departamento' },
     { id: '', label: 'Sede' },
     { id: '', label: 'Sexo' },
     { id: '', label: 'Motivo Consulta' },
@@ -203,35 +54,109 @@ export default function HistorialReportesView() {
     { id: '', label: 'Estatus' },
     { id: '', label: 'Horario cita' },
     { id: '', width: 88 },
-    /* { id: '', width: 88 }, */
+];
+
+const defaultFilters = {
+  name: '',
+  role: [],
+  status: 'all',
+  especialista: [],
+};
+
+// ----------------------------------------------------------------------
+
+function handleDownloadExcel(tableData, area) {
+
+  const data = [
+    {
+      sheet: "Resumen Terapias",
+      columns: [
+        { label: "ID Colaborador", value: "idColab" },
+        { label: "Paciente", value: "paciente" },
+        { label: "Especialista", value: "especialista" },
+        { label: "Horario cita", value: "horario" },
+        { label: "Oficina", value: "oficina" },
+        { label: "Sede", value: "sede" },
+        { label: "Sexo", value: "sexo" },
+        { label: "Motivo consulta", value: "motivoCita" },
+        { label: "Pago generado", value: "pagoGenerado" },
+        { label: "Método de pago", value: "metodoPago" },
+        { label: "Estatus", value: "estatus" },
+      ],
+      content: tableData,
+    },
   ];
 
-  if (rol === "1") {
+  const settings = {
+    fileName: "Resumen Terapias",
+    extraLength: 3,
+    writeMode: "writeFile",
+    writeOptions: {},
+    RTL: false,
+  }
+  Xlsx(data, settings)
+}
 
-    TABLE_BASE.splice(1, 1);
-    headerBase.splice(1, 1);
+const doc = new JsPDF('l', 'pt');
 
-    TABLE_HEAD = TABLE_BASE;
-    header = headerBase;
+function handleDownloadPDF(tableData, headerBase) {
 
-  } else if (rol === "2") {
+  let data = [];
 
-    TABLE_BASE.splice(2, 1);
-    headerBase.splice(2, 1);
+  data = tableData.map(item => ([item.idColab, item.especialista, item.paciente, item.oficina, item.sede, item.sexo, item.motivoCita, item.pagoGenerado, item.metodoPago, item.estatus, item.horario  ]))
 
-    TABLE_HEAD = TABLE_BASE;
-    header = headerBase;
+  autoTable(doc, {
+    head: [headerBase],
+    body: data,
+  })
+  doc.save('Resumen Terapias.pdf')
+}
 
+// ----------------------------------------------------------------------
+
+export default function ResumenTerapiasView() {
+
+  const headerBase = ["ID Colaborador", "Especialista", "Paciente", "Oficina", "Sede", "Sexo", "Motivo consulta", "Pago Generado", "Método de pago", "Estatus",
+    "Horario cita"];
+
+  const table = useTable();
+
+  const settings = useSettingsContext();
+
+  const router = useRouter();
+
+  const { user } = useAuthContext();
+
+  const rol = user.idRol
+
+  let puestos = 0;
+
+  if (rol === "4" || rol === 4) {
+    puestos = 158;
   } else {
-    TABLE_HEAD = TABLE_BASE;
-    header = headerBase;
+    puestos = user.idPuesto;
   }
 
+  const [dataValue, setReportData] = useState('general');
+
+  const [area, setArea] = useState(puestos);
+
+  const { resumenData } = usePostGeneral(dataValue, endpoints.reportes.getResumenTerapias, "resumenData");
+
+  const { especialistasData } = useGetGeneral(endpoints.reportes.getEspeQua, "especialistasData");
+
+  const [tableData, setTableData] = useState([]);
+
+  const [filters, setFilters] = useState(defaultFilters);
+
+  const [especialistas, setEspecialistas] = useState([]);
+
+  const _rp = especialistas.flatMap((es) => (es.nombre));
+
   const dataFiltered = applyFilter({
-    inputData: datosTabla,
+    inputData: tableData,
     comparator: getComparator(table.order, table.orderBy),
     filters,
-    dateError,
   });
 
   const dataInPage = dataFiltered.slice(
@@ -258,24 +183,24 @@ export default function HistorialReportesView() {
 
   const handleDeleteRow = useCallback(
     (id) => {
-      const deleteRow = datosTabla.filter((row) => row.id !== id);
-      setDatosTabla(deleteRow);
+      const deleteRow = tableData.filter((row) => row.id !== id);
+      setTableData(deleteRow);
 
       table.onUpdatePageDeleteRow(dataInPage.length);
     },
-    [dataInPage.length, table, datosTabla]
+    [dataInPage.length, table, tableData]
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = datosTabla.filter((row) => !table.selected.includes(row.id));
-    setDatosTabla(deleteRows);
+    const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
+    setTableData(deleteRows);
 
     table.onUpdatePageDeleteRows({
-      totalRows: datosTabla.length,
+      totalRows: tableData.length,
       totalRowsInPage: dataInPage.length,
       totalRowsFiltered: dataFiltered.length,
     });
-  }, [dataFiltered.length, dataInPage.length, table, datosTabla]);
+  }, [dataFiltered.length, dataInPage.length, table, tableData]);
 
   const handleEditRow = useCallback(
     (id) => {
@@ -284,52 +209,66 @@ export default function HistorialReportesView() {
     [router]
   );
 
+  const handleFilterStatus = useCallback(
+    (event, newValue) => {
+      handleFilters('status', newValue);
+    },
+    [handleFilters]
+  );
+
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
 
-  const targetRef = useRef();
+  useEffect(() => {
+    setTableData(resumenData);
+  }, [resumenData]);
 
-  const handleExcel = async e => {
-    e.preventDefault();
-    handleDownloadExcel(
-      datosTabla,
-      rol
-    );
+  const handleChangeId = (newAr) => {
+    setArea(newAr);
+
+    setEspecialistas(especialistasData);
   }
 
   const handlePdf = async e => {
     e.preventDefault();
     handleDownloadPDF(
-      datosTabla,
-      header,
-      rol
+      tableData,
+      headerBase
     );
   }
+
+  const handleExcel = async e => {
+    e.preventDefault();
+    handleDownloadExcel(
+      tableData,
+      area
+    );
+  }
+
+  const [esp, setEspe] = useState([]);
+
+  const _esp = esp.flatMap((i) => (i.nombre));
+
+  useEffect(() => {
+    setEspe(especialistasData);
+  }, [
+    especialistasData,
+  ]);
 
   const handleChangeReport = (newData) => {
     setReportData(newData);
   }
 
-  useEffect(() => {
-    setDatosTabla(reportesData);
-  }, [reportesData]);
-
-  useEffect(() => {
-    if (especialistasData.length) {
-      setEspecialistas(especialistasData);
-    }
-  }, [especialistasData]);
-
   return (
-    <>
+    
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Historial Reportes"
+          heading="Resumen Terapias"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Reportes'/* , href: paths.dashboard.user.root */ },
-            { name: 'Historial' },
+            { name: 'Reportes', /* href: paths.dashboard.user.root */ },
+            { name: 'Resumen Terapias' },
           ]}
           sx={{
             mb: { xs: 3, md: 5 },
@@ -338,19 +277,20 @@ export default function HistorialReportesView() {
 
         <Card>
 
-          <BarraTareasTabla
+          <ToolbarResumenTerapias
             filters={filters}
             onFilters={handleFilters}
             //
             roleOptions={_rp}
+            handleChangeId={handleChangeId}
+            rol={rol}
+            OptionsEsp={_esp}
             handleChangeReport={handleChangeReport}
             table={table}
-            tot={dataFiltered.length}
-            dataValue={dataValue}
           />
 
           {canReset && (
-            <FiltrosTabla
+            <FiltersResumenTerapias
               filters={filters}
               onFilters={handleFilters}
               //
@@ -393,14 +333,15 @@ export default function HistorialReportesView() {
 
           </Stack>
 
-          <TableContainer sx={{ position: 'relative', overflow: 'unset' }} >
+          <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+
             <Scrollbar>
-              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }} ref={targetRef}>
+              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
                 <TableHeadCustom
                   order={table.order}
                   orderBy={table.orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={datosTabla.length}
+                  rowCount={tableData.length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
                 />
@@ -412,21 +353,20 @@ export default function HistorialReportesView() {
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
                     .map((row, index) => (
-                      <FilasTabla
+                      <RowResumenTerapias
                         key={index}
                         row={row}
-                        selected={table.selected.includes(row.idCita)}
-                        onSelectRow={() => table.onSelectRow(row.idCita)}
-                        onDeleteRow={() => handleDeleteRow(row.idCita)}
-                        onEditRow={() => handleEditRow(row.idCita)}
-                        rol={rol}
-                        rel={handleChangeReport}
+                        area={area}
+                        selected={table.selected.includes(row.id)}
+                        onSelectRow={() => table.onSelectRow(row.id)}
+                        onDeleteRow={() => handleDeleteRow(row.id)}
+                        onEditRow={() => handleEditRow(row.id)}
                       />
                     ))}
 
                   <TableEmptyRows
                     height={denseHeight}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, datosTabla.length)}
+                    emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
                   />
 
                   <TableNoData notFound={notFound} />
@@ -441,40 +381,18 @@ export default function HistorialReportesView() {
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
             onRowsPerPageChange={table.onChangeRowsPerPage}
+          //
           />
         </Card>
       </Container>
-
-      <ConfirmDialog
-        open={confirm.value}
-        onClose={confirm.onFalse}
-        title="Eliminar"
-        content={
-          <>
-            Estas seguro de eliminar <strong> {table.selected.length} </strong> items?
-          </>
-        }
-        action={
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => {
-              handleDeleteRows();
-              confirm.onFalse();
-            }}
-          >
-            Eliminar
-          </Button>
-        }
-      />
-    </>
+      
   );
 }
 
 // ----------------------------------------------------------------------
 
-function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { name, area, startDate, endDate, especialista } = filters;
+function applyFilter({ inputData, comparator, filters }) {
+  const { name, especialista } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
 
@@ -495,22 +413,8 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
         cita.area.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
         cita.especialista.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
         cita.paciente.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        cita.oficina.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1
+        cita.oficina.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 
     );
-  }
-
-  if (area.length) {
-    inputData = inputData.filter((cita) => area.includes(cita.area));
-  }
-
-  if (!dateError) {
-    if (startDate && endDate) {
-      inputData = inputData.filter(
-        (order) =>
-          fTimestamp(order.fechaModificacion) >= fTimestamp(startDate) &&
-          fTimestamp(order.fechaModificacion) <= fTimestamp(endDate)
-      );
-    }
   }
 
   if (especialista.length) {
