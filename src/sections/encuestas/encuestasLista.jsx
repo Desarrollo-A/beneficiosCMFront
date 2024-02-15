@@ -192,6 +192,7 @@ export default function EncuestasLista({ encuestas, estatusCt }) {
                       onSelectRow={() => table.onSelectRow(usuario.id)}
                       onDeleteRow={() => handleDisableUser(usuario.id)}
                       est={EstatusData}
+                      puestos={puestos}
                     />
                   ))}
 

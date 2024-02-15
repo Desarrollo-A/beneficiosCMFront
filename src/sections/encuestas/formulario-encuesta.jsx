@@ -43,8 +43,6 @@ export default function FormularioEncuesta({ idEncuesta }) {
 
   const { Resp1Data } = useGetGeneral(endpoints.encuestas.getResp1, "Resp1Data");
 
-  console.log(Resp1Data)
-
   const { Resp2Data } = useGetGeneral(endpoints.encuestas.getResp2, "Resp2Data");
 
   const { Resp3Data } = useGetGeneral(endpoints.encuestas.getResp3, "Resp3Data");

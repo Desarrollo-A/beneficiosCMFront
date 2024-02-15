@@ -21,7 +21,7 @@ import { useAuthContext } from 'src/auth/hooks';
 import { useSnackbar } from 'src/components/snackbar';
 // ----------------------------------------------------------------------
 
-export default function EncuestaHabilitar({ open, onClose, idEncuesta }) {
+export default function EncuestaHabilitar({ open, onClose, idEncuesta, puestos }) {
 
   const { user } = useAuthContext();
 
@@ -47,7 +47,7 @@ export default function EncuestaHabilitar({ open, onClose, idEncuesta }) {
           'idEncuesta': idEncuesta,
           'estatus': 1,
           'vigencia': vig,
-          'area': user.puesto
+          'area': puestos
         };
 
         onClose();
@@ -129,4 +129,5 @@ EncuestaHabilitar.propTypes = {
   onClose: PropTypes.func,
   open: PropTypes.bool,
   idEncuesta: PropTypes.number,
+  puestos: PropTypes.any,
 };
