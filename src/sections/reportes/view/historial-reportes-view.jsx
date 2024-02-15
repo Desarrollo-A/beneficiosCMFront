@@ -164,6 +164,8 @@ export default function HistorialReportesView() {
 
   const [dataValue, setReportData] = useState('general');
 
+  const { espeUserData } = usePostGeneral(user.idUsuario, endpoints.reportes.getEspeUser, "espeUserData");
+
   const { reportesData } = usePostGeneral(dataValue, endpoints.reportes.lista, "reportesData");
 
   const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
@@ -173,6 +175,10 @@ export default function HistorialReportesView() {
   const [especialistas, setEspecialistas] = useState([]);
 
   const _rp = especialistas.flatMap((es) => (es.nombre));
+
+  const _eu = espeUserData.flatMap((es) => (es.puesto));
+
+  defaultFilters.area = rol !== 4 ? _eu : [];
 
   const table = useTable();
 
@@ -347,6 +353,7 @@ export default function HistorialReportesView() {
             table={table}
             tot={dataFiltered.length}
             dataValue={dataValue}
+            rol={rol}
           />
 
           {canReset && (

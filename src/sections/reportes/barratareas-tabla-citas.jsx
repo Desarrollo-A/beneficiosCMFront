@@ -1,6 +1,5 @@
 import sumBy from 'lodash/sumBy';
 import PropTypes from 'prop-types';
-import { es } from 'date-fns/locale';
 import { useState, useEffect, useCallback } from 'react';
 
 import Stack from '@mui/material/Stack';
@@ -15,8 +14,6 @@ import FormControl from '@mui/material/FormControl';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 import { endpoints } from 'src/utils/axios';
 
@@ -36,7 +33,8 @@ export default function BarraTareasTabla({
   roleOptions,
   handleChangeReport,
   table,
-  dataValue
+  dataValue,
+  rol,
 }) {
   const popover = usePopover();
 
@@ -57,7 +55,7 @@ export default function BarraTareasTabla({
 
   const diaUnoMes = formatFirstDayOfMonth();
 
-  const [area, setArea] = useState([0]);
+  const [area, setArea] = useState([filters.area]);
 
   const [fechaI, setFechaI] = useState(diaUnoMes);
 
@@ -86,7 +84,7 @@ export default function BarraTareasTabla({
       setCondi(false);
     }
 
-  }, [area, fechaI, fechaF, dt.esp]);
+  }, [area, fechaI, fechaF, dt.esp, rol]);
 
   const { cPaciData } = usePostGeneral(dt, endpoints.reportes.getCierrePacientes, "cPaciData");
 
@@ -236,6 +234,8 @@ export default function BarraTareasTabla({
           </TextField>
         </FormControl>
 
+        {rol === "4" || rol === 4 ? (
+
         <FormControl
           sx={{
             flexShrink: 0,
@@ -264,6 +264,10 @@ export default function BarraTareasTabla({
             ))}
           </Select>
         </FormControl>
+
+        ):(
+          null
+        )}
 
         <FormControl
           sx={{
@@ -295,33 +299,29 @@ export default function BarraTareasTabla({
           </Select>
         </FormControl>
 
-        <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
-          <DatePicker
-            label="Fecha inicio"
-            value={filters.startDate}
-            onChange={handleFilterStartDate}
-            slotProps={{
-              textField: {
-                fullWidth: true,
-              },
-            }}
-            sx={{
-              maxWidth: { md: 200 },
-            }}
-          />
-        </LocalizationProvider>
+        <DatePicker
+          label="Fecha inicio"
+          value={filters.startDate}
+          onChange={handleFilterStartDate}
+          slotProps={{
+            textField: {
+              fullWidth: true,
+            },
+          }}
+          sx={{
+            maxWidth: { md: 200 },
+          }}
+        />
 
-        <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
-          <DatePicker
-            label="Fecha fin"
-            value={filters.endDate}
-            onChange={handleFilterEndDate}
-            slotProps={{ textField: { fullWidth: true } }}
-            sx={{
-              maxWidth: { md: 200 },
-            }}
-          />
-        </LocalizationProvider>
+        <DatePicker
+          label="Fecha fin"
+          value={filters.endDate}
+          onChange={handleFilterEndDate}
+          slotProps={{ textField: { fullWidth: true } }}
+          sx={{
+            maxWidth: { md: 200 },
+          }}
+        />
 
         <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
@@ -379,10 +379,11 @@ export default function BarraTareasTabla({
 }
 
 BarraTareasTabla.propTypes = {
-  filters: PropTypes.object,
+  filters: PropTypes.any,
   onFilters: PropTypes.func,
   roleOptions: PropTypes.array,
   handleChangeReport: PropTypes.func,
   table: PropTypes.any,
   dataValue: PropTypes.any,
+  rol: PropTypes.any,
 };

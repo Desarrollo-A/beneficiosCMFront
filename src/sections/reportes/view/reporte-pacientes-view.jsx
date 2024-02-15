@@ -301,6 +301,7 @@ export default function ReportePacientesView() {
               //
               results={dataFiltered.length}
               sx={{ p: 2.5, pt: 0 }}
+              rol={rol}
             />
           )}
 

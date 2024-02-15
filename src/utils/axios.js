@@ -174,7 +174,8 @@ export const endpoints = {
     getEspeQua: '/ReportesController/getEspeQua',
     getCierrePacientes: '/ReportesController/getCierrePacientes',
     getCierreIngresos: '/ReportesController/getCierreIngresos',
-    getSelectEspe: '/ReportesController/getSelectEspe'
+    getSelectEspe: '/ReportesController/getSelectEspe',
+    getEspeUser: '/ReportesController/getEspeUser'
   },
   dashboard: {
     usersCount: '/GeneralController/usrCount',
