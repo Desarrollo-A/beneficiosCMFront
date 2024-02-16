@@ -85,9 +85,9 @@ export default function JwtLoginView() {
               xl: 720,
             },
             position: 'absolute',
-            width: '24%',
+            width: '16%',
             left: '64%',
-            top: '-20%'
+            top: '-9%'
           }}
         />
         <Box
