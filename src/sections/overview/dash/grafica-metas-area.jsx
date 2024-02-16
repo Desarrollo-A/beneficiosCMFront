@@ -1,19 +1,12 @@
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 
-import { useTheme } from '@mui/material/styles';
-
-import Chart, { useChart } from 'src/components/chart';
-
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetCitasArea } from 'src/api/especialistas';
 
-import { titleCase } from 'src/utils/format-string'
-
-// ---------------------------------------------------------
+import Chart, { useChart } from 'src/components/chart';
 
 export default function GraficaMetasArea({ ...other }) {
-  const theme = useTheme();
 
   const { user } = useAuthContext();
 

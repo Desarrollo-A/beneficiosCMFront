@@ -11,9 +11,8 @@ import TableContainer from '@mui/material/TableContainer';
 
 import { endpoints } from 'src/utils/axios';
 
-import { useAuthContext } from 'src/auth/hooks';
-
 import { useUpdateUser } from 'src/api/user';
+import { useAuthContext } from 'src/auth/hooks';
 import { useGetGeneral, usePostGeneral } from 'src/api/general';
 
 import Scrollbar from 'src/components/scrollbar';
@@ -76,8 +75,6 @@ export default function EncuestasLista({ encuestas, estatusCt }) {
   const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
 
   const [especialistas, setEspecialistas] = useState([]);
-
-  const _rp = especialistas.flatMap((es) => (es.nombre));
 
   const [filters, setFilters] = useState(defaultFilters);
   const [userData, setUserData] = useState(getData || []);

@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
+import Dialog from '@mui/material/Dialog';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
-import Dialog from '@mui/material/Dialog';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 import ListItemText from '@mui/material/ListItemText';
@@ -20,7 +20,6 @@ import HistorialCitas from './modal-historial-citas'
 
 export default function RowResumenTerapias({ row, area, idUs, rol }) {
   const {
-    id,
     nombre,
     correo,
     depto,
