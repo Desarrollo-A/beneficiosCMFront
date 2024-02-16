@@ -79,15 +79,11 @@ export default function JwtLoginView() {
           alt="auth"
           src={ `${import.meta.env.BASE_URL}assets/img/logoBeneficios.svg`}
           sx={{
-            maxWidth: {
-              xs: 480,
-              lg: 560,
-              xl: 720,
-            },
+            maxWidth: { xs: 480, lg: 560, xl: 720 },
             position: 'absolute',
-            width: '16%',
+            width: { xs: '25%', md: '16%' },
             left: '64%',
-            top: '-9%'
+            top: { xs: '10%', md: '-9%' } 
           }}
         />
         <Box

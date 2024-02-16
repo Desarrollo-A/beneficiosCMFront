@@ -14,12 +14,12 @@ export default function AuthClassicLayout({ children, image, title }) {
       sx={{
         width: 1,
         mx: 'auto',
-        maxWidth: 500,
+        maxWidth: { xs: 350, md: 500 },
         px: { xs: 2, md: 8 },
         pt: { xs: 15, md: 0 },
         pb: { xs: 15, md: 0 },
         position: 'relative',
-        left: '18%'
+        left: { md: '18%' } 
       }}
     >
       {children}
@@ -41,12 +41,22 @@ export default function AuthClassicLayout({ children, image, title }) {
         backgroundSize: 'cover',
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center center',
-        backgroundImage: `url(${import.meta.env.BASE_URL}assets/illustrations/mainLoginBGFinal.png)`
+        backgroundImage: {
+          xs : `url(${import.meta.env.BASE_URL}assets/illustrations/responsiveLoginBGFinal.png)`,
+          md : `url(${import.meta.env.BASE_URL}assets/illustrations/mainLoginBGFinal.png)`
+        }
       }}
     >
 
       {mdUp}
-      <Grid container sx={styles}>
+      <Grid container 
+        sx={{ width : '100%',
+          display: 'flex',
+          alignItems: {
+            xs : 'baseline',
+            md :  'center' 
+          }
+        }}>
         {renderContent}
       </Grid>
     </Stack>
