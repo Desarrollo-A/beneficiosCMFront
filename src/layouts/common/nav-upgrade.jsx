@@ -20,7 +20,7 @@ export default function NavUpgrade() {
       <Stack alignItems="center">
 
        
-        <Box component="img" sx={{ position: 'relative', width: "60%" }}  src= {`${import.meta.env.BASE_URL}assets/img/gph-02.svg`} />
+        <Box component="img" sx={{ position: 'relative', width: "60%", filter: "invert(66%) sepia(100%) saturate(100%) hue-rotate(172deg) brightness(50%) contrast(94%)"}}  src= {`${import.meta.env.BASE_URL}assets/img/logoBeneficios.svg`}/>
         
 
         <Stack spacing={0.5} sx={{ mt: 1.5, mb: 2 }}>
