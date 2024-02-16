@@ -357,7 +357,7 @@ export default function DashView() {
               <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
-                value={areas ? areas : ''}
+                value={!areas ? '' : areas}
                 label="Área"
                 onChange={(e) => handleChangeArea(e)}
               >
