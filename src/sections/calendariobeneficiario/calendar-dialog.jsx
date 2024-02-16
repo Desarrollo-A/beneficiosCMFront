@@ -1172,39 +1172,55 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     <>
       {open2 === false && (
         <FormProvider methods={methods} onSubmit={onSubmit}>
-          <DialogTitle sx={{ p: { xs: 1, md: 2 } }}>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              useFlexGap
-              flexWrap="wrap"
-              sx={{ p: { xs: 1, md: 2 } }}
-            >
-              <Typography variant="h5" sx={{ display: 'flex', alignItems: 'end' }}>
-                {currentEvent?.id ? 'DATOS DE CITA' : 'AGENDAR CITA'}
-              </Typography>
-              {currentEvent?.id && (currentEvent?.estatus === 1 || currentEvent?.estatus === 6) && (
-                <Stack sx={{ flexDirection: 'row' }}>
-                  {dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss') <
-                    dayjs(currentEvent.start).subtract(3, 'hour').format('YYYY-MM-DD HH:mm:ss') &&
-                    currentEvent?.estatus === 1 && (
-                      <Tooltip title="Reagendar cita">
-                        <IconButton onClick={() => rescheduleAppointment()}>
-                          <Iconify icon="fluent-mdl2:date-time-12" width={22} />
+          {currentEvent?.id && (
+            <DialogTitle sx={{ p: { xs: 1, md: 2 } }}>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                useFlexGap
+                flexWrap="wrap"
+                sx={{ p: { xs: 1, md: 2 } }}
+              >
+                <Typography variant="h5" sx={{ display: 'flex', alignItems: 'end' }}>
+                  {currentEvent?.id ? 'DATOS DE CITA' : 'AGENDAR CITA'}
+                </Typography>
+                {currentEvent?.id &&
+                  (currentEvent?.estatus === 1 || currentEvent?.estatus === 6) && (
+                    <Stack sx={{ flexDirection: 'row' }}>
+                      {dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss') <
+                        dayjs(currentEvent.start)
+                          .subtract(3, 'hour')
+                          .format('YYYY-MM-DD HH:mm:ss') &&
+                        currentEvent?.estatus === 1 && (
+                          <Tooltip title="Reagendar cita">
+                            <IconButton onClick={() => rescheduleAppointment()}>
+                              <Iconify icon="fluent-mdl2:date-time-12" width={22} />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                      <Tooltip title="Cancelar cita">
+                        <IconButton onClick={() => setConfirmCancel(true)}>
+                          <Iconify icon="solar:trash-bin-trash-bold" width={22} />
                         </IconButton>
                       </Tooltip>
-                    )}
-                  <Tooltip title="Cancelar cita">
-                    <IconButton onClick={() => setConfirmCancel(true)}>
-                      <Iconify icon="solar:trash-bin-trash-bold" width={22} />
-                    </IconButton>
-                  </Tooltip>
-                </Stack>
-              )}
-            </Stack>
-          </DialogTitle>
+                    </Stack>
+                  )}
+              </Stack>
+            </DialogTitle>
+          )}
           <DialogContent
-            sx={{ p: { xs: 1, md: 2 } }}
+            // sx={{ p: { xs: 1, md: 2 } }}
+            sx={
+              !currentEvent?.id && selectedValues.modalidad
+                ? {
+                    p: { xs: 1, md: 2 },
+                    background: {
+                      xs: 'linear-gradient(180deg, #2c3239 54%, white 46%)',
+                      md: 'linear-gradient(90deg, #2c3239 50%, white 50%)',
+                    },
+                  }
+                : { p: { xs: 1, md: 2 } }
+            }
             direction="row"
             justifycontent="space-between"
           >
@@ -1498,7 +1514,43 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
             )}
           </DialogContent>
 
-          <DialogActions>
+          {/* <DialogActions>
+            <Button variant="contained" color="error" onClick={onClose}>
+              Cerrar
+            </Button>
+            {currentEvent?.id && currentEvent?.estatus === 6 && (
+              <Button
+                variant="contained"
+                color="success"
+                disabled={currentEvent?.estatus !== 6}
+                onClick={onPay}
+              >
+                Pagar
+              </Button>
+            )}
+            {!currentEvent?.id && (
+              <LoadingButton
+                type="submit"
+                variant="contained"
+                color="success"
+                loading={btnDisabled}
+              >
+                Agendar
+              </LoadingButton>
+            )}
+          </DialogActions> */}
+          <DialogActions
+            sx={
+              !currentEvent?.id && selectedValues.modalidad
+                ? {
+                    background: {
+                      xs: 'white',
+                      md: 'linear-gradient(90deg, #2c3239 50%, white 50%)',
+                    },
+                  }
+                : {}
+            }
+          >
             <Button variant="contained" color="error" onClick={onClose}>
               Cerrar
             </Button>
