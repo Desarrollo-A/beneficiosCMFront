@@ -16,14 +16,11 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { endpoints } from 'src/utils/axios';
 
 import { useUpdate } from 'src/api/reportes';
-import { useAuthContext } from 'src/auth/hooks';
 
 import { useSnackbar } from 'src/components/snackbar';
 // ----------------------------------------------------------------------
 
 export default function EncuestaHabilitar({ open, onClose, idEncuesta, puestos }) {
-
-  const { user } = useAuthContext();
 
   const confirm = useBoolean();
 

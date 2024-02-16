@@ -3,6 +3,7 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import Stack from '@mui/material/Stack';
+import { LoadingButton } from '@mui/lab';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import Select from '@mui/material/Select';
@@ -20,7 +21,6 @@ import { useUpdate } from 'src/api/reportes';
 import { useGetGeneral } from 'src/api/general';
 
 import { useSnackbar } from 'src/components/snackbar';
-import { LoadingButton } from '@mui/lab';
 // ----------------------------------------------------------------------
 
 export default function EditarEstatus({ open, onClose, id, est, estatusVal }) {

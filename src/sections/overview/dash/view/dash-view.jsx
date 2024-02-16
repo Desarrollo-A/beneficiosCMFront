@@ -26,8 +26,8 @@ import { useSettingsContext } from 'src/components/settings';
 import AppWelcome from '../app-welcome';
 import WidgetConteo from '../widget-conteo';
 import GraficaMetas from '../grafica-metas';
-import GraficaMetasArea from '../grafica-metas-area';
 import EncuestaBarra from '../barra-encuesta';
+import GraficaMetasArea from '../grafica-metas-area';
 // import AppTopRelated from '../app-top-related';
 import EncuestaPorcentaje from '../porcentaje-encuesta';
 
@@ -107,7 +107,7 @@ export default function DashView() {
 
   const [espe, setEspe] = useState({ idData: idDt, idRol: user.idRol });
 
-  const [meta, setMeta] = useState({
+  const [ setMeta] = useState({
     idData: idDt,
     idRol: user.idRol,
     inicio: trimStart,
@@ -251,29 +251,6 @@ export default function DashView() {
       value: _dt.percent(index) ?? 0,
     })
   );
-
-  function metasDate() {
-
-    let totMeta = 0;
-
-    if (areas === 158 && user.idUsuario === 40) {
-      totMeta = 360;
-    } else if (areas === 158) {
-      totMeta = 240;
-    } else if (areas === 537) {
-      totMeta = 100;
-    } else if (areas === 686) {
-      totMeta = 40;
-    } else if (areas === 585) {
-      totMeta = 80;
-    }
-
-    return {
-      totalMeta: totMeta
-    };
-  }
-
-  const { totalMeta } = metasDate();
 
   const handleChangeArea = (event) => {
 

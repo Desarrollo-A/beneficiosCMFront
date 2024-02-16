@@ -26,12 +26,6 @@ export default function AuthClassicLayout({ children, image, title }) {
     </Stack>
   );
 
-  const styles = {
-    width : '100%',
-    display: 'flex',
-    alignItems: 'center'
-  };
-
   return (
     <Stack
       component="main"
