@@ -21,7 +21,7 @@ export default function AddInsertSede({ idSede, especiaData, oficinaData, modali
 
   const [select, setSelect] = useState(0);
 
-  const [mod, setMod] = useState(0);
+  const [mod, setMod] = useState('');
 
   const [bol, setBol] = useState(false);
 
@@ -72,6 +72,7 @@ export default function AddInsertSede({ idSede, especiaData, oficinaData, modali
               name='oficina'
               size="small"
               label="Oficina"
+              defaultValue=''
               InputLabelProps={{ shrink: true }}
               onChange={(e) => handleChangeOfi(e)}
             >
@@ -92,6 +93,7 @@ export default function AddInsertSede({ idSede, especiaData, oficinaData, modali
               name='especialista'
               size="small"
               label="Especialista"
+              defaultValue=''
               InputLabelProps={{ shrink: true }}
               onChange={(e) => handleChangeEsp(e)}
             >
@@ -114,7 +116,7 @@ export default function AddInsertSede({ idSede, especiaData, oficinaData, modali
                 size="small"
                 label="Modalidad"
                 InputLabelProps={{ shrink: true }}
-                value={mod}
+                defaultValue=''
                 onChange={(e) => handleChangeMod(e)}
               >
 
