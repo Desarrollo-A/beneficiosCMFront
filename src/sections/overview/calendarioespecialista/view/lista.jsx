@@ -270,7 +270,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
             <FormControlLabel
               sx={{ mt: -0.85 }}
               control={<Checkbox onChange={(value) => handleChangeDay(value.target.checked)} />}
-              label="Ocupar dia(s)"
+              label="Ocupar día(s)"
               labelPlacement="start"
               name="daySwitch"
             />

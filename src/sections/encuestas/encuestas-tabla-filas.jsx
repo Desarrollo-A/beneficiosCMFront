@@ -102,7 +102,7 @@ export default function EncuestasTablaFilas({ row, selected, puestos }) {
           onClick={editDias.onTrue}
           >
             <Iconify icon="solar:pen-bold" />
-            Editar dias
+            Editar días
           </MenuItem>
 
       </CustomPopover>
