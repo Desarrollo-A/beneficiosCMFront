@@ -20,7 +20,7 @@ export default function FilasTabla({ row, selected, rol, rel }) {
     idColab,
     especialista,
     oficina,
-    area,
+    depto,
     sede,
     paciente,
     estatus,
@@ -34,18 +34,6 @@ export default function FilasTabla({ row, selected, rol, rel }) {
   } = row;
   const quickEdit = useBoolean();
 
-  let espe = Boolean(true);
-
-  let paci = Boolean(true);
-
-  if (rol === 1 || rol === "1") {
-    espe = false
-  }
-
-  if (rol === 2 || rol === "2") {
-    paci = false
-  }
-
   return (
     <>
 
@@ -53,13 +41,19 @@ export default function FilasTabla({ row, selected, rol, rel }) {
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{idColab}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }} style={{ display: espe ? '' : 'none' }}>{especialista}</TableCell>
+        {rol !== 3 ? (
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }} style={{ display: paci ? '' : 'none' }}>{paciente}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{especialista}</TableCell>
+
+        ):(
+          null
+        )}
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }} >{paciente}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{oficina}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{area}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{depto}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{sede}</TableCell>
 

@@ -27,8 +27,8 @@ import {
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
-import WidgetPacientes from './widget-pacientes';
 import WidgetIngresos from './widget-ingresos';
+import WidgetPacientes from './widget-pacientes';
 
 // ----------------------------------------------------------------------
 
@@ -80,13 +80,17 @@ export default function BarraTareasTabla({
       fhF: fechaF,
     });
 
+  if(rol !== 1){
     if (dt?.esp[0]?.length === 0) {
       setCondi(true);
     } else if (dt.esp.length === 0) {
       setCondi(true);
     } else if (dt.esp.length > 0) {
       setCondi(false);
-    }
+    } 
+  }else{
+    setCondi(false);
+  }
 
   }, [area, fechaI, fechaF, dt.esp, rol]);
 
