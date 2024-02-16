@@ -85,9 +85,8 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
       ...mod,
       ...esp,
     };
-  
 
-    if (!isEmpty(combinedArray)) {
+    if (!isEmpty(combinedArray) && !isEmpty(mod) && !isEmpty(esp)) {
       try {
         await new Promise((resolve) => setTimeout(resolve, 500));
 

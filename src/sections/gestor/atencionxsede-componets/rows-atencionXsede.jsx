@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 
+import Dialog from '@mui/material/Dialog';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
@@ -25,6 +27,18 @@ export default function RowsAtencionXsede({ row, selected, onEditRow, onDeleteRo
   const modalEsp = useBoolean();
 
   const modalMod = useBoolean();
+
+  const [open, setOpen] = useState(false);
+
+  const [close] = useState(false);
+
+  const handleOpen = () => {
+    setOpen(true);
+  }
+
+  const handleClose = () => {
+    setOpen(false);
+  }
 
   return (
     <>
@@ -82,8 +96,6 @@ export default function RowsAtencionXsede({ row, selected, onEditRow, onDeleteRo
         )}
       </TableRow>
 
-      <ModalEspecialista estatusVal={nombre} id={id} puesto={idPuesto} open={modalEsp.value} onClose={modalEsp.onFalse} />
-
       <ModalModalidad estatusVal={modalidad} modalidadesData={modalidadesData} id={id} open={modalMod.value} onClose={modalMod.onFalse} />
 
       <CustomPopover
@@ -104,14 +116,24 @@ export default function RowsAtencionXsede({ row, selected, onEditRow, onDeleteRo
 
         <MenuItem
           onClick={() => {
-            modalEsp.onTrue();
-            popover.onClose();
+            handleOpen();
           }}
         >
           <Iconify icon="fa6-solid:user-pen" />
           Cambio de especialista
         </MenuItem>
       </CustomPopover>
+
+      <Dialog
+        maxWidth={false}
+        open={open}
+        onClose={close}
+        PaperProps={{
+          sx: { maxWidth: 720 },
+        }}
+      >
+        <ModalEspecialista estatusVal={nombre} id={id} puesto={idPuesto} open={modalEsp.value} onClose={handleClose} />
+      </Dialog>
 
     </>
   );
