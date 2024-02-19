@@ -52,8 +52,6 @@ import {
   deleteGoogleCalendarEvent,
 } from 'src/api/calendar-colaborador';
 
-import { useGetDiasPresenciales } from 'src/api/especialistas';
-
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider from 'src/components/hook-form/form-provider';
@@ -101,8 +99,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const [btnConfirmAction, setBtnConfirmAction] = useState(false);
 
   const [virtual, setVirtual] = useState(false);
-
-  const [ virtual, setVirtual ] = useState(false);
 
   const { user: datosUser } = useAuthContext();
 
