@@ -283,6 +283,7 @@ export function useGetAppointmentsByUser(current, id) {
 }
 
 export function cancelAppointment(currentEvent, id, cancelType, idUsuario) {
+
   const URL = [endpoints.calendario.cancelAppointment];
   const data = {
     idCita: id,
