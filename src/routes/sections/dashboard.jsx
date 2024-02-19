@@ -8,11 +8,12 @@ import { LoadingScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
 // CITAS
+const EvaluacionCitasPage = lazy(() => import ('src/pages/dashboard/evaluacion-citas-view'));
+// REPORTES
 const HistorialReportesPage = lazy(() => import('src/pages/dashboard/reportes/historial-reportes'));
 const ReportePacientesPage = lazy(() => import('src/pages/dashboard/reportes/reporte-pacientes'));
-const EvaluacionCitasPage = lazy(() => import('src/pages/dashboard/evaluacion-citas-view'));
+const ResumenTerapiasPage = lazy(() => import ('src/pages/dashboard/reportes/resumen-terapias'));
 // OVERVIEW
-const IndexPage = lazy(() => import('src/pages/dashboard/app'));
 const DashPage = lazy(() => import('src/pages/dashboard/dash'));
 // ENCUESTAS
 const EncuestasPage = lazy(() => import('src/pages/dashboard/encuestas/encuestas-view'));
@@ -85,7 +86,7 @@ const PermissionDeniedPage = lazy(() => import('src/pages/dashboard/permission')
 // const BlankPage = lazy(() => import('src/pages/dashboard/blank'));
 const BlankPage = lazy(() => import('src/sections/_examples/extra/upload-view'));
 
-const AgendaPage = lazy(() => import('src/pages/dashboard/agenda'))
+// const AgendaPage = lazy(() => import('src/pages/dashboard/agenda'))
 
 // ----------------------------------------------------------------------
 
@@ -102,12 +103,13 @@ export const dashboardRoutes = [
       </AuthGuard>
     ),
     children: [
-      { element: <IndexPage />, index: true },
+      { element: <DashPage />, index: true },
       {
         path: 'reportes',
         children: [
           { path: 'historial', element: <HistorialReportesPage /> },
           { path: 'pacientes', element: <ReportePacientesPage /> },
+          { path: 'resumenterapias', element: <ResumenTerapiasPage /> },
         ],
       },
       {
@@ -131,7 +133,7 @@ export const dashboardRoutes = [
         path: 'privacidad',
         children: [
           { path: 'administrar', element: <AvisosDePrivacidad /> },
-          { path: 'ver', element: <AvisosDePrivacidad /> }
+          { path: 'ver', element: <AvisosDePrivacidad /> },
         ],
       },
       { path: 'dash', element: <DashPage /> },

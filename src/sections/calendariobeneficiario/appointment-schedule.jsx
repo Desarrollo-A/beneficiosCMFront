@@ -39,17 +39,15 @@ export default function AppointmentSchedule({
   errorEspecialista,
   modalidades,
   errorModalidad,
-  infoContact,
   oficina,
   isLoading,
   handleDateChange,
   shouldDisableDate,
   horariosDisponibles,
   horarioSeleccionado,
-  setHorarioSeleccionado,
   errorHorarioSeleccionado,
   currentEvent,
-  Items,
+  handleHorarioSeleccionado,
 }) {
   return (
     <Grid sx={{ display: 'flex' }}>
@@ -65,13 +63,14 @@ export default function AppointmentSchedule({
           <Stack spacing={3}>
             {currentEvent?.estatus === 1 ? (
               <Typography variant="subtitle1">
-                {dayjs(currentEvent.start).locale('es').format('dddd, DD MMMM YYYY HH:mm ')}
+                {dayjs(currentEvent?.start).locale('es').format('dddd, DD MMMM YYYY HH:mm ')}
               </Typography>
             ) : (
               <Typography variant="subtitle1">
                 {dayjs().locale('es').format('dddd, DD MMMM YYYY')}
               </Typography>
             )}
+
             <Stack direction="column" spacing={3} justifyContent="space-between">
               <FormControl error={!!errorBeneficio} fullWidth>
                 <InputLabel id="beneficio-input" name="beneficio">
@@ -84,9 +83,9 @@ export default function AppointmentSchedule({
                   value={selectedValues.beneficio || ''}
                   defaultValue=""
                   onChange={(e) => handleChange('beneficio', e.target.value)}
-                  disabled={!!(beneficios.length === 0 || currentEvent?.id)}
+                  disabled={!!(beneficios?.length === 0 || currentEvent?.id)}
                 >
-                  {beneficios.map((e) => (
+                  {beneficios?.map((e) => (
                     <MenuItem key={e.idPuesto} value={e.idPuesto}>
                       {e.puesto.toUpperCase()}
                     </MenuItem>
@@ -106,9 +105,9 @@ export default function AppointmentSchedule({
                   value={selectedValues.especialista}
                   defaultValue=""
                   onChange={(e) => handleChange('especialista', e.target.value)}
-                  disabled={!!(especialistas.length === 0 || currentEvent?.id)}
+                  disabled={!!(especialistas?.length === 0 || currentEvent?.id)}
                 >
-                  {especialistas.map((e, index) => (
+                  {especialistas?.map((e, index) => (
                     <MenuItem key={e.id} value={e.id}>
                       {e.especialista.toUpperCase()}
                     </MenuItem>
@@ -130,9 +129,9 @@ export default function AppointmentSchedule({
                   defaultValue=""
                   value={selectedValues.modalidad}
                   onChange={(e) => handleChange('modalidad', e.target.value)}
-                  disabled={!!(modalidades.length === 0 || currentEvent?.id)}
+                  disabled={!!(modalidades?.length === 0 || currentEvent?.id)}
                 >
-                  {modalidades.map((e, index) => (
+                  {modalidades?.map((e, index) => (
                     <MenuItem key={e.tipoCita} value={e.tipoCita}>
                       {e.modalidad.toUpperCase()}
                     </MenuItem>
@@ -143,33 +142,54 @@ export default function AppointmentSchedule({
                 )}
               </FormControl>
             </Stack>
-
             {selectedValues.modalidad === 1 && selectedValues.beneficio && (
-              <Stack spacing={1} sx={{ p: { xs: 1, md: 1 } }}>
-                Dirección de la oficina :
-                {oficina && oficina.result ? (
-                  <Stack
-                    sx={{
-                      flexDirection: 'row',
-                    }}
-                  >
-                    <Stack>
-                      <Iconify
-                        icon="mdi:office-building-marker"
-                        width={30}
-                        sx={{ color: 'text.disabled' }}
-                      />
+              <>
+                <Stack spacing={1} sx={{ p: { xs: 1, md: 1 } }}>
+                  Dirección de la oficina :
+                  {oficina && oficina.result ? (
+                    <Stack
+                      sx={{
+                        flexDirection: 'row',
+                      }}
+                    >
+                      <Stack>
+                        <Iconify
+                          icon="mdi:office-building-marker"
+                          width={30}
+                          sx={{ color: 'text.disabled' }}
+                        />
+                      </Stack>
+                      <Stack sx={{ flexDirection: 'col' }}>
+                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                          {oficina.data[0].ubicación}
+                        </Typography>
+                      </Stack>
                     </Stack>
-                    <Stack sx={{ flexDirection: 'col' }}>
-                      <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                        {oficina.data[0].ubicación}
-                      </Typography>
-                    </Stack>
+                  ) : (
+                    ' Cargando...'
+                  )}
+                </Stack>
+                <Stack
+                  sx={{
+                    flexDirection: 'row',
+                    p: { xs: 1, md: 1 },
+                    alignItems: 'center',
+                  }}
+                >
+                  <Stack>
+                    <Iconify
+                      icon="mdi:timer-edit-outline"
+                      width={30}
+                      sx={{ color: 'text.disabled' }}
+                    />
                   </Stack>
-                ) : (
-                  ' Cargando...'
-                )}
-              </Stack>
+                  <Stack sx={{ flexDirection: 'col' }}>
+                    <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                      Se considerará como inasistencia la llegada tardía despues de 10 minutos.
+                    </Typography>
+                  </Stack>
+                </Stack>
+              </>
             )}
           </Stack>
         </Box>
@@ -206,7 +226,7 @@ export default function AppointmentSchedule({
                 label="Horarios disponibles"
                 name="Horarios disponibles"
                 value={horarioSeleccionado}
-                onChange={(e) => setHorarioSeleccionado(e.target.value)}
+                onChange={(e) => handleHorarioSeleccionado(e.target.value)}
                 disabled={horariosDisponibles.length === 0}
               >
                 {horariosDisponibles.map((e, index) => (
@@ -239,15 +259,13 @@ AppointmentSchedule.propTypes = {
   errorEspecialista: PropTypes.bool,
   modalidades: PropTypes.array,
   errorModalidad: PropTypes.bool,
-  infoContact: PropTypes.object,
   oficina: PropTypes.object,
   isLoading: PropTypes.bool,
   handleDateChange: PropTypes.func,
   shouldDisableDate: PropTypes.func,
   horariosDisponibles: PropTypes.array,
   horarioSeleccionado: PropTypes.string,
-  setHorarioSeleccionado: PropTypes.func,
   errorHorarioSeleccionado: PropTypes.bool,
   currentEvent: PropTypes.object,
-  Items: PropTypes.any,
+  handleHorarioSeleccionado: PropTypes.func,
 };

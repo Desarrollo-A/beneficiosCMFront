@@ -19,8 +19,8 @@ import { useRouter } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-// import uuidv4 from "src/utils/uuidv4";
 import { endpoints } from 'src/utils/axios';
+import { fTimestamp } from 'src/utils/format-time';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetGeneral, usePostGeneral } from 'src/api/general';
@@ -46,33 +46,43 @@ import BarraTareasTabla from '../barratareas-tabla-citas';
 
 // ----------------------------------------------------------------------
 
+const diaActual = new Date();
+
+const currentDate = new Date();
+const diaMesUno = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+
 const defaultFilters = {
   name: '',
   area: [],
   estatus: 'all',
+  startDate: diaMesUno,
+  endDate: diaActual,
+  especialista: [],
 };
 
 // ----------------------------------------------------------------------
-const doc = new JsPDF();
+const doc = new JsPDF('l', 'pt');
 
 function handleDownloadExcel(datosTabla, rol) {
-  
+
   let data = [];
 
   const baseArray = [
     {
       sheet: "Historial Reportes",
       columns: [
-        { label: "ID Cita", value: "idCita" },
-        { label: "Especialista", value: "especialista" },
+        { label: "ID Colaborador", value: "idColab" },
         { label: "Paciente", value: "paciente" },
+        { label: "Especialista", value: "especialista" },
+        { label: "Horario cita", value: "horario" },
         { label: "Oficina", value: "oficina" },
         { label: "Departamento", value: "area" },
         { label: "Sede", value: "sede" },
         { label: "Sexo", value: "sexo" },
-        { label: "Motivo consulta", value: "titulo" },
+        { label: "Motivo consulta", value: "motivoCita" },
+        { label: "Pago generado", value: "pagoGenerado" },
+        { label: "Método de pago", value: "metodoPago" },
         { label: "Estatus", value: "estatus" },
-        { label: "Horario cita", value: "horario" },
       ],
       content: datosTabla,
     },
@@ -121,15 +131,15 @@ function handleDownloadPDF(datosTabla, header, rol) {
   let data = [];
 
   if (rol === "1" || rol === 1) {
-    data = datosTabla.map(item => ([item.idCita, item.paciente,
-    item.oficina, item.area, item.sede, '', item.titulo, item.estatus, item.horario]))
+    data = datosTabla.map(item => ([item.idColab, item.paciente,
+    item.oficina, item.area, item.sede, item.sexo, item.horario, item.motivoCita, item.pagoGenerado, item.metodoPago, item.estatus]))
   }
   else if (rol === "2" || rol === 2) {
-    data = datosTabla.map(item => ([item.idCita, item.especialista,
-      item.oficina, item.area, item.sede, '', item.titulo, item.estatus, item.horario]))
+    data = datosTabla.map(item => ([item.idColab, item.especialista,
+    item.oficina, item.area, item.sede, item.sexo, item.estatus, item.horario]))
   } else {
-    data = datosTabla.map(item => ([item.idCita, item.especialista, item.paciente,
-      item.oficina, item.area, item.sede, '', item.titulo, item.estatus, item.horario]))
+    data = datosTabla.map(item => ([item.idColab, item.especialista, item.paciente,
+    item.oficina, item.area, item.sede, item.sexo, item.horario, item.motivoCita, item.pagoGenerado, item.metodoPago, item.estatus,]))
   }
 
   autoTable(doc, {
@@ -149,10 +159,12 @@ export default function HistorialReportesView() {
 
   let header = [];
 
-  const headerBase = ["ID Cita", "Especialista", "Paciente", "Oficina", "Departamento", "Sede", "Sexo", "Motivo consulta", "Estatus",
+  const headerBase = ["ID Colaborador", "Especialista", "Paciente", "Oficina", "Departamento", "Sede", "Sexo", "Motivo consulta", "Pago Generado", "Método de pago", "Estatus",
     "Horario cita"];
 
   const [dataValue, setReportData] = useState('general');
+
+  const { espeUserData } = usePostGeneral(user.idUsuario, endpoints.reportes.getEspeUser, "espeUserData");
 
   const { reportesData } = usePostGeneral(dataValue, endpoints.reportes.lista, "reportesData");
 
@@ -164,6 +176,10 @@ export default function HistorialReportesView() {
 
   const _rp = especialistas.flatMap((es) => (es.nombre));
 
+  const _eu = espeUserData.flatMap((es) => (es.puesto));
+
+  defaultFilters.area = rol !== 4 ? _eu : [];
+
   const table = useTable();
 
   const settings = useSettingsContext();
@@ -174,8 +190,13 @@ export default function HistorialReportesView() {
 
   const [filters, setFilters] = useState(defaultFilters);
 
+  const dateError =
+    filters.startDate && filters.endDate
+      ? filters.startDate.getTime() > filters.endDate.getTime()
+      : false;
+
   const TABLE_BASE = [
-    { id: '', label: 'ID Cita' },
+    { id: '', label: 'ID Colaborador' },
     { id: '', label: 'Especialista' },
     { id: '', label: 'Paciente' },
     { id: '', label: 'Oficina' },
@@ -183,23 +204,18 @@ export default function HistorialReportesView() {
     { id: '', label: 'Sede' },
     { id: '', label: 'Sexo' },
     { id: '', label: 'Motivo Consulta' },
+    { id: '', label: 'Pago generado' },
+    { id: '', label: 'Método de pago' },
     { id: '', label: 'Estatus' },
     { id: '', label: 'Horario cita' },
     { id: '', width: 88 },
+    /* { id: '', width: 88 }, */
   ];
 
-  if (rol === "1") {
+  if (rol === "3" || rol === 3) {
 
     TABLE_BASE.splice(1, 1);
     headerBase.splice(1, 1);
-
-    TABLE_HEAD = TABLE_BASE;
-    header = headerBase;
-
-  } else if (rol === "2") {
-
-    TABLE_BASE.splice(2, 1);
-    headerBase.splice(2, 1);
 
     TABLE_HEAD = TABLE_BASE;
     header = headerBase;
@@ -213,6 +229,7 @@ export default function HistorialReportesView() {
     inputData: datosTabla,
     comparator: getComparator(table.order, table.orderBy),
     filters,
+    dateError,
   });
 
   const dataInPage = dataFiltered.slice(
@@ -278,7 +295,7 @@ export default function HistorialReportesView() {
       rol
     );
   }
-  
+
   const handlePdf = async e => {
     e.preventDefault();
     handleDownloadPDF(
@@ -293,9 +310,7 @@ export default function HistorialReportesView() {
   }
 
   useEffect(() => {
-    if (reportesData.length) {
-      setDatosTabla(reportesData);
-    }
+    setDatosTabla(reportesData);
   }, [reportesData]);
 
   useEffect(() => {
@@ -328,6 +343,9 @@ export default function HistorialReportesView() {
             roleOptions={_rp}
             handleChangeReport={handleChangeReport}
             table={table}
+            tot={dataFiltered.length}
+            dataValue={dataValue}
+            rol={rol}
           />
 
           {canReset && (
@@ -336,6 +354,7 @@ export default function HistorialReportesView() {
               onFilters={handleFilters}
               //
               onResetFilters={handleResetFilters}
+              rol={rol}
               //
               results={dataFiltered.length}
               sx={{ p: 2.5, pt: 0 }}
@@ -364,12 +383,12 @@ export default function HistorialReportesView() {
             </Tooltip>
 
             <Tooltip title="Exportar a PDF" placement="top" arrow>
-            <MenuItem
-              sx={{ width: 50, p: 1 }}
-              onClick={handlePdf}
-            >
-              <Iconify icon="teenyicons:pdf-outline" />
-            </MenuItem>
+              <MenuItem
+                sx={{ width: 50, p: 1 }}
+                onClick={handlePdf}
+              >
+                <Iconify icon="teenyicons:pdf-outline" />
+              </MenuItem>
             </Tooltip>
 
           </Stack>
@@ -454,8 +473,8 @@ export default function HistorialReportesView() {
 
 // ----------------------------------------------------------------------
 
-function applyFilter({ inputData, comparator, filters }) {
-  const { name, area } = filters;
+function applyFilter({ inputData, comparator, filters, dateError }) {
+  const { name, area, startDate, endDate, especialista } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
 
@@ -470,18 +489,32 @@ function applyFilter({ inputData, comparator, filters }) {
   if (name) {
     inputData = inputData.filter(
       (cita) =>
-        cita.idCita.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        cita.idColab.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
         cita.horario.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
         cita.estatus.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
         cita.area.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
         cita.especialista.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
         cita.paciente.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        cita.oficina.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 
+        cita.oficina.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1
     );
   }
 
   if (area.length) {
     inputData = inputData.filter((cita) => area.includes(cita.area));
+  }
+
+  if (!dateError) {
+    if (startDate && endDate) {
+      inputData = inputData.filter(
+        (order) =>
+          fTimestamp(order.fechaModificacion) >= fTimestamp(startDate) &&
+          fTimestamp(order.fechaModificacion) <= fTimestamp(endDate)
+      );
+    }
+  }
+
+  if (especialista.length) {
+    inputData = inputData.filter((i) => especialista.includes(i.especialista));
   }
 
   return inputData;

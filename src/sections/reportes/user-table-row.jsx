@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 
+import Dialog from '@mui/material/Dialog';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
@@ -16,8 +18,17 @@ import HistorialCitas from './modal-historial-citas'
 
 // ----------------------------------------------------------------------
 
-export default function UserTableRow({ row, area }) {
-  const { id, nombre, correo, sede, estNut, estPsi, estQB, estGE } = row;
+export default function RowResumenTerapias({ row, area, idUs, rol }) {
+  const {
+    nombre,
+    correo,
+    depto,
+    sede,
+    puesto,
+    estNut,
+    estPsi,
+    estQB,
+    estGE, } = row;
 
   const quickEditar = useBoolean();
 
@@ -25,11 +36,27 @@ export default function UserTableRow({ row, area }) {
 
   const popover = usePopover();
 
+  const [us, setUs] = useState(0);
+
+  const [open, setOpen] = useState(false);
+
+  const [close] = useState(false);
+
+  const handleOpen = (idUsuario) => {
+    setUs(idUsuario);
+    setOpen(true);
+  }
+
+  const handleClose = () => {
+    setUs(0);
+    setOpen(false);
+  }
+
   return (
     <>
       <TableRow>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{id}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.idUsuario}</TableCell>
 
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
 
@@ -44,7 +71,11 @@ export default function UserTableRow({ row, area }) {
           />
         </TableCell>
 
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{depto}</TableCell>
+
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{sede}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{puesto}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {estNut || estPsi || estQB || estGE || ''}
@@ -59,8 +90,6 @@ export default function UserTableRow({ row, area }) {
 
       <EditarEstatus id={row.id} est={area} estatusVal={estNut || estPsi || estQB || estGE} open={quickEditar.value} onClose={quickEditar.onFalse} />
 
-      <HistorialCitas idUsuario={row.idUsuario} open={quickHisCit.value} area={area} onClose={quickHisCit.onFalse} />
-
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
@@ -69,29 +98,46 @@ export default function UserTableRow({ row, area }) {
       >
         <MenuItem
           onClick={() => {
-            quickHisCit.onTrue();
-            popover.onClose();
+            handleOpen(row.idUsuario);
           }}
         >
           <Iconify icon="icon-park-twotone:time" />
           Historial citas
         </MenuItem>
 
-        <MenuItem
-          onClick={() => {
-            quickEditar.onTrue();
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="solar:pen-bold" />
-          Cambiar estatus
-        </MenuItem>
+        {rol === 4 || rol === 1 ? (
+          <MenuItem
+            onClick={() => {
+              quickEditar.onTrue();
+              popover.onClose();
+            }}
+          >
+            <Iconify icon="solar:pen-bold" />
+            Cambiar estatus
+          </MenuItem>
+        ) : (
+          null
+        )}
       </CustomPopover>
+
+
+      <Dialog
+        maxWidth={false}
+        open={open}
+        onClose={close}
+        PaperProps={{
+          sx: { maxWidth: 720 },
+        }}
+      >
+        <HistorialCitas idUsuario={us} area={area} rol={rol} idUs={idUs} open={quickHisCit.value} onClose={handleClose} />
+      </Dialog>
     </>
   );
 }
 
-UserTableRow.propTypes = {
+RowResumenTerapias.propTypes = {
   row: PropTypes.object,
   area: PropTypes.any,
+  idUs: PropTypes.any,
+  rol: PropTypes.any,
 };

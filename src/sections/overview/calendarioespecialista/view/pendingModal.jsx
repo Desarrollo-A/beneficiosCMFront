@@ -265,9 +265,9 @@ export default function PendingModal() {
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button variant="contained" color="error" onClick={handleClose2}>
+          {/* <Button variant="contained" color="error" onClick={handleClose2}>
             Cerrar
-          </Button>
+          </Button> */}
           <LoadingButton
             type="submit"
             variant="contained"

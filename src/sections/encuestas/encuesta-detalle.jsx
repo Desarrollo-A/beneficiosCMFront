@@ -16,6 +16,8 @@ export default function FormularioEncuesta({ idEncuesta }) {
 
   const { encuestaData } = usePostGeneral(idEncuesta, endpoints.encuestas.getEncuesta, "encuestaData");
 
+  console.log(encuestaData)
+
   const { Resp1Data } = useGetGeneral(endpoints.encuestas.getResp1, "Resp1Data");
 
   const { Resp2Data } = useGetGeneral(endpoints.encuestas.getResp2, "Resp2Data");
@@ -83,5 +85,5 @@ export default function FormularioEncuesta({ idEncuesta }) {
 }
 
 FormularioEncuesta.propTypes = {
-  idEncuesta: PropTypes.number,
+  idEncuesta: PropTypes.any,
 };

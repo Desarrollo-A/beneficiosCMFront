@@ -17,7 +17,7 @@ import EncuestaHabilitar from './modal-habilitar-encuesta';
 
 // ----------------------------------------------------------------------
 
-export default function EncuestasTablaFilas({ row, selected }) {
+export default function EncuestasTablaFilas({ row, selected, puestos }) {
   const { idEncuesta, fechaCreacion, estatus, diasVigencia } = row;
 
   const popover = usePopover();
@@ -70,7 +70,7 @@ export default function EncuestasTablaFilas({ row, selected }) {
         sx={{ width: 140 }}
       >
 
-      <EncuestaHabilitar idEncuesta={row.idEncuesta} open={enctHabilitar.value} onClose={enctHabilitar.onFalse} />
+      <EncuestaHabilitar idEncuesta={row.idEncuesta} puestos={puestos} open={enctHabilitar.value} onClose={enctHabilitar.onFalse} />
 
       <EditarDias idEncuesta={row.idEncuesta} open={editDias.value} onClose={editDias.onFalse} />
 
@@ -102,7 +102,7 @@ export default function EncuestasTablaFilas({ row, selected }) {
           onClick={editDias.onTrue}
           >
             <Iconify icon="solar:pen-bold" />
-            Editar dias
+            Editar días
           </MenuItem>
 
       </CustomPopover>
@@ -114,4 +114,5 @@ export default function EncuestasTablaFilas({ row, selected }) {
 EncuestasTablaFilas.propTypes = {
   row: PropTypes.object,
   selected: PropTypes.bool,
+  puestos: PropTypes.any,
 };

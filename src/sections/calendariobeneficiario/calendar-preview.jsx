@@ -4,19 +4,26 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Dialog, DialogContent } from '@material-ui/core';
 
+import { LoadingButton } from '@mui/lab';
 import Tooltip from '@mui/material/Tooltip';
 import DialogTitle from '@mui/material/DialogTitle';
 import FormHelperText from '@mui/material/FormHelperText';
 import InputAdornment from '@mui/material/InputAdornment';
 import { Chip, Stack, Button, TextField, Typography, DialogActions } from '@mui/material';
 
-import { useAuthContext } from 'src/auth/hooks';
+// import { useAuthContext } from 'src/auth/hooks';
 import { updateGoogleCalendarEvent } from 'src/api/calendar-colaborador';
 
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 
-export default function CalendarPreview({ event, open, handleClose }) {
+export default function CalendarPreview({
+  event,
+  open,
+  handleClose,
+  btnNotificationDisabled,
+  setBtnNotificationDisabled,
+}) {
   const [email, setEmail] = useState('');
   const [emails, setEmails] = useState([]);
   const [errorMessage, setErrorMessage] = useState('Formato de correo erróneo');
@@ -24,7 +31,7 @@ export default function CalendarPreview({ event, open, handleClose }) {
   const [sendEmails, setSendEmails] = useState(false);
 
   const { enqueueSnackbar } = useSnackbar();
-  const { user: datosUser } = useAuthContext();
+  // const { user: datosUser } = useAuthContext();
 
   const handleSendEmails = () => {
     setSendEmails(!sendEmails);
@@ -55,6 +62,14 @@ export default function CalendarPreview({ event, open, handleClose }) {
   };
 
   const sendNotifications = async () => {
+    if (emails.length === 0) {
+      enqueueSnackbar('Añada un correo electrónico para poder notificar a la persona', {
+        variant: 'warning',
+      });
+      return false;
+    }
+    setBtnNotificationDisabled(true);
+
     const startDate = dayjs(event.start);
     const endDate = startDate.add(1, 'hour');
 
@@ -62,8 +77,17 @@ export default function CalendarPreview({ event, open, handleClose }) {
       event.idEventoGoogle,
       startDate.format('YYYY-MM-DDTHH:mm:ss'),
       endDate.format('YYYY-MM-DDTHH:mm:ss'),
-      datosUser.correo,
-      [datosUser.correo, 'programador.analista34@ciudadmaderas.com', ...emails]
+      'programador.analista36@ciudadmaderas.com', // datosUser.correo, Sustituir correo de analista.
+      [
+        'programador.analista36@ciudadmaderas.com', // datosUser.correo Sustituir correo de analista.
+        'artturo.alarcon@gmail.com',
+        'programador.analista34@ciudadmaderas.com',
+        'programador.analista32@ciudadmaderas.com',
+        'programador.analista12@ciudadmaderas.com',
+        'tester.ti2@ciudadmaderas.com',
+        'tester.ti3@ciudadmaderas.com',
+        ...emails,
+      ]
     );
     if (!updateGoogleEvent.result) {
       enqueueSnackbar('No se pudo sincronizar el evento con la cuenta de google', {
@@ -304,7 +328,7 @@ export default function CalendarPreview({ event, open, handleClose }) {
           </Stack>
           <Stack sx={{ flexDirection: 'col' }}>
             <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-              {event?.estatus === 1 ? 'Pagado' : 'Pagado'}
+              {event?.idDetalle === null || event?.idDetalle === 0 ? 'Sin pago' : 'Pagado'}
             </Typography>
           </Stack>
         </Stack>
@@ -418,9 +442,14 @@ export default function CalendarPreview({ event, open, handleClose }) {
         <Button variant="contained" color="error" onClick={handleClose}>
           Cerrar
         </Button>
-        <Button variant="contained" color="success" onClick={() => sendNotifications()}>
+        <LoadingButton
+          variant="contained"
+          color="success"
+          onClick={() => sendNotifications()}
+          loading={btnNotificationDisabled}
+        >
           Notificar
-        </Button>
+        </LoadingButton>
       </DialogActions>
     </Dialog>
   );
@@ -430,4 +459,6 @@ CalendarPreview.propTypes = {
   event: PropTypes.object,
   open: PropTypes.bool,
   handleClose: PropTypes.func,
+  btnNotificationDisabled: PropTypes.bool,
+  setBtnNotificationDisabled: PropTypes.func,
 };

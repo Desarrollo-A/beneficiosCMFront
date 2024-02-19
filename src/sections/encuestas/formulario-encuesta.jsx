@@ -142,27 +142,27 @@ export default function FormularioEncuesta({ idEncuesta }) {
                       {item.pregunta}
                     </Typography>
 
-                    {item.respuestas === "1" && (
+                    {item.respuestas === "1" || item.respuestas === 1 && (
                       <RHFRadioGroup row spacing={4} name={`resp_${index}`} options={Resp1Data} />
                     )}
 
-                    {item.respuestas === "2" && (
+                    {item.respuestas === "2" || item.respuestas === 2 && (
                       <RHFRadioGroup row spacing={4} name={`resp_${index}`} options={Resp2Data} />
                     )}
 
-                    {item.respuestas === "3" && (
+                    {item.respuestas === "3" || item.respuestas === 3 && (
                       <RHFRadioGroup row spacing={4} name={`resp_${index}`} options={Resp3Data} />
                     )}
 
-                    {item.respuestas === "4" && (
+                    {item.respuestas === "4" || item.respuestas === 4 && (
                       <RHFRadioGroup row spacing={4} name={`resp_${index}`} options={Resp4Data} />
                     )}
 
-                    {item.respuestas === "5" && (
+                    {item.respuestas === "5" || item.respuestas === 5 && (
                       <RHFTextField name={`resp_${index}`} />
                     )}
 
-                    {item.respuestas === "6" && (
+                    {item.respuestas === "6" || item.respuestas === 6 && (
                       <RHFTextField name={`resp_${index}`} multiline rows={4} />
                     )}
 
@@ -199,5 +199,5 @@ export default function FormularioEncuesta({ idEncuesta }) {
 }
 
 FormularioEncuesta.propTypes = {
-  idEncuesta: PropTypes.number,
+  idEncuesta: PropTypes.any,
 };

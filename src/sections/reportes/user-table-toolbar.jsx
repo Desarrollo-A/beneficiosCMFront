@@ -18,7 +18,7 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function UserTableToolbar({
+export default function ToolbarResumenTerapias({
   filters,
   onFilters,
   //
@@ -93,8 +93,7 @@ export default function UserTableToolbar({
 
       ) : (
 
-        <>
-        </>
+        null
 
       )}
 
@@ -120,7 +119,7 @@ export default function UserTableToolbar({
   );
 }
 
-UserTableToolbar.propTypes = {
+ToolbarResumenTerapias.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
   handleChangeId: PropTypes.func,

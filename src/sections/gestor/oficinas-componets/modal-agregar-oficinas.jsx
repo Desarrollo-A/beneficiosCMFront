@@ -3,6 +3,7 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import Stack from '@mui/material/Stack';
+import { LoadingButton } from '@mui/lab';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import Select from '@mui/material/Select';
@@ -45,6 +46,8 @@ export default function ModalAgregarOficinas({ open, onClose }) {
 
   const [sed, setSed] = useState(0);
 
+  const [btnLoad, setBtnLoad] = useState(false);
+
   const handleChange = (event) => {
     setEst(event.target.value);
   }
@@ -74,13 +77,19 @@ export default function ModalAgregarOficinas({ open, onClose }) {
 
         mutate(endpoints.gestor.getOfi);
 
+        setBtnLoad(false);
+
       } else {
         enqueueSnackbar(insert.msj, { variant: 'error' });
+
+        setBtnLoad(false);
       }
 
     } catch (error) {
       console.error("Error en handleEstatus:", error);
       enqueueSnackbar(`¡No se pudieron actualizar los datos!`, { variant: 'danger' });
+
+      setBtnLoad(false);
     }
 
   }
@@ -165,7 +174,8 @@ export default function ModalAgregarOficinas({ open, onClose }) {
         <Button variant="contained" color="error" onClick={onClose}>
           Cerrar
         </Button>
-        <Button variant="contained" color="success" onClick={() => {
+        <LoadingButton variant="contained" color="success" loading={btnLoad} onClick={() => {
+          setBtnLoad(true);
           handleEstatus(
             {
               'ofi': ofic,
@@ -177,7 +187,7 @@ export default function ModalAgregarOficinas({ open, onClose }) {
           confirm.onFalse();
         }}>
           Guardar
-        </Button>
+        </LoadingButton>
       </DialogActions>
 
     </Dialog>

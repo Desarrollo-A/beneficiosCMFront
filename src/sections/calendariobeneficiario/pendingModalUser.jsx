@@ -9,6 +9,7 @@ import Card from '@mui/material/Card';
 import Rating from '@mui/material/Rating';
 import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
+import LoadingButton from '@mui/lab/LoadingButton';
 import { alpha, useTheme } from '@mui/material/styles';
 import {
   Box,
@@ -25,7 +26,6 @@ import uuidv4 from 'src/utils/uuidv4';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { AvatarShape } from 'src/assets/illustrations';
-// import { useGetEventReasons } from 'src/api/calendar-specialist';
 import {
   sendMail,
   consultarCita,
@@ -48,6 +48,9 @@ export default function PendingModalUser() {
   const [event, setEvent] = useState({});
   const [valorRating, setValorRating] = useState(0);
   const { data: pendientes, pendingsMutate } = useGetPendientes(); // traer todas las citas en pendiente de pago o evaluacion
+  const [confirmCancel, setConfirmCancel] = useState(false);
+  const [datosCita, setDatosCita] = useState({});
+  const [btnConfirmAction, setBtnConfirmAction] = useState(false);
 
   dayjs.locale('es');
   dayjs.extend(localeData);
@@ -57,6 +60,7 @@ export default function PendingModalUser() {
 
   const onClose = () => {
     setOpen(false);
+    setConfirmCancel(false);
   };
 
   const handleClose2 = () => {
@@ -74,7 +78,7 @@ export default function PendingModalUser() {
     setOpen3(false);
     let precio = 50;
     let metodoPago = 1;
-    if (datosUser.tipoPuesto.toLowerCase() === 'operativa' || datosUser.idDepto === 13) {
+    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
       precio = 0;
       metodoPago = 3;
     }
@@ -122,8 +126,15 @@ export default function PendingModalUser() {
     return '';
   };
 
-  const onCancel = async (currentEvent) => {
-    const cancel = await cancelAppointment(currentEvent, currentEvent.id, 0);
+  const handleCancel = (cita) => {
+    setBtnConfirmAction(false);
+    setConfirmCancel(true);
+    setDatosCita(cita);
+  };
+
+  const onCancel = async () => {
+    setBtnConfirmAction(true);
+    const cancel = await cancelAppointment(datosCita, datosCita.id, 0);
     if (!cancel.result) {
       enqueueSnackbar('¡Se generó un error al intentar cancelar la cita!', {
         variant: 'error',
@@ -137,8 +148,8 @@ export default function PendingModalUser() {
       });
 
       const deleteGoogleEvent = await deleteGoogleCalendarEvent(
-        currentEvent.idEventoGoogle,
-        datosUser.correo
+        datosCita.idEventoGoogle,
+        'programador.analista36@ciudadmaderas.com' // datosUser.correo Sustituir correo de analista.
       );
       if (!deleteGoogleEvent.result) {
         enqueueSnackbar('¡No se pudo sincronizar el evento con el calendario de google!', {
@@ -148,8 +159,7 @@ export default function PendingModalUser() {
         return onClose();
       }
     }
-
-    const scheduledAppointment = await consultarCita(currentEvent.id);
+    const scheduledAppointment = await consultarCita(datosCita.id);
     if (!scheduledAppointment.result) {
       enqueueSnackbar('¡Surgió un error al poder mostrar el preview de la cita!', {
         variant: 'error',
@@ -157,15 +167,14 @@ export default function PendingModalUser() {
       onClose();
       return false;
     }
-
     const email = await sendMail(scheduledAppointment.data[0], 2, [
       'programador.analista36@ciudadmaderas.com',
       'programador.analista34@ciudadmaderas.com',
       'programador.analista32@ciudadmaderas.com',
       'programador.analista12@ciudadmaderas.com',
       'tester.ti2@ciudadmaderas.com',
+      'tester.ti3@ciudadmaderas.com',
     ]);
-
     if (!email.result) {
       console.error('No se pudo notificar al usuario');
     }
@@ -230,7 +239,7 @@ export default function PendingModalUser() {
                   secondaryAction={
                     <>
                       <Tooltip title="Cancelar cita">
-                        <IconButton onClick={() => onCancel(pendientes?.data?.pago[key])}>
+                        <IconButton onClick={() => handleCancel(pendientes?.data?.pago[key])}>
                           <Iconify icon="solar:trash-bin-trash-bold" />
                         </IconButton>
                       </Tooltip>
@@ -252,12 +261,14 @@ export default function PendingModalUser() {
                   />
                 </ListItem>
               ))}
+            <Stack
+              direction="row"
+              justifyContent="center"
+              useFlexGap
+              flexWrap="wrap"
+              sx={{ pt: { xs: 1, md: 2 }, pb: { xs: 1, md: 2 } }}
+            />
           </DialogContent>
-          <DialogActions>
-            <Button variant="contained" color="error" onClick={onClose}>
-              Cerrar
-            </Button>
-          </DialogActions>
         </Dialog>
       )}
       <CalendarPreview event={event} open={open2} handleClose={handleClose2} />
@@ -394,6 +405,37 @@ export default function PendingModalUser() {
             </Card>
           </Dialog>
         )}
+      <Dialog open={confirmCancel} maxWidth="sm">
+        <DialogContent>
+          <Stack
+            direction="row"
+            justifyContent="center"
+            useFlexGap
+            flexWrap="wrap"
+            sx={{ pt: { xs: 1, md: 2 }, pb: { xs: 1, md: 2 } }}
+          >
+            <Typography color="red" sx={{ mt: 1, mb: 1 }}>
+              <strong>¡ATENCIÓN!</strong>
+            </Typography>
+          </Stack>
+
+          <Typography>¿Está seguro de cancelar la cita?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" color="error" onClick={() => setConfirmCancel(false)}>
+            Cerrar
+          </Button>
+          <LoadingButton
+            variant="contained"
+            color="success"
+            onClick={onCancel}
+            loading={btnConfirmAction}
+            autoFocus
+          >
+            Aceptar
+          </LoadingButton>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

@@ -9,7 +9,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 
-export default function NuevaCitaForm({open, especialidadElegida}) {
+export default function NuevaCitaForm({ open, especialidadElegida }) {
   const [openModal, setOpenModal] = React.useState(open);
 
   const handleClickOpen = () => {
@@ -29,8 +29,8 @@ export default function NuevaCitaForm({open, especialidadElegida}) {
         <DialogTitle>Subscribe</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            To subscribe to this website, please enter your email address here. We
-            will send updates occasionally.
+            To subscribe to this website, please enter your email address here. We will send updates
+            occasionally.
           </DialogContentText>
           <TextField
             autoFocus

@@ -16,14 +16,11 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { endpoints } from 'src/utils/axios';
 
 import { useUpdate } from 'src/api/reportes';
-import { useAuthContext } from 'src/auth/hooks';
 
 import { useSnackbar } from 'src/components/snackbar';
 // ----------------------------------------------------------------------
 
-export default function EncuestaHabilitar({ open, onClose, idEncuesta }) {
-
-  const { user } = useAuthContext();
+export default function EncuestaHabilitar({ open, onClose, idEncuesta, puestos }) {
 
   const confirm = useBoolean();
 
@@ -47,7 +44,7 @@ export default function EncuestaHabilitar({ open, onClose, idEncuesta }) {
           'idEncuesta': idEncuesta,
           'estatus': 1,
           'vigencia': vig,
-          'area': user.puesto
+          'area': puestos
         };
 
         onClose();
@@ -129,4 +126,5 @@ EncuestaHabilitar.propTypes = {
   onClose: PropTypes.func,
   open: PropTypes.bool,
   idEncuesta: PropTypes.number,
+  puestos: PropTypes.any,
 };
