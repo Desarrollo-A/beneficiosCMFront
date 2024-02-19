@@ -45,3 +45,78 @@ export function useUpdate(rt){
 
 }
 
+export function usePostPacientes(dataValue, URL, nameData) {
+
+  const { data, isLoading, error, isValidating } = useSWR(
+    URL,
+    (url) => fetcherPost(url, dataValue),
+    options
+  );
+
+    useEffect(() => {
+      mutate(URL);
+    }, [URL, dataValue]);
+    
+    const memoizedVal = useMemo(
+      () => ({
+        [nameData]: data?.data || [],
+        dataLoading: isLoading,
+        dataError: error,
+        dataValidating: isValidating,
+        dataEmpty: !isLoading,
+      }),
+      [data?.data, error, isLoading, isValidating, nameData]
+    );
+    return { ...memoizedVal };
+}
+
+export function usePostIngresos(dataValue, URL, nameData) {
+
+  const { data, isLoading, error, isValidating } = useSWR(
+    URL,
+    (url) => fetcherPost(url, dataValue),
+    options
+  );
+
+    useEffect(() => {
+      mutate(URL);
+    }, [URL, dataValue]);
+    
+    const memoizedVal = useMemo(
+      () => ({
+        [nameData]: data?.data || [],
+        dataLoading: isLoading,
+        dataError: error,
+        dataValidating: isValidating,
+        dataEmpty: !isLoading,
+      }),
+      [data?.data, error, isLoading, isValidating, nameData]
+    );
+    return { ...memoizedVal };
+}
+
+export function usePostSelect(dataValue, URL, nameData) {
+
+  const { data, isLoading, error, isValidating } = useSWR(
+    URL,
+    (url) => fetcherPost(url, dataValue),
+    options
+  );
+
+    useEffect(() => {
+      mutate(URL);
+    }, [URL, dataValue]);
+    
+    const memoizedVal = useMemo(
+      () => ({
+        [nameData]: data?.data || [],
+        dataLoading: isLoading,
+        dataError: error,
+        dataValidating: isValidating,
+        dataEmpty: !isLoading,
+      }),
+      [data?.data, error, isLoading, isValidating, nameData]
+    );
+    return { ...memoizedVal };
+}
+

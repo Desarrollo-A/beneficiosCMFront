@@ -241,5 +241,8 @@ export const endpoints = {
     getEspecialidadToSelect : '/AvisosPrivacidadController/getEspecialidades',
     getAvisoDePrivacidad : '/AvisosPrivacidadController/getAvisoPrivacidad',
     actualizarArchivoPrivacidad: '/AvisosPrivacidadController/actualizarArchivoPrivacidad'
-  }
+  },
+  citas : {
+    getCitas : '/GeneralController/getCitas',
+  },
 };

@@ -1,16 +1,9 @@
-import JsPDF from 'jspdf';
-import Xlsx from 'json-as-xlsx';
 import isEqual from 'lodash/isEqual';
-import autoTable from 'jspdf-autotable';
 import { useState, useEffect, useCallback } from 'react';
 
-import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
-import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
@@ -23,9 +16,8 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { endpoints } from 'src/utils/axios';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { useGetGeneral } from 'src/api/general';
+import { useGetGeneral, usePostGeneral } from 'src/api/general';
 
-import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
@@ -40,18 +32,23 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-import TableRowSedes from '../sedes-componets/table-row-sedes';
-import ToolbarOficinas from '../sedes-componets/toolbar-sedes';
-import FiltersOficinas from '../sedes-componets/filters-sedes';
-import ModalAgregarSedes from '../sedes-componets/modal-agregar-sedes';
+import UserTableRow from '../user-table-row';
+import UserTableToolbar from '../user-table-toolbar';
+import UserTableFiltersResult from '../user-table-filters-result';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'idSede', label: 'ID' },
-  { id: 'idSede', label: 'Sede', with: 220 },
-  { id: 'abreviacion', label: 'Abreviación', with: 100 },
-  { id: 'estatus', label: 'Estatus' },
+  { id: 'id', label: 'ID Cita' },
+  { id: 'beneficio', label: 'Beneficio', width: 100 },
+  { id: 'especialista', label: 'Especialista', width: 220 },
+  { id: 'motivoCita', label: 'Motivo cita', width: 100 },
+  { id: 'sede', label: 'Sede', width: 100 },
+  { id: 'oficina', label: 'Oficina', width: 100 },
+  { id: 'pagoGenerado', label: 'Pago generado', width: 100 },
+  { id: 'metodoPago', label: 'Metodo de pago', width: 100 },
+  { id: 'horario', label: 'Horario cita', width: 100 },
+  { id: 'estatus', label: 'Estatus', width: 100 },
   { id: '', width: 88 },
 ];
 
@@ -63,51 +60,7 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-function handleDownloadExcel(tableData) {
-
-  const data = [
-    {
-      sheet: "Historial Reportes",
-      columns: [
-        { label: "ID", value: "idSede" },
-        { label: "Sede", value: "sede" },
-        { label: "Abreviación", value: "sede" },
-        { label: "Estatus", value: "estatus" },
-      ],
-      content: tableData,
-    },
-  ];
-
-  const settings = {
-    fileName: "Sedes",
-    extraLength: 3,
-    writeMode: "writeFile",
-    writeOptions: {},
-    RTL: false,
-  }
-  Xlsx(data, settings)
-}
-
-const doc = new JsPDF();
-
-function handleDownloadPDF(tableData, headerBase) {
-
-  let data = [];
-
-  data = tableData.map(item => ([item.idSede, item.sede, item.abreviacion, item.estatus]))
-
-  autoTable(doc, {
-    head: [headerBase],
-    body: data,
-  })
-  doc.save('Sedes.pdf')
-}
-
-// ----------------------------------------------------------------------
-
-export default function SedesView() {
-
-  const headerBase = ["ID", "Sede", "Abreviación", "Estatus"];
+export default function CitasView() {
 
   const table = useTable();
 
@@ -119,20 +72,43 @@ export default function SedesView() {
 
   const { user } = useAuthContext();
 
-  const rol = user?.idRol
+  const rol = user?.idRol;
 
-  // const [userDt, setUserDt] = useState({
-  //   idRol: user.idRol,
-  //   idPuesto: user.idPuesto,
-  // });
+  const idUs = user?.idUsuario;
 
-  const { sedesData } = useGetGeneral(endpoints.gestor.getSedes, "sedesData");
+  let puestos = 0;
+
+  if (rol === "4" || rol === 4) {
+    puestos = 158;
+  } else {
+    puestos = user?.idPuesto;
+  }
+
+  const [area, setArea] = useState(puestos);
+
+  const [dt, setDt] = useState({
+    idRol: user?.idRol,
+    esp: area,
+    idUs: user?.idUsuario,
+  });
+
+  useEffect(() => {
+    setDt({
+      idRol: user?.idRol,
+      esp: area,
+      idUs: user?.idUsuario,
+    });
+  }, [area, user ]);
+
+  const { citasData } = usePostGeneral(user?.idUsuario, endpoints.citas.getCitas, "citasData");
+
+  const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
 
   const [tableData, setTableData] = useState([]);
 
   const [filters, setFilters] = useState(defaultFilters);
 
-  const [especialistas] = useState([]); // setEspecialistas
+  const [especialistas, setEspecialistas] = useState([]);
 
   const _rp = especialistas.flatMap((es) => (es.nombre));
 
@@ -192,89 +168,47 @@ export default function SedesView() {
     [router]
   );
 
-  // const handleFilterStatus = useCallback(
-  //   (event, newValue) => {
-  //     handleFilters('status', newValue);
-  //   },
-  //   [handleFilters]
-  // );
-
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
 
-  const handlePdf = async e => {
-    e.preventDefault();
-    handleDownloadPDF(
-      tableData,
-      headerBase
-    );
-  }
-
-  const handleExcel = async e => {
-    e.preventDefault();
-    handleDownloadExcel(
-      tableData
-    );
-  }
-
   useEffect(() => {
-    setTableData(sedesData);
-  }, [sedesData]);
+    setTableData(citasData);
+  }, [citasData]);
 
-  const modal = useBoolean();
+  const handleChangeId = (newAr) => {
+    setArea(newAr);
+
+    setEspecialistas(especialistasData);
+  }
 
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Sedes"
+          heading="Citas"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Gestor', /* href: paths.dashboard.user.root */ },
-            { name: 'Sedes' },
+            { name: 'Citas', },
           ]}
           sx={{
-            mb: { xs: 3, md: 0 },
+            mb: { xs: 3, md: 5 },
           }}
         />
 
-        <ModalAgregarSedes
-          open={modal.value}
-          onClose={modal.onFalse}
-        />
-
-        { rol === 4 ?(
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <Button
-            variant="contained"
-            spacing={2}
-            color='primary'
-            sx={{ mb: 3 }}
-            onClick={() => {
-              modal.onTrue();
-            }}
-          >
-            Agregar sede
-            <Iconify icon="lucide:plus" />
-          </Button>
-        </Box>
-        ):(
-          null
-        )}
-
         <Card>
 
-          <ToolbarOficinas
+          <UserTableToolbar
             filters={filters}
             onFilters={handleFilters}
             //
             roleOptions={_rp}
+            handleChangeId={handleChangeId}
             rol={rol}
           />
 
           {canReset && (
-            <FiltersOficinas
+            <UserTableFiltersResult
               filters={filters}
               onFilters={handleFilters}
               //
@@ -282,40 +216,9 @@ export default function SedesView() {
               //
               results={dataFiltered.length}
               sx={{ p: 2.5, pt: 0 }}
+              rol={rol}
             />
           )}
-
-          <Stack
-            spacing={1}
-            alignItems={{ xs: 'flex-start', md: 'flex-start' }}
-            direction={{
-              xs: 'column',
-              md: 'row',
-            }}
-            sx={{
-              p: 1,
-              pr: { xs: 1, md: 1 },
-            }}
-          >
-            <Tooltip title="Exportar a XLS" placement="top" arrow>
-              <MenuItem
-                sx={{ width: 50, p: 1 }}
-                onClick={handleExcel}
-              >
-                <Iconify icon="teenyicons:xls-outline" />
-              </MenuItem>
-            </Tooltip>
-
-            <Tooltip title="Exportar a PDF" placement="top" arrow>
-              <MenuItem
-                sx={{ width: 50, p: 1 }}
-                onClick={handlePdf}
-              >
-                <Iconify icon="teenyicons:pdf-outline" />
-              </MenuItem>
-            </Tooltip>
-
-          </Stack>
 
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
 
@@ -337,9 +240,11 @@ export default function SedesView() {
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
                     .map((row) => (
-                      <TableRowSedes
-                        key={row.idSede}
+                      <UserTableRow
+                        key={row.id}
                         row={row}
+                        area={area}
+                        idUs={idUs}
                         rol={rol}
                         selected={table.selected.includes(row.id)}
                         onSelectRow={() => table.onSelectRow(row.id)}
@@ -399,7 +304,7 @@ export default function SedesView() {
 // ----------------------------------------------------------------------
 
 function applyFilter({ inputData, comparator, filters }) {
-  const { name } = filters;
+  const { name } = filters; // status, role
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
 
@@ -414,9 +319,12 @@ function applyFilter({ inputData, comparator, filters }) {
   if (name) {
     inputData = inputData.filter(
       (i) =>
+        i.especialista.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        i.motivoCita.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
         i.sede.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        i.abreviacion.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        i.idSede.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1
+        i.oficina.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        i.pagoGenerado.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        i.metodoPago.toLowerCase().indexOf(name.toLowerCase()) !== -1
     );
   }
 

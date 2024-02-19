@@ -38,7 +38,7 @@ import {
   lastAppointment,
   checaPrimeraCita,
   getAtencionXSede,
-  cancelAppointment,
+  CancelAppointment,
   updateAppointment,
   getCitasSinEvaluar,
   getCitasFinalizadas,
@@ -374,7 +374,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
   const onCancel = async () => {
     setBtnConfirmAction(true);
-    const cancel = await cancelAppointment(currentEvent, currentEvent.id, 0);
+    const cancel = await CancelAppointment(currentEvent, currentEvent.id, 0);
     if (!cancel.result) {
       enqueueSnackbar('¡Se generó un error al intentar cancelar la cita!', {
         variant: 'error',
@@ -888,15 +888,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     // Verificar si la fecha está en la lista de fechas deshabilitadas
     const formattedDate = date.format('YYYY-MM-DD');
     const isDisabledFromSQLServer = diasOcupados.includes(formattedDate);
-
-    console.log('fecha: ', formattedDate);
-    console.log('sedes', sedes.length, sedes);
-    console.log(
-      'Virtual',
-      selectedValues.modalidad,
-      typeof selectedValues.modalidad,
-      selectedValues.modalidad === 1
-    );
     let noPresencial = false;
     if (selectedValues.modalidad === 1) {
       if (sedes.length > 1) {
@@ -1012,7 +1003,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       return onClose();
     }
 
-    const cancel = await cancelAppointment(currentEvent, currentEvent.id, 8);
+    const cancel = await CancelAppointment(currentEvent, currentEvent.id, 8);
 
     if (!cancel.result) {
       enqueueSnackbar('Surgió un error al intentar cancelar la cita previa', {
@@ -1646,79 +1637,77 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       </Dialog>
 
       {/* REAGENDAR CITA */}
-      <FormProvider>
-        <Dialog
-          fullWidth
-          maxWidth="md"
-          open={reschedule}
-          aria-labelledby="alert-dialog-title1"
-          aria-describedby="alert-dialog-description1"
+      <Dialog
+        fullWidth
+        maxWidth="md"
+        open={reschedule}
+        aria-labelledby="alert-dialog-title1"
+        aria-describedby="alert-dialog-description1"
+      >
+        <DialogContent
+          sx={
+            // !currentEvent?.id && selectedValues.modalidad ?
+            {
+              p: { xs: 1, md: 2 },
+              background: {
+                xs: 'linear-gradient(180deg, #2c3239 54%, white 46%)',
+                md: 'linear-gradient(90deg, #2c3239 50%, white 50%)',
+              },
+              position: 'relative',
+              display: { xs: 'inline-table' },
+            }
+            //  : { p: { xs: 1, md: 2 } }
+          }
+          direction="row"
+          justifycontent="space-between"
         >
-          <DialogContent
-            sx={
-              // !currentEvent?.id && selectedValues.modalidad ?
-              {
-                p: { xs: 1, md: 2 },
-                background: {
-                  xs: 'linear-gradient(180deg, #2c3239 54%, white 46%)',
-                  md: 'linear-gradient(90deg, #2c3239 50%, white 50%)',
-                },
-                position: 'relative',
-                display: { xs: 'inline-table' },
-              }
-              //  : { p: { xs: 1, md: 2 } }
+          <AppointmentSchedule
+            selectedValues={selectedValues}
+            handleChange={handleChange}
+            beneficios={beneficios}
+            errorBeneficio={errorBeneficio}
+            especialistas={especialistas}
+            errorEspecialista={errorEspecialista}
+            modalidades={modalidades}
+            errorModalidad={errorModalidad}
+            oficina={oficina}
+            isLoading={isLoading}
+            handleDateChange={handleDateChange}
+            shouldDisableDate={shouldDisableDate}
+            horariosDisponibles={horariosDisponibles}
+            horarioSeleccionado={horarioSeleccionado}
+            errorHorarioSeleccionado={errorHorarioSeleccionado}
+            currentEvent={currentEvent}
+            handleHorarioSeleccionado={handleHorarioSeleccionado}
+          />
+        </DialogContent>
+        <DialogActions
+          sx={
+            // !currentEvent?.id && selectedValues.modalidad ?
+            {
+              background: {
+                xs: 'white',
+                md: 'linear-gradient(90deg, #2c3239 50%, white 50%)',
+              },
             }
-            direction="row"
-            justifycontent="space-between"
-          >
-            <AppointmentSchedule
-              selectedValues={selectedValues}
-              handleChange={handleChange}
-              beneficios={beneficios}
-              errorBeneficio={errorBeneficio}
-              especialistas={especialistas}
-              errorEspecialista={errorEspecialista}
-              modalidades={modalidades}
-              errorModalidad={errorModalidad}
-              oficina={oficina}
-              isLoading={isLoading}
-              handleDateChange={handleDateChange}
-              shouldDisableDate={shouldDisableDate}
-              horariosDisponibles={horariosDisponibles}
-              horarioSeleccionado={horarioSeleccionado}
-              errorHorarioSeleccionado={errorHorarioSeleccionado}
-              currentEvent={currentEvent}
-              handleHorarioSeleccionado={handleHorarioSeleccionado}
-            />
-          </DialogContent>
-          <DialogActions
-            sx={
-              // !currentEvent?.id && selectedValues.modalidad ?
-              {
-                background: {
-                  xs: 'white',
-                  md: 'linear-gradient(90deg, #2c3239 50%, white 50%)',
-                },
-              }
-              //    : {}
-            }
-          >
-            <Button variant="contained" color="error" onClick={() => setReschedule(false)}>
-              Cerrar
-            </Button>
-            {currentEvent?.id && (
-              <LoadingButton
-                variant="contained"
-                color="success"
-                onClick={handleReSchedule}
-                loading={btnDisabled}
-              >
-                Reagendar
-              </LoadingButton>
-            )}
-          </DialogActions>
-        </Dialog>
-      </FormProvider>
+            //    : {}
+          }
+        >
+          <Button variant="contained" color="error" onClick={() => setReschedule(false)}>
+            Cerrar
+          </Button>
+          {currentEvent?.id && (
+            <LoadingButton
+              variant="contained"
+              color="success"
+              onClick={handleReSchedule}
+              loading={btnDisabled}
+            >
+              Reagendar
+            </LoadingButton>
+          )}
+        </DialogActions>
+      </Dialog>
 
       <Dialog open={confirmCancel} maxWidth="sm">
         <DialogContent>

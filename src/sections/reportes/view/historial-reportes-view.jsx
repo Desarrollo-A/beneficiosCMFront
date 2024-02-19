@@ -153,7 +153,7 @@ export default function HistorialReportesView() {
 
   const { user } = useAuthContext();
 
-  const rol = user.idRol;
+  const rol = user?.idRol;
 
   let TABLE_HEAD = [];
 
@@ -164,7 +164,7 @@ export default function HistorialReportesView() {
 
   const [dataValue, setReportData] = useState('general');
 
-  const { espeUserData } = usePostGeneral(user.idUsuario, endpoints.reportes.getEspeUser, "espeUserData");
+  const { espeUserData } = usePostGeneral(user?.idUsuario, endpoints.reportes.getEspeUser, "espeUserData");
 
   const { reportesData } = usePostGeneral(dataValue, endpoints.reportes.lista, "reportesData");
 
@@ -178,7 +178,7 @@ export default function HistorialReportesView() {
 
   const _eu = espeUserData.flatMap((es) => (es.puesto));
 
-  defaultFilters.area = rol !== 4 ? _eu : [];
+  defaultFilters.area = user.idRol !== 4 ? _eu : [];
 
   const table = useTable();
 
@@ -203,7 +203,7 @@ export default function HistorialReportesView() {
     { id: '', label: 'Departamento' },
     { id: '', label: 'Sede' },
     { id: '', label: 'Sexo' },
-    { id: '', label: 'Motivo Consulta' },
+    { id: '', label: 'Motivo Consulta', width: 1 },
     { id: '', label: 'Pago generado' },
     { id: '', label: 'Método de pago' },
     { id: '', label: 'Estatus' },
@@ -346,6 +346,7 @@ export default function HistorialReportesView() {
             tot={dataFiltered.length}
             dataValue={dataValue}
             rol={rol}
+            _eu={_eu}
           />
 
           {canReset && (
@@ -489,13 +490,18 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   if (name) {
     inputData = inputData.filter(
       (cita) =>
-        cita.idColab.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        (cita.idColab && cita.idColab.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
         cita.horario.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
         cita.estatus.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        cita.area.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        cita.especialista.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        cita.paciente.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        cita.oficina.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1
+        (cita.depto && cita.depto.toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
+        (cita.especialista && cita.especialista.toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
+        (cita.paciente && cita.paciente.toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
+        (cita.paciente && cita.paciente.toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
+        (cita.sede && cita.sede.toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
+        (cita.sexo && cita.sexo.toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
+        (cita.motivoCita && cita.motivoCita.toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
+        (cita.metodoPago && cita.metodoPago.toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
+        (cita.oficina && cita.oficina.toLowerCase().indexOf(name.toLowerCase()) !== -1) 
     );
   }
 
