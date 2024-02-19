@@ -1,15 +1,12 @@
-import sumBy from 'lodash/sumBy';
 import PropTypes from 'prop-types';
 import { useState, useEffect, useCallback } from 'react';
 
 import Stack from '@mui/material/Stack';
 import Select from '@mui/material/Select';
-import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
 import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Unstable_Grid2';
-import { useTheme } from '@mui/material/styles';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import OutlinedInput from '@mui/material/OutlinedInput';
@@ -18,7 +15,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 import { endpoints } from 'src/utils/axios';
 
-import { usePostGeneral } from 'src/api/general';
+import { usePostSelect, usePostIngresos, usePostPacientes } from 'src/api/reportes';
 import {
   BookingIllustration,
   CheckInIllustration,
@@ -41,6 +38,7 @@ export default function BarraTareasTabla({
   table,
   dataValue,
   rol,
+  _eu
 }) {
   const popover = usePopover();
 
@@ -65,8 +63,10 @@ export default function BarraTareasTabla({
 
   const [fechaF, setFechaF] = useState(diaActual);
 
-  const [dt, setDt] = useState({
-    esp: { area },
+  const [ar] = useState(_eu);
+
+  const [dt] = useState({
+    esp: rol === 4 ? area : ar,
     fhI: fechaI,
     fhF: fechaF,
   });
@@ -74,31 +74,26 @@ export default function BarraTareasTabla({
   const [condi, setCondi] = useState(true);
 
   useEffect(() => {
-    setDt({
-      esp: area,
-      fhI: fechaI,
-      fhF: fechaF,
-    });
 
   if(rol !== 1){
-    if (dt?.esp[0]?.length === 0) {
+    if (area[0]?.length === 0) {
       setCondi(true);
-    } else if (dt.esp.length === 0) {
+    } else if (area.length === 0) {
       setCondi(true);
-    } else if (dt.esp.length > 0) {
+    } else if (area.length > 0) {
       setCondi(false);
     } 
   }else{
     setCondi(false);
   }
 
-  }, [area, fechaI, fechaF, dt.esp, rol]);
+  }, [area, fechaI, fechaF, dt, rol, ar]);
 
-  const { cPaciData } = usePostGeneral(dt, endpoints.reportes.getCierrePacientes, "cPaciData");
+  const { cPaciData } = usePostPacientes(dt, endpoints.reportes.getCierrePacientes, "cPaciData");
 
-  const { cIngreData } = usePostGeneral(dt, endpoints.reportes.getCierreIngresos, "cIngreData");
+  const { cIngreData } = usePostIngresos(dt, endpoints.reportes.getCierreIngresos, "cIngreData");
 
-  const { espData } = usePostGeneral(dt, endpoints.reportes.getSelectEspe, "espData");
+  const { espData } = usePostSelect(dt, endpoints.reportes.getSelectEspe, "espData");
 
   const handleFilterName = useCallback(
     (event) => {
@@ -393,4 +388,5 @@ BarraTareasTabla.propTypes = {
   table: PropTypes.any,
   dataValue: PropTypes.any,
   rol: PropTypes.any,
+  _eu: PropTypes.any,
 };
