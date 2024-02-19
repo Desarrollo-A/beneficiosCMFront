@@ -52,6 +52,8 @@ import {
   deleteGoogleCalendarEvent,
 } from 'src/api/calendar-colaborador';
 
+import { useGetDiasPresenciales } from 'src/api/especialistas';
+
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider from 'src/components/hook-form/form-provider';
@@ -99,6 +101,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const [btnConfirmAction, setBtnConfirmAction] = useState(false);
 
   const [virtual, setVirtual] = useState(false);
+
+  const [ virtual, setVirtual ] = useState(false);
 
   const { user: datosUser } = useAuthContext();
 
@@ -876,7 +880,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     // Verificar si la fecha está en la lista de fechas deshabilitadas
     const formattedDate = date.format('YYYY-MM-DD');
     const isDisabledFromSQLServer = diasOcupados.includes(formattedDate);
-
+    
     // console.log('sedes', sedes.length)
     let noPresencial = false;
     if (!virtual) {
@@ -884,7 +888,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         noPresencial = !diasPresenciales.includes(formattedDate);
       }
     }
-
     // Deshabilitar la fecha si es un fin de semana o está en la lista de fechas deshabilitadas
     return isWeekendDay || isDisabledFromSQLServer || noPresencial;
   };
