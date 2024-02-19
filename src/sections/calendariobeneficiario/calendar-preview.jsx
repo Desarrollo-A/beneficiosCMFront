@@ -117,13 +117,13 @@ export default function CalendarPreview({
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >
-      <DialogTitle sx={{ p: { xs: 1, md: 2 } }}>
+      <DialogTitle sx={{ paddingLeft: { xs: 1, md: 2 }, paddingRight: { xs: 1, md: 2 } }}>
         <Stack
           direction="row"
           justifyContent="space-between"
           useFlexGap
           flexWrap="wrap"
-          sx={{ p: { xs: 1, md: 2 } }}
+          sx={{ paddingLeft: { xs: 1, md: 2 }, paddingRight: { xs: 1, md: 2 } }}
         >
           <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center' }}>
             DATOS DE CITA
@@ -131,7 +131,7 @@ export default function CalendarPreview({
         </Stack>
       </DialogTitle>
       <DialogContent>
-        <Stack spacing={3} sx={{ p: { xs: 1, md: 2 } }}>
+        <Stack spacing={3} sx={{ paddingLeft: { xs: 1, md: 2 }, paddingRight: { xs: 1, md: 2 } }}>
           <Typography variant="subtitle1">
             {event?.start ? dayjs(event.start).format('dddd, DD MMMM YYYY') : 'Fecha'}
           </Typography>
@@ -440,7 +440,7 @@ export default function CalendarPreview({
       </DialogContent>
       <DialogActions>
         <Button variant="contained" color="error" onClick={handleClose}>
-          CerrarR
+          Cerrar
         </Button>
         <LoadingButton
           variant="contained"

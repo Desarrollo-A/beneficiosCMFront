@@ -38,7 +38,7 @@ import {
   lastAppointment,
   checaPrimeraCita,
   getAtencionXSede,
-  CancelAppointment,
+  cancelAppointment,
   updateAppointment,
   getCitasSinEvaluar,
   getCitasFinalizadas,
@@ -320,7 +320,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       `Cita ${nombreBeneficio} - ${datosUser.nombre}`,
       startDate.format('YYYY-MM-DDTHH:mm:ss'),
       endDate.format('YYYY-MM-DDTHH:mm:ss'),
-      oficina.data[0].ubicación,
+      oficina?.data ? oficina.data[0].ubicación : 'Oficina virtual ',
       `Cita de ${datosUser.nombre} en ${nombreBeneficio}`,
       correosNotificar, // Sustituir valores de correos
       organizador // datosUser.correo
@@ -374,7 +374,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
   const onCancel = async () => {
     setBtnConfirmAction(true);
-    const cancel = await CancelAppointment(currentEvent, currentEvent.id, 0);
+    const cancel = await cancelAppointment(currentEvent, currentEvent.id, 0, datosUser.idUsuario);
     if (!cancel.result) {
       enqueueSnackbar('¡Se generó un error al intentar cancelar la cita!', {
         variant: 'error',
@@ -1003,7 +1003,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       return onClose();
     }
 
-    const cancel = await CancelAppointment(currentEvent, currentEvent.id, 8);
+    const cancel = await cancelAppointment(currentEvent, currentEvent.id, 8, datosUser.idUsuario);
 
     if (!cancel.result) {
       enqueueSnackbar('Surgió un error al intentar cancelar la cita previa', {

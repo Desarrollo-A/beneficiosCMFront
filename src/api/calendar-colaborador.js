@@ -282,15 +282,15 @@ export function useGetAppointmentsByUser(current, id) {
   return memoizedValue;
 }
 
-export function CancelAppointment(currentEvent, id, cancelType) {
-  const { user: datosUser } = useAuthContext();
+export function cancelAppointment(currentEvent, id, cancelType, idUsuario) {
+
   const URL = [endpoints.calendario.cancelAppointment];
   const data = {
     idCita: id,
     startStamp: dayjs(currentEvent.start).format('YYYY/MM/DD HH:mm:ss'),
     start: currentEvent.start,
     tipo: cancelType,
-    modificadoPor: datosUser.idUsuario,
+    modificadoPor: idUsuario,
   };
   const cancel = fetcherPost(URL, data);
 

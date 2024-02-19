@@ -30,7 +30,7 @@ import {
   sendMail,
   consultarCita,
   useGetPendientes,
-  CancelAppointment,
+  cancelAppointment,
   updateAppointment,
   registrarDetalleDePago,
   deleteGoogleCalendarEvent,
@@ -134,7 +134,7 @@ export default function PendingModalUser() {
 
   const onCancel = async () => {
     setBtnConfirmAction(true);
-    const cancel = await CancelAppointment(datosCita, datosCita.id, 0);
+    const cancel = await cancelAppointment(datosCita, datosCita.id, 0, datosUser.idUsuario);
     if (!cancel.result) {
       enqueueSnackbar('¡Se generó un error al intentar cancelar la cita!', {
         variant: 'error',
