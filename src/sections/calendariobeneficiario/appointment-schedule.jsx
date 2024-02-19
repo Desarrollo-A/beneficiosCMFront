@@ -251,7 +251,6 @@ export default function AppointmentSchedule({
                 </FormControl>
               </Stack>
             )}
-
             {selectedValues.modalidad === 1 && selectedValues.beneficio && (
               <>
                 <Stack spacing={1} sx={{ p: { xs: 1, md: 1 } }}>
@@ -278,6 +277,53 @@ export default function AppointmentSchedule({
                   ) : (
                     ' Cargando...'
                   )}
+                </Stack>
+                <Stack
+                  sx={{
+                    flexDirection: 'row',
+                    p: { xs: 1, md: 1 },
+                    alignItems: 'center',
+                  }}
+                >
+                  <Stack>
+                    <Iconify
+                      icon="mdi:timer-edit-outline"
+                      width={30}
+                      sx={{ color: 'text.disabled' }}
+                    />
+                  </Stack>
+                  <Stack sx={{ flexDirection: 'col' }}>
+                    <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                      {selectedValues.beneficio === 158
+                        ? 'Se consideran 5 minutos de tolerancia.'
+                        : 'Se consideran 10 minutos de tolerancia.'}
+                    </Typography>
+                  </Stack>
+                </Stack>
+              </>
+            )}{' '}
+            {selectedValues.modalidad === 2 && selectedValues.beneficio && (
+              <>
+                <Stack spacing={1} sx={{ p: { xs: 1, md: 1 } }}>
+                  Especificaciones de la cita :
+                  <Stack
+                    sx={{
+                      flexDirection: 'row',
+                    }}
+                  >
+                    <Stack>
+                      <Iconify
+                        icon="mdi:office-building-marker"
+                        width={30}
+                        sx={{ color: 'text.disabled' }}
+                      />
+                    </Stack>
+                    <Stack sx={{ flexDirection: 'col' }}>
+                      <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                        Oficina virtual
+                      </Typography>
+                    </Stack>
+                  </Stack>
                 </Stack>
                 <Stack
                   sx={{
