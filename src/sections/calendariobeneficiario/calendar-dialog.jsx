@@ -20,11 +20,13 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import uuidv4 from 'src/utils/uuidv4';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetEventReasons } from 'src/api/calendar-specialist';
+import { useGetDiasPresenciales, useGetSedesPresenciales } from 'src/api/especialistas';
 import {
   sendMail,
   crearCita,
@@ -51,8 +53,6 @@ import {
   deleteGoogleCalendarEvent,
 } from 'src/api/calendar-colaborador';
 
-import { useGetDiasPresenciales } from 'src/api/especialistas';
-
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider from 'src/components/hook-form/form-provider';
@@ -69,7 +69,11 @@ let initialValue = dayjs().tz('America/Mexico_City'); // Objeto con todo los dat
 const lastDayOfNextMonth = initialValue.add(2, 'month').startOf('month').subtract(1, 'day');
 initialValue = initialValue.hour() < 15 ? initialValue : initialValue.add(1, 'day');
 
-// ----------------------------------------------------------------------
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+  },
+});
 
 export default function CalendarDialog({ currentEvent, onClose, selectedDate, appointmentMutate }) {
   const [selectedValues, setSelectedValues] = useState({
@@ -88,7 +92,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const [errorEspecialista, setErrorEspecialista] = useState(false);
   const [errorModalidad, setErrorModalidad] = useState(false);
   const [errorHorarioSeleccionado, setErrorHorarioSeleccionado] = useState(false);
-  const [infoContact, setInfoContact] = useState({});
   const [oficina, setOficina] = useState({});
   const [diasOcupados, setDiasOcupados] = useState([]);
   const [diasHabilitados, setDiasHabilitados] = useState([]);
@@ -96,16 +99,24 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const [horariosDisponibles, setHorariosDisponibles] = useState([]);
   const [horarioSeleccionado, setHorarioSeleccionado] = useState('');
   const [event, setEvent] = useState({});
+  const [btnDisabled, setBtnDisabled] = useState(false);
+  const [btnNotificationDisabled, setBtnNotificationDisabled] = useState(false);
+  const [btnConfirmAction, setBtnConfirmAction] = useState(false);
 
-  const [ virtual, setVirtual ] = useState(false);
+  const [virtual, setVirtual] = useState(false);
 
   const { user: datosUser } = useAuthContext();
 
   const { data: benefits } = useGetBenefits(datosUser.idSede);
 
-  //const [ especialista, setEspecialista ] = useState(0);
+  const [especialista, setEspecialista] = useState(0);
 
-  const { diasPresenciales, diasPresencialesGet } = useGetDiasPresenciales({especialista: selectedValues.especialista, sede: datosUser.idSede});
+  const { sedes } = useGetSedesPresenciales({ idEspecialista: especialista });
+
+  const { diasPresenciales } = useGetDiasPresenciales({
+    especialista: selectedValues.especialista,
+    sede: datosUser.idSede,
+  });
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -127,6 +138,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const fechasFolio = currentEvent?.fechasFolio ? currentEvent?.fechasFolio.split(',') : [];
 
   const onSubmit = handleSubmit(async () => {
+    setBtnDisabled(true);
     // Validaciones de inputs: Coloca leyenda de error debajo de cada input en caso que le falte cumplir con el valor
     if (selectedValues.beneficio === '') return setErrorBeneficio(true);
     if (selectedValues.especialista === '') return setErrorEspecialista(true);
@@ -140,7 +152,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const mes = horarioSeleccionado.substring(5, 7);
 
     if (datosUser.fechaIngreso > fechaActual) {
-      enqueueSnackbar('¡Existe un error con la fecha de antiguedad!', {
+      enqueueSnackbar('¡Existe un error con la fecha de antigüedad!', {
         variant: 'error',
       });
       onClose();
@@ -205,9 +217,12 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const citasFinalizadas = await getCitasFinalizadas(datosUser.idUsuario, mes, año);
 
     if (citasFinalizadas.result === true && citasFinalizadas?.data.length >= 2) {
-      enqueueSnackbar('Ya cuentas con la cantidad maxima de beneficios brindados en el mes', {
-        variant: 'error',
-      });
+      enqueueSnackbar(
+        'Ya cuentas con la cantidad máxima de beneficios brindados en el mes seleccionado',
+        {
+          variant: 'error',
+        }
+      );
       onClose();
       return false;
     }
@@ -222,7 +237,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     if (tieneCitas.result === true) {
       tipoCita = 1;
     }
-    if (datosUser.tipoPuesto.toLowerCase() === 'operativa' || datosUser.idDepto === 13) {
+    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
       tipoCita = 1;
       precio = 0;
       metodoPago = 3;
@@ -294,8 +309,15 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       endDate.format('YYYY-MM-DDTHH:mm:ss'),
       oficina.data[0].ubicación,
       `Cita de ${datosUser.nombre} en ${nombreBeneficio}`,
-      [datosUser.correo, 'programador.analista34@ciudadmaderas.com'],
-      datosUser.correo
+      [
+        'programador.analista36@ciudadmaderas.com', // datosUser.correo Sustituir correo de analista
+        'programador.analista34@ciudadmaderas.com',
+        'programador.analista32@ciudadmaderas.com',
+        'programador.analista12@ciudadmaderas.com',
+        'tester.ti2@ciudadmaderas.com',
+        'tester.ti3@ciudadmaderas.com',
+      ], // Sustituir valores de correos
+      'programador.analista36@ciudadmaderas.com' // datosUser.correo
     );
     if (!newGoogleEvent.result) {
       enqueueSnackbar('Error al conectar con la cuenta de google', {
@@ -326,7 +348,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     appointmentMutate();
     const scheduledAppointment = await consultarCita(agendar.data);
     if (!scheduledAppointment.result) {
-      enqueueSnackbar('¡Surgió un error al poder mostrar el preview de la cita!', {
+      enqueueSnackbar('¡Surgió un error al poder mostrar la previsualización de la cita!', {
         variant: 'error',
       });
       onClose();
@@ -339,6 +361,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       'programador.analista32@ciudadmaderas.com',
       'programador.analista12@ciudadmaderas.com',
       'tester.ti2@ciudadmaderas.com',
+      'tester.ti3@ciudadmaderas.com',
     ]);
 
     if (!email.result) {
@@ -350,6 +373,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   });
 
   const onCancel = async () => {
+    setBtnConfirmAction(true);
     const cancel = await cancelAppointment(currentEvent, currentEvent.id, 0);
     if (!cancel.result) {
       enqueueSnackbar('¡Se generó un error al intentar cancelar la cita!', {
@@ -365,7 +389,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
       const deleteGoogleEvent = await deleteGoogleCalendarEvent(
         currentEvent.idEventoGoogle,
-        datosUser.correo
+        'programador.analista36@ciudadmaderas.com' // datosUser.correo Sustituir correo de analista
       );
       if (!deleteGoogleEvent.result) {
         enqueueSnackbar('¡No se pudo sincronizar el evento con el calendario de google!', {
@@ -378,7 +402,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     const scheduledAppointment = await consultarCita(currentEvent.id);
     if (!scheduledAppointment.result) {
-      enqueueSnackbar('¡Surgió un error al poder mostrar el preview de la cita!', {
+      enqueueSnackbar('¡Surgió un error al poder mostrar la previsualización de la cita!', {
         variant: 'error',
       });
       onClose();
@@ -391,6 +415,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       'programador.analista32@ciudadmaderas.com',
       'programador.analista12@ciudadmaderas.com',
       'tester.ti2@ciudadmaderas.com',
+      'tester.ti3@ciudadmaderas.com',
     ]);
 
     if (!email.result) {
@@ -403,7 +428,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const onPay = async () => {
     let precio = 50;
     let metodoPago = 1;
-    if (datosUser.tipoPuesto.toLowerCase() === 'operativa' || datosUser.idDepto === 13) {
+    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
       precio = 0;
       metodoPago = 3;
     }
@@ -433,7 +458,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         return onClose();
       }
       if (!update.result) {
-        enqueueSnackbar('¡Se obtuvó un error al intentar generar el pago de cita!', {
+        enqueueSnackbar('¡Se obtuvo un error al intentar generar el pago de cita!', {
           variant: 'error',
         });
         return onClose();
@@ -449,7 +474,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   };
 
   const handleChange = async (input, value) => {
-    setInfoContact({});
+    setBtnDisabled(false);
     setOficina({});
     setHorarioSeleccionado('');
     setErrorHorarioSeleccionado(false);
@@ -489,10 +514,9 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       const data = await getSpecialists(datosUser.idSede, datosUser.idArea, value);
       setEspecialistas(data?.data);
     } else if (input === 'especialista') {
-
       console.log('especialista', value);
-      //setEspecialista(value);
-      
+      setEspecialista(value);
+
       setErrorEspecialista(false);
       const modalitiesData = await getModalities(datosUser.idSede, value);
       setModalidades(modalitiesData?.data);
@@ -519,13 +543,12 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       }
       getHorariosDisponibles(selectedValues.beneficio, value);
     } else if (input === 'modalidad') {
-
       // console.log('modalidad', value)
-      if(value === 2){
+      if (value === 2) {
         setVirtual(true);
-      }else{
+      } else {
         setVirtual(false);
-        //diasPresencialesGet();
+        // diasPresencialesGet();
       }
 
       setSelectedValues({
@@ -660,7 +683,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     return registrosFecha;
   };
 
-  const getHorariosDisponibles = async (beneficio, especialista) => {
+  const getHorariosDisponibles = async (beneficio, especialistah) => {
     setIsLoading(true);
     // Consultamos el horario del especialista segun su beneficio.
     const horarioACubrir = await getHorario(beneficio);
@@ -675,14 +698,16 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
       return dayOfWeek !== 0 && (horarioACubrir?.data[0]?.sabados !== '0' || dayOfWeek !== 6);
     });
+    console.log('Todos los dias', diasProximos);
 
     // Traemos citas y horarios bloqueados por parte del usuario y especialsita
     const horariosOcupados = await getHorariosOcupados(
-      especialista,
+      especialistah,
       datosUser.idUsuario,
       initialValue.format('YYYY-MM-DD'),
       lastDayOfNextMonth.format('YYYY-MM-DD')
     );
+    console.log('Horarios no disponibles', horariosOcupados);
 
     // Dias laborables con horario.
     const diasLaborablesConHorario = diasProximos.map((item) => {
@@ -704,6 +729,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
       return elemento;
     });
+    console.log('Dias con horario laboral', diasLaborablesConHorario);
 
     const fechasEn5minutos = diasLaborablesConHorario
       .map((item) => {
@@ -740,9 +766,11 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     // Este proceso solo es para quitar en el calendario visualmente los dias que no están ///
     // ///////////////////////////////////////////////////////////////////////////////////////
     const diasDisponibles = obtenerSoloFechas(registrosCadaHora);
+    console.log('Dias a mostrar', diasDisponibles);
     setDiasHabilitados(diasDisponibles);
 
     const diasOcupadosFiltro = filtradoDias(diasProximos, diasDisponibles);
+    console.log('Dias a quitar', diasOcupadosFiltro);
 
     const year = initialValue.year();
 
@@ -758,7 +786,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
             `${year}-09-16`,
             `${year}-11-20`,
             `${year}-12-01`,
-            `${year}-03-21`,
+            `${year}-12-25`,
             `${year + 1}-01-01`,
             `${year + 1}-02-05`,
             `${year + 1}-03-21`,
@@ -766,17 +794,25 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
             `${year + 1}-09-16`,
             `${year + 1}-11-20`,
             `${year + 1}-12-01`,
-            `${year + 1}-03-21`,
+            `${year + 1}-12-25`,
           ];
 
+    console.log('Festivos a quitar', diasFestivos);
     const diasADeshabilitar = new Set([...diasOcupadosFiltro, ...diasFestivos]);
 
     setDiasOcupados([...diasADeshabilitar]);
+    console.log('Todo a quitar', [diasADeshabilitar]);
     setIsLoading(false);
+  };
+
+  const handleHorarioSeleccionado = (val) => {
+    setBtnDisabled(false);
+    setHorarioSeleccionado(val);
   };
 
   const handleDateChange = (newDate) => {
     setErrorHorarioSeleccionado(false);
+    setBtnDisabled(false);
 
     // Bloque para obtener las horas del dia actual mas una cant de horas para validar registros del mismo dia actual.
     const ahora = new Date();
@@ -845,16 +881,21 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     // Verificar si la fecha está en la lista de fechas deshabilitadas
     const formattedDate = date.format('YYYY-MM-DD');
     const isDisabledFromSQLServer = diasOcupados.includes(formattedDate);
-
-    const noPresencial = virtual ? false : !diasPresenciales.includes(formattedDate);
-
+    
+    // console.log('sedes', sedes.length)
+    let noPresencial = false;
+    if (!virtual) {
+      if (sedes.length > 1) {
+        noPresencial = !diasPresenciales.includes(formattedDate);
+      }
+    }
     // Deshabilitar la fecha si es un fin de semana o está en la lista de fechas deshabilitadas
     return isWeekendDay || isDisabledFromSQLServer || noPresencial;
   };
 
   const agendarCita = async (
     titulo,
-    especialista,
+    especialistah,
     observaciones,
     horarioCita,
     tipoCita,
@@ -866,7 +907,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   ) => {
     const registrarCita = await crearCita(
       titulo,
-      especialista,
+      especialistah,
       idUsuario,
       observaciones,
       horarioCita,
@@ -881,7 +922,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     if (registrarCita.result) {
       const updateDetail = await updateDetailPacient(datosUser.idUsuario, beneficio);
       if (!updateDetail.result) {
-        enqueueSnackbar('¡Ha surgidó un error al actualizar el estado del beneficio en uso!', {
+        enqueueSnackbar('¡Ha surgido un error al actualizar el estado del beneficio en uso!', {
           variant: 'error',
         });
         return registrarCita;
@@ -915,6 +956,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   };
 
   const handleReSchedule = async () => {
+    setBtnDisabled(true);
     // Validaciones de inputs: Coloca leyenda de error debajo de cada input en caso que le falte cumplir con el valor
     if (selectedValues.beneficio === '') return setErrorBeneficio(true);
     if (selectedValues.especialista === '') return setErrorEspecialista(true);
@@ -938,7 +980,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     }
 
     if (datosUser.fechaIngreso > fechaActual) {
-      enqueueSnackbar('¡Existe un error con la fecha de antiguedad!', {
+      enqueueSnackbar('¡Existe un error con la fecha de antigüedad!', {
         variant: 'error',
       });
       return onClose();
@@ -980,9 +1022,12 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const citasFinalizadas = await getCitasFinalizadas(datosUser.idUsuario, mes, año);
 
     if (citasFinalizadas.result === true && citasFinalizadas?.data.length >= 2) {
-      enqueueSnackbar('Ya cuentas con la cantidad maxima de beneficios brindados en el mes', {
-        variant: 'error',
-      });
+      enqueueSnackbar(
+        'Ya cuentas con la cantidad máxima  de beneficios brindados en el mes seleccionado',
+        {
+          variant: 'error',
+        }
+      );
       return onClose();
     }
 
@@ -1030,8 +1075,15 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       currentEvent.idEventoGoogle,
       startDate.format('YYYY-MM-DDTHH:mm:ss'),
       endDate.format('YYYY-MM-DDTHH:mm:ss'),
-      datosUser.correo,
-      [datosUser.correo, 'programador.analista34@ciudadmaderas.com', 'artturo.alarcon@gmail.com']
+      'programador.analista36@ciudadmaderas.com', // datosUser.correo, Sustituir correo de analista
+      [
+        'programador.analista36@ciudadmaderas.com', // datosUser.correo Sustituir correo de analista
+        'programador.analista34@ciudadmaderas.com',
+        'programador.analista32@ciudadmaderas.com',
+        'programador.analista12@ciudadmaderas.com',
+        'tester.ti2@ciudadmaderas.com',
+        'tester.ti3@ciudadmaderas.com',
+      ]
     );
     if (!updateGoogleEvent.result) {
       enqueueSnackbar('No se pudo sincronizar el evento con la cuenta de google', {
@@ -1042,7 +1094,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     const scheduledAppointment = await consultarCita(agendar.data);
     if (!scheduledAppointment.result) {
-      enqueueSnackbar('¡Surgió un error al poder mostrar el preview de la cita!', {
+      enqueueSnackbar('¡Surgió un error al poder mostrar la previsualización de la cita!', {
         variant: 'error',
       });
       onClose();
@@ -1061,6 +1113,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         'programador.analista32@ciudadmaderas.com',
         'programador.analista12@ciudadmaderas.com',
         'tester.ti2@ciudadmaderas.com',
+        'tester.ti3@ciudadmaderas.com',
       ]
     );
     if (!email.result) {
@@ -1121,342 +1174,422 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
   return (
     <>
-      <FormProvider methods={methods} onSubmit={onSubmit}>
-        <DialogTitle sx={{ p: { xs: 1, md: 2 } }}>
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            useFlexGap
-            flexWrap="wrap"
-            sx={{ p: { xs: 1, md: 2 } }}
-          >
-            <Typography variant="h5" sx={{ display: 'flex', alignItems: 'end' }}>
-              {currentEvent?.id ? 'DATOS DE CITA' : 'AGENDAR CITA'}
-            </Typography>
-            {currentEvent?.id && (currentEvent?.estatus === 1 || currentEvent?.estatus === 6) && (
-              <Stack sx={{ flexDirection: 'row' }}>
-                {dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss') <
-                  dayjs(currentEvent.start).subtract(3, 'hour').format('YYYY-MM-DD HH:mm:ss') &&
-                  currentEvent?.estatus === 1 && (
-                    <Tooltip title="Reagendar cita">
-                      <IconButton onClick={() => rescheduleAppointment()}>
-                        <Iconify icon="fluent-mdl2:date-time-12" width={22} />
-                      </IconButton>
-                    </Tooltip>
+      {open2 === false && (
+        <FormProvider methods={methods} onSubmit={onSubmit}>
+          {currentEvent?.id && (
+            <DialogTitle sx={{ p: { xs: 1, md: 2 } }}>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                useFlexGap
+                flexWrap="wrap"
+                sx={{ p: { xs: 1, md: 2 } }}
+              >
+                <Typography variant="h5" sx={{ display: 'flex', alignItems: 'end' }}>
+                  {currentEvent?.id ? 'DATOS DE CITA' : 'AGENDAR CITA'}
+                </Typography>
+                {currentEvent?.id &&
+                  (currentEvent?.estatus === 1 || currentEvent?.estatus === 6) && (
+                    <Stack sx={{ flexDirection: 'row' }}>
+                      {dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss') <
+                        dayjs(currentEvent.start)
+                          .subtract(3, 'hour')
+                          .format('YYYY-MM-DD HH:mm:ss') &&
+                        currentEvent?.estatus === 1 && (
+                          <Tooltip title="Reagendar cita">
+                            <IconButton onClick={() => rescheduleAppointment()}>
+                              <Iconify icon="fluent-mdl2:date-time-12" width={22} />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                      <Tooltip title="Cancelar cita">
+                        <IconButton onClick={() => setConfirmCancel(true)}>
+                          <Iconify icon="solar:trash-bin-trash-bold" width={22} />
+                        </IconButton>
+                      </Tooltip>
+                    </Stack>
                   )}
-                <Tooltip title="Cancelar cita">
-                  <IconButton onClick={() => setConfirmCancel(true)}>
-                    <Iconify icon="solar:trash-bin-trash-bold" width={22} />
-                  </IconButton>
-                </Tooltip>
               </Stack>
-            )}
-          </Stack>
-        </DialogTitle>
-        <DialogContent sx={{ p: { xs: 1, md: 2 } }} direction="row" justifycontent="space-between">
-          {currentEvent?.id ? (
+            </DialogTitle>
+          )}
+          {!reschedule && (
             <>
-              <Stack sx={{ p: { xs: 1, md: 2 } }}>
-                <Typography variant="subtitle1">{selectedDateTittle}</Typography>
-              </Stack>
-
-              <Stack
-                alignItems="center"
-                sx={{
-                  flexDirection: { sm: 'row', md: 'col' },
-                  px: { xs: 1, md: 2 },
-                  py: 1,
-                  alignItems: 'center',
-                }}
+              <DialogContent
+                // sx={{ p: { xs: 1, md: 2 } }}
+                sx={
+                  !currentEvent?.id && selectedValues.modalidad
+                    ? {
+                        p: { xs: 1, md: 2 },
+                        background: {
+                          xs: 'linear-gradient(180deg, #2c3239 54%, white 46%)',
+                          md: 'linear-gradient(90deg, #2c3239 50%, white 50%)',
+                        },
+                      }
+                    : { p: { xs: 1, md: 2 } }
+                }
+                direction="row"
+                justifycontent="space-between"
               >
-                <Iconify icon="mdi:account-circle" width={30} sx={{ color: 'text.disabled' }} />
-                {currentEvent?.estatus === 1 ? (
-                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                    Cita en {`${currentEvent?.beneficio} (por asistir)`}
-                  </Typography>
-                ) : (
-                  ''
-                )}
-                {currentEvent?.estatus === 2 || currentEvent?.estatus === '7' ? (
-                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                    Cita en {`${currentEvent?.beneficio} (cancelado)`}
-                  </Typography>
-                ) : (
-                  ''
-                )}
-                {currentEvent?.estatus === 3 ? (
-                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                    Cita en {`${currentEvent?.beneficio} (penalizado)`}
-                  </Typography>
-                ) : (
-                  ''
-                )}
-                {currentEvent?.estatus === 4 ? (
-                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                    Cita en {`${currentEvent?.beneficio} (finalizada)`}
-                  </Typography>
-                ) : (
-                  ''
-                )}
-                {currentEvent?.estatus === 5 ? (
-                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                    Cita en {`${currentEvent?.beneficio} (justificado)`}
-                  </Typography>
-                ) : (
-                  ''
-                )}
-                {currentEvent?.estatus === 6 ? (
-                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                    Cita en {`${currentEvent?.beneficio} (pendiente de pago)`}
-                  </Typography>
-                ) : (
-                  ''
-                )}
-                {currentEvent?.estatus === 8 ? (
-                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                    Cita en {`${currentEvent?.beneficio} (reagendado)`}
-                  </Typography>
-                ) : (
-                  ''
-                )}
-                {currentEvent?.estatus === 9 ? (
-                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                    Cita en {`${currentEvent?.beneficio} (cita expirada)`}
-                  </Typography>
-                ) : (
-                  ''
-                )}
-              </Stack>
-              <Stack
-                alignItems="center"
-                sx={{
-                  flexDirection: { sm: 'row', md: 'col' },
-                  px: { xs: 1, md: 2 },
-                  py: 1,
-                  alignItems: 'center',
-                }}
-              >
-                <Iconify icon="solar:user-id-broken" width={30} sx={{ color: 'text.disabled' }} />
-                <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                  {currentEvent?.especialista ? currentEvent?.especialista : 'Especialista'}
-                </Typography>
-              </Stack>
-              <Stack
-                alignItems="center"
-                sx={{
-                  flexDirection: { sm: 'row', md: 'col' },
-                  px: { xs: 1, md: 2 },
-                  py: 1,
-                  alignItems: 'center',
-                }}
-              >
-                <Iconify icon="mdi:phone" width={30} sx={{ color: 'text.disabled' }} />
-                <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                  {currentEvent?.telefonoEspecialista ? currentEvent?.telefonoEspecialista : 'n/a'}
-                </Typography>
-              </Stack>
-              <Stack
-                alignItems="center"
-                sx={{
-                  flexDirection: { sm: 'row', md: 'col' },
-                  px: { xs: 1, md: 2 },
-                  py: 1,
-                  alignItems: 'center',
-                }}
-              >
-                <Iconify icon="mdi:calendar-clock" width={30} sx={{ color: 'text.disabled' }} />
-                <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                  {currentEvent?.id
-                    ? `${dayjs(currentEvent?.start).format('HH:mm a')} - ${dayjs(
-                        currentEvent?.end
-                      ).format('HH:mm a')}`
-                    : 'Fecha'}
-                </Typography>
-              </Stack>
-              <Stack
-                alignItems="center"
-                sx={{
-                  flexDirection: { sm: 'row', md: 'col' },
-                  px: { xs: 1, md: 2 },
-                  py: 1,
-                  alignItems: 'center',
-                }}
-              >
-                {currentEvent?.modalidad === 1 ? (
+                {currentEvent?.id ? (
                   <>
-                    <Iconify icon="mdi:earth" width={30} sx={{ color: 'text.disabled' }} />
+                    <Stack sx={{ p: { xs: 1, md: 2 } }}>
+                      <Typography variant="subtitle1">{selectedDateTittle}</Typography>
+                    </Stack>
 
-                    <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                      {currentEvent?.sede ? currentEvent?.sede : 'Querétaro'}
-                    </Typography>
+                    <Stack
+                      alignItems="center"
+                      sx={{
+                        flexDirection: 'row',
+                        px: { xs: 1, md: 2 },
+                        py: 1,
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Iconify
+                        icon="mdi:account-circle"
+                        width={30}
+                        sx={{ color: 'text.disabled' }}
+                      />
+                      {currentEvent?.estatus === 1 ? (
+                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                          Cita en {`${currentEvent?.beneficio} (por asistir)`}
+                        </Typography>
+                      ) : (
+                        ''
+                      )}
+                      {currentEvent?.estatus === 2 || currentEvent?.estatus === '7' ? (
+                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                          Cita en {`${currentEvent?.beneficio} (cancelado)`}
+                        </Typography>
+                      ) : (
+                        ''
+                      )}
+                      {currentEvent?.estatus === 3 ? (
+                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                          Cita en {`${currentEvent?.beneficio} (penalizado)`}
+                        </Typography>
+                      ) : (
+                        ''
+                      )}
+                      {currentEvent?.estatus === 4 ? (
+                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                          Cita en {`${currentEvent?.beneficio} (finalizada)`}
+                        </Typography>
+                      ) : (
+                        ''
+                      )}
+                      {currentEvent?.estatus === 5 ? (
+                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                          Cita en {`${currentEvent?.beneficio} (justificado)`}
+                        </Typography>
+                      ) : (
+                        ''
+                      )}
+                      {currentEvent?.estatus === 6 ? (
+                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                          Cita en {`${currentEvent?.beneficio} (pendiente de pago)`}
+                        </Typography>
+                      ) : (
+                        ''
+                      )}
+                      {currentEvent?.estatus === 8 ? (
+                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                          Cita en {`${currentEvent?.beneficio} (reagendado)`}
+                        </Typography>
+                      ) : (
+                        ''
+                      )}
+                      {currentEvent?.estatus === 9 ? (
+                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                          Cita en {`${currentEvent?.beneficio} (cita expirada)`}
+                        </Typography>
+                      ) : (
+                        ''
+                      )}
+                    </Stack>
+                    <Stack
+                      alignItems="center"
+                      sx={{
+                        flexDirection: 'row',
+                        px: { xs: 1, md: 2 },
+                        py: 1,
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Iconify
+                        icon="solar:user-id-broken"
+                        width={30}
+                        sx={{ color: 'text.disabled' }}
+                      />
+                      <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                        {currentEvent?.especialista ? currentEvent?.especialista : 'Especialista'}
+                      </Typography>
+                    </Stack>
+                    <Stack
+                      alignItems="center"
+                      sx={{
+                        flexDirection: 'row',
+                        px: { xs: 1, md: 2 },
+                        py: 1,
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Iconify icon="mdi:phone" width={30} sx={{ color: 'text.disabled' }} />
+                      <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                        {currentEvent?.telefonoEspecialista
+                          ? currentEvent?.telefonoEspecialista
+                          : 'n/a'}
+                      </Typography>
+                    </Stack>
+                    <Stack
+                      alignItems="center"
+                      sx={{
+                        flexDirection: 'row',
+                        px: { xs: 1, md: 2 },
+                        py: 1,
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Iconify
+                        icon="mdi:calendar-clock"
+                        width={30}
+                        sx={{ color: 'text.disabled' }}
+                      />
+                      <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                        {currentEvent?.id
+                          ? `${dayjs(currentEvent?.start).format('HH:mm a')} - ${dayjs(
+                              currentEvent?.end
+                            ).format('HH:mm a')}`
+                          : 'Fecha'}
+                      </Typography>
+                    </Stack>
+                    <Stack
+                      alignItems="center"
+                      sx={{
+                        flexDirection: 'row',
+                        px: { xs: 1, md: 2 },
+                        py: 1,
+                        alignItems: 'center',
+                      }}
+                    >
+                      {currentEvent?.modalidad === 1 ? (
+                        <>
+                          <Iconify icon="mdi:earth" width={30} sx={{ color: 'text.disabled' }} />
+
+                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                            {currentEvent?.sede ? currentEvent?.sede : 'Querétaro'}
+                          </Typography>
+                        </>
+                      ) : (
+                        <>
+                          <Iconify icon="mdi:earth" width={30} sx={{ color: 'text.disabled' }} />
+
+                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                            {currentEvent?.sede ? `${currentEvent?.sede} (En línea)` : 'En línea'}
+                          </Typography>
+                        </>
+                      )}
+                    </Stack>
+                    <Stack
+                      alignItems="center"
+                      sx={{
+                        flexDirection: 'row',
+                        px: { xs: 1, md: 2 },
+                        py: 1,
+                        alignItems: 'center',
+                      }}
+                    >
+                      {currentEvent?.modalidad === 1 ? (
+                        <>
+                          <Iconify
+                            icon="ic:outline-place"
+                            width={30}
+                            sx={{ color: 'text.disabled' }}
+                          />
+
+                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                            {currentEvent?.ubicación
+                              ? currentEvent?.ubicación
+                              : 'Calle Callerinas, 00, Centro, 76000'}
+                          </Typography>
+                        </>
+                      ) : (
+                        <>
+                          <Iconify
+                            icon="ic:outline-place"
+                            width={30}
+                            sx={{ color: 'text.disabled' }}
+                          />
+
+                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                            {currentEvent?.ubicación
+                              ? currentEvent?.ubicación
+                              : 'Remoto (En línea)'}
+                          </Typography>
+                        </>
+                      )}
+                    </Stack>
+                    <Stack
+                      sx={{
+                        flexDirection: 'row',
+                        px: { xs: 1, md: 2 },
+                        py: 1,
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Stack>
+                        <Iconify
+                          icon="ic:outline-email"
+                          width={30}
+                          sx={{ color: 'text.disabled' }}
+                        />
+                      </Stack>
+                      <Stack sx={{ flexDirection: 'col' }}>
+                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                          {currentEvent?.correoEspecialista
+                            ? currentEvent?.correoEspecialista.toLowerCase()
+                            : 'correo-demo@ciudadmaderas.com.mx'}
+                        </Typography>
+                      </Stack>
+                    </Stack>
+                    <Stack
+                      sx={{
+                        flexDirection: 'row',
+                        px: { xs: 1, md: 2 },
+                        py: 1,
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Iconify
+                        icon="fa-solid:money-bill"
+                        width={30}
+                        sx={{ color: 'text.disabled' }}
+                      />
+
+                      <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                        {currentEvent?.idDetalle === null || currentEvent?.idDetalle === 0
+                          ? 'Sin pago'
+                          : 'Pagado'}
+                      </Typography>
+                    </Stack>
+                    {currentEvent?.fechasFolio && (
+                      <Stack
+                        flexDirection="row"
+                        flexWrap="wrap"
+                        flex={1}
+                        spacing={2}
+                        sx={{ px: { xs: 1, md: 2 }, py: 1 }}
+                      >
+                        <Stack spacing={2} direction="row">
+                          <Iconify
+                            icon="mdi:clock-remove-outline"
+                            width={30}
+                            sx={{ color: 'text.disabled' }}
+                          />
+                        </Stack>
+                        <Stack>
+                          {fechasFolio.map((fecha, i) => [
+                            i > 0 && '',
+                            <Typography
+                              key={i}
+                              style={{ textDecoration: 'line-through' }}
+                              fontSize="90%"
+                            >
+                              {fecha}
+                            </Typography>,
+                          ])}
+                        </Stack>
+                      </Stack>
+                    )}
+                    {currentEvent?.estatus === 4 ? (
+                      <Stack spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1 }}>
+                        <Stack direction="row" sx={{ alignItems: 'center' }}>
+                          <Iconify
+                            icon="solar:chat-round-line-outline"
+                            width={30}
+                            sx={{ color: 'text.disabled' }}
+                          />
+                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                            Motivos
+                          </Typography>
+                        </Stack>
+                        <Stack
+                          flexDirection="row"
+                          flexWrap="wrap"
+                          flex={1}
+                          spacing={2}
+                          sx={{ px: { xs: 1, md: 3 }, py: 1 }}
+                        >
+                          <Items />
+                        </Stack>
+                      </Stack>
+                    ) : (
+                      ''
+                    )}
                   </>
                 ) : (
-                  <>
-                    <Iconify icon="mdi:earth" width={30} sx={{ color: 'text.disabled' }} />
-
-                    <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                      {currentEvent?.sede ? `${currentEvent?.sede} (En línea)` : 'En línea'}
-                    </Typography>
-                  </>
+                  <AppointmentSchedule
+                    selectedValues={selectedValues}
+                    handleChange={handleChange}
+                    beneficios={beneficios}
+                    errorBeneficio={errorBeneficio}
+                    especialistas={especialistas}
+                    errorEspecialista={errorEspecialista}
+                    modalidades={modalidades}
+                    errorModalidad={errorModalidad}
+                    oficina={oficina}
+                    isLoading={isLoading}
+                    handleDateChange={handleDateChange}
+                    shouldDisableDate={shouldDisableDate}
+                    horariosDisponibles={horariosDisponibles}
+                    horarioSeleccionado={horarioSeleccionado}
+                    errorHorarioSeleccionado={errorHorarioSeleccionado}
+                    btnDisabled={btnDisabled}
+                    handleHorarioSeleccionado={handleHorarioSeleccionado}
+                  />
                 )}
-              </Stack>
-              <Stack
-                alignItems="center"
-                sx={{
-                  flexDirection: { sm: 'row', md: 'col' },
-                  px: { xs: 1, md: 2 },
-                  py: 1,
-                  alignItems: 'center',
-                }}
+              </DialogContent>
+              <DialogActions
+                sx={
+                  !currentEvent?.id && selectedValues.modalidad
+                    ? {
+                        background: {
+                          xs: 'white',
+                          md: 'linear-gradient(90deg, #2c3239 50%, white 50%)',
+                        },
+                      }
+                    : {}
+                }
               >
-                {currentEvent?.modalidad === 1 ? (
-                  <>
-                    <Iconify icon="ic:outline-place" width={30} sx={{ color: 'text.disabled' }} />
-
-                    <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                      {currentEvent?.ubicación
-                        ? currentEvent?.ubicación
-                        : 'Calle Callerinas, 00, Centro, 76000'}
-                    </Typography>
-                  </>
-                ) : (
-                  <>
-                    <Iconify icon="ic:outline-place" width={30} sx={{ color: 'text.disabled' }} />
-
-                    <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                      {currentEvent?.ubicación ? currentEvent?.ubicación : 'Remoto (En línea)'}
-                    </Typography>
-                  </>
-                )}
-              </Stack>
-              <Stack
-                sx={{
-                  flexDirection: 'row',
-                  px: { xs: 1, md: 2 },
-                  py: 1,
-                  alignItems: 'center',
-                }}
-              >
-                <Stack>
-                  <Iconify icon="ic:outline-email" width={30} sx={{ color: 'text.disabled' }} />
-                </Stack>
-                <Stack sx={{ flexDirection: 'col' }}>
-                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                    {currentEvent?.correoEspecialista
-                      ? currentEvent?.correoEspecialista.toLowerCase()
-                      : 'correo-demo@ciudadmaderas.com.mx'}
-                  </Typography>
-                </Stack>
-              </Stack>
-              <Stack
-                sx={{
-                  flexDirection: 'row',
-                  px: { xs: 1, md: 2 },
-                  py: 1,
-                  alignItems: 'center',
-                }}
-              >
-                <Iconify icon="fa-solid:money-bill" width={30} sx={{ color: 'text.disabled' }} />
-
-                <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                  {currentEvent?.estatus === 6 ? 'Pendiente de pago' : 'Pagado'}
-                </Typography>
-              </Stack>
-              {currentEvent?.fechasFolio && (
-                <Stack
-                  flexDirection="row"
-                  flexWrap="wrap"
-                  flex={1}
-                  spacing={2}
-                  sx={{ px: { xs: 1, md: 2 }, py: 1 }}
-                >
-                  <Stack spacing={2} direction="row">
-                    <Iconify
-                      icon="mdi:clock-remove-outline"
-                      width={30}
-                      sx={{ color: 'text.disabled' }}
-                    />
-                  </Stack>
-                  <Stack>
-                    {fechasFolio.map((fecha, i) => [
-                      i > 0 && '',
-                      <Typography key={i} style={{ textDecoration: 'line-through' }} fontSize="90%">
-                        {fecha}
-                      </Typography>,
-                    ])}
-                  </Stack>
-                </Stack>
-              )}
-              {currentEvent?.estatus === 4 ? (
-                <Stack spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1 }}>
-                  <Stack direction="row" sx={{ alignItems: 'center' }}>
-                    <Iconify
-                      icon="solar:chat-round-line-outline"
-                      width={30}
-                      sx={{ color: 'text.disabled' }}
-                    />
-                    <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                      Motivos
-                    </Typography>
-                  </Stack>
-                  <Stack
-                    flexDirection="row"
-                    flexWrap="wrap"
-                    flex={1}
-                    spacing={2}
-                    sx={{ px: { xs: 1, md: 3 }, py: 1 }}
+                <Button variant="contained" color="error" onClick={onClose}>
+                  Cerrar
+                </Button>
+                {currentEvent?.id && currentEvent?.estatus === 6 && (
+                  <Button
+                    variant="contained"
+                    color="success"
+                    disabled={currentEvent?.estatus !== 6}
+                    onClick={onPay}
                   >
-                    <Items />
-                  </Stack>
-                </Stack>
-              ) : (
-                ''
-              )}
+                    Pagar
+                  </Button>
+                )}
+                {!currentEvent?.id && (
+                  <LoadingButton
+                    type="submit"
+                    variant="contained"
+                    color="success"
+                    loading={btnDisabled}
+                  >
+                    Agendar
+                  </LoadingButton>
+                )}
+              </DialogActions>
             </>
-          ) : (
-            <AppointmentSchedule
-              selectedValues={selectedValues}
-              handleChange={handleChange}
-              beneficios={beneficios}
-              errorBeneficio={errorBeneficio}
-              especialistas={especialistas}
-              errorEspecialista={errorEspecialista}
-              modalidades={modalidades}
-              errorModalidad={errorModalidad}
-              infoContact={infoContact}
-              oficina={oficina}
-              isLoading={isLoading}
-              handleDateChange={handleDateChange}
-              shouldDisableDate={shouldDisableDate}
-              horariosDisponibles={horariosDisponibles}
-              horarioSeleccionado={horarioSeleccionado}
-              setHorarioSeleccionado={setHorarioSeleccionado}
-              errorHorarioSeleccionado={errorHorarioSeleccionado}
-            />
           )}
-        </DialogContent>
+        </FormProvider>
+      )}
 
-        <DialogActions>
-          <Button variant="contained" color="error" onClick={onClose}>
-            Cerrar
-          </Button>
-          {currentEvent?.id && currentEvent?.estatus === 6 && (
-            <Button
-              variant="contained"
-              color="success"
-              disabled={currentEvent?.estatus !== 6}
-              onClick={onPay}
-            >
-              Pagar
-            </Button>
-          )}
-          {!currentEvent?.id && (
-            <LoadingButton type="submit" variant="contained" color="success">
-              Agendar
-            </LoadingButton>
-          )}
-        </DialogActions>
-      </FormProvider>
       <Dialog
         open={open}
         maxWidth="sm"
@@ -1488,59 +1621,80 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         </DialogContent>
       </Dialog>
 
-      <Dialog
-        fullWidth
-        maxWidth="md"
-        open={reschedule}
-        aria-labelledby="alert-dialog-title1"
-        aria-describedby="alert-dialog-description1"
-      >
-        <DialogTitle sx={{ p: { xs: 1, md: 2 } }}>
-          <Stack
+      {/* REAGENDAR CITA */}
+      <FormProvider>
+        <Dialog
+          fullWidth
+          maxWidth="md"
+          open={reschedule}
+          aria-labelledby="alert-dialog-title1"
+          aria-describedby="alert-dialog-description1"
+        >
+          <DialogContent
+            sx={
+              // !currentEvent?.id && selectedValues.modalidad ?
+              {
+                p: { xs: 1, md: 2 },
+                background: {
+                  xs: 'linear-gradient(180deg, #2c3239 54%, white 46%)',
+                  md: 'linear-gradient(90deg, #2c3239 50%, white 50%)',
+                },
+                position: 'relative',
+                display: { xs: 'inline-table' },
+              }
+              //  : { p: { xs: 1, md: 2 } }
+            }
             direction="row"
-            justifyContent="space-between"
-            useFlexGap
-            flexWrap="wrap"
-            sx={{ p: { xs: 1, md: 2 } }}
+            justifycontent="space-between"
           >
-            <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center' }}>
-              REAGENDAR CITA
-            </Typography>
-          </Stack>
-        </DialogTitle>
-        <DialogContent sx={{ p: { xs: 1, md: 2 } }} direction="row" justifycontent="space-between">
-          <AppointmentSchedule
-            selectedValues={selectedValues}
-            handleChange={handleChange}
-            beneficios={beneficios}
-            errorBeneficio={errorBeneficio}
-            especialistas={especialistas}
-            errorEspecialista={errorEspecialista}
-            modalidades={modalidades}
-            errorModalidad={errorModalidad}
-            infoContact={infoContact}
-            oficina={oficina}
-            isLoading={isLoading}
-            handleDateChange={handleDateChange}
-            shouldDisableDate={shouldDisableDate}
-            horariosDisponibles={horariosDisponibles}
-            horarioSeleccionado={horarioSeleccionado}
-            setHorarioSeleccionado={setHorarioSeleccionado}
-            errorHorarioSeleccionado={errorHorarioSeleccionado}
-            currentEvent={currentEvent}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button variant="contained" color="error" onClick={() => setReschedule(false)}>
-            Cerrar
-          </Button>
-          {currentEvent?.id && (
-            <Button variant="contained" color="success" onClick={handleReSchedule}>
-              Reagendar
+            <AppointmentSchedule
+              selectedValues={selectedValues}
+              handleChange={handleChange}
+              beneficios={beneficios}
+              errorBeneficio={errorBeneficio}
+              especialistas={especialistas}
+              errorEspecialista={errorEspecialista}
+              modalidades={modalidades}
+              errorModalidad={errorModalidad}
+              oficina={oficina}
+              isLoading={isLoading}
+              handleDateChange={handleDateChange}
+              shouldDisableDate={shouldDisableDate}
+              horariosDisponibles={horariosDisponibles}
+              horarioSeleccionado={horarioSeleccionado}
+              errorHorarioSeleccionado={errorHorarioSeleccionado}
+              currentEvent={currentEvent}
+              handleHorarioSeleccionado={handleHorarioSeleccionado}
+            />
+          </DialogContent>
+          <DialogActions
+            sx={
+              // !currentEvent?.id && selectedValues.modalidad ?
+              {
+                background: {
+                  xs: 'white',
+                  md: 'linear-gradient(90deg, #2c3239 50%, white 50%)',
+                },
+              }
+              //    : {}
+            }
+          >
+            <Button variant="contained" color="error" onClick={() => setReschedule(false)}>
+              Cerrar
             </Button>
-          )}
-        </DialogActions>
-      </Dialog>
+            {currentEvent?.id && (
+              <LoadingButton
+                variant="contained"
+                color="success"
+                onClick={handleReSchedule}
+                loading={btnDisabled}
+              >
+                Reagendar
+              </LoadingButton>
+            )}
+          </DialogActions>
+        </Dialog>
+      </FormProvider>
 
       <Dialog open={confirmCancel} maxWidth="sm">
         <DialogContent>
@@ -1562,13 +1716,25 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
           <Button variant="contained" color="error" onClick={() => setConfirmCancel(false)}>
             Cerrar
           </Button>
-          <Button variant="contained" color="success" onClick={onCancel} autoFocus>
+          <LoadingButton
+            variant="contained"
+            color="success"
+            onClick={onCancel}
+            loading={btnConfirmAction}
+            autoFocus
+          >
             Aceptar
-          </Button>
+          </LoadingButton>
         </DialogActions>
       </Dialog>
 
-      <CalendarPreview event={event} open={open2} handleClose={handleClose} />
+      <CalendarPreview
+        event={event}
+        open={open2}
+        handleClose={handleClose}
+        btnNotificationDisabled={btnNotificationDisabled}
+        setBtnNotificationDisabled={setBtnNotificationDisabled}
+      />
     </>
   );
 }

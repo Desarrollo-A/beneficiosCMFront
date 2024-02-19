@@ -31,4 +31,5 @@ export default function RHFDatePicker({ name, label, value, ...other }) {
 RHFDatePicker.propTypes = {
   label: PropTypes.string,
   name: PropTypes.string,
+  value: PropTypes.any
 };

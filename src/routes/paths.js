@@ -132,7 +132,7 @@ export const paths = {
       sedes: `${ROOTS.DASHBOARD}/gestor/sedes`,
     },
     privacidad: {
-      aprivacidad: `${ROOTS.DASHBOARD}/privacidad/administrar`
+      aprivacidad: `${ROOTS.DASHBOARD}/privacidad/administrar`,
     },
     user: {
       root: `${ROOTS.DASHBOARD}/user`,
@@ -205,7 +205,7 @@ export const paths = {
     usuariosexternos: {
       root: `${ROOTS.DASHBOARD}/usuarios`,
       new: `${ROOTS.DASHBOARD}/usuarios/new`,
-      perfil: `${ROOTS.DASHBOARD}/usuarios/perfil`,
+      perfil: `${ROOTS.DASHBOARD}/usuariosexternos/perfil`,
     },
   },
 };

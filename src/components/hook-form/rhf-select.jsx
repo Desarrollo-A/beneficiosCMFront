@@ -69,6 +69,7 @@ RHFSelect.propTypes = {
   maxHeight: PropTypes.number,
   name: PropTypes.string,
   native: PropTypes.bool,
+  value: PropTypes.any
 };
 
 // ----------------------------------------------------------------------
@@ -151,5 +152,5 @@ RHFMultiSelect.propTypes = {
   label: PropTypes.string,
   name: PropTypes.string,
   options: PropTypes.array,
-  placeholder: PropTypes.string,
+  placeholder: PropTypes.string
 };

@@ -13,3 +13,7 @@ export const validarCorreo = (correo) => {
   // Verificar si el correo cumple con el patrón de la expresión regular
   return regexCorreo.test(correo);
 };
+
+export const parseStartDate = (value, originalValue) => originalValue.toISOString();
+
+export const parseEndDate = (value, originalValue) => originalValue.toISOString();

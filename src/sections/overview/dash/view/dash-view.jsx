@@ -15,8 +15,10 @@ import { endpoints } from 'src/utils/axios';
 
 import { bgGradient } from 'src/theme/css';
 import { useAuthContext } from 'src/auth/hooks';
+import { useGetMeta } from 'src/api/especialistas';
 import { SeoIllustration } from 'src/assets/illustrations';
 import { useGetGeneral, usePostGeneral } from 'src/api/general';
+
 // import { _appAuthors, _appRelated, _appFeatured, _appInvoices, _appInstalled } from 'src/_mock';
 
 import { useSettingsContext } from 'src/components/settings';
@@ -25,6 +27,7 @@ import AppWelcome from '../app-welcome';
 import WidgetConteo from '../widget-conteo';
 import GraficaMetas from '../grafica-metas';
 import EncuestaBarra from '../barra-encuesta';
+import GraficaMetasArea from '../grafica-metas-area';
 // import AppTopRelated from '../app-top-related';
 import EncuestaPorcentaje from '../porcentaje-encuesta';
 
@@ -104,7 +107,7 @@ export default function DashView() {
 
   const [espe, setEspe] = useState({ idData: idDt, idRol: user.idRol });
 
-  const [meta, setMeta] = useState({
+  const [ setMeta] = useState({
     idData: idDt,
     idRol: user.idRol,
     inicio: trimStart,
@@ -127,7 +130,9 @@ export default function DashView() {
 
   const { penalizadaData } = usePostGeneral(espe, endpoints.dashboard.getCtPenalizadas, "penalizadaData");
 
-  const { metasData } = usePostGeneral(meta, endpoints.dashboard.getMetas, "metasData");
+  // const { metasData } = usePostGeneral(meta, endpoints.dashboard.getMetas, "metasData");
+
+  const { meta: metaData } = useGetMeta({especialista : user.idUsuario})
 
   const [pgDt, setPgDt] = useState('');
 
@@ -247,29 +252,6 @@ export default function DashView() {
     })
   );
 
-  function metasDate() {
-
-    let totMeta = 0;
-
-    if (areas === 158 && user.idUsuario === 40) {
-      totMeta = 360;
-    } else if (areas === 158) {
-      totMeta = 240;
-    } else if (areas === 537) {
-      totMeta = 100;
-    } else if (areas === 686) {
-      totMeta = 40;
-    } else if (areas === 585) {
-      totMeta = 80;
-    }
-
-    return {
-      totalMeta: totMeta
-    };
-  }
-
-  const { totalMeta } = metasDate();
-
   const handleChangeArea = (event) => {
 
     setAreas(event.target.value);
@@ -375,7 +357,7 @@ export default function DashView() {
               <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
-                value={areas}
+                value={!areas ? '' : areas}
                 label="Área"
                 onChange={(e) => handleChangeArea(e)}
               >
@@ -439,20 +421,16 @@ export default function DashView() {
 
           {rol === "1" || rol === 1 || rol === "3" || rol === 3 || rol === "4" || rol === 4 ? (
             <>
-
-              {metasData.map((i, index) => (
-                <Grid xs={12} sm={6} md={4} key={index}>
-                  <GraficaMetas
-                    title="Meta de citas"
-                    chart={{
-                      series: [
-                        { label: 'Citas', value: i.citas },
-                        { label: 'Faltantes', value: totalMeta - i.citas },
-                      ],
-                    }}
-                  />
+              {user.idRol === 1 && user.idAreaBeneficio ?
+                <Grid xs={12}>
+                  <GraficaMetasArea />
                 </Grid>
-              ))}
+              : null }
+              {user.idRol === 3 && metaData ?
+                <Grid xs={12} sm={6} md={4}>
+                  <GraficaMetas data={metaData} />
+                </Grid>
+              : null}
 
               {sn === 0 ? (
                 <Grid xs={12} sm={6} md={8}>

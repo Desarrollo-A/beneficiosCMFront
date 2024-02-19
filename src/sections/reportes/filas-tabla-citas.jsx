@@ -20,7 +20,7 @@ export default function FilasTabla({ row, selected, rol, rel }) {
     idColab,
     especialista,
     oficina,
-    area,
+    depto,
     sede,
     paciente,
     estatus,
@@ -30,38 +30,9 @@ export default function FilasTabla({ row, selected, rol, rel }) {
     motivoCita,
     metodoPago,
     estatusCita,
-    fechaModificacion,
     pagoGenerado
   } = row;
-
   const quickEdit = useBoolean();
-
-  let espe = Boolean(true);
-
-  let paci = Boolean(true);
-
-  if (rol === 1 || rol === "1") {
-    espe = false
-  }
-
-  if (rol === 2 || rol === "2") {
-    paci = false
-  }
-
-  function indicador(secondDate) {
-    const currentDate = new Date();
-
-    const currentMonth = currentDate.getMonth();
-    const secondDateMonth = secondDate.getMonth();
-
-    // Calcular la diferencia en meses entre la fecha actual y la segunda fecha
-    const monthDifference = currentMonth - secondDateMonth;
-    return monthDifference >= 2;
-  }
-
-  // Ejemplo de uso
-  const secondDate = new Date(fechaModificacion); // Suponiendo que esta es la segunda fecha
-  const result = indicador(secondDate);
 
   return (
     <>
@@ -70,13 +41,19 @@ export default function FilasTabla({ row, selected, rol, rel }) {
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{idColab}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }} style={{ display: espe ? '' : 'none' }}>{especialista}</TableCell>
+        {rol !== 3 ? (
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }} style={{ display: paci ? '' : 'none' }}>{paciente}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{especialista}</TableCell>
+
+        ):(
+          null
+        )}
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }} >{paciente}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{oficina}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{area}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{depto}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{sede}</TableCell>
 

@@ -91,10 +91,10 @@ export default function EditarDias({ open, onClose, idEncuesta }) {
 
       <Stack spacing={1} >
 
-      <DialogTitle>¿Estás de modificar los días habiles de la encuesta?</DialogTitle>
+      <DialogTitle>¿Estás de modificar los días hábiles de la encuesta?</DialogTitle>
 
         <FormControl spacing={3} sx={{ p: 3 }}>
-          <InputLabel spacing={3} sx={{ p: 3 }} id="demo-simple-select-label">Dias para constestar</InputLabel>
+          <InputLabel spacing={3} sx={{ p: 3 }} id="demo-simple-select-label">Días para constestar</InputLabel>
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"

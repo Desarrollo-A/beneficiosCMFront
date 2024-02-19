@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
@@ -32,6 +31,14 @@ export default function ModalEspecialista({ open, onClose, id, estatusVal, puest
 
   const [estatus, setEstatus] = useState('');
 
+  let val = true;
+
+  if(espeData.length === 1  && espeData[0]?.nombre === estatusVal){
+    val = false;
+  }else if(espeData.length !== 1  && espeData[0]?.nombre !== estatusVal){
+    val = true;
+  }
+
   const handleChange = (event) => {
     setEstatus(event.target.value);
   }
@@ -52,8 +59,6 @@ export default function ModalEspecialista({ open, onClose, id, estatusVal, puest
         onClose();
 
         const update = await updateEstatus(data);
-
-        console.log(data)
 
         if (update.estatus === true) {
           enqueueSnackbar(update.msj, { variant: 'success' });
@@ -77,56 +82,63 @@ export default function ModalEspecialista({ open, onClose, id, estatusVal, puest
   }
 
   return (
-    <Dialog
-      fullWidth
-      maxWidth={false}
-      open={open}
-      onClose={onClose}
-      PaperProps={{
-        sx: { maxWidth: 720 },
-      }}
-    >
 
-      <Stack spacing={1} >
+    <>
 
-        <DialogTitle>¿Estás seguro que deseas cambiar al especialista?</DialogTitle>
+      { val === true ? (
 
-        <FormControl spacing={3} sx={{ p: 3 }}>
+        <>
+          <Stack spacing={1} >
 
-          <InputLabel spacing={3} sx={{ p: 3 }} id="demo-simple-select-label">Especialista</InputLabel>
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            label="Especialista"
-            value={estatus}
-            onChange={(e) => handleChange(e)}
-          >
-            {espeData.map((i) => (
-              i.nombre === estatusVal ? null : (
-                <MenuItem key={i.idUsuario} value={i.idUsuario}>
-                  {i.nombre}
-                </MenuItem>
-              )
-            ))}
-          </Select>
+            <DialogTitle>¿Estás seguro que deseas cambiar al especialista?</DialogTitle>
 
-        </FormControl>
+            <FormControl spacing={3} sx={{ p: 3 }}>
 
-      </Stack>
+              <InputLabel spacing={3} sx={{ p: 3 }} id="demo-simple-select-label">Especialista</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                label="Especialista"
+                value={estatus}
+                onChange={(e) => handleChange(e)}
+              >
+                {espeData.map((i) => (
+                  i.nombre === estatusVal ? null : (
+                    <MenuItem key={i.idUsuario} value={i.idUsuario}>
+                      {i.nombre}
+                    </MenuItem>
+                  )
+                ))}
+              </Select>
 
-      <DialogActions>
-        <Button variant="contained" color="error" onClick={onClose}>
-          Cerrar
-        </Button>
-        <Button variant="contained" color="success" onClick={() => {
-          handleEstatus(estatus);
-          confirm.onFalse();
-        }}>
-          Guardar
-        </Button>
-      </DialogActions>
+            </FormControl>
 
-    </Dialog>
+          </Stack>
+
+          <DialogActions>
+            <Button variant="contained" color="error" onClick={onClose}>
+              Cerrar
+            </Button>
+            <Button variant="contained" color="success" onClick={() => {
+              handleEstatus(estatus);
+              confirm.onFalse();
+            }}>
+              Guardar
+            </Button>
+          </DialogActions>
+        </>
+      ) : (
+        <>
+          <DialogTitle>No hay más especialistas para cambiar</DialogTitle>
+          <DialogActions>
+            <Button variant="contained" color="error" onClick={onClose}>
+              Cerrar
+            </Button>
+          </DialogActions>
+        </>
+      )}
+
+    </>
 
   );
 }

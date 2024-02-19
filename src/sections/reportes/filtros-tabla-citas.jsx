@@ -14,6 +14,7 @@ import { shortDateLabel } from 'src/components/custom-date-range-picker';
 export default function FiltrosTabla({
   filters,
   onFilters,
+  rol,
   //
   onResetFilters,
   //
@@ -58,12 +59,18 @@ export default function FiltrosTabla({
           </Block>
         )}
 
-        {!!filters.area.length && (
-          <Block label="Área:">
-            {filters.area.map((item) => (
-              <Chip key={item} label={item} size="small" onDelete={() => handleRemoveRole(item)} />
-            ))}
-          </Block>
+        {rol !== 1 ? (
+          <>
+            {!!filters.area.length && (
+              <Block label="Área:">
+                {filters.area.map((item) => (
+                  <Chip key={item} label={item} size="small" onDelete={() => handleRemoveRole(item)} />
+                ))}
+              </Block>
+            )}
+          </>
+        ) : (
+          null
         )}
 
         {!!filters.especialista.length && (
@@ -97,6 +104,7 @@ FiltrosTabla.propTypes = {
   onFilters: PropTypes.func,
   onResetFilters: PropTypes.func,
   results: PropTypes.number,
+  rol: PropTypes.any,
 };
 
 // ----------------------------------------------------------------------

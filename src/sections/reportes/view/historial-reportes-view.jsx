@@ -164,6 +164,8 @@ export default function HistorialReportesView() {
 
   const [dataValue, setReportData] = useState('general');
 
+  const { espeUserData } = usePostGeneral(user.idUsuario, endpoints.reportes.getEspeUser, "espeUserData");
+
   const { reportesData } = usePostGeneral(dataValue, endpoints.reportes.lista, "reportesData");
 
   const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
@@ -173,6 +175,10 @@ export default function HistorialReportesView() {
   const [especialistas, setEspecialistas] = useState([]);
 
   const _rp = especialistas.flatMap((es) => (es.nombre));
+
+  const _eu = espeUserData.flatMap((es) => (es.puesto));
+
+  defaultFilters.area = rol !== 4 ? _eu : [];
 
   const table = useTable();
 
@@ -206,18 +212,10 @@ export default function HistorialReportesView() {
     /* { id: '', width: 88 }, */
   ];
 
-  if (rol === "1") {
+  if (rol === "3" || rol === 3) {
 
     TABLE_BASE.splice(1, 1);
     headerBase.splice(1, 1);
-
-    TABLE_HEAD = TABLE_BASE;
-    header = headerBase;
-
-  } else if (rol === "2") {
-
-    TABLE_BASE.splice(2, 1);
-    headerBase.splice(2, 1);
 
     TABLE_HEAD = TABLE_BASE;
     header = headerBase;
@@ -347,6 +345,7 @@ export default function HistorialReportesView() {
             table={table}
             tot={dataFiltered.length}
             dataValue={dataValue}
+            rol={rol}
           />
 
           {canReset && (
@@ -355,6 +354,7 @@ export default function HistorialReportesView() {
               onFilters={handleFilters}
               //
               onResetFilters={handleResetFilters}
+              rol={rol}
               //
               results={dataFiltered.length}
               sx={{ p: 2.5, pt: 0 }}

@@ -1,16 +1,16 @@
 import { useState } from 'react';
 
-import Container from '@mui/material/Container';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-
-import { useSettingsContext } from 'src/components/settings';
-import { Calendar } from 'src/components/calendar'
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetHorariosPresenciales } from 'src/api/especialistas'
+
+import { Calendar } from 'src/components/calendar'
+import { useSettingsContext } from 'src/components/settings';
 
 import AgendaDialog from './agenda-dialog';
 
@@ -36,9 +36,9 @@ export default function AgendaView(){
     setOpenDialog(true);
   }
 
-  const onSelectRange = (start, end) => {
-    setStart(start);
-    setEnd(end);
+  const onSelectRange = (startNew, endNew) => {
+    setStart(startNew);
+    setEnd(endNew);
     setOpenDialog(true);
   }
 
@@ -60,7 +60,6 @@ export default function AgendaView(){
   }
 
   return(
-    <>
       <Container maxWidth={settings.themeStretch ? false : 'xl'}>
         <Stack
           alignItems="center"
@@ -91,6 +90,5 @@ export default function AgendaView(){
           sede={sede}
         />
       </Container>
-    </>
   )
 }

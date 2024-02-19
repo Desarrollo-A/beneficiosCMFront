@@ -1,3 +1,4 @@
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import Stack from '@mui/material/Stack';
@@ -20,8 +21,6 @@ export default function UserQuickEditForm({ open, onClose, idEncuesta }) {
 
   const { Resp1Data } = useGetGeneral(endpoints.encuestas.getResp1, "Resp1Data");
 
-  console.log(Resp1Data)
-
   const { Resp2Data } = useGetGeneral(endpoints.encuestas.getResp2, "Resp2Data");
 
   const { Resp3Data } = useGetGeneral(endpoints.encuestas.getResp3, "Resp3Data");
@@ -42,9 +41,9 @@ export default function UserQuickEditForm({ open, onClose, idEncuesta }) {
       <DialogTitle>Encuesta</DialogTitle>
 
       <Stack spacing={1} >
-        {encuestaData.map((item) => (
+        {encuestaData.map((item, index) => (
 
-          <>
+          <React.Fragment key={index}>
 
             <DialogContent style={{fontWeight:'bold'}}>
               {item.pregunta}
@@ -75,7 +74,7 @@ export default function UserQuickEditForm({ open, onClose, idEncuesta }) {
             )}
 
             <Divider sx={{ my: 1, borderStyle: 'dashed' }} />
-          </>
+          </ React.Fragment>
         ))}
 
       </Stack>

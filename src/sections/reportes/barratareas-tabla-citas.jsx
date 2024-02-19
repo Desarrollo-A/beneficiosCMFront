@@ -1,14 +1,12 @@
-import sumBy from 'lodash/sumBy';
 import PropTypes from 'prop-types';
 import { useState, useEffect, useCallback } from 'react';
 
 import Stack from '@mui/material/Stack';
 import Select from '@mui/material/Select';
-import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
 import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
-import { useTheme } from '@mui/material/styles';
+import Grid from '@mui/material/Unstable_Grid2';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import OutlinedInput from '@mui/material/OutlinedInput';
@@ -18,11 +16,16 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { endpoints } from 'src/utils/axios';
 
 import { usePostGeneral } from 'src/api/general';
+import {
+  BookingIllustration,
+  CheckInIllustration,
+} from 'src/assets/illustrations';
 
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
-import InvoiceAnalytic from './invoice-analytic';
+import WidgetIngresos from './widget-ingresos';
+import WidgetPacientes from './widget-pacientes';
 
 // ----------------------------------------------------------------------
 
@@ -33,11 +36,10 @@ export default function BarraTareasTabla({
   roleOptions,
   handleChangeReport,
   table,
-  dataValue
+  dataValue,
+  rol,
 }) {
   const popover = usePopover();
-
-  const theme = useTheme();
 
   const diaActual = new Date().toISOString().split('T')[0];
 
@@ -54,7 +56,7 @@ export default function BarraTareasTabla({
 
   const diaUnoMes = formatFirstDayOfMonth();
 
-  const [area, setArea] = useState([0]);
+  const [area, setArea] = useState([filters.area]);
 
   const [fechaI, setFechaI] = useState(diaUnoMes);
 
@@ -75,15 +77,19 @@ export default function BarraTareasTabla({
       fhF: fechaF,
     });
 
-    if (dt?.esp[0] === 0) {
+  if(rol !== 1){
+    if (dt?.esp[0]?.length === 0) {
       setCondi(true);
     } else if (dt.esp.length === 0) {
       setCondi(true);
     } else if (dt.esp.length > 0) {
       setCondi(false);
-    }
+    } 
+  }else{
+    setCondi(false);
+  }
 
-  }, [area, fechaI, fechaF, dt.esp]);
+  }, [area, fechaI, fechaF, dt.esp, rol]);
 
   const { cPaciData } = usePostGeneral(dt, endpoints.reportes.getCierrePacientes, "cPaciData");
 
@@ -162,38 +168,37 @@ export default function BarraTareasTabla({
 
   const _esp = espData.flatMap((i) => (i.nombre));
 
-  console.log(dataValue)
+  const SPACING = 3;
 
   return (
     <>
 
       {dataValue === 'general' ? (
-        <Stack
-          direction="row"
-          divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
-          sx={{ py: 2 }}
-        >
-          <InvoiceAnalytic
-            title="Total de pacientes"
-            total={_pa}
-            percent={100}
-            price={sumBy(0, 'totalAmount')}
-            icon="fa-solid:users"
-            color={theme.palette.info.main}
-          />
 
-          <InvoiceAnalytic
-            title="Total de ingresos"
-            percent={100}
-            price={_in}
-            icon="dashicons:money-alt"
-            color={theme.palette.success.main}
-          />
+        <Stack
+          spacing={2}
+          sx={{
+            p: 2.5,
+            pr: { xs: 2.5, md: 2.5 },
+          }}
+        >
+          <Grid container spacing={SPACING} disableEqualOverflow>
+            <Grid xs={12} md={6}>
+              <WidgetPacientes title="Total de pacientes" total={_pa} icon={<BookingIllustration />} />
+            </Grid>
+
+            <Grid xs={12} md={6}>
+              <WidgetIngresos title="Total de ingresos" total={_in} icon={<CheckInIllustration />} />
+            </Grid>
+          </Grid>
+
         </Stack>
 
       ) : (
         null
       )}
+
+      
 
       <Stack
         spacing={2}
@@ -233,34 +238,40 @@ export default function BarraTareasTabla({
           </TextField>
         </FormControl>
 
-        <FormControl
-          sx={{
-            flexShrink: 0,
-            width: { xs: 1, md: 200 },
-          }}
-        >
-          <InputLabel>Área</InputLabel>
+        {rol === "4" || rol === 4 ? (
 
-          <Select
-            multiple
-            value={filters.area}
-            onChange={handleFilterRole}
-            input={<OutlinedInput label="Área" />}
-            renderValue={(selected) => selected.map((value) => value).join(', ')}
-            MenuProps={{
-              PaperProps: {
-                sx: { maxHeight: 240 },
-              },
+          <FormControl
+            sx={{
+              flexShrink: 0,
+              width: { xs: 1, md: 200 },
             }}
           >
-            {roleOptions.map((option, index) => (
-              <MenuItem key={index} value={option}>
-                <Checkbox disableRipple size="small" checked={filters.area.includes(option)} />
-                {option}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+            <InputLabel>Área</InputLabel>
+
+            <Select
+              multiple
+              value={filters.area}
+              onChange={handleFilterRole}
+              input={<OutlinedInput label="Área" />}
+              renderValue={(selected) => selected.map((value) => value).join(', ')}
+              MenuProps={{
+                PaperProps: {
+                  sx: { maxHeight: 240 },
+                },
+              }}
+            >
+              {roleOptions.map((option, index) => (
+                <MenuItem key={index} value={option}>
+                  <Checkbox disableRipple size="small" checked={filters.area.includes(option)} />
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+        ) : (
+          null
+        )}
 
         <FormControl
           sx={{
@@ -372,10 +383,11 @@ export default function BarraTareasTabla({
 }
 
 BarraTareasTabla.propTypes = {
-  filters: PropTypes.object,
+  filters: PropTypes.any,
   onFilters: PropTypes.func,
   roleOptions: PropTypes.array,
   handleChangeReport: PropTypes.func,
   table: PropTypes.any,
   dataValue: PropTypes.any,
+  rol: PropTypes.any,
 };

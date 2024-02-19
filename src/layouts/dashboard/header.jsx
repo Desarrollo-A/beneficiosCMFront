@@ -20,6 +20,8 @@ import Logo from 'src/components/logoMini';
 import SvgColor from 'src/components/svg-color';
 import { useSettingsContext } from 'src/components/settings';
 
+import PendingModalUser from 'src/sections/calendariobeneficiario/pendingModalUser';
+
 import Searchbar from '../common/searchbar';
 import { NAV, HEADER } from '../config-layout';
 import SettingsButton from '../common/settings-button';
@@ -32,7 +34,7 @@ export default function Header({ onOpenNav }) {
 
   const { user: datosUser, authenticated } = useAuthContext();
 
-  const idUsr = authenticated ? datosUser.idUsuario: undefined;
+  const idUsr = authenticated ? datosUser.idUsuario : undefined;
 
   const settings = useSettingsContext();
 
@@ -47,33 +49,33 @@ export default function Header({ onOpenNav }) {
   const offsetTop = offset && !isNavHorizontal;
 
   const currentYear = new Date().getFullYear();
-  
+
   const getTrimestreAnterior = () => {
     const currentMonth = new Date().getMonth();
-  
+
     let startMonth = 0;
     let startYear = 0;
 
     if (currentMonth >= 0 && currentMonth <= 2) {
-      startMonth = 9; 
+      startMonth = 9;
       startYear = currentYear - 1;
     } else if (currentMonth >= 3 && currentMonth <= 5) {
-      startMonth = 0; 
+      startMonth = 0;
       startYear = currentYear;
     } else if (currentMonth >= 6 && currentMonth <= 8) {
-      startMonth = 3; 
+      startMonth = 3;
       startYear = currentYear;
     } else {
-      startMonth = 6; 
+      startMonth = 6;
       startYear = currentYear;
     }
-  
+
     const startDate = new Date(startYear, startMonth, 1);
-    startDate.setDate(startDate.getDate() + 2); 
-  
+    startDate.setDate(startDate.getDate() + 2);
+
     return startDate;
   };
-  
+
   const trimestreAnterior = getTrimestreAnterior().toISOString().split('T')[0];
 
   let trimestreActual = '';
@@ -83,41 +85,38 @@ export default function Header({ onOpenNav }) {
   const currentMonth = new Date().getMonth();
 
   let trimestre = '';
-  
-    if (currentMonth >= 0 && currentMonth <= 2) {
-      trimestreActual = new Date(currentYear, 0, 1).toISOString().split('T')[0];
 
-      const firstQuarter = new Date(currentYear, 0, 1);
-      if (date > firstQuarter) {
-        trimestre = new Date(currentYear, 3, 1).toISOString().split('T')[0];
-      } else {
-        trimestre = new Date(currentYear, 0, 1).toISOString().split('T')[0];
-      }
+  if (currentMonth >= 0 && currentMonth <= 2) {
+    trimestreActual = new Date(currentYear, 0, 1).toISOString().split('T')[0];
 
-    } else if (currentMonth >= 3 && currentMonth <= 5) {
-      trimestreActual = new Date(currentYear, 3, 1).toISOString().split('T')[0];
-
-      const secondQuarter = new Date(currentYear, 3, 1);
-      if (date > secondQuarter) {
-        trimestre = new Date(currentYear, 6, 1).toISOString().split('T')[0];
-      } else {
-        trimestre = new Date(currentYear, 3, 1).toISOString().split('T')[0];
-      }
-
-    } else if (currentMonth >= 6 && currentMonth <= 8) {
-      trimestreActual = new Date(currentYear, 6, 1).toISOString().split('T')[0];
-
-      const thirdQuarter = new Date(currentYear, 6, 1);
-      if (date > thirdQuarter) {
-        trimestre =  new Date(currentYear, 9, 1).toISOString().split('T')[0];
-      } else {
-        trimestre =  new Date(currentYear, 6, 1).toISOString().split('T')[0];
-      }
-
+    const firstQuarter = new Date(currentYear, 0, 1);
+    if (date > firstQuarter) {
+      trimestre = new Date(currentYear, 3, 1).toISOString().split('T')[0];
     } else {
-      trimestreActual = new Date(currentYear, 9, 1).toISOString().split('T')[0];
-      trimestre =  new Date(currentYear, 9, 1).toISOString().split('T')[0];
+      trimestre = new Date(currentYear, 0, 1).toISOString().split('T')[0];
     }
+  } else if (currentMonth >= 3 && currentMonth <= 5) {
+    trimestreActual = new Date(currentYear, 3, 1).toISOString().split('T')[0];
+
+    const secondQuarter = new Date(currentYear, 3, 1);
+    if (date > secondQuarter) {
+      trimestre = new Date(currentYear, 6, 1).toISOString().split('T')[0];
+    } else {
+      trimestre = new Date(currentYear, 3, 1).toISOString().split('T')[0];
+    }
+  } else if (currentMonth >= 6 && currentMonth <= 8) {
+    trimestreActual = new Date(currentYear, 6, 1).toISOString().split('T')[0];
+
+    const thirdQuarter = new Date(currentYear, 6, 1);
+    if (date > thirdQuarter) {
+      trimestre = new Date(currentYear, 9, 1).toISOString().split('T')[0];
+    } else {
+      trimestre = new Date(currentYear, 6, 1).toISOString().split('T')[0];
+    }
+  } else {
+    trimestreActual = new Date(currentYear, 9, 1).toISOString().split('T')[0];
+    trimestre = new Date(currentYear, 9, 1).toISOString().split('T')[0];
+  }
 
   const fechaActual = new Date().toISOString().slice(0, 10);
 
@@ -128,14 +127,10 @@ export default function Header({ onOpenNav }) {
       vigenciaFin: trimestreActual,
       trimDefault: trimestre,
       fechActual: fechaActual,
-    }
-    
-    setDataNot(array)
-  }, [idUsr, 
-      trimestreAnterior, 
-      trimestreActual,
-      trimestre,
-      fechaActual])
+    };
+
+    setDataNot(array);
+  }, [idUsr, trimestreAnterior, trimestreActual, trimestre, fechaActual]);
 
   const [dataNot, setDataNot] = useState({
     idUsuario: idUsr,
@@ -145,7 +140,7 @@ export default function Header({ onOpenNav }) {
     fechActual: fechaActual,
   });
 
-  const { getData } = usePostGeneral(dataNot, endpoints.encuestas.getEncNotificacion, "getData");
+  const { getData } = usePostGeneral(dataNot, endpoints.encuestas.getEncNotificacion, 'getData');
 
   const renderContent = (
     <>
@@ -158,6 +153,7 @@ export default function Header({ onOpenNav }) {
       )}
 
       <Searchbar />
+      {datosUser.idRol === 2 && <PendingModalUser />}
 
       <Stack
         flexGrow={1}
@@ -166,7 +162,6 @@ export default function Header({ onOpenNav }) {
         justifyContent="flex-end"
         spacing={{ xs: 0.5, sm: 1 }}
       >
-
         {/* <NotificationsPopover /> */}
 
         {getData.length > 0 && <NotifiEncuesta data={getData} />}

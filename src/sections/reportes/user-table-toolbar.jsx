@@ -93,8 +93,7 @@ export default function ToolbarResumenTerapias({
 
       ) : (
 
-        <>
-        </>
+        null
 
       )}
 
