@@ -1,21 +1,21 @@
 import 'dayjs/locale/es';
 import useSWR from 'swr';
 import dayjs from 'dayjs';
-import { Base64 } from 'js-base64';
 import { useMemo, useEffect } from 'react';
 
 import { endpoints, fetcherPost } from 'src/utils/axios';
 
+import { useAuthContext } from 'src/auth/hooks';
+
 // Se hizo el intento con el useAuthContext pero se manda a declarar más veces y da mas errores debido a su uso como componente
 const session = sessionStorage.getItem('accessToken');
-const datosUser = sessionStorage.getItem('accessToken')
-  ? JSON.parse(Base64.decode(session.split('.')[2]))
-  : '';
+
 
 // ----------------------------------------------------------------------
 
 // Trae todos los beneficios que puede gozar la sede.
 export function useGetBenefits(sede) {
+
   const URL_BENEFITS = [endpoints.benefits.list];
   const {
     data,
@@ -173,6 +173,8 @@ export function checkInvoice(id) {
 
 // Función para traer citas con estatus en pediente de pago
 export function useGetPendientes() {
+  const {user: datosUser} = useAuthContext()
+
   const pendientes = endpoints.calendarioColaborador.getPendientes;
   const { data, mutate: revalidate } = useSWR(pendientes, (url) =>
     fetcherPost(url, { idUsuario: datosUser?.idUsuario })
@@ -236,6 +238,8 @@ export function crearCita(
 
 // Trae todas las citas del usuario
 export function useGetAppointmentsByUser(current) {
+const {user: datosUser} = useAuthContext()
+
   const URL_APPOINTMENTS = [endpoints.calendarioColaborador.getAppointmentsByUser];
   const year = current.getFullYear();
   const month = current.getMonth() + 1;
@@ -282,6 +286,7 @@ export function useGetAppointmentsByUser(current) {
 }
 
 export function cancelAppointment(currentEvent, id, cancelType) {
+  const {user: datosUser} = useAuthContext()
   const URL = [endpoints.calendario.cancelAppointment];
   const data = {
     idCita: id,

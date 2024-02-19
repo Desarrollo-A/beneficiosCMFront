@@ -23,6 +23,7 @@ export const paths = {
   payment: '/payment',
   about: '/about-us',
   contact: '/contact-us',
+  citas: '/citas',
   faqs: '/faqs',
   page403: '/403',
   page404: '/404',

@@ -9,6 +9,7 @@ import { LoadingScreen } from 'src/components/loading-screen';
 // ----------------------------------------------------------------------
 // CITAS
 const EvaluacionCitasPage = lazy(() => import ('src/pages/dashboard/evaluacion-citas-view'));
+const CitasPage = lazy(() => import ('src/pages/dashboard/citas'));
 // REPORTES
 const HistorialReportesPage = lazy(() => import('src/pages/dashboard/reportes/historial-reportes'));
 const ReportePacientesPage = lazy(() => import('src/pages/dashboard/reportes/reporte-pacientes'));
@@ -226,6 +227,7 @@ export const dashboardRoutes = [
       { path: 'permission', element: <PermissionDeniedPage /> },
       { path: 'blank', element: <BlankPage /> },
       { path: 'evaluacioncitas', element: <EvaluacionCitasPage /> },
+      { path: 'citas', element: <CitasPage /> },
     ],
   },
 ];
