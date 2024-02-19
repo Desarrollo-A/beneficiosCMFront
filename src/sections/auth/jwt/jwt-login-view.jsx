@@ -105,12 +105,13 @@ export default function JwtLoginView() {
       </div>
       <Typography variant="h4">Iniciar sesión</Typography>
 
-      <Stack direction="row" spacing={0.5}>
+      <Stack direction="row" spacing={1}>
         <Typography variant="body2">¿Aún no tienes una cuenta? Puedas crearla</Typography>
 
         <Link component={RouterLink} href={paths.auth.jwt.register} variant="subtitle2">
           aquí
         </Link>
+        <Box mb={7} />
       </Stack>
     </Stack>
 
