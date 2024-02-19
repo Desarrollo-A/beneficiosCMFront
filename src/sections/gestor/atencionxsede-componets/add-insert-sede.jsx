@@ -21,7 +21,7 @@ export default function AddInsertSede({ idSede, especiaData, oficinaData, modali
 
   const [select, setSelect] = useState(0);
 
-  const [mod, setMod] = useState('');
+  const [ setMod] = useState('');
 
   const [bol, setBol] = useState(false);
 
