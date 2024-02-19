@@ -121,11 +121,11 @@ export default function OficinasView() {
 
   const { user } = useAuthContext();
 
-  const rol = user.idRol
+  const rol = user?.idRol
 
   const [userDt] = useState({ // setUserDt
-    idRol: user.idRol,
-    idPuesto: user.idPuesto,
+    idRol: user?.idRol,
+    idPuesto: user?.idPuesto,
   });
 
   const { oficinasData } = usePostGeneral(userDt, endpoints.gestor.getOfi, "oficinasData");

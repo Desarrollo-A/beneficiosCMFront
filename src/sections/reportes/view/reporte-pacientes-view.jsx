@@ -133,31 +133,31 @@ export default function ReportePacientesView() {
 
   const { user } = useAuthContext();
 
-  const rol = user.idRol;
+  const rol = user?.idRol;
 
-  const idUs = user.idUsuario;
+  const idUs = user?.idUsuario;
 
   let puestos = 0;
 
   if (rol === "4" || rol === 4) {
     puestos = 158;
   } else {
-    puestos = user.idPuesto;
+    puestos = user?.idPuesto;
   }
 
   const [area, setArea] = useState(puestos);
 
   const [dt, setDt] = useState({
-    idRol: user.idRol,
+    idRol: user?.idRol,
     esp: area,
-    idUs: user.idUsuario,
+    idUs: user?.idUsuario,
   });
 
   useEffect(() => {
     setDt({
-      idRol: user.idRol,
+      idRol: user?.idRol,
       esp: area,
-      idUs: user.idUsuario,
+      idUs: user?.idUsuario,
     });
   }, [area, user ]);
 
@@ -436,9 +436,9 @@ function applyFilter({ inputData, comparator, filters }) {
   if (name) {
     inputData = inputData.filter(
       (user) =>
-        user.nombre.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        user.sede.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        user.correo.toLowerCase().indexOf(name.toLowerCase()) !== -1
+        user?.nombre.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        user?.sede.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        user?.correo.toLowerCase().indexOf(name.toLowerCase()) !== -1
     );
   }
 

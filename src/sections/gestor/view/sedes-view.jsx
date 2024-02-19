@@ -119,7 +119,7 @@ export default function SedesView() {
 
   const { user } = useAuthContext();
 
-  const rol = user.idRol
+  const rol = user?.idRol
 
   // const [userDt, setUserDt] = useState({
   //   idRol: user.idRol,
