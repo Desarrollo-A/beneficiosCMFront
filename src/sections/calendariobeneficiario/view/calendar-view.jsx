@@ -5,6 +5,8 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import timelinePlugin from '@fullcalendar/timeline';
 import allLocales from '@fullcalendar/core/locales-all';
+import interactionPlugin from '@fullcalendar/interaction';
+
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -126,10 +128,10 @@ export default function CalendarView() {
               eventDisplay="block"
               events={dataFiltered}
               headerToolbar={false}
-              select={onSelectRange}
+              select={dialog.onTrue}
               eventClick={onClickEvent}
               height={smUp ? 720 : 'auto'}
-              plugins={[listPlugin, dayGridPlugin, timelinePlugin, timeGridPlugin]}
+              plugins={[listPlugin, dayGridPlugin, timelinePlugin, timeGridPlugin, interactionPlugin]}
             />
           </StyledCalendar>
         </Card>
