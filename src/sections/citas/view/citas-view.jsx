@@ -72,35 +72,35 @@ export default function CitasView() {
 
   const { user } = useAuthContext();
 
-  const rol = user.idRol;
+  const rol = user?.idRol;
 
-  const idUs = user.idUsuario;
+  const idUs = user?.idUsuario;
 
   let puestos = 0;
 
   if (rol === "4" || rol === 4) {
     puestos = 158;
   } else {
-    puestos = user.idPuesto;
+    puestos = user?.idPuesto;
   }
 
   const [area, setArea] = useState(puestos);
 
   const [dt, setDt] = useState({
-    idRol: user.idRol,
+    idRol: user?.idRol,
     esp: area,
-    idUs: user.idUsuario,
+    idUs: user?.idUsuario,
   });
 
   useEffect(() => {
     setDt({
-      idRol: user.idRol,
+      idRol: user?.idRol,
       esp: area,
-      idUs: user.idUsuario,
+      idUs: user?.idUsuario,
     });
   }, [area, user ]);
 
-  const { citasData } = usePostGeneral(user.idUsuario, endpoints.citas.getCitas, "citasData");
+  const { citasData } = usePostGeneral(user?.idUsuario, endpoints.citas.getCitas, "citasData");
 
   const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
 

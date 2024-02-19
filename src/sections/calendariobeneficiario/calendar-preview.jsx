@@ -140,7 +140,7 @@ export default function CalendarPreview({
         <Stack
           alignItems="center"
           sx={{
-            flexDirection: { sm: 'row', md: 'col' },
+            flexDirection: 'row',
             px: { xs: 1, md: 2 },
             py: 1,
             alignItems: 'center',
@@ -207,7 +207,7 @@ export default function CalendarPreview({
         <Stack
           alignItems="center"
           sx={{
-            flexDirection: { sm: 'row', md: 'col' },
+            flexDirection: 'row',
             px: { xs: 1, md: 2 },
             py: 1,
           }}
@@ -220,7 +220,7 @@ export default function CalendarPreview({
         <Stack
           alignItems="center"
           sx={{
-            flexDirection: { sm: 'row', md: 'col' },
+            flexDirection: 'row',
             px: { xs: 1, md: 2 },
             py: 1,
             alignItems: 'center',
@@ -234,7 +234,7 @@ export default function CalendarPreview({
         <Stack
           alignItems="center"
           sx={{
-            flexDirection: { sm: 'row', md: 'col' },
+            flexDirection: 'row',
             px: { xs: 1, md: 2 },
             py: 1,
           }}
@@ -249,7 +249,7 @@ export default function CalendarPreview({
         <Stack
           alignItems="center"
           sx={{
-            flexDirection: { sm: 'row', md: 'col' },
+            flexDirection: 'row',
             px: { xs: 1, md: 2 },
             py: 1,
           }}
@@ -275,7 +275,7 @@ export default function CalendarPreview({
         <Stack
           alignItems="center"
           sx={{
-            flexDirection: { sm: 'row', md: 'col' },
+            flexDirection: 'row',
             px: { xs: 1, md: 2 },
             py: 1,
           }}
@@ -440,7 +440,7 @@ export default function CalendarPreview({
       </DialogContent>
       <DialogActions>
         <Button variant="contained" color="error" onClick={handleClose}>
-          Cerrar
+          CerrarR
         </Button>
         <LoadingButton
           variant="contained"

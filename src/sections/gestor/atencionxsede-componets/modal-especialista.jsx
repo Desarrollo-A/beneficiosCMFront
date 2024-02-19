@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';

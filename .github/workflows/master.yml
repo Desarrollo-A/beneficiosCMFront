@@ -22,7 +22,7 @@ jobs:
       - name: ⚙️ Build project
         run: |
           npm install --legacy-peer-deps
-          npm run pruebas
+          npm run build
 
       - name: 📂 Sync files
         uses: wlixcc/SFTP-Deploy-Action@v1.2.1
@@ -32,5 +32,5 @@ jobs:
           username: prohab
           ssh_private_key: ${{ secrets.SFTP_SSH_PRIVATE_KEY }}
           local_path: ./dist/*
-          remote_path: /mnt/data/aplicaciones/Prueba/beneficiosmaderas/
+          remote_path: /mnt/data/aplicaciones/BeneficioMaderas/front/
           delete_remote_files: true

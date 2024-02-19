@@ -1,10 +1,11 @@
-import { useState } from 'react';
-import Calendar from '@fullcalendar/react'; // => request placed at the top
+import Calendar from '@fullcalendar/react';
+import { useState, useEffect } from 'react'; // => request placed at the top
 import listPlugin from '@fullcalendar/list';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import timelinePlugin from '@fullcalendar/timeline';
 import allLocales from '@fullcalendar/core/locales-all';
+import interactionPlugin from '@fullcalendar/interaction';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -59,8 +60,8 @@ export default function CalendarView() {
     openForm,
     onDatePrev,
     onDateNext,
-    onDateToday,
     onCloseForm,
+    onDateToday,
     calendarRef,
     onChangeView,
     onClickEvent,
@@ -82,6 +83,10 @@ export default function CalendarView() {
     filters,
     dateError,
   });
+
+  useEffect(() => {
+    appointmentMutate();
+  }, [appointmentMutate]);
 
   return (
     <>
@@ -114,7 +119,7 @@ export default function CalendarView() {
             />
             <Calendar
               weekends
-              editable
+              editable = {false} // en false para prevenir un drag del evento
               selectable
               locales={allLocales}
               locale="es"
@@ -126,10 +131,10 @@ export default function CalendarView() {
               eventDisplay="block"
               events={dataFiltered}
               headerToolbar={false}
-              select={onSelectRange}
+              select={dialog.onTrue}
               eventClick={onClickEvent}
               height={smUp ? 720 : 'auto'}
-              plugins={[listPlugin, dayGridPlugin, timelinePlugin, timeGridPlugin]}
+              plugins={[listPlugin, dayGridPlugin, timelinePlugin, timeGridPlugin, interactionPlugin]}
             />
           </StyledCalendar>
         </Card>
