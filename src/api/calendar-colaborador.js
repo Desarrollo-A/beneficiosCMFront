@@ -235,7 +235,7 @@ export function crearCita(
 }
 
 // Trae todas las citas del usuario
-export function useGetAppointmentsByUser(current) {
+export function useGetAppointmentsByUser(current, id) {
   const URL_APPOINTMENTS = [endpoints.calendarioColaborador.getAppointmentsByUser];
   const year = current.getFullYear();
   const month = current.getMonth() + 1;
@@ -243,7 +243,7 @@ export function useGetAppointmentsByUser(current) {
   const dataValue = {
     year,
     month,
-    idUsuario: datosUser.idUsuario,
+    idUsuario: id,
   };
 
   const {
@@ -260,7 +260,7 @@ export function useGetAppointmentsByUser(current) {
 
   useEffect(() => {
     revalidate();
-  }, [month, revalidate]);
+  }, [current, revalidate]);
 
   const memoizedValue = useMemo(() => {
     const events = data?.data?.map((event) => ({

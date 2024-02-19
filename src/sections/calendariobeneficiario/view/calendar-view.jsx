@@ -15,11 +15,11 @@ import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 
 import { useBoolean } from 'src/hooks/use-boolean';
-import { useSession } from 'src/hooks/use-session';
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import { fTimestamp } from 'src/utils/format-time';
 
+import { useAuthContext } from 'src/auth/hooks';
 import { useGetAppointmentsByUser } from 'src/api/calendar-colaborador';
 
 import { useSettingsContext } from 'src/components/settings';
@@ -40,9 +40,10 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 
 export default function CalendarView() {
-  useSession();
   const theme = useTheme();
   const dialog = useBoolean();
+
+  const { user: datosUser } = useAuthContext();
 
   const settings = useSettingsContext();
   const smUp = useResponsive('up', 'sm');
@@ -59,6 +60,7 @@ export default function CalendarView() {
     openForm,
     onDatePrev,
     onDateNext,
+    onCloseForm,
     onDateToday,
     calendarRef,
     onChangeView,
@@ -72,7 +74,7 @@ export default function CalendarView() {
     data: events,
     appointmentLoading: eventsLoading,
     appointmentMutate,
-  } = useGetAppointmentsByUser(date);
+  } = useGetAppointmentsByUser(date, datosUser.idUsuario);
 
   const currentEvent = useEvent(events, selectEventId, openForm);
 
@@ -157,7 +159,14 @@ export default function CalendarView() {
           enter: theme.transitions.duration.shortest,
           exit: theme.transitions.duration.shortest - 1000,
         }}
-      />
+      >
+        <CalendarDialog
+          currentEvent={currentEvent}
+          onClose={onCloseForm}
+          selectedDate={selectedDate}
+          appointmentMutate={appointmentMutate}
+        />
+      </Dialog>
     </>
   );
 }

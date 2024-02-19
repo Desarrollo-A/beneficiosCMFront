@@ -20,7 +20,6 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import uuidv4 from 'src/utils/uuidv4';
 
@@ -69,12 +68,6 @@ let initialValue = dayjs().tz('America/Mexico_City'); // Objeto con todo los dat
 const lastDayOfNextMonth = initialValue.add(2, 'month').startOf('month').subtract(1, 'day');
 initialValue = initialValue.hour() < 15 ? initialValue : initialValue.add(1, 'day');
 
-const darkTheme = createTheme({
-  palette: {
-    mode: 'dark',
-  },
-});
-
 export default function CalendarDialog({ currentEvent, onClose, selectedDate, appointmentMutate }) {
   const [selectedValues, setSelectedValues] = useState({
     beneficio: '',
@@ -107,6 +100,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
   const { user: datosUser } = useAuthContext();
 
+  console.log(datosUser);
+
   const { data: benefits } = useGetBenefits(datosUser.idSede);
 
   const [especialista, setEspecialista] = useState(0);
@@ -138,12 +133,12 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const fechasFolio = currentEvent?.fechasFolio ? currentEvent?.fechasFolio.split(',') : [];
 
   const onSubmit = handleSubmit(async () => {
-    setBtnDisabled(true);
     // Validaciones de inputs: Coloca leyenda de error debajo de cada input en caso que le falte cumplir con el valor
     if (selectedValues.beneficio === '') return setErrorBeneficio(true);
     if (selectedValues.especialista === '') return setErrorEspecialista(true);
     if (selectedValues.modalidad === '') return setErrorModalidad(true);
     if (horarioSeleccionado === '') return setErrorHorarioSeleccionado(true);
+    setBtnDisabled(true);
 
     const ahora = new Date();
     const fechaActual = dayjs(ahora).format('YYYY-MM-DD');
@@ -303,29 +298,44 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const startDate = dayjs(horarioSeleccionado);
     const endDate = startDate.add(1, 'hour');
 
+    let organizador = 'programador.analista36@ciudadmaderas.com';
+    let correosNotificar = [
+      organizador, // datosUser.correo Sustituir correo de analista
+      'programador.analista34@ciudadmaderas.com',
+      'programador.analista32@ciudadmaderas.com',
+      'programador.analista12@ciudadmaderas.com',
+      'tester.ti2@ciudadmaderas.com',
+      'tester.ti3@ciudadmaderas.com',
+      // algun correo de especialista
+    ];
+
+    if (datosUser.correo === null) {
+      organizador = 'programador.analista12@ciudadmaderas.com'; // especialista
+      correosNotificar = [
+        organizador, // datosUser.correo Sustituir correo de analista
+        'programador.analista36@ciudadmaderas.com',
+        'programador.analista34@ciudadmaderas.com',
+        'programador.analista32@ciudadmaderas.com',
+        'tester.ti2@ciudadmaderas.com',
+        'tester.ti3@ciudadmaderas.com',
+      ];
+    }
     const newGoogleEvent = await insertGoogleCalendarEvent(
       `Cita ${nombreBeneficio} - ${datosUser.nombre}`,
       startDate.format('YYYY-MM-DDTHH:mm:ss'),
       endDate.format('YYYY-MM-DDTHH:mm:ss'),
       oficina.data[0].ubicación,
       `Cita de ${datosUser.nombre} en ${nombreBeneficio}`,
-      [
-        'programador.analista36@ciudadmaderas.com', // datosUser.correo Sustituir correo de analista
-        'programador.analista34@ciudadmaderas.com',
-        'programador.analista32@ciudadmaderas.com',
-        'programador.analista12@ciudadmaderas.com',
-        'tester.ti2@ciudadmaderas.com',
-        'tester.ti3@ciudadmaderas.com',
-      ], // Sustituir valores de correos
-      'programador.analista36@ciudadmaderas.com' // datosUser.correo
+      correosNotificar, // Sustituir valores de correos
+      organizador // datosUser.correo
     );
+
     if (!newGoogleEvent.result) {
       enqueueSnackbar('Error al conectar con la cuenta de google', {
         variant: 'error',
       });
       return onClose();
     }
-
     // Mandar datos de google calendar
     const update = await updateAppointment(
       datosUser.idUsuario,
@@ -335,13 +345,13 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       null,
       newGoogleEvent.data.id
     );
-
     if (!update.result) {
       enqueueSnackbar('¡Ha surgido un error al intentar registrar el detalle de pago!', {
         variant: 'error',
       });
       return onClose();
     }
+
     enqueueSnackbar('¡Se ha agendado la cita con éxito!', {
       variant: 'success',
     });
@@ -355,18 +365,12 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       return false;
     }
 
-    const email = await sendMail(scheduledAppointment.data[0], 1, [
-      'programador.analista36@ciudadmaderas.com',
-      'programador.analista34@ciudadmaderas.com',
-      'programador.analista32@ciudadmaderas.com',
-      'programador.analista12@ciudadmaderas.com',
-      'tester.ti2@ciudadmaderas.com',
-      'tester.ti3@ciudadmaderas.com',
-    ]);
+    const email = await sendMail(scheduledAppointment.data[0], 1, correosNotificar);
 
     if (!email.result) {
       console.error('No se pudo notificar al usuario');
     }
+
     setEvent({ ...scheduledAppointment.data[0] });
     setOpen2(true);
     return true;
@@ -382,22 +386,43 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       appointmentMutate();
       return onClose();
     }
-    if (cancel.result) {
-      enqueueSnackbar('¡Se ha cancelado la cita!', {
-        variant: 'success',
-      });
 
-      const deleteGoogleEvent = await deleteGoogleCalendarEvent(
-        currentEvent.idEventoGoogle,
-        'programador.analista36@ciudadmaderas.com' // datosUser.correo Sustituir correo de analista
-      );
-      if (!deleteGoogleEvent.result) {
-        enqueueSnackbar('¡No se pudo sincronizar el evento con el calendario de google!', {
-          variant: 'error',
-        });
-        appointmentMutate();
-        return onClose();
-      }
+    enqueueSnackbar('¡Se ha cancelado la cita!', {
+      variant: 'success',
+    });
+
+    let organizador = 'programador.analista36@ciudadmaderas.com';
+    let correosNotificar = [
+      organizador,
+      'programador.analista34@ciudadmaderas.com',
+      'programador.analista32@ciudadmaderas.com',
+      'programador.analista12@ciudadmaderas.com',
+      'tester.ti2@ciudadmaderas.com',
+      'tester.ti3@ciudadmaderas.com',
+      // currentEvent.correoEspecialista
+    ];
+    if (datosUser.correo === null) {
+      organizador = 'programador.analista12@ciudadmaderas.com'; // currentEvent.correoEspecialista;
+      correosNotificar = [
+        organizador,
+        'programador.analista36@ciudadmaderas.com',
+        'programador.analista34@ciudadmaderas.com',
+        'programador.analista32@ciudadmaderas.com',
+        'tester.ti2@ciudadmaderas.com',
+        'tester.ti3@ciudadmaderas.com',
+      ];
+    }
+
+    const deleteGoogleEvent = await deleteGoogleCalendarEvent(
+      currentEvent.idEventoGoogle,
+      organizador // datosUser.correo Sustituir correo de analista
+    );
+    if (!deleteGoogleEvent.result) {
+      enqueueSnackbar('¡No se pudo sincronizar el evento con el calendario de google!', {
+        variant: 'error',
+      });
+      appointmentMutate();
+      return onClose();
     }
 
     const scheduledAppointment = await consultarCita(currentEvent.id);
@@ -409,14 +434,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       return false;
     }
 
-    const email = await sendMail(scheduledAppointment.data[0], 2, [
-      'programador.analista36@ciudadmaderas.com',
-      'programador.analista34@ciudadmaderas.com',
-      'programador.analista32@ciudadmaderas.com',
-      'programador.analista12@ciudadmaderas.com',
-      'tester.ti2@ciudadmaderas.com',
-      'tester.ti3@ciudadmaderas.com',
-    ]);
+    const email = await sendMail(scheduledAppointment.data[0], 2, correosNotificar);
 
     if (!email.result) {
       console.error('No se pudo notificar al usuario');
@@ -881,7 +899,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     // Verificar si la fecha está en la lista de fechas deshabilitadas
     const formattedDate = date.format('YYYY-MM-DD');
     const isDisabledFromSQLServer = diasOcupados.includes(formattedDate);
-    
+
     // console.log('sedes', sedes.length)
     let noPresencial = false;
     if (!virtual) {
@@ -1071,19 +1089,35 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const startDate = dayjs(horarioSeleccionado);
     const endDate = startDate.add(1, 'hour');
 
+    let organizador = 'programador.analista36@ciudadmaderas.com';
+    let correosNotificar = [
+      organizador, // datosUser.correo Sustituir correo de analista
+      'programador.analista34@ciudadmaderas.com',
+      'programador.analista32@ciudadmaderas.com',
+      'programador.analista12@ciudadmaderas.com',
+      'tester.ti2@ciudadmaderas.com',
+      'tester.ti3@ciudadmaderas.com',
+      // Algun correo de especialista
+    ];
+
+    if (datosUser === null) {
+      organizador = 'programador.analista12@ciudadmaderas.com'; // Algun correo de especialista
+      correosNotificar = [
+        organizador, // datosUser.correo Sustituir correo de analista
+        'programador.analista36@ciudadmaderas.com',
+        'programador.analista34@ciudadmaderas.com',
+        'programador.analista32@ciudadmaderas.com',
+        'tester.ti2@ciudadmaderas.com',
+        'tester.ti3@ciudadmaderas.com',
+      ];
+    }
+
     const updateGoogleEvent = await updateGoogleCalendarEvent(
       currentEvent.idEventoGoogle,
       startDate.format('YYYY-MM-DDTHH:mm:ss'),
       endDate.format('YYYY-MM-DDTHH:mm:ss'),
-      'programador.analista36@ciudadmaderas.com', // datosUser.correo, Sustituir correo de analista
-      [
-        'programador.analista36@ciudadmaderas.com', // datosUser.correo Sustituir correo de analista
-        'programador.analista34@ciudadmaderas.com',
-        'programador.analista32@ciudadmaderas.com',
-        'programador.analista12@ciudadmaderas.com',
-        'tester.ti2@ciudadmaderas.com',
-        'tester.ti3@ciudadmaderas.com',
-      ]
+      organizador, // datosUser.correo, Sustituir correo de analista
+      correosNotificar
     );
     if (!updateGoogleEvent.result) {
       enqueueSnackbar('No se pudo sincronizar el evento con la cuenta de google', {
@@ -1107,14 +1141,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         oldEventEnd: currentEvent.end,
       },
       3,
-      [
-        'programador.analista36@ciudadmaderas.com',
-        'programador.analista34@ciudadmaderas.com',
-        'programador.analista32@ciudadmaderas.com',
-        'programador.analista12@ciudadmaderas.com',
-        'tester.ti2@ciudadmaderas.com',
-        'tester.ti3@ciudadmaderas.com',
-      ]
+      correosNotificar
     );
     if (!email.result) {
       console.error('No se pudo notificar al usuario');
