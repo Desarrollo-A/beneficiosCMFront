@@ -36,6 +36,23 @@ const darkTheme = createTheme({
     mode: 'dark',
   },
 });
+
+const lightTheme = createTheme({
+  palette: {
+    mode: 'light',
+  },
+  components: {
+    MuiPickersDay: {
+      // Sobrescribe los estilos del día del calendario
+      styleOverrides: {
+        root: {
+          color: 'black', // Establece el color del día a negro
+        },
+      },
+    },
+  },
+});
+
 export default function AppointmentSchedule({
   selectedValues,
   handleChange,
@@ -219,17 +236,36 @@ export default function AppointmentSchedule({
         }}
       >
         <Stack sx={{ pading: { xs: '10px' } }}>
-          <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
-            <DateCalendar
-              loading={isLoading}
-              onChange={handleDateChange}
-              renderLoading={() => <DayCalendarSkeleton />}
-              minDate={initialValue}
-              maxDate={lastDayOfNextMonth}
-              shouldDisableDate={shouldDisableDate}
-              views={['year', 'month', 'day']}
-            />
-          </LocalizationProvider>
+          <ThemeProvider theme={lightTheme}>
+            <LocalizationProvider
+              dateAdapter={AdapterDayjs}
+              adapterLocale="es"
+              sx={{
+                bgcolor: 'white', // Color de fondo del calendario
+                '& .MuiPickersDay-day': {
+                  color: 'black', // Color de los días
+                },
+                color: 'black',
+              }}
+            >
+              <DateCalendar
+                loading={isLoading}
+                onChange={handleDateChange}
+                renderLoading={() => <DayCalendarSkeleton />}
+                minDate={initialValue}
+                maxDate={lastDayOfNextMonth}
+                shouldDisableDate={shouldDisableDate}
+                views={['year', 'month', 'day']}
+                sx={{
+                  bgcolor: 'white', // Color de fondo del calendario
+                  '& .MuiPickersDay-day': {
+                    color: 'black', // Color de los días
+                  },
+                  color: 'black',
+                }}
+              />
+            </LocalizationProvider>
+          </ThemeProvider>
           <Stack
             direction="column"
             spacing={3}

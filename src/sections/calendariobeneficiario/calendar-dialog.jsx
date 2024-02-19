@@ -1637,10 +1637,11 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
               {
                 p: { xs: 1, md: 2 },
                 background: {
-                  xs: 'linear-gradient(180deg, #2c3239 80%, white 46%)',
+                  xs: 'linear-gradient(180deg, #2c3239 54%, white 46%)',
                   md: 'linear-gradient(90deg, #2c3239 50%, white 50%)',
                 },
                 position: 'relative',
+                display: { xs: 'inline-table' },
               }
               //  : { p: { xs: 1, md: 2 } }
             }
