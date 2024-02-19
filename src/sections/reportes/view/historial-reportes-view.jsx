@@ -203,7 +203,7 @@ export default function HistorialReportesView() {
     { id: '', label: 'Departamento' },
     { id: '', label: 'Sede' },
     { id: '', label: 'Sexo' },
-    { id: '', label: 'Motivo Consulta' },
+    { id: '', label: 'Motivo Consulta', width: 1 },
     { id: '', label: 'Pago generado' },
     { id: '', label: 'Método de pago' },
     { id: '', label: 'Estatus' },
@@ -489,13 +489,18 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   if (name) {
     inputData = inputData.filter(
       (cita) =>
-        cita.idColab.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        (cita.idColab && cita.idColab.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
         cita.horario.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
         cita.estatus.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        cita.area.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        cita.especialista.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        cita.paciente.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        cita.oficina.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1
+        (cita.depto && cita.depto.toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
+        (cita.especialista && cita.especialista.toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
+        (cita.paciente && cita.paciente.toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
+        (cita.paciente && cita.paciente.toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
+        (cita.sede && cita.sede.toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
+        (cita.sexo && cita.sexo.toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
+        (cita.motivoCita && cita.motivoCita.toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
+        (cita.metodoPago && cita.metodoPago.toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
+        (cita.oficina && cita.oficina.toLowerCase().indexOf(name.toLowerCase()) !== -1) 
     );
   }
 
