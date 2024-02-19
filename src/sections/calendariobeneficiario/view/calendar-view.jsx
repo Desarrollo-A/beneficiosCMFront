@@ -7,7 +7,6 @@ import timelinePlugin from '@fullcalendar/timeline';
 import allLocales from '@fullcalendar/core/locales-all';
 import interactionPlugin from '@fullcalendar/interaction';
 
-
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -116,7 +115,7 @@ export default function CalendarView() {
             />
             <Calendar
               weekends
-              editable
+              editable = {false} // en false para prevenir un drag del evento
               selectable
               locales={allLocales}
               locale="es"
