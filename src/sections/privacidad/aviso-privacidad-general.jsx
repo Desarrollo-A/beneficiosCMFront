@@ -11,6 +11,8 @@ import Grid from '@mui/material/Unstable_Grid2';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 
+import EmptyContent from 'src/components/empty-content/empty-content';
+
 // import { paths } from 'src/routes/paths';
 
 import { Stack } from '@mui/system';
@@ -176,7 +178,16 @@ export default function AvisoPrivacidadGeneral() {
                             <Grid xs={12} style={{ alignItems: 'center', height: '450px', width: '100%', alignContent: 'space-around', flexWrap: 'wrap', flexDirection: 'column', justifyContent: 'center'}} >
                                 <Upload onDrop={manejarCambioArchivo} accept={{ 'application/pdf': [] }} file={archivo} onDelete={() => eliminarArchivo()} />
                             </Grid>
-                            : <Typography align="center">Sin datos para mostrar </Typography>
+                            :
+                            <Grid xs={12} style={{ alignItems: 'center', height: '100%', width: '100%', alignContent: 'space-around', flexWrap: 'wrap', flexDirection: 'column', justifyContent: 'center'}} >
+                                <EmptyContent
+                                filled
+                                title="Sin Datos"
+                                sx={{
+                                  py: 10,
+                                }}
+                            />
+                            </Grid>
                             }
                             <Grid xs={12} style={{textAlign:'center', marginTop:'10%', display: nombreArchivo === '' ? 'none' : 'block' }}>
                                 <Button variant="contained" type="submit" color='success' endIcon={<Iconify icon="eva:cloud-upload-fill" />} >
@@ -194,7 +205,7 @@ export default function AvisoPrivacidadGeneral() {
     if(existeRama === true){
         visorPdfFile = <NoHayArchivo/>      
     }
-console.log(especialidadesDisponibles[0]);
+
   return (
     <>
         <Container maxWidth={settings.themeStretch ? false : 'lg'}>

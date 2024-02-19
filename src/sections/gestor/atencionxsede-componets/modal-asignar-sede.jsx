@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
+import { LoadingButton } from '@mui/lab';
 import Button from '@mui/material/Button';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
@@ -46,6 +47,8 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
 
   const insertData = useInsert(endpoints.gestor.insertAtxSede);
 
+  const [btnLoad, setBtnLoad] = useState(false);
+
   const handleEsp = (newPg) => {
     setEsp(newPg);
   }
@@ -82,9 +85,8 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
       ...mod,
       ...esp,
     };
-  
 
-    if (!isEmpty(combinedArray)) {
+    if (!isEmpty(combinedArray) && !isEmpty(mod) && !isEmpty(esp)) {
       try {
         await new Promise((resolve) => setTimeout(resolve, 500));
 
@@ -99,17 +101,22 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
           mutate(endpoints.gestor.getAtencionXsede);
           mutate(endpoints.gestor.getAtencionXsedeEsp);
 
+          setBtnLoad(false);
+
         } else {
           enqueueSnackbar(insert.msj, { variant: 'error' });
+          setBtnLoad(false);
         }
 
       } catch (error) {
         console.error(error);
         loadingSend.onFalse();
+        setBtnLoad(false);
       }
 
     } else {
       enqueueSnackbar("Faltan Datos", { variant: 'error' });
+      setBtnLoad(false);
     }
 
   });
@@ -138,7 +145,7 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
 
             <DialogActions>
 
-              <Button
+              <LoadingButton
                 variant="contained"
                 color="success"
                 loading={loadingSend.value && isSubmitting}
@@ -146,7 +153,7 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
                   confirm.onTrue();
                 }}>
                 Guardar
-              </Button>
+              </LoadingButton>
               <Button variant="contained" color="error" onClick={onClose}>
                 Cerrar
               </Button>
@@ -160,13 +167,14 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
               title="¿Deseas guardar los registros?"
               action={
                 <>
-                  <Button variant="contained" onClick={() => {
+                  <LoadingButton variant="contained" loading={btnLoad} onClick={() => {
+                    setBtnLoad(true);
                     handleCreateAndSend(1);
                     confirm.onFalse();
                     onClose();
                   }}>
                     Si
-                  </Button>
+                  </LoadingButton>
                   <Button variant="contained" onClick={() => {
                     confirm.onFalse();
                   }}>

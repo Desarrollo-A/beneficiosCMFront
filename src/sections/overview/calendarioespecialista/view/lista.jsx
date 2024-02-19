@@ -41,17 +41,12 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
     horaFinal: dayjs('0000/00/00 18:00:00').format('HH:mm:ss'),
   };
   const [defaultFecha, setDefaultFecha] = useState(selectedDate);
+  const [btnDisable, setBtnDisable] = useState(false);
   const [defaultInicio, setDefaultInicio] = useState(selectedDate);
   const [defaultEnd, setDefaultEnd] = useState(null);
   const [dateTitle, setDateTitle] = useState(dayjs(selectedDate).format('dddd, DD MMMM YYYY'));
   const [type, setType] = useState('cancel'); // constante para el cambio entre cancelar hora y agendar cita
-  const [patient, setPatient] = useState({
-    id: '',
-    nombre: '',
-    idSede: '',
-    puesto: '',
-    fechaIngreso: '',
-  });
+  const [patient, setPatient] = useState('');
   const [allModalities, setAllModalities] = useState([]);
   const [modalitie, setModalitie] = useState({
     id: '',
@@ -74,11 +69,19 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
   const { reset, watch, handleSubmit } = methods;
 
   const values = watch();
+
   const hourError = checkHour(values.start, defaultEnd, type, defaultInicio, defaultFecha, allDay);
-  const selectedUser = userSelect(type, patient); // validacion si se selecciono paciente, solo al crear cita
-  const selectedModalitie = !!((type === 'date' && modalitie.id) || type === 'cancel' || (type === 'date' && patient.externo === 1));
+  const selectedUser = userSelect(type, patient, values.usuario); // validacion si se selecciono paciente, solo al crear cita
+  const selectedModalitie = !!((type === 'date' && modalitie.id) || type === 'cancel' || (type === 'date' && patient?.externo === 1));
   const dateError = type === 'cancel' && defaultInicio > defaultFecha; // validacion que la fecha final no sea menor a la fecha inicio
   const endValidation = allDay ? !defaultEnd : defaultEnd;
+
+  const esp = { // idioma de los botones
+    okButtonLabel: "Seleccionar",
+    cancelButtonLabel: "Cancelar",
+    datePickerToolbarTitle: 'Selecciona una fecha',
+    timePickerToolbarTitle: 'Selecciona un horario'
+  };
 
   const handleChangeType = useCallback(
     (event, newType) => {
@@ -116,12 +119,13 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
   }, []);
 
   const onSubmit = handleSubmit(async (data) => {
+    setBtnDisable(true);
     let save = '';
 
     const eventData = {
       // se da el formato juntando la fecha elegida y la hora que se elige con los minutos
       id: uuidv4(),
-      title: type === 'cancel' ? data?.title : `Cita con ${patient.nombre}`,
+      title: type === 'cancel' ? data?.title : `Cita con ${patient?.nombre}`,
       hora_inicio: !allDay ? dayjs(data?.start).format('HH:mm:ss') : defaultHour.horaInicio,
       hora_final: !allDay ? dayjs(defaultEnd).format('HH:mm:ss') : defaultHour.horaFinal,
       fechaInicio: fDate(defaultInicio),
@@ -130,6 +134,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
     };
 
     if (dateError || !selectedUser || hourError.result || !endValidation || !selectedModalitie) {
+      setBtnDisable(false);
       return enqueueSnackbar('Faltan datos en el formulario', { variant: 'error' });
     }
 
@@ -138,6 +143,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
       const fechaActual = dayjs(ahora).format('YYYY-MM-DD');
 
     if (patient.fechaIngreso > fechaActual) {
+      setBtnDisable(false);
       return enqueueSnackbar('¡Surgio un problema con la antigüedad del colaborador!', {
         variant: 'error',
       });
@@ -176,11 +182,16 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
       onClose();
       return enqueueSnackbar(save.msg);
     }
+    setBtnDisable(false);
     return enqueueSnackbar(save.msg, { variant: 'error' });
   });
 
-  const handlePatient = async (value) => {
+  const handlePatient = async (value, reason) => {
     if (!value) {
+      if(reason === 'clear'){
+        setPatient('');
+      }
+
       setAllModalities([]);
       setModalitie({ id: '', idAtencionXSede: '' });
       return;
@@ -191,6 +202,12 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
     const modalidades = await getModalities(value?.idSede, datosUser.idUsuario);
     if (modalidades.result) setAllModalities(modalidades.data);
   };
+
+  const handleKeyDown = async () => {
+    setAllModalities([]);
+    setModalitie({ id: '', idAtencionXSede: '' });
+    setPatient('');
+  }
 
   const handleModalitie = (value) => {
     if (!value) {
@@ -253,7 +270,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
             <FormControlLabel
               sx={{ mt: -0.85 }}
               control={<Checkbox onChange={(value) => handleChangeDay(value.target.checked)} />}
-              label="Ocupar dia(s)"
+              label="Ocupar día(s)"
               labelPlacement="start"
               name="daySwitch"
             />
@@ -265,14 +282,17 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
               name="usuario"
               label="Pacientes"
               value=""
-              onChange={(_event, value) => {
-                handlePatient(value);
+              onChange={(_event, value, reason) => {
+                handlePatient(value, reason);
+              }}
+              onKeyDown={(e) => {
+                handleKeyDown();
               }}
               options={userData.map((user) => ({
                 label: user.nombreCompleto,
                 value: user.idUsuario,
                 idSede: user.idSede,
-                values: user,
+                values: user
               }))}
             />
           </Stack>
@@ -310,7 +330,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
           spacing={2}
           sx={{ p: { xs: 1, md: 2 } }}
         >
-          <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
+          <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns} localeText={esp}>
             <Controller
               name="fechaInicio"
               render={({ field }) => (
@@ -351,6 +371,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
             spacing={2}
             sx={{ p: { xs: 1, md: 2 } }}
           >
+            <LocalizationProvider localeText={esp}>
             <Controller
               name="start"
               render={({ field }) => (
@@ -383,6 +404,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
                 />
               )}
             />
+            </LocalizationProvider>
           </Stack>
         )}
       </DialogContent>
@@ -396,6 +418,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
           variant="contained"
           disabled={dateError || hourError.result}
           color="success"
+          loading = { btnDisable }
         >
           Guardar
         </LoadingButton>
@@ -451,7 +474,7 @@ function checkHour(start, end, type, dateStart, dateEnd) {
 function userSelect(type, patient) {
   let selectedUser = true;
 
-  if (type === 'date' && !patient.idUsuario) {
+  if (type === 'date' && !patient?.idUsuario) {
     selectedUser = false;
   }
 

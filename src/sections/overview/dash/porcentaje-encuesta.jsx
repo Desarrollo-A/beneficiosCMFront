@@ -60,7 +60,7 @@ export default function EncuestaPorcentaje({ title, subheader, data, user, handl
             labelId="demo-simple-select-label"
             id="demo-simple-select"
             label="Pregunta"
-            value={pregunta}
+            value={!pregunta ? '' : pregunta}
             onChange={(e) => handleChangeSeries(e)}
           >
             {preguntaData.map((i) => (

@@ -7,18 +7,23 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 
 import Iconify from 'src/components/iconify';
+import { shortDateLabel } from 'src/components/custom-date-range-picker';
 
 // ----------------------------------------------------------------------
 
 export default function FiltrosTabla({
   filters,
   onFilters,
+  rol,
   //
   onResetFilters,
   //
   results,
   ...other
 }) {
+
+  const shortLabel = shortDateLabel(filters.startDate, filters.endDate);
+
   const handleRemoveStatus = () => {
     onFilters('estatus', 'all');
   };
@@ -26,6 +31,16 @@ export default function FiltrosTabla({
   const handleRemoveRole = (inputValue) => {
     const newValue = filters.area.filter((item) => item !== inputValue);
     onFilters('area', newValue);
+  };
+
+  const handleRemoveDate = () => {
+    onFilters('startDate', null);
+    onFilters('endDate', null);
+  };
+
+  const handleRemoveEspe = (inputValue) => {
+    const newValue = filters.especialista.filter((item) => item !== inputValue);
+    onFilters('especialista', newValue);
   };
 
   return (
@@ -44,11 +59,31 @@ export default function FiltrosTabla({
           </Block>
         )}
 
-        {!!filters.area.length && (
-          <Block label="Área:">
-            {filters.area.map((item) => (
-              <Chip key={item} label={item} size="small" onDelete={() => handleRemoveRole(item)} />
+        {rol !== 1 ? (
+          <>
+            {!!filters.area.length && (
+              <Block label="Área:">
+                {filters.area.map((item) => (
+                  <Chip key={item} label={item} size="small" onDelete={() => handleRemoveRole(item)} />
+                ))}
+              </Block>
+            )}
+          </>
+        ) : (
+          null
+        )}
+
+        {!!filters.especialista.length && (
+          <Block label="Especialista:">
+            {filters.especialista.map((item) => (
+              <Chip key={item} label={item} size="small" onDelete={() => handleRemoveEspe(item)} />
             ))}
+          </Block>
+        )}
+
+        {filters.startDate && filters.endDate && (
+          <Block label="Fecha:">
+            <Chip size="small" label={shortLabel} onDelete={handleRemoveDate} />
           </Block>
         )}
 
@@ -69,6 +104,7 @@ FiltrosTabla.propTypes = {
   onFilters: PropTypes.func,
   onResetFilters: PropTypes.func,
   results: PropTypes.number,
+  rol: PropTypes.any,
 };
 
 // ----------------------------------------------------------------------
