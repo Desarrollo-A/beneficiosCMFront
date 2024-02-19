@@ -295,7 +295,9 @@ export default function AppointmentSchedule({
                   </Stack>
                   <Stack sx={{ flexDirection: 'col' }}>
                     <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                      Se considerará como inasistencia la llegada tardía despues de 10 minutos.
+                      {selectedValues.beneficio === 158
+                        ? 'Se consideran 5 minutos de tolerancia.'
+                        : 'Se consideran 10 minutos de tolerancia.'}
                     </Typography>
                   </Stack>
                 </Stack>

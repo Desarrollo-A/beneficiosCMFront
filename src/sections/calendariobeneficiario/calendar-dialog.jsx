@@ -96,17 +96,13 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const [btnNotificationDisabled, setBtnNotificationDisabled] = useState(false);
   const [btnConfirmAction, setBtnConfirmAction] = useState(false);
 
-  const [virtual, setVirtual] = useState(false);
-
   const { user: datosUser } = useAuthContext();
 
   console.log(datosUser);
 
   const { data: benefits } = useGetBenefits(datosUser.idSede);
 
-  const [especialista, setEspecialista] = useState(0);
-
-  const { sedes } = useGetSedesPresenciales({ idEspecialista: especialista });
+  const { sedes } = useGetSedesPresenciales({ idEspecialista: selectedValues.especialista });
 
   const { diasPresenciales } = useGetDiasPresenciales({
     especialista: selectedValues.especialista,
@@ -533,7 +529,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       setEspecialistas(data?.data);
     } else if (input === 'especialista') {
       console.log('especialista', value);
-      setEspecialista(value);
 
       setErrorEspecialista(false);
       const modalitiesData = await getModalities(datosUser.idSede, value);
@@ -562,12 +557,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       getHorariosDisponibles(selectedValues.beneficio, value);
     } else if (input === 'modalidad') {
       // console.log('modalidad', value)
-      if (value === 2) {
-        setVirtual(true);
-      } else {
-        setVirtual(false);
-        // diasPresencialesGet();
-      }
 
       setSelectedValues({
         ...selectedValues,
@@ -900,13 +889,21 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const formattedDate = date.format('YYYY-MM-DD');
     const isDisabledFromSQLServer = diasOcupados.includes(formattedDate);
 
-    // console.log('sedes', sedes.length)
+    console.log('fecha: ', formattedDate);
+    console.log('sedes', sedes.length, sedes);
+    console.log(
+      'Virtual',
+      selectedValues.modalidad,
+      typeof selectedValues.modalidad,
+      selectedValues.modalidad === 1
+    );
     let noPresencial = false;
-    if (!virtual) {
+    if (selectedValues.modalidad === 1) {
       if (sedes.length > 1) {
         noPresencial = !diasPresenciales.includes(formattedDate);
       }
     }
+
     // Deshabilitar la fecha si es un fin de semana o está en la lista de fechas deshabilitadas
     return isWeekendDay || isDisabledFromSQLServer || noPresencial;
   };
