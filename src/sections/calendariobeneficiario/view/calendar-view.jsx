@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import Calendar from '@fullcalendar/react'; // => request placed at the top
+import Calendar from '@fullcalendar/react';
+import { useState, useEffect } from 'react'; // => request placed at the top
 import listPlugin from '@fullcalendar/list';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -81,6 +81,10 @@ export default function CalendarView() {
     filters,
     dateError,
   });
+
+  useEffect(() => {
+    appointmentMutate();
+  }, [appointmentMutate]);
 
   return (
     <>
