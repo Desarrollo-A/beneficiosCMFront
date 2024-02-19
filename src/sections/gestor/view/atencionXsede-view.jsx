@@ -73,11 +73,11 @@ export default function AtencionXsedeView() {
 
   const { user } = useAuthContext();
 
-  const rol = user.idRol;
+  const rol = user?.idRol;
 
   const { atXsedeData } = useGetGeneral(endpoints.gestor.getAtencionXsede, "atXsedeData");
 
-  const { atXsdEspData } = usePostGeneral(user.idPuesto, endpoints.gestor.getAtencionXsedeEsp, "atXsdEspData");
+  const { atXsdEspData } = usePostGeneral(user?.idPuesto, endpoints.gestor.getAtencionXsedeEsp, "atXsdEspData");
 
   const { sedesData } = useGetGeneral(endpoints.gestor.getSedes, "sedesData");
 
@@ -235,7 +235,7 @@ export default function AtencionXsedeView() {
               <Tab label="Registros" value="1" />
 
               {sedesEmptyData !== false && 
-               user.idRol === "4" || user.idRol === 4 || user.idRol === "1" || user.idRol === 1 
+               user?.idRol === "4" || user?.idRol === 4 || user?.idRol === "1" || user?.idRol === 1 
                 ? (
 
                 <Tab value="2" iconPosition="end" icon={
@@ -324,7 +324,7 @@ export default function AtencionXsedeView() {
 
           </TabPanel>
 
-          {user.idRol === "4" || user.idRol === 4 || user.idRol === "1" || user.idRol === 1 ? (
+          {user?.idRol === "4" || user?.idRol === 4 || user?.idRol === "1" || user?.idRol === 1 ? (
           <TabPanel value="2">
 
             <Stack spacing={2}>

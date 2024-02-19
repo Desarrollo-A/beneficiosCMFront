@@ -145,6 +145,9 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
 
             <DialogActions>
 
+            <Button variant="contained" color="error" onClick={onClose}>
+                Cerrar
+              </Button>
               <LoadingButton
                 variant="contained"
                 color="success"
@@ -153,11 +156,7 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
                   confirm.onTrue();
                 }}>
                 Guardar
-              </LoadingButton>
-              <Button variant="contained" color="error" onClick={onClose}>
-                Cerrar
-              </Button>
-
+              </LoadingButton> 
             </DialogActions>
 
 
