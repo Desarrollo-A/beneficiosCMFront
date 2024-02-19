@@ -1,15 +1,9 @@
-import JsPDF from 'jspdf';
-import Xlsx from 'json-as-xlsx';
 import isEqual from 'lodash/isEqual';
-import autoTable from 'jspdf-autotable';
 import { useState, useEffect, useCallback } from 'react';
 
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
-import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
@@ -24,7 +18,6 @@ import { endpoints } from 'src/utils/axios';
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetGeneral, usePostGeneral } from 'src/api/general';
 
-import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
@@ -46,11 +39,15 @@ import UserTableFiltersResult from '../user-table-filters-result';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'id', label: 'ID' },
-  { id: 'nombre', label: 'Nombre', width: 220 },
-  { id: 'depto', label: 'Departamento', width: 100 },
+  { id: 'id', label: 'ID Cita' },
+  { id: 'beneficio', label: 'Beneficio', width: 100 },
+  { id: 'especialista', label: 'Especialista', width: 220 },
+  { id: 'motivoCita', label: 'Motivo cita', width: 100 },
   { id: 'sede', label: 'Sede', width: 100 },
-  { id: 'puesto', label: 'Puesto', width: 100 },
+  { id: 'oficina', label: 'Oficina', width: 100 },
+  { id: 'pagoGenerado', label: 'Pago generado', width: 100 },
+  { id: 'metodoPago', label: 'Metodo de pago', width: 100 },
+  { id: 'horario', label: 'Horario cita', width: 100 },
   { id: 'estatus', label: 'Estatus', width: 100 },
   { id: '', width: 88 },
 ];
@@ -63,65 +60,7 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-function handleDownloadExcel(tableData, area) {
-
-  let estatus = "";
-
-  if(area === 158){
-    estatus = "estQB";
-  }else if(area === 537){
-    estatus = "estNut";
-  }else if(area === 585){
-    estatus = "estPsi";
-  }else if(area === 686){
-    estatus = "estGE";
-  }
-
-  const data = [
-    {
-      sheet: "Historial Reportes",
-      columns: [
-        { label: "ID", value: "idUsuario" },
-        { label: "Nombre", value: "nombre" },
-        { label: "Departamento", value: "depto" },
-        { label: "Sede", value: "sede" },
-        { label: "Puesto", value: "puesto" },
-        { label: "Estatus", value: estatus },
-      ],
-      content: tableData,
-    },
-  ];
-
-  const settings = {
-    fileName: "Historial Reportes",
-    extraLength: 3,
-    writeMode: "writeFile",
-    writeOptions: {},
-    RTL: false,
-  }
-  Xlsx(data, settings)
-}
-
-const doc = new JsPDF();
-
-function handleDownloadPDF(tableData, headerBase) {
-
-  let data = [];
-
-  data = tableData.map(item => ([item.idUsuario, item.nombre, item.depto, item.sede, item.puesto, item.estNut || item.estPsi || item.estQB || item.estGE ]))
-
-  autoTable(doc, {
-    head: [headerBase],
-    body: data,
-  })
-  doc.save('Reporte de pacientes.pdf')
-}
-
-// ----------------------------------------------------------------------
-
-export default function ReportePacientesView() {
-
-  const headerBase = ["ID", "Nombre", "Departamento", "Sede", "Puesto", "Estatus"];
+export default function CitasView() {
 
   const table = useTable();
 
@@ -161,7 +100,7 @@ export default function ReportePacientesView() {
     });
   }, [area, user ]);
 
-  const { pacientesData } = usePostGeneral(dt, endpoints.reportes.pacientes, "pacientesData");
+  const { citasData } = usePostGeneral(user.idUsuario, endpoints.citas.getCitas, "citasData");
 
   const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
 
@@ -229,20 +168,13 @@ export default function ReportePacientesView() {
     [router]
   );
 
-  // const handleFilterStatus = useCallback(
-  //   (event, newValue) => {
-  //     handleFilters('status', newValue);
-  //   },
-  //   [handleFilters]
-  // );
-
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
 
   useEffect(() => {
-    setTableData(pacientesData);
-  }, [pacientesData]);
+    setTableData(citasData);
+  }, [citasData]);
 
   const handleChangeId = (newAr) => {
     setArea(newAr);
@@ -250,31 +182,14 @@ export default function ReportePacientesView() {
     setEspecialistas(especialistasData);
   }
 
-  const handlePdf = async e => {
-    e.preventDefault();
-    handleDownloadPDF(
-      tableData,
-      headerBase
-    );
-  }
-
-  const handleExcel = async e => {
-    e.preventDefault();
-    handleDownloadExcel(
-      tableData,
-      area
-    );
-  }
-
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Pacientes"
+          heading="Citas"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Reportes', /* href: paths.dashboard.user.root */ },
-            { name: 'Pacientes' },
+            { name: 'Citas', },
           ]}
           sx={{
             mb: { xs: 3, md: 5 },
@@ -304,38 +219,6 @@ export default function ReportePacientesView() {
               rol={rol}
             />
           )}
-
-          <Stack
-            spacing={1}
-            alignItems={{ xs: 'flex-start', md: 'flex-start' }}
-            direction={{
-              xs: 'column',
-              md: 'row',
-            }}
-            sx={{
-              p: 1,
-              pr: { xs: 1, md: 1 },
-            }}
-          >
-            <Tooltip title="Exportar a XLS" placement="top" arrow>
-              <MenuItem
-                sx={{ width: 50, p: 1 }}
-                onClick={handleExcel}
-              >
-                <Iconify icon="teenyicons:xls-outline" />
-              </MenuItem>
-            </Tooltip>
-
-            <Tooltip title="Exportar a PDF" placement="top" arrow>
-              <MenuItem
-                sx={{ width: 50, p: 1 }}
-                onClick={handlePdf}
-              >
-                <Iconify icon="teenyicons:pdf-outline" />
-              </MenuItem>
-            </Tooltip>
-
-          </Stack>
 
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
 
@@ -435,10 +318,13 @@ function applyFilter({ inputData, comparator, filters }) {
 
   if (name) {
     inputData = inputData.filter(
-      (user) =>
-        user.nombre.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        user.sede.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        user.correo.toLowerCase().indexOf(name.toLowerCase()) !== -1
+      (i) =>
+        i.especialista.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        i.motivoCita.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        i.sede.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        i.oficina.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        i.pagoGenerado.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        i.metodoPago.toLowerCase().indexOf(name.toLowerCase()) !== -1
     );
   }
 
