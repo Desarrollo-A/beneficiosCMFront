@@ -88,7 +88,7 @@ export default function CalendarioView(){
 
     const { events, eventsLoading} = GetCustomEvents(date);
 
-    const { horarios, horariosGet } = useGetHorariosPresenciales({idEspecialista : user.idUsuario});
+    const { horarios, horariosGet } = useGetHorariosPresenciales({idEspecialista : user?.idUsuario});
 
     const [startPresencial] = useState(new Date());
     const [endPresencial] = useState(new Date());
@@ -144,7 +144,7 @@ export default function CalendarioView(){
     const onCloseHorariosDialog = () => {
       setOpenPresencialDialog(false);
 
-      horariosGet({idEspecialista : user.idUsuario})
+      horariosGet({idEspecialista : user?.idUsuario})
     }
     
     return(

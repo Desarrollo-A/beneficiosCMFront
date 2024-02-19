@@ -166,9 +166,6 @@ const StyledNavItem = styled(ListItemButton, {
       flexShrink: 0,
       color: "white"
     },
-    label: {
-      textTransform: 'capitalize',
-    },
     caption: {
       color: theme.palette.text.disabled,
     },

@@ -7,7 +7,6 @@ import timelinePlugin from '@fullcalendar/timeline';
 import allLocales from '@fullcalendar/core/locales-all';
 import interactionPlugin from '@fullcalendar/interaction';
 
-
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -17,11 +16,11 @@ import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 
 import { useBoolean } from 'src/hooks/use-boolean';
-import { useSession } from 'src/hooks/use-session';
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import { fTimestamp } from 'src/utils/format-time';
 
+import { useAuthContext } from 'src/auth/hooks';
 import { useGetAppointmentsByUser } from 'src/api/calendar-colaborador';
 
 import { useSettingsContext } from 'src/components/settings';
@@ -42,9 +41,10 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 
 export default function CalendarView() {
-  useSession();
   const theme = useTheme();
   const dialog = useBoolean();
+
+  const { user: datosUser } = useAuthContext();
 
   const settings = useSettingsContext();
   const smUp = useResponsive('up', 'sm');
@@ -75,7 +75,7 @@ export default function CalendarView() {
     data: events,
     appointmentLoading: eventsLoading,
     appointmentMutate,
-  } = useGetAppointmentsByUser(date);
+  } = useGetAppointmentsByUser(date, datosUser.idUsuario);
 
   const currentEvent = useEvent(events, selectEventId, openForm);
 
@@ -120,7 +120,7 @@ export default function CalendarView() {
             />
             <Calendar
               weekends
-              editable
+              editable = {false} // en false para prevenir un drag del evento
               selectable
               locales={allLocales}
               locale="es"

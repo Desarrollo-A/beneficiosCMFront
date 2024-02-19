@@ -19,7 +19,7 @@ import ModalEspecialista from './modal-especialista';
 
 // ----------------------------------------------------------------------
 
-export default function RowsAtencionXsede({ row, selected, onEditRow, onDeleteRow, modalidadesData, rol }) {
+export default function RowsAtencionXsede({ row, selected, onEditRow, onDeleteRow, modalidadesData, rol, close }) {
   const { id, sede, oficina, ubicación, nombre, puesto, idPuesto, modalidad, estatus } = row;
 
   const popover = usePopover();
@@ -30,7 +30,7 @@ export default function RowsAtencionXsede({ row, selected, onEditRow, onDeleteRo
 
   const [open, setOpen] = useState(false);
 
-  const [close] = useState(false);
+  // const [close] = useState(false);
 
   const handleOpen = () => {
     setOpen(true);
@@ -146,4 +146,5 @@ RowsAtencionXsede.propTypes = {
   selected: PropTypes.bool,
   modalidadesData: PropTypes.any,
   rol: PropTypes.any,
+  close: PropTypes.func
 };
