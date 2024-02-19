@@ -321,7 +321,7 @@ export default function DashView() {
           <Grid xs={12} md={9}>
             <AppWelcome
               title={`Bienvenido 👋 \n ${user?.nombre}`}
-              description="If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything."
+              /* description="If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything." */
               img={<SeoIllustration />}
 
             />

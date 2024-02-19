@@ -134,11 +134,11 @@ export default function JwtRegisterView() {
         textAlign: 'center',
       }}
     >
-      {'By signing up, I agree to '}
+      {'Al registrarme, acepto '}
       <Link underline="always" color="text.primary">
         Nuestros servicios
       </Link>
-      {' and '}
+      {' y '}
       <Link underline="always" color="text.primary">
         Politicas de privacidad
       </Link>
@@ -157,6 +157,7 @@ export default function JwtRegisterView() {
           size="large"
           type="submit"
           variant="contained"
+          autoComplete="off"
           loading={isSubmitting}
           onClick={() => validarNumEmpleado()}
         >

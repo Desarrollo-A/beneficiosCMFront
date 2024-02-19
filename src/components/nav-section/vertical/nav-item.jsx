@@ -191,7 +191,6 @@ const StyledNavItem = styled(ListItemButton, {
     label: {
       ...noWrapStyles,
       ...theme.typography.body2,
-      textTransform: 'capitalize',
       fontWeight: theme.typography[active ? 'fontWeightSemiBold' : 'fontWeightMedium'],
     },
     caption: {
