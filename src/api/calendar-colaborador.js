@@ -285,7 +285,7 @@ const {user: datosUser} = useAuthContext()
   return memoizedValue;
 }
 
-export function cancelAppointment(currentEvent, id, cancelType) {
+export function CancelAppointment(currentEvent, id, cancelType) {
   const {user: datosUser} = useAuthContext()
   const URL = [endpoints.calendario.cancelAppointment];
   const data = {
