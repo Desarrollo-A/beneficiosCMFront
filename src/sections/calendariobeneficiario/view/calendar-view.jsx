@@ -60,7 +60,6 @@ export default function CalendarView() {
     onDatePrev,
     onDateNext,
     onDateToday,
-    onCloseForm,
     calendarRef,
     onChangeView,
     onClickEvent,
@@ -158,14 +157,7 @@ export default function CalendarView() {
           enter: theme.transitions.duration.shortest,
           exit: theme.transitions.duration.shortest - 1000,
         }}
-      >
-        <CalendarDialog
-          currentEvent={currentEvent}
-          onClose={onCloseForm}
-          selectedDate={selectedDate}
-          appointmentMutate={appointmentMutate}
-        />
-      </Dialog>
+      />
     </>
   );
 }
