@@ -178,7 +178,7 @@ export default function HistorialReportesView() {
 
   const _eu = espeUserData.flatMap((es) => (es.puesto));
 
-  defaultFilters.area = rol !== 4 ? _eu : [];
+  defaultFilters.area = user.idRol !== 4 ? _eu : [];
 
   const table = useTable();
 
@@ -346,6 +346,7 @@ export default function HistorialReportesView() {
             tot={dataFiltered.length}
             dataValue={dataValue}
             rol={rol}
+            _eu={_eu}
           />
 
           {canReset && (
