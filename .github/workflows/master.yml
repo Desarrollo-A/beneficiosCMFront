@@ -22,7 +22,7 @@ jobs:
       - name: ⚙️ Build project
         run: |
           npm install --legacy-peer-deps
-          npm run production
+          npm run build
 
       - name: 📂 Sync files
         uses: wlixcc/SFTP-Deploy-Action@v1.2.1
