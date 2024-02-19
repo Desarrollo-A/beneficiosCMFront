@@ -109,14 +109,14 @@ export default function ModalModalidad({ open, onClose, id, est, estatusVal, mod
       </Stack>
 
       <DialogActions>
+        <Button variant="contained" color="error" onClick={onClose}>
+          Cerrar
+        </Button>
         <Button variant="contained" color="success" onClick={() => {
           handleEstatus(estatus);
           confirm.onFalse();
         }}>
           Guardar
-        </Button>
-        <Button variant="contained" color="error" onClick={onClose}>
-          Cerrar
         </Button>
       </DialogActions>
 

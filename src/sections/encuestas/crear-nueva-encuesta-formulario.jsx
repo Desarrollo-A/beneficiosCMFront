@@ -57,9 +57,9 @@ export default function InvoiceNewEditForm() {
 
   const defaultValues = useMemo(
     () => ({
-      area: user.idPuesto
+      area: user?.idPuesto
     }),
-    [user.idPuesto]
+    [user?.idPuesto]
   );
 
   const methods = useForm({
@@ -81,7 +81,7 @@ export default function InvoiceNewEditForm() {
     setFormKey((prevKey) => prevKey + 1);
   };
 
-  const rol = user.idRol;
+  const rol = user?.idRol;
 
   const handleCreateAndSend = handleSubmit(async (data, est) => {
 

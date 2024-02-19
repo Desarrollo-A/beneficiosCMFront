@@ -153,7 +153,7 @@ export default function HistorialReportesView() {
 
   const { user } = useAuthContext();
 
-  const rol = user.idRol;
+  const rol = user?.idRol;
 
   let TABLE_HEAD = [];
 
@@ -164,7 +164,7 @@ export default function HistorialReportesView() {
 
   const [dataValue, setReportData] = useState('general');
 
-  const { espeUserData } = usePostGeneral(user.idUsuario, endpoints.reportes.getEspeUser, "espeUserData");
+  const { espeUserData } = usePostGeneral(user?.idUsuario, endpoints.reportes.getEspeUser, "espeUserData");
 
   const { reportesData } = usePostGeneral(dataValue, endpoints.reportes.lista, "reportesData");
 
