@@ -53,7 +53,7 @@ export default function Upload({
       <Stack spacing={1} sx={{ textAlign: 'center' }}>
         <Typography variant="h6">Suelte o seleccione un archivo</Typography>
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          Suelte el archivo o haga clic en
+          Suelte el archivo o haga clic para
           <Box
             component="span"
             sx={{
@@ -64,7 +64,7 @@ export default function Upload({
           >
             explorar
           </Box>
-          en su maquina
+          en su equipo
         </Typography>
       </Stack>
     </Stack>
