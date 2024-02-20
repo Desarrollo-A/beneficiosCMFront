@@ -38,7 +38,8 @@ export default function BarraTareasTabla({
   table,
   dataValue,
   rol,
-  _eu
+  _eu,
+  idUsuario,
 }) {
   const popover = usePopover();
 
@@ -63,31 +64,56 @@ export default function BarraTareasTabla({
 
   const [fechaF, setFechaF] = useState(diaActual);
 
-  const [ar] = useState(_eu);
+  const [selectEsp, setSelectEsp] = useState([]);
 
-  const [dt] = useState({
-    esp: rol === 4 ? area : ar,
+  const [dt, setDt] = useState({
+    esp: rol === 4 ? area : _eu,
     fhI: fechaI,
     fhF: fechaF,
+    roles: rol,
+    idUsr: idUsuario, 
+    idEsp: selectEsp,
   });
+
+  useEffect(() => {
+    if (area) {
+      setDt({
+        esp: rol === 4 ? area : _eu,
+        fhI: fechaI,
+        fhF: fechaF,
+        roles: rol,
+        idUsr: idUsuario,
+        idEsp: selectEsp,
+      });
+    }
+  }, [
+    area,
+    rol,
+    fechaI,
+    fechaF,
+    _eu,
+    idUsuario,
+    selectEsp
+  ]);
+
 
   const [condi, setCondi] = useState(true);
 
   useEffect(() => {
 
-  if(rol !== 1){
-    if (area[0]?.length === 0) {
-      setCondi(true);
-    } else if (area.length === 0) {
-      setCondi(true);
-    } else if (area.length > 0) {
+    if (rol !== 1) {
+      if (area[0]?.length === 0) {
+        setCondi(true);
+      } else if (area.length === 0) {
+        setCondi(true);
+      } else if (area.length > 0) {
+        setCondi(false);
+      }
+    } else {
       setCondi(false);
-    } 
-  }else{
-    setCondi(false);
-  }
+    }
 
-  }, [area, fechaI, fechaF, dt, rol, ar]);
+  }, [area, fechaI, fechaF, dt, rol]);
 
   const { cPaciData } = usePostPacientes(dt, endpoints.reportes.getCierrePacientes, "cPaciData");
 
@@ -156,6 +182,7 @@ export default function BarraTareasTabla({
         'especialista',
         typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value
       );
+      setSelectEsp(event.target.value);
     },
     [onFilters]
   );
@@ -195,8 +222,6 @@ export default function BarraTareasTabla({
       ) : (
         null
       )}
-
-      
 
       <Stack
         spacing={2}
@@ -389,4 +414,5 @@ BarraTareasTabla.propTypes = {
   dataValue: PropTypes.any,
   rol: PropTypes.any,
   _eu: PropTypes.any,
+  idUsuario: PropTypes.any,
 };

@@ -30,7 +30,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
   
   const updateObservacion = useUpdate(endpoints.reportes.observacion);
 
-  const idUsr = user.idUsuario;
+  const idUsr = user?.idUsuario;
 
   const NewUserSchema = Yup.object().shape({
     descripcion: Yup.string().required('El campo es requerido'),

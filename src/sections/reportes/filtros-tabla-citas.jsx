@@ -4,10 +4,10 @@ import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
+/* import Button from '@mui/material/Button'; */
 
-import Iconify from 'src/components/iconify';
-import { shortDateLabel } from 'src/components/custom-date-range-picker';
+/* import Iconify from 'src/components/iconify';
+import { shortDateLabel } from 'src/components/custom-date-range-picker'; */
 
 // ----------------------------------------------------------------------
 
@@ -22,13 +22,13 @@ export default function FiltrosTabla({
   ...other
 }) {
 
-  const shortLabel = shortDateLabel(filters.startDate, filters.endDate);
+ /*  const shortLabel = shortDateLabel(filters.startDate, filters.endDate); */
 
   const handleRemoveStatus = () => {
     onFilters('estatus', 'all');
   };
 
-  const handleRemoveRole = (inputValue) => {
+  /* const handleRemoveRole = (inputValue) => {
     const newValue = filters.area.filter((item) => item !== inputValue);
     onFilters('area', newValue);
   };
@@ -41,7 +41,7 @@ export default function FiltrosTabla({
   const handleRemoveEspe = (inputValue) => {
     const newValue = filters.especialista.filter((item) => item !== inputValue);
     onFilters('especialista', newValue);
-  };
+  }; */
 
   return (
     <Stack spacing={1.5} {...other}>
@@ -59,7 +59,7 @@ export default function FiltrosTabla({
           </Block>
         )}
 
-        {rol !== 1 ? (
+        {/* {rol !== 1 ? (
           <>
             {!!filters.area.length && (
               <Block label="Área:">
@@ -85,15 +85,15 @@ export default function FiltrosTabla({
           <Block label="Fecha:">
             <Chip size="small" label={shortLabel} onDelete={handleRemoveDate} />
           </Block>
-        )}
+        )} */}
 
-        <Button
+        {/* <Button
           color="error"
           onClick={onResetFilters}
           startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
         >
           Limpiar
-        </Button>
+        </Button> */}
       </Stack>
     </Stack>
   );
