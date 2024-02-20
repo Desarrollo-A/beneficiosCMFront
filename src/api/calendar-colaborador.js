@@ -324,7 +324,7 @@ export function sendMail(event, typeEmail, correo) {
       tituloEmail = 'Reservación';
       imagen = 'appointment.png';
       view = 'email-appointment';
-      temaEmail = 'Se ha realizado su cita para ';
+      temaEmail = 'Has realizado con éxito tu reservación para el beneficio de ';
       break;
     case 2: // Cancelar
       tituloEmail = 'Cancelación';
