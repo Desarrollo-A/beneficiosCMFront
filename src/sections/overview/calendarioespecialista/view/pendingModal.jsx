@@ -55,6 +55,7 @@ export default function PendingModal() {
   };
 
   const handleClose2 = () => {
+    setBtnLoading(false);
     setOpen2(false);
     setReason([]);
     setCancelType('');
