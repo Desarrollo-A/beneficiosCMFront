@@ -82,7 +82,7 @@ export function GetCustomEvents(current) {
   const memoizedValue = useMemo(() => {
     const events = data?.events?.map((event) => ({
       ...event,
-      textColor: event?.color,
+      textColor: event?.tipoCita === 1 && event?.estatus === 1 ? 'yellow' : event?.color,
       type: event?.type,
       fechaInicio: event.start,
     }));
