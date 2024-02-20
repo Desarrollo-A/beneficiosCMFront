@@ -39,7 +39,8 @@ const options = {
   refreshInterval: 0,
 };
 
-const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+const session = sessionStorage.getItem('accessToken');
+const datosUser = session ? JSON.parse(Base64.decode(session.split('.')[2])) : [];
 
 // ----------------------------------------------------------------------
 
