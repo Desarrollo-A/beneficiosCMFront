@@ -67,12 +67,12 @@ export default function FormularioEncuesta({ idEncuesta }) {
                     )}
 
                     {item.respuestas === "5" && (
-                      <Typography variant="subtitle2" > Respuesta: Abierta corta </Typography>
+                      <Typography variant="subtitle2" > Respuesta: Abierta </Typography>
                     )}
 
-                    {item.respuestas === "6" && (
+                    {/* {item.respuestas === "6" && (
                       <Typography variant="subtitle2" > Respuestas: Abierta larga </Typography>
-                    )}
+                    )} */}
 
                   </Stack>
                 ))}

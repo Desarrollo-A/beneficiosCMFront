@@ -40,6 +40,7 @@ export default function BarraTareasTabla({
   rol,
   _eu,
   idUsuario,
+
 }) {
   const popover = usePopover();
 
@@ -71,7 +72,7 @@ export default function BarraTareasTabla({
     fhI: fechaI,
     fhF: fechaF,
     roles: rol,
-    idUsr: idUsuario, 
+    idUsr: idUsuario,
     idEsp: selectEsp,
   });
 
@@ -296,35 +297,41 @@ export default function BarraTareasTabla({
           null
         )}
 
-        <FormControl
-          sx={{
-            flexShrink: 0,
-            width: { xs: 1, md: 200 },
-          }}
-        >
-          <InputLabel>Especialistas</InputLabel>
+        {rol !== 3 ? (
 
-          <Select
-            multiple
-            disabled={condi}
-            value={filters.especialista}
-            onChange={handleFilterEspe}
-            input={<OutlinedInput label="Especialistas" />}
-            renderValue={(selected) => selected.map((value) => value).join(', ')}
-            MenuProps={{
-              PaperProps: {
-                sx: { maxHeight: 240 },
-              },
+          <FormControl
+            sx={{
+              flexShrink: 0,
+              width: { xs: 1, md: 200 },
             }}
           >
-            {_esp.map((option) => (
-              <MenuItem key={option} value={option}>
-                <Checkbox disableRipple size="small" checked={filters.especialista.includes(option)} />
-                {option}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+            <InputLabel>Especialistas</InputLabel>
+
+            <Select
+              multiple
+              disabled={condi}
+              value={filters.especialista}
+              onChange={handleFilterEspe}
+              input={<OutlinedInput label="Especialistas" />}
+              renderValue={(selected) => selected.map((value) => value).join(', ')}
+              MenuProps={{
+                PaperProps: {
+                  sx: { maxHeight: 240 },
+                },
+              }}
+            >
+              {_esp.map((option) => (
+                <MenuItem key={option} value={option}>
+                  <Checkbox disableRipple size="small" checked={filters.especialista.includes(option)} />
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+        ) : (
+          null
+        )}
 
         <DatePicker
           label="Fecha inicio"

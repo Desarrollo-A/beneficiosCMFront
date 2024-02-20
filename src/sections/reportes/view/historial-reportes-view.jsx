@@ -157,6 +157,8 @@ export default function HistorialReportesView() {
 
   const idUsuario = user?.idUsuario;
 
+  const nombreUser = user?.nombre;
+
   let TABLE_HEAD = [];
 
   let header = [];
@@ -187,6 +189,8 @@ export default function HistorialReportesView() {
   const _eu = esp.flatMap((es) => (es.puesto));
 
   defaultFilters.area = user?.idRol !== 4 ? _eu : [];
+
+  defaultFilters.especialista = user?.idRol === 3 ? nombreUser : [];
 
   const table = useTable();
 
@@ -356,6 +360,7 @@ export default function HistorialReportesView() {
             rol={rol}
             _eu={_eu}
             idUsuario={idUsuario}
+            nombreUser={nombreUser}
           />
 
           {canReset && (

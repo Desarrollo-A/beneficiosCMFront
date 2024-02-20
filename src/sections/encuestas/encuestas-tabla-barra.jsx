@@ -18,7 +18,8 @@ export default function UserTableToolbar({
   filters,
   onFilters,
   roleOptions,
-  handleChangeId
+  handleChangeId,
+  rol,
 }) {
 
   const handleFilterName = useCallback(
@@ -57,6 +58,7 @@ export default function UserTableToolbar({
           pr: { xs: 2.5, md: 1 },
         }}
       >
+        {rol === 4 ? (
         <FormControl
           sx={{
             flexShrink: 0,
@@ -83,6 +85,10 @@ export default function UserTableToolbar({
           </Select>
         </FormControl>
 
+        ):(
+          null
+        )}
+
         <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
             fullWidth
@@ -108,4 +114,5 @@ UserTableToolbar.propTypes = {
   onFilters: PropTypes.func,
   roleOptions: PropTypes.any,
   handleChangeId: PropTypes.any,
+  rol: PropTypes.any
 };
