@@ -195,6 +195,7 @@ export const endpoints = {
     getCtCanceladas: '/GeneralController/getCtCanceladas',
     getCtPenalizadas: '/GeneralController/getCtPenalizadas',
     getMetas: '/DashboardController/getMetas',
+    getMetaAdmin: '/DashboardController/getMetaAdmin'
   },
   encuestas: {
     encuestaInsert: '/EncuestasController/encuestaInsert',

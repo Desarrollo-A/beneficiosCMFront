@@ -202,18 +202,18 @@ export default function InvoiceNewEditForm() {
         title="¿Deseas activar la encuesta?"
         action={
           <>
-            <Button variant="contained" onClick={() => {
-              handleCreateAndSend(1);
-              confirm.onFalse();
-            }}>
-              Si
-            </Button>
-            <Button variant="contained" loading={btnLoad} onClick={() => {
+            <Button variant="contained" color="error" loading={btnLoad} onClick={() => {
               setBtnLoad(true);
               confirm.onFalse();
               handleCreateAndSend(0);
             }}>
               No
+            </Button>
+            <Button variant="contained" color="success" onClick={() => {
+              handleCreateAndSend(1);
+              confirm.onFalse();
+            }}>
+              Si
             </Button>
           </>
         }

@@ -140,7 +140,7 @@ export default function AvisoPrivacidadGeneral() {
               formData.append('nombreEspecialidad', detalleEspecialidad.nombre);
               formData.append('idEspecialidad', detalleEspecialidad.id);
               formData.append('accion', 1);// tipoDeAccion: 1: nuevo 2: Editar
-              formData.append('idUsuario', user.idUsuario);
+              formData.append('idUsuario', user?.idUsuario);
         
               // Realizar la llamada al servidor para subir el archivo 
               fetch(`${HOST}${endpoints.avisosPrivacidad.actualizarArchivoPrivacidad}`, {
@@ -175,8 +175,8 @@ export default function AvisoPrivacidadGeneral() {
                         >
                             <Typography>{nombreArchivo}</Typography>
                         </Stack>
-                            
-                            {user.idRol === 4 || user.idPuesto === especialidadSelector.idPuesto ? 
+                            {/* user.idPuesto === especialidadSelector.idPuesto */}
+                            {user?.idRol === 4 ? 
                             <Grid xs={12} style={{ alignItems: 'center', height: '450px', width: '100%', alignContent: 'space-around', flexWrap: 'wrap', flexDirection: 'column', justifyContent: 'center'}} >
                                 <Upload onDrop={manejarCambioArchivo} accept={{ 'application/pdf': [] }} file={archivo} onDelete={() => eliminarArchivo()} />
                             </Grid>

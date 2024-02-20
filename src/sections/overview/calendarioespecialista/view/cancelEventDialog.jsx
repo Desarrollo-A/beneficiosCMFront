@@ -31,6 +31,8 @@ import {
   cancelAppointment,
 } from 'src/api/calendar-specialist';
 
+import Iconify from 'src/components/iconify';
+
 export default function CancelEventDialog({ type, currentEvent, pastCheck, reasons, onClose, close, selectedDate }) {
   dayjs.locale('es'); // valor para cambiar el idioma del dayjs
   const [assist, setAssist] = useState('');
@@ -189,9 +191,10 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
                 name="motivos"
                 multiple
                 limitTags={2}
-                getOptionDisabled={(option) =>
-                  !!reasons.find((element) => element.idOpcion === option.idOpcion)
+                getOptionDisabled={(option) => // deshabilita las opciones que ya hayan sido seleccionadas
+                  reason.some((selectedOption) => selectedOption.value === option.value)
                 }
+
                 onChange={(event, value) => {
                   setReason(value);
                 }}
@@ -199,10 +202,30 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
                 renderTags={(value, getTagProps) =>
                   value.map((option, index) => (
                     <Chip
-                      style={{
-                        backgroundColor: '#e0e0e0',
-                        borderRadius: '20px',
-                      }}
+                    sx={{
+                      backgroundColor: '#e0e0e0',
+                      borderRadius: '20px',
+                      alignItems: 'center',
+                      alignContent: 'center',
+                      justifyContent: 'center',
+                    }}
+                    deleteIcon={
+                      <Stack
+                        style={{
+                          width: '30px',
+                          height: '20px',
+                          display: 'flex',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <Iconify
+                          icon="typcn:delete-outline"
+                          sx={{
+                            color: 'black',
+                          }}
+                        />
+                      </Stack>
+                    }
                       variant="outlined"
                       label={option.label}
                       {...getTagProps({ index })}
