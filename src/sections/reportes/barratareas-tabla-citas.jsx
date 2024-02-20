@@ -65,11 +65,21 @@ export default function BarraTareasTabla({
 
   const [ar] = useState(_eu);
 
-  const [dt] = useState({
+  const [dt, setDt] = useState({
     esp: rol === 4 ? area : ar,
     fhI: fechaI,
     fhF: fechaF,
-  });
+});
+
+useEffect(() => {
+    if(area) {
+        setDt({
+            esp: rol === 4 ? area : ar,
+            fhI: fechaI,
+            fhF: fechaF,
+        });
+    }
+}, [area, rol, ar, fechaI, fechaF]);
 
   const [condi, setCondi] = useState(true);
 
