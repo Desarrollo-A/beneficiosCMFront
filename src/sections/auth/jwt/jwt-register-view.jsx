@@ -83,7 +83,6 @@ export default function JwtRegisterView() {
       const config = {
         headers: {
           Authorization: '41EgSP8+YSqsyT1ZRuxTK3CYR11LOcyqopI2TTNJd3EL+aU3MUdJNsKGx8xOK+HH',
-          'Access-Control-Allow-Origin': '*',
           Accept: '*/*',
           Origin: 'https://prueba.gphsis.com/auth/jwt/register',
         },
