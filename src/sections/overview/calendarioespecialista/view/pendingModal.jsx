@@ -45,6 +45,7 @@ export default function PendingModal() {
   const { data: reasons } = useGetMotivos();
   const [selectEvent, setSelectEvent] = useState('');
   const selectedReason = reason.length > 0 || cancelType;
+  const [btnLoading, setBtnLoading] = useState(false);
 
   dayjs.locale('es');
   dayjs.extend(localeData);
@@ -102,6 +103,7 @@ export default function PendingModal() {
   };
 
   const endSubmit = async () => {
+    setBtnLoading(true);
     switch (assist) {
       case 0:
         try {
@@ -216,6 +218,9 @@ export default function PendingModal() {
                   name="motivos"
                   multiple
                   limitTags={2}
+                  getOptionDisabled={(option) => // deshabilita las opciones que ya hayan sido seleccionadas
+                  reason.some((selectedOption) => selectedOption.value === option.value)
+                }
                   onChange={(event, value) => {
                     setReason(value);
                   }}
@@ -223,10 +228,30 @@ export default function PendingModal() {
                   renderTags={(value, getTagProps) =>
                     value.map((option, index) => (
                       <Chip
-                        style={{
-                          backgroundColor: '#e0e0e0',
-                          borderRadius: '20px',
-                        }}
+                      sx={{
+                        backgroundColor: '#e0e0e0',
+                        borderRadius: '20px',
+                        alignItems: 'center',
+                        alignContent: 'center',
+                        justifyContent: 'center',
+                      }}
+                      deleteIcon={
+                        <Stack
+                          style={{
+                            width: '30px',
+                            height: '20px',
+                            display: 'flex',
+                            alignItems: 'center',
+                          }}
+                        >
+                          <Iconify
+                            icon="typcn:delete-outline"
+                            sx={{
+                              color: 'black',
+                            }}
+                          />
+                        </Stack>
+                      }
                         variant="outlined"
                         label={option.label}
                         {...getTagProps({ index })}
@@ -265,18 +290,19 @@ export default function PendingModal() {
           </Stack>
         </DialogContent>
         <DialogActions>
-          {/* <Button variant="contained" color="error" onClick={handleClose2}>
-            Cerrar
-          </Button> */}
+          <Button variant="contained" color="error" onClick={handleClose2} disabled={btnLoading}>
+            Regresar
+          </Button>
           <LoadingButton
             type="submit"
             variant="contained"
             disabled={!selectedReason}
             color="success"
+            loading={ btnLoading }
             onClick={endSubmit}
             autoFocus
           >
-            Aceptar
+            Guardar
           </LoadingButton>
         </DialogActions>
       </Dialog>

@@ -30,6 +30,7 @@ import {
   endAppointment,
   cancelAppointment,
 } from 'src/api/calendar-specialist';
+
 import Iconify from 'src/components/iconify';
 
 export default function CancelEventDialog({ type, currentEvent, pastCheck, reasons, onClose, close, selectedDate }) {
@@ -190,8 +191,7 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
                 name="motivos"
                 multiple
                 limitTags={2}
-                 // disabling selected options
-                 getOptionDisabled={(option) =>
+                getOptionDisabled={(option) => // deshabilita las opciones que ya hayan sido seleccionadas
                   reason.some((selectedOption) => selectedOption.value === option.value)
                 }
 
