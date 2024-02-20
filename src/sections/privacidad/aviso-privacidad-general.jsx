@@ -1,7 +1,7 @@
 import axios from 'axios';
 import * as React from 'react';
 // import { useRef } from 'react';
-import { Base64 } from 'js-base64';
+// import { Base64 } from 'js-base64';
 
 import Select from '@mui/material/Select';
 import Button from '@mui/material/Button';
@@ -23,6 +23,7 @@ import { endpoints } from 'src/utils/axios';
 // ----------------------------------------------------------------------
 import { HOST } from 'src/config-global';
 import { useGetGeneral } from 'src/api/general';
+import { useAuthContext } from 'src/auth/hooks';
 
 import Iconify from 'src/components/iconify';
 import { Upload } from 'src/components/upload';
@@ -35,12 +36,13 @@ import VisorPdf from 'src/sections/privacidad/visorArchivoPdf';
 export default function AvisoPrivacidadGeneral() {
   const settings = useSettingsContext();
   const { enqueueSnackbar } = useSnackbar();
+  const { user } = useAuthContext();
 
 
   const [especialidadSelector, seteEspecialidadSelector] = React.useState('');
   const [propiedadesIFrame, setPropiedadesIFrame] = React.useState({visualize:'none', rutaArchivo:'https://google.com', tituloEspecialidad:'', idDocumento:0});
   const { especialidadesDisponibles } = useGetGeneral(endpoints.avisosPrivacidad.getEspecialidadToSelect, "especialidadesDisponibles");
-  const user = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+  // const user = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
   const [archivoPrivacidad, setArchivoPrivacidad] = React.useState({archivo:'', idDocumento:0, nombreDocumento:''});
   const [existeRama, setExisteRama] = React.useState(false);
   // const fileInputRef = useRef(null);
@@ -57,7 +59,6 @@ export default function AvisoPrivacidadGeneral() {
         setAcualizarView(false);
     }, 2000)
   };
-
 
 
     const handleChange = async (event) => {
@@ -139,6 +140,7 @@ export default function AvisoPrivacidadGeneral() {
               formData.append('nombreEspecialidad', detalleEspecialidad.nombre);
               formData.append('idEspecialidad', detalleEspecialidad.id);
               formData.append('accion', 1);// tipoDeAccion: 1: nuevo 2: Editar
+              formData.append('idUsuario', user.idUsuario);
         
               // Realizar la llamada al servidor para subir el archivo 
               fetch(`${HOST}${endpoints.avisosPrivacidad.actualizarArchivoPrivacidad}`, {
