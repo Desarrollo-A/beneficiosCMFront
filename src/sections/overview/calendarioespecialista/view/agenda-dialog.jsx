@@ -107,8 +107,8 @@ export default function AgendaDialog({ open, onClose, id, start, end, sede, ...p
                   dateAdapter={AdapterDateFns}
                   localeText={espa}
                 >
-                  <RHFDatePicker name="start" label="Inicio" value={start} />
-                  <RHFDatePicker name="end" label="Final" value={end} />
+                  <RHFDatePicker name="start" label="Inicio" value={start} disablePast={true} />
+                  <RHFDatePicker name="end" label="Final" value={end} disablePast={true} />
                 </LocalizationProvider>
               </Stack>
               <RHFSelect name="sede" label="Sede" value="">

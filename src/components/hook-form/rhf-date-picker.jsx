@@ -16,6 +16,7 @@ export default function RHFDatePicker({ name, label, value, ...other }) {
       shouldUnregister
       render={({ field }) => (
         <MobileDatePicker
+          {...other}
           disabled={field.disabled}
           sx={{ width: '100%' }}
           label={label}
