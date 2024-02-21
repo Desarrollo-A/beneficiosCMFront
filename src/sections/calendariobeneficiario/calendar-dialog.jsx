@@ -1,6 +1,7 @@
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
 import * as yup from 'yup';
+import { stubTrue } from 'lodash';
 import PropTypes from 'prop-types';
 import utc from 'dayjs/plugin/utc';
 import { useForm } from 'react-hook-form';
@@ -62,7 +63,6 @@ import FormProvider from 'src/components/hook-form/form-provider';
 import EvaluateDialog from './evaluate-dialog';
 import CalendarPreview from './calendar-preview';
 import AppointmentSchedule from './appointment-schedule';
-import { stubTrue } from 'lodash';
 
 dayjs.locale('es');
 dayjs.extend(utc);

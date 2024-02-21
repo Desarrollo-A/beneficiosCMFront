@@ -24,6 +24,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import uuidv4 from 'src/utils/uuidv4';
 import { fDate } from 'src/utils/format-time';
 
+import { useAuthContext } from 'src/auth/hooks';
 import {
   reRender,
   deleteEvent,
@@ -40,6 +41,7 @@ import FormProvider from 'src/components/hook-form/form-provider';
 import CancelEventDialog from './cancelEventDialog';
 
 export default function EventContent({ currentEvent, onClose, selectedDate, selectedEnd, reasons}) {
+  const { user } = useAuthContext(); // variable del la sesion del usuario
   dayjs.locale('es'); // valor para cambiar el idioma del dayjs
 
   const { enqueueSnackbar } = useSnackbar();
@@ -124,11 +126,11 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
       if (!dateError && !hourError) {
         switch (type) {
           case 'cancel':
-            save = await updateCustom(eventData);
+            save = await updateCustom(eventData, user.idUsuario);
             break;
 
           case 'date':
-            save = await updateAppointment(eventData);
+            save = await updateAppointment(eventData, user.idUsuario);
             break;
 
           default:
@@ -155,7 +157,7 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
   const onDelete = useCallback(async () => {
     // funcion para borrar horarios ocupados
     try {
-      const resp = await deleteEvent(`${currentEvent?.id}`);
+      const resp = await deleteEvent(currentEvent?.id, user.idUsuario);
 
       if (resp.result) {
         enqueueSnackbar(resp.msg);
@@ -171,7 +173,7 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
       setOpen(false);
       onClose();
     }
-  }, [currentEvent?.id, enqueueSnackbar, onClose]);
+  }, [currentEvent?.id, enqueueSnackbar, onClose, user.idUsuario]);
 
   const handleHourChange = useCallback(
     (value) => {

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { enqueueSnackbar } from 'notistack';
 import localeData from 'dayjs/plugin/localeData';
 import { Dialog, DialogContent } from '@material-ui/core';
+import { useAuthContext } from 'src/auth/hooks';
 
 import { LoadingButton } from '@mui/lab';
 import {
@@ -36,13 +37,14 @@ import {
 import Iconify from 'src/components/iconify';
 
 export default function PendingModal() {
+  const { user } = useAuthContext();
   const [open, setOpen] = useState(true);
   const [open2, setOpen2] = useState(false);
-  const { data: pendings, pendingsMutate } = useGetPending(); // traer todas las citas sin finalzar que sean anterior a la fecha actual
+  const { data: pendings, pendingsMutate } = useGetPending(user?.idUsuario); // traer todas las citas sin finalzar que sean anterior a la fecha actual
   const [assist, setAssist] = useState('');
   const [reason, setReason] = useState([]);
   const [cancelType, setCancelType] = useState('');
-  const { data: reasons } = useGetMotivos();
+  const {data: reasons} = useGetMotivos(user?.idPuesto);
   const [selectEvent, setSelectEvent] = useState('');
   const selectedReason = reason.length > 0 || cancelType;
   const [btnLoading, setBtnLoading] = useState(false);
@@ -80,8 +82,8 @@ export default function PendingModal() {
   const Items = () => {
     let items = '';
     if (pendings) {
-      items = pendings.map((pending) => (
-        <Stack key={pending.idCita} sx={{p:1}}>
+      items = pendings.map((pending, index) => (
+        <Stack key={index} sx={{p:1}}>
           <ListItem alignItems="flex-start" key={pending.idCita}>
             <ListItemText primary={pending.titulo} sx={{ width: '45%' }}  primaryTypographyProps={{fontSize: '14px'}} />
             <ListItemText
