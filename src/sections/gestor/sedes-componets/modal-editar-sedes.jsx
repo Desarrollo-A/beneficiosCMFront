@@ -163,7 +163,7 @@ export default function ModalEditarSedes({ open, onClose, idSede, sede, abreviac
 ModalEditarSedes.propTypes = {
   onClose: PropTypes.func,
   open: PropTypes.bool,
-  idSede: PropTypes.number,
+  idSede: PropTypes.any,
   sede: PropTypes.any,
   abreviacion: PropTypes.any,
   estatus: PropTypes.any,
