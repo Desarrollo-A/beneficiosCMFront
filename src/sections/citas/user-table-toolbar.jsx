@@ -1,13 +1,8 @@
-import { mutate } from 'swr';
 import PropTypes from 'prop-types';
 import { useState, useEffect, useCallback } from 'react';
 
 import Stack from '@mui/material/Stack';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
 import InputAdornment from '@mui/material/InputAdornment';
 
 import { endpoints } from 'src/utils/axios';
@@ -43,19 +38,7 @@ export default function ToolbarResumenTerapias({
     }
   }, [especialistasData]);
 
-  const [area, setArea] = useState(158);
-
-  const handleChange = useCallback(
-    (event) => {
-      setArea(event.target.value);
-      handleChangeId(event.target.value);
-      mutate(endpoints.reportes.pacientes);
-    },
-    [handleChangeId]
-  );
-
   return (
-
     <Stack
       spacing={2}
       alignItems={{ xs: 'flex-end', md: 'center' }}
@@ -83,11 +66,8 @@ export default function ToolbarResumenTerapias({
             ),
           }}
         />
-
       </Stack>
     </Stack>
-
-
   );
 }
 
