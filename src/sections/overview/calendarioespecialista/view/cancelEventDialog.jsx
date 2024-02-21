@@ -102,6 +102,7 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
       fundacion: currentEvent?.externo,
       oldEventStart: currentEvent?.start,
       oldEventEnd: currentEvent?.end,
+      oldEventTipo: currentEvent?.tipoCita,
       beneficio: currentEvent?.beneficio,
       especialista: currentEvent?.especialista,
       sede: currentEvent?.sede,
