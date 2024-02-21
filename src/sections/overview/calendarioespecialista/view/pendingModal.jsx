@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { enqueueSnackbar } from 'notistack';
 import localeData from 'dayjs/plugin/localeData';
 import { Dialog, DialogContent } from '@material-ui/core';
-import { useAuthContext } from 'src/auth/hooks';
 
 import { LoadingButton } from '@mui/lab';
 import {
@@ -26,6 +25,7 @@ import {
   DialogActions,
 } from '@mui/material';
 
+import { useAuthContext } from 'src/auth/hooks';
 import {
   reRender,
   useGetMotivos,
@@ -110,7 +110,7 @@ export default function PendingModal() {
     switch (assist) {
       case 0:
         try {
-          const resp = await cancelAppointment(selectEvent, selectEvent.id, cancelType);
+          const resp = await cancelAppointment(selectEvent, selectEvent.id, cancelType, user.idUsuario);
 
           if (resp.result) {
             enqueueSnackbar(resp.msg);
@@ -126,7 +126,7 @@ export default function PendingModal() {
 
       case 1:
         try {
-          const resp = await endAppointment(selectEvent, reason);
+          const resp = await endAppointment(selectEvent, reason, user.idUsuario);
 
           if (resp.result) {
             enqueueSnackbar(resp.msg);
