@@ -602,6 +602,7 @@ export async function reschedule(eventData, idDetalle, cancelType) {
     reagenda: 1,
     tipoPuesto: eventData.tipoPuesto,
     idEventoGoogle: eventData.idEventoGoogle,
+    oldEventTipo: eventData.oldEventTipo
   };
 
   const cancelData = {
