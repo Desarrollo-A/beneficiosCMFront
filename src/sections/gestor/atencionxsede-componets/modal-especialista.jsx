@@ -31,6 +31,8 @@ export default function ModalEspecialista({ open, onClose, id, estatusVal, puest
 
   const [estatus, setEstatus] = useState('');
 
+  const [btnLoad, setBtnLoad] = useState(false);
+
   let val = true;
 
   if(espeData.length === 1  && espeData[0]?.nombre === estatusVal){
@@ -66,17 +68,25 @@ export default function ModalEspecialista({ open, onClose, id, estatusVal, puest
           mutate(endpoints.gestor.getAtencionXsede);
           mutate(endpoints.gestor.getAtencionXsedeEsp);
 
+          setBtnLoad(false);
+
         } else {
           enqueueSnackbar(update.msj, { variant: 'error' });
+
+          setBtnLoad(false);
         }
 
       } else {
         enqueueSnackbar(`¡No se selecciono alguna opción!`, { variant: 'danger' });
+
+        setBtnLoad(false);
       }
 
     } catch (error) {
       console.error("Error en handleEstatus:", error);
       enqueueSnackbar(`¡No se pudieron actualizar los datos de usuario!`, { variant: 'danger' });
+
+      setBtnLoad(false);
     }
 
   }
@@ -119,7 +129,8 @@ export default function ModalEspecialista({ open, onClose, id, estatusVal, puest
             <Button variant="contained" color="error" onClick={onClose}>
               Cerrar
             </Button>
-            <Button variant="contained" color="success" onClick={() => {
+            <Button variant="contained" color="success" loading={btnLoad} onClick={() => {
+              setBtnLoad(true);
               handleEstatus(estatus);
               confirm.onFalse();
             }}>
