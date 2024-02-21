@@ -66,12 +66,12 @@ export default function UserQuickEditForm({ open, onClose, idEncuesta }) {
             )}
 
             {item.respuestas === "5" || item.respuestas === 5 && (
-              <DialogContent> Respuesta: Abierta corta </DialogContent>
+              <DialogContent> Respuesta: Abierta </DialogContent>
             )}
 
-            {item.respuestas === "6" || item.respuestas === 6 && (
+            {/* {item.respuestas === "6" || item.respuestas === 6 && (
               <DialogContent> Respuestas: Abierta larga </DialogContent>
-            )}
+            )} */}
 
             <Divider sx={{ my: 1, borderStyle: 'dashed' }} />
           </ React.Fragment>

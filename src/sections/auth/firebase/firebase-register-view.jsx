@@ -124,11 +124,11 @@ export default function FirebaseRegisterView() {
         textAlign: 'center',
       }}
     >
-      {'By signing up, I agree to '}
+      {'Al registrarme, acepto '}
       <Link underline="always" color="text.primary">
         Terms of Service
       </Link>
-      {' and '}
+      {' y '}
       <Link underline="always" color="text.primary">
         Privacy Policy
       </Link>

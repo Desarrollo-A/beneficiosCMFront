@@ -57,9 +57,9 @@ export default function InvoiceNewEditForm() {
 
   const defaultValues = useMemo(
     () => ({
-      area: user.idPuesto
+      area: user?.idPuesto
     }),
-    [user.idPuesto]
+    [user?.idPuesto]
   );
 
   const methods = useForm({
@@ -81,7 +81,7 @@ export default function InvoiceNewEditForm() {
     setFormKey((prevKey) => prevKey + 1);
   };
 
-  const rol = user.idRol;
+  const rol = user?.idRol;
 
   const handleCreateAndSend = handleSubmit(async (data, est) => {
 
@@ -202,18 +202,18 @@ export default function InvoiceNewEditForm() {
         title="¿Deseas activar la encuesta?"
         action={
           <>
-            <Button variant="contained" onClick={() => {
-              handleCreateAndSend(1);
-              confirm.onFalse();
-            }}>
-              Si
-            </Button>
-            <Button variant="contained" loading={btnLoad} onClick={() => {
+            <Button variant="contained" color="error" loading={btnLoad} onClick={() => {
               setBtnLoad(true);
               confirm.onFalse();
               handleCreateAndSend(0);
             }}>
               No
+            </Button>
+            <Button variant="contained" color="success" onClick={() => {
+              handleCreateAndSend(1);
+              confirm.onFalse();
+            }}>
+              Si
             </Button>
           </>
         }

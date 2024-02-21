@@ -153,7 +153,11 @@ export default function HistorialReportesView() {
 
   const { user } = useAuthContext();
 
-  const rol = user.idRol;
+  const rol = user?.idRol;
+
+  const idUsuario = user?.idUsuario;
+
+  const nombreUser = user?.nombre;
 
   let TABLE_HEAD = [];
 
@@ -164,7 +168,13 @@ export default function HistorialReportesView() {
 
   const [dataValue, setReportData] = useState('general');
 
-  const { espeUserData } = usePostGeneral(user.idUsuario, endpoints.reportes.getEspeUser, "espeUserData");
+  const { espeUserData } = usePostGeneral(user?.idUsuario, endpoints.reportes.getEspeUser, "espeUserData");
+
+  const [esp, setEsp] = useState([]);
+
+  useEffect(() => {
+    setEsp(espeUserData);
+  }, [espeUserData])
 
   const { reportesData } = usePostGeneral(dataValue, endpoints.reportes.lista, "reportesData");
 
@@ -176,9 +186,11 @@ export default function HistorialReportesView() {
 
   const _rp = especialistas.flatMap((es) => (es.nombre));
 
-  const _eu = espeUserData.flatMap((es) => (es.puesto));
+  const _eu = esp.flatMap((es) => (es.puesto));
 
-  defaultFilters.area = rol !== 4 ? _eu : [];
+  defaultFilters.area = user?.idRol !== 4 ? _eu : [];
+
+  defaultFilters.especialista = user?.idRol === 3 ? nombreUser : [];
 
   const table = useTable();
 
@@ -346,6 +358,9 @@ export default function HistorialReportesView() {
             tot={dataFiltered.length}
             dataValue={dataValue}
             rol={rol}
+            _eu={_eu}
+            idUsuario={idUsuario}
+            nombreUser={nombreUser}
           />
 
           {canReset && (

@@ -160,9 +160,6 @@ const StyledNavItem = styled(ListItemButton, {
       flexShrink: 0,
       marginRight: theme.spacing(1),
     },
-    label: {
-      textTransform: 'capitalize',
-    },
     caption: {
       marginLeft: theme.spacing(0.75),
       color: theme.palette.text.disabled,

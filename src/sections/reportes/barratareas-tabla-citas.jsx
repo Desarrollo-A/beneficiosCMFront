@@ -15,7 +15,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 import { endpoints } from 'src/utils/axios';
 
-import { usePostGeneral } from 'src/api/general';
+import { usePostSelect, usePostIngresos, usePostPacientes } from 'src/api/reportes';
 import {
   BookingIllustration,
   CheckInIllustration,
@@ -38,6 +38,9 @@ export default function BarraTareasTabla({
   table,
   dataValue,
   rol,
+  _eu,
+  idUsuario,
+
 }) {
   const popover = usePopover();
 
@@ -62,40 +65,62 @@ export default function BarraTareasTabla({
 
   const [fechaF, setFechaF] = useState(diaActual);
 
+  const [selectEsp, setSelectEsp] = useState([]);
+
   const [dt, setDt] = useState({
-    esp: { area },
+    esp: rol === 4 ? area : _eu,
     fhI: fechaI,
     fhF: fechaF,
+    roles: rol,
+    idUsr: idUsuario,
+    idEsp: selectEsp,
   });
+
+  useEffect(() => {
+    if (area) {
+      setDt({
+        esp: rol === 4 ? area : _eu,
+        fhI: fechaI,
+        fhF: fechaF,
+        roles: rol,
+        idUsr: idUsuario,
+        idEsp: selectEsp,
+      });
+    }
+  }, [
+    area,
+    rol,
+    fechaI,
+    fechaF,
+    _eu,
+    idUsuario,
+    selectEsp
+  ]);
+
 
   const [condi, setCondi] = useState(true);
 
   useEffect(() => {
-    setDt({
-      esp: area,
-      fhI: fechaI,
-      fhF: fechaF,
-    });
 
-  if(rol !== 1){
-    if (dt?.esp[0]?.length === 0) {
-      setCondi(true);
-    } else if (dt.esp.length === 0) {
-      setCondi(true);
-    } else if (dt.esp.length > 0) {
+    if (rol !== 1) {
+      if (area[0]?.length === 0) {
+        setCondi(true);
+      } else if (area.length === 0) {
+        setCondi(true);
+      } else if (area.length > 0) {
+        setCondi(false);
+      }
+    } else {
       setCondi(false);
-    } 
-  }else{
-    setCondi(false);
-  }
+    }
 
-  }, [area, fechaI, fechaF, dt.esp, rol]);
+  }, [area, fechaI, fechaF, dt, rol]);
 
-  const { cPaciData } = usePostGeneral(dt, endpoints.reportes.getCierrePacientes, "cPaciData");
+  const { cPaciData } = usePostPacientes(dt, endpoints.reportes.getCierrePacientes, "cPaciData");
 
-  const { cIngreData } = usePostGeneral(dt, endpoints.reportes.getCierreIngresos, "cIngreData");
+  const { cIngreData } = usePostIngresos(dt, endpoints.reportes.getCierreIngresos, "cIngreData");
 
-  const { espData } = usePostGeneral(dt, endpoints.reportes.getSelectEspe, "espData");
+  const { espData } = usePostSelect(dt, endpoints.reportes.getSelectEspe, "espData");
 
   const handleFilterName = useCallback(
     (event) => {
@@ -158,6 +183,7 @@ export default function BarraTareasTabla({
         'especialista',
         typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value
       );
+      setSelectEsp(event.target.value);
     },
     [onFilters]
   );
@@ -197,8 +223,6 @@ export default function BarraTareasTabla({
       ) : (
         null
       )}
-
-      
 
       <Stack
         spacing={2}
@@ -273,35 +297,41 @@ export default function BarraTareasTabla({
           null
         )}
 
-        <FormControl
-          sx={{
-            flexShrink: 0,
-            width: { xs: 1, md: 200 },
-          }}
-        >
-          <InputLabel>Especialistas</InputLabel>
+        {rol !== 3 ? (
 
-          <Select
-            multiple
-            disabled={condi}
-            value={filters.especialista}
-            onChange={handleFilterEspe}
-            input={<OutlinedInput label="Especialistas" />}
-            renderValue={(selected) => selected.map((value) => value).join(', ')}
-            MenuProps={{
-              PaperProps: {
-                sx: { maxHeight: 240 },
-              },
+          <FormControl
+            sx={{
+              flexShrink: 0,
+              width: { xs: 1, md: 200 },
             }}
           >
-            {_esp.map((option) => (
-              <MenuItem key={option} value={option}>
-                <Checkbox disableRipple size="small" checked={filters.especialista.includes(option)} />
-                {option}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+            <InputLabel>Especialistas</InputLabel>
+
+            <Select
+              multiple
+              disabled={condi}
+              value={filters.especialista}
+              onChange={handleFilterEspe}
+              input={<OutlinedInput label="Especialistas" />}
+              renderValue={(selected) => selected.map((value) => value).join(', ')}
+              MenuProps={{
+                PaperProps: {
+                  sx: { maxHeight: 240 },
+                },
+              }}
+            >
+              {_esp.map((option) => (
+                <MenuItem key={option} value={option}>
+                  <Checkbox disableRipple size="small" checked={filters.especialista.includes(option)} />
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+        ) : (
+          null
+        )}
 
         <DatePicker
           label="Fecha inicio"
@@ -390,4 +420,6 @@ BarraTareasTabla.propTypes = {
   table: PropTypes.any,
   dataValue: PropTypes.any,
   rol: PropTypes.any,
+  _eu: PropTypes.any,
+  idUsuario: PropTypes.any,
 };

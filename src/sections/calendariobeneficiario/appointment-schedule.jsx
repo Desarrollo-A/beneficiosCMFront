@@ -100,7 +100,85 @@ export default function AppointmentSchedule({
                 {dayjs().locale('es').format('dddd, DD MMMM YYYY')}
               </Typography>
             )}
-            <ThemeProvider theme={!currentEvent?.id && selectedValues?.modalidad ? darkTheme : ''}>
+            {!currentEvent?.id && selectedValues?.modalidad ? (
+              <ThemeProvider theme={darkTheme}>
+                <Stack direction="column" spacing={3} justifyContent="space-between">
+                  <FormControl error={!!errorBeneficio} fullWidth>
+                    <InputLabel id="beneficio-input" name="beneficio">
+                      Beneficio
+                    </InputLabel>
+                    <Select
+                      labelId="Beneficio"
+                      id="select-beneficio"
+                      label="Beneficio"
+                      value={selectedValues.beneficio || ''}
+                      defaultValue=""
+                      onChange={(e) => handleChange('beneficio', e.target.value)}
+                      disabled={!!(beneficios?.length === 0 || currentEvent?.id)}
+                    >
+                      {beneficios?.map((e) => (
+                        <MenuItem key={e.idPuesto} value={e.idPuesto}>
+                          {e.puesto.toUpperCase()}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    {errorBeneficio && selectedValues.beneficio === '' && (
+                      <FormHelperText error={errorBeneficio}>
+                        Seleccione un beneficio
+                      </FormHelperText>
+                    )}
+                  </FormControl>
+                  <FormControl error={!!errorEspecialista} fullWidth>
+                    <InputLabel id="especialista-input">Especialista</InputLabel>
+                    <Select
+                      labelId="especialista-input"
+                      id="select-especialista"
+                      label="Especialista"
+                      name="especialista"
+                      value={selectedValues.especialista}
+                      defaultValue=""
+                      onChange={(e) => handleChange('especialista', e.target.value)}
+                      disabled={!!(especialistas?.length === 0 || currentEvent?.id)}
+                    >
+                      {especialistas?.map((e, index) => (
+                        <MenuItem key={e.id} value={e.id}>
+                          {e.especialista.toUpperCase()}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    {errorEspecialista && selectedValues.especialista === '' && (
+                      <FormHelperText error={errorEspecialista}>
+                        Seleccione un especialista
+                      </FormHelperText>
+                    )}
+                  </FormControl>
+                  <FormControl error={!!errorModalidad} fullWidth>
+                    <InputLabel id="modalidad-input">Modalidad</InputLabel>
+                    <Select
+                      labelId="Modalidad"
+                      id="select-modalidad"
+                      label="Modalidad"
+                      name="Modalidad"
+                      defaultValue=""
+                      value={selectedValues.modalidad}
+                      onChange={(e) => handleChange('modalidad', e.target.value)}
+                      disabled={!!(modalidades?.length === 0 || currentEvent?.id)}
+                    >
+                      {modalidades?.map((e, index) => (
+                        <MenuItem key={e.tipoCita} value={e.tipoCita}>
+                          {e.modalidad.toUpperCase()}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    {errorModalidad && selectedValues.modalidad === '' && (
+                      <FormHelperText error={errorModalidad}>
+                        Seleccione una modalidad
+                      </FormHelperText>
+                    )}
+                  </FormControl>
+                </Stack>
+              </ThemeProvider>
+            ) : (
               <Stack direction="column" spacing={3} justifyContent="space-between">
                 <FormControl error={!!errorBeneficio} fullWidth>
                   <InputLabel id="beneficio-input" name="beneficio">
@@ -172,7 +250,7 @@ export default function AppointmentSchedule({
                   )}
                 </FormControl>
               </Stack>
-            </ThemeProvider>
+            )}
             {selectedValues.modalidad === 1 && selectedValues.beneficio && (
               <>
                 <Stack spacing={1} sx={{ p: { xs: 1, md: 1 } }}>
@@ -216,7 +294,56 @@ export default function AppointmentSchedule({
                   </Stack>
                   <Stack sx={{ flexDirection: 'col' }}>
                     <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                      Se considerará como inasistencia la llegada tardía despues de 10 minutos.
+                      {selectedValues.beneficio === 158
+                        ? 'Se consideran 5 minutos de tolerancia.'
+                        : 'Se consideran 10 minutos de tolerancia.'}
+                    </Typography>
+                  </Stack>
+                </Stack>
+              </>
+            )}{' '}
+            {selectedValues.modalidad === 2 && selectedValues.beneficio && (
+              <>
+                <Stack spacing={1} sx={{ p: { xs: 1, md: 1 } }}>
+                  Especificaciones de la cita :
+                  <Stack
+                    sx={{
+                      flexDirection: 'row',
+                    }}
+                  >
+                    <Stack>
+                      <Iconify
+                        icon="mdi:office-building-marker"
+                        width={30}
+                        sx={{ color: 'text.disabled' }}
+                      />
+                    </Stack>
+                    <Stack sx={{ flexDirection: 'col' }}>
+                      <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                        Oficina virtual
+                      </Typography>
+                    </Stack>
+                  </Stack>
+                </Stack>
+                <Stack
+                  sx={{
+                    flexDirection: 'row',
+                    p: { xs: 1, md: 1 },
+                    alignItems: 'center',
+                  }}
+                >
+                  <Stack>
+                    <Iconify
+                      icon="mdi:timer-edit-outline"
+                      width={30}
+                      sx={{ color: 'text.disabled' }}
+                    />
+                  </Stack>
+                  <Stack sx={{ flexDirection: 'col' }}>
+                    <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                      {selectedValues.beneficio === 158
+                        ? 'Se consideran 5 minutos de tolerancia.'
+                        : 'Se consideran 10 minutos de tolerancia.'}
                     </Typography>
                   </Stack>
                 </Stack>

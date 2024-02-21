@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Base64 } from 'js-base64';
 
 import { Stack} from '@mui/material';
 import Slide from '@mui/material/Slide';
@@ -16,6 +15,7 @@ import DialogContent from '@mui/material/DialogContent';
 import { endpoints } from 'src/utils/axios';
 
 import { HOST } from 'src/config-global';
+import { useAuthContext } from 'src/auth/hooks';
 
 import Iconify from 'src/components/iconify';
 import { Upload } from 'src/components/upload';
@@ -29,7 +29,7 @@ export default function AvisoPrivacidadGeneral({datos, enviarDatosAlPadre, idPue
     const [open, setOpen] = React.useState(false);
     const { enqueueSnackbar } = useSnackbar();
     const [nombreArchivo, setNombreArchivo] = useState({nombre: '', activo: false});
-    const user = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+    const { user } = useAuthContext();
 
     const handleEditarArchivo = () => {
         setOpen(true);
@@ -72,7 +72,7 @@ export default function AvisoPrivacidadGeneral({datos, enviarDatosAlPadre, idPue
             >
               <Button
                 variant="contained"
-                style={{ display: user.idRol === 4  || user.idPuesto === idPuesto ? '' : 'none' }}
+                style={{ display: user?.idRol === 4 ? '' : 'none' }}
                 onClick={handleEditarArchivo}
                 size="small"
                 startIcon={<Iconify icon="eva:edit-fill" />}
@@ -88,7 +88,7 @@ export default function AvisoPrivacidadGeneral({datos, enviarDatosAlPadre, idPue
         </Container>
         <Container
           maxWidth={settings.themeStretch ? false : 'lg'}
-          style={{ display: user.idRol === 4 ? 'block' : 'none' }}
+          style={{ display: user?.idRol === 4 ? 'block' : 'none' }}
         >
           <Dialog
             open={open}

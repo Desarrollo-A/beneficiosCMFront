@@ -39,7 +39,7 @@ export default function AgendaDialog({ open, onClose, id, start, end, sede, ...p
 
   const { user } = useAuthContext();
 
-  const { sedes } = useGetSedesPresenciales({ idEspecialista: user.idUsuario });
+  const { sedes } = useGetSedesPresenciales({ idEspecialista: user?.idUsuario });
 
   const formSchema = yup.object({
     id: yup.number().nullable(true),
@@ -101,7 +101,7 @@ export default function AgendaDialog({ open, onClose, id, start, end, sede, ...p
 
             <Stack direction="column" spacing={2}>
               <Stack direction="row" spacing={2}>
-                <RHFHidden name="especialista" value={user.idUsuario} />
+                <RHFHidden name="especialista" value={user?.idUsuario} />
                 <LocalizationProvider
                   adapterLocale={es}
                   dateAdapter={AdapterDateFns}

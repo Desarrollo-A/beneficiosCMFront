@@ -1,16 +1,11 @@
 import 'dayjs/locale/es';
 import useSWR from 'swr';
 import dayjs from 'dayjs';
-import { Base64 } from 'js-base64';
 import { useMemo, useEffect } from 'react';
 
 import { endpoints, fetcherPost } from 'src/utils/axios';
 
-// Se hizo el intento con el useAuthContext pero se manda a declarar más veces y da mas errores debido a su uso como componente
-const session = sessionStorage.getItem('accessToken');
-const datosUser = sessionStorage.getItem('accessToken')
-  ? JSON.parse(Base64.decode(session.split('.')[2]))
-  : '';
+import { useAuthContext } from 'src/auth/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -101,9 +96,17 @@ export function getCitasSinFinalizar(usuario, beneficio) {
 }
 
 // Traer las citas sin evaluar y ya terminadas
-export function getCitasSinEvaluar(usuario, beneficio) {
+export function getCitasSinEvaluar(usuario) {
   const URL = [endpoints.calendarioColaborador.getCitasSinEvaluar];
-  const cita = fetcherPost(URL, { usuario, beneficio });
+  const cita = fetcherPost(URL, { usuario });
+
+  return cita;
+}
+
+// Traer las citas sin evaluar y ya terminadas
+export function getCitasSinPagar(usuario) {
+  const URL = [endpoints.calendarioColaborador.getCitasSinPagar];
+  const cita = fetcherPost(URL, { usuario });
 
   return cita;
 }
@@ -173,6 +176,8 @@ export function checkInvoice(id) {
 
 // Función para traer citas con estatus en pediente de pago
 export function useGetPendientes() {
+  const { user: datosUser } = useAuthContext();
+
   const pendientes = endpoints.calendarioColaborador.getPendientes;
   const { data, mutate: revalidate } = useSWR(pendientes, (url) =>
     fetcherPost(url, { idUsuario: datosUser?.idUsuario })
@@ -198,6 +203,27 @@ export function useGetPendientes() {
   );
 
   return memoizedValue;
+}
+
+export function getPendientes(id) {
+  const URL = [endpoints.calendarioColaborador.getPendientes];
+  const pendientes = fetcherPost(URL, { idUsuario: id });
+
+  return pendientes;
+}
+
+export function getSedesPresenciales(id) {
+  const URL = [endpoints.calendarioColaborador.getSedesEspecialista];
+  const pendientes = fetcherPost(URL, { idUsuario: id });
+
+  return pendientes;
+}
+
+export function getDiasDisponibles(idUsuario, idSede) {
+  const URL = [endpoints.calendarioColaborador.getDisponibilidadEspecialista];
+  const dias = fetcherPost(URL, { idUsuario, idSede });
+
+  return dias;
 }
 
 // Función para crear cita
@@ -235,7 +261,8 @@ export function crearCita(
 }
 
 // Trae todas las citas del usuario
-export function useGetAppointmentsByUser(current) {
+
+export function useGetAppointmentsByUser(current, id) {
   const URL_APPOINTMENTS = [endpoints.calendarioColaborador.getAppointmentsByUser];
   const year = current.getFullYear();
   const month = current.getMonth() + 1;
@@ -243,7 +270,7 @@ export function useGetAppointmentsByUser(current) {
   const dataValue = {
     year,
     month,
-    idUsuario: datosUser.idUsuario,
+    idUsuario: id,
   };
 
   const {
@@ -260,7 +287,7 @@ export function useGetAppointmentsByUser(current) {
 
   useEffect(() => {
     revalidate();
-  }, [month, revalidate]);
+  }, [current, revalidate]);
 
   const memoizedValue = useMemo(() => {
     const events = data?.data?.map((event) => ({
@@ -281,14 +308,14 @@ export function useGetAppointmentsByUser(current) {
   return memoizedValue;
 }
 
-export function cancelAppointment(currentEvent, id, cancelType) {
+export function cancelAppointment(currentEvent, id, cancelType, idUsuario) {
   const URL = [endpoints.calendario.cancelAppointment];
   const data = {
     idCita: id,
     startStamp: dayjs(currentEvent.start).format('YYYY/MM/DD HH:mm:ss'),
     start: currentEvent.start,
     tipo: cancelType,
-    modificadoPor: datosUser.idUsuario,
+    modificadoPor: idUsuario,
   };
   const cancel = fetcherPost(URL, data);
 
@@ -322,7 +349,7 @@ export function sendMail(event, typeEmail, correo) {
       tituloEmail = 'Reservación';
       imagen = 'appointment.png';
       view = 'email-appointment';
-      temaEmail = 'Se ha realizado su cita para ';
+      temaEmail = 'Has realizado con éxito tu reservación para el beneficio de ';
       break;
     case 2: // Cancelar
       tituloEmail = 'Cancelación';

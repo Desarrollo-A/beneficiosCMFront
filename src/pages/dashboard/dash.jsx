@@ -6,7 +6,7 @@ import { useAuthContext } from 'src/auth/hooks';
 
 import { DashView } from 'src/sections/overview/dash/view';
 // import PendingModalUser from 'src/sections/calendariobeneficiario/pendingModalUser';
-import PendingModal from 'src/sections/overview/calendarioespecialista/view/pendingModal';
+// import PendingModal from 'src/sections/overview/calendarioespecialista/view/pendingModal';
 
 // ----------------------------------------------------------------------
 
@@ -22,7 +22,7 @@ export default function DashPage() {
       </Helmet>
 
       {/* <PendingModalUser /> */}
-      <PendingModal />
+      {/* <PendingModal /> */}
       {authenticated ? <DashView /> : null}
     </>
   );

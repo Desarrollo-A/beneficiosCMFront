@@ -39,7 +39,8 @@ const options = {
   refreshInterval: 0,
 };
 
-const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+const session = sessionStorage.getItem('accessToken');
+const datosUser = session ? JSON.parse(Base64.decode(session.split('.')[2])) : [];
 
 // ----------------------------------------------------------------------
 
@@ -82,7 +83,7 @@ export function GetCustomEvents(current) {
   const memoizedValue = useMemo(() => {
     const events = data?.events?.map((event) => ({
       ...event,
-      textColor: event?.color,
+      textColor: event?.tipoCita === 1 && event?.estatus === 1 ? 'yellow' : event?.color,
       type: event?.type,
       fechaInicio: event.start,
     }));

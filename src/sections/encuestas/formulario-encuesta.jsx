@@ -159,12 +159,12 @@ export default function FormularioEncuesta({ idEncuesta }) {
                     )}
 
                     {item.respuestas === "5" || item.respuestas === 5 && (
-                      <RHFTextField name={`resp_${index}`} />
+                      <RHFTextField name={`resp_${index}`}  multiline rows={4}/>
                     )}
 
-                    {item.respuestas === "6" || item.respuestas === 6 && (
+                    {/* {item.respuestas === "6" || item.respuestas === 6 && (
                       <RHFTextField name={`resp_${index}`} multiline rows={4} />
-                    )}
+                    )} */}
 
                     {/* <Controller
                     name={`pgt_${index}`}
