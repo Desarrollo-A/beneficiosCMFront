@@ -32,7 +32,6 @@ import {
   checkInvoice,
   getModalities,
   consultarCita,
-  getPendientes,
   getSpecialists,
   useGetBenefits,
   lastAppointment,
@@ -62,7 +61,6 @@ import FormProvider from 'src/components/hook-form/form-provider';
 import EvaluateDialog from './evaluate-dialog';
 import CalendarPreview from './calendar-preview';
 import AppointmentSchedule from './appointment-schedule';
-import { stubTrue } from 'lodash';
 
 dayjs.locale('es');
 dayjs.extend(utc);
