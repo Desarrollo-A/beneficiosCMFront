@@ -147,7 +147,7 @@ export default function ModalEditarSedes({ open, onClose, idSede, sede, abreviac
               'sede': sed,
               'abreviacion': abre,
               'estatus': est,
-              'modificadoPor': user.idUsuario,
+              'modificadoPor': user?.idUsuario,
             });
           confirm.onFalse();
         }}>

@@ -38,7 +38,7 @@ export default function AddInsertSede({ idSede, especiaData, oficinaData, modali
       handleMod({
         modalidad: 2,
         sede: idSede,
-        usuario: user.idUsuario,
+        usuario: user?.idUsuario,
         oficina: e.target.value,
       });
     } else {
@@ -51,7 +51,7 @@ export default function AddInsertSede({ idSede, especiaData, oficinaData, modali
     handleMod({
       modalidad: e.target.value,
       sede: idSede,
-      usuario: user.idUsuario,
+      usuario: user?.idUsuario,
       oficina: select,
     });
   }
