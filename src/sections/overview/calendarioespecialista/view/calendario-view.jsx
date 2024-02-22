@@ -53,7 +53,7 @@ export default function CalendarioView(){
     const smUp = useResponsive('up', 'sm');
     const settings = useSettingsContext();
     const [filters] = useState(defaultFilters);
-    const { data: names, usersMutate } = useGetNameUser();
+    const { data: names, usersMutate } = useGetNameUser(user?.idUsuario);
     const [userData, setUserData] = useState('');
     const {data: reasons} = useGetMotivos(user?.idPuesto);
     const theme = useTheme();

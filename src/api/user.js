@@ -23,11 +23,10 @@ export function useGetUsers() {
   return memoizedValue;
 }
 
-export function useGetNameUser() {
-  // funcion para traer los usuarios disponibles en select de cita QB.
+export function useGetNameUser(idUsuario) { // funcion para traer los usuarios disponibles en select de cita.
   const URL = endpoints.user.names;
 
-  const { data, mutate } = useSWR(URL, (url) => fetcherPost(url, datosUser.idUsuario));
+  const { data, mutate } = useSWR(URL, (url) => fetcherPost(url, idUsuario));
 
   const memoizedValue = useMemo(
     () => ({
