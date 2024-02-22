@@ -1,6 +1,7 @@
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
 import * as yup from 'yup';
+import { stubTrue } from 'lodash';
 import PropTypes from 'prop-types';
 import utc from 'dayjs/plugin/utc';
 import { useForm } from 'react-hook-form';

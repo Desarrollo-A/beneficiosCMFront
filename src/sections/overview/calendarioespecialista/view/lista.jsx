@@ -1,7 +1,7 @@
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
 import * as yup from 'yup';
-import { Base64 } from 'js-base64';
+// import { Base64 } from 'js-base64';
 import PropTypes from 'prop-types';
 import { es } from 'date-fns/locale'
 import { useState, useCallback } from 'react';
@@ -24,6 +24,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import uuidv4 from 'src/utils/uuidv4';
 import { fDate } from 'src/utils/format-time';
 
+import { useAuthContext } from 'src/auth/hooks';
 import { getModalities } from 'src/api/calendar-colaborador';
 import { reRender, createCustom, createAppointment, UpdateDetallePaciente } from 'src/api/calendar-specialist';
 
@@ -31,8 +32,9 @@ import { enqueueSnackbar } from 'src/components/snackbar';
 import FormProvider from 'src/components/hook-form/form-provider';
 import { RHFTextField, RHFAutocomplete } from 'src/components/hook-form';
 
-const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+// const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
 export default function Lista({ currentEvent, onClose, userData, selectedDate, usersMutate }) {
+  const { user } = useAuthContext(); // variable del la sesion del usuario
   dayjs.locale('es') // valor para cambiar el idioma del dayjs
 
   const [allDay, setAllDay] = useState(false);
@@ -151,7 +153,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
 
     const tieneAntiguedad = validarAntiguedad(patient.fechaIngreso, fechaActual); // Validamos la antiguedad: Mandamos fechaIngreso, fechaDeHoy, isPracticante, idBeneficio.
 
-    if (!tieneAntiguedad && datosUser.idArea !== 25) { // 25 es de ventas
+    if (!tieneAntiguedad && user.idArea !== 25) { // 25 es de ventas
       onClose();
       return enqueueSnackbar('¡El paciente no cuenta con la antigüedad requerida!', {
         variant: 'error',
@@ -161,13 +163,13 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
 
     switch (type) {
       case 'cancel':
-        save = await createCustom(eventData);
+        save = await createCustom(eventData, user.idUsuario);
         break;
 
       case 'date':
-        save = await createAppointment(eventData, modalitie);
+        save = await createAppointment(eventData, modalitie, user);
         if(save.result){
-          UpdateDetallePaciente(patient.idUsuario);
+          UpdateDetallePaciente(patient.idUsuario, user?.idPuesto);
         }
         break;
 
@@ -199,7 +201,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
 
     setPatient(value.values);
 
-    const modalidades = await getModalities(value?.idSede, datosUser.idUsuario);
+    const modalidades = await getModalities(value?.idSede, user.idUsuario);
     if (modalidades.result) setAllModalities(modalidades.data);
   };
 
@@ -288,11 +290,11 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
               onKeyDown={(e) => {
                 handleKeyDown();
               }}
-              options={userData.map((user) => ({
-                label: user.nombreCompleto,
-                value: user.idUsuario,
-                idSede: user.idSede,
-                values: user
+              options={userData.map((users) => ({
+                label: users.nombreCompleto,
+                value: users.idUsuario,
+                idSede: users.idSede,
+                values: users
               }))}
             />
           </Stack>

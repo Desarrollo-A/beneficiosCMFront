@@ -55,7 +55,7 @@ export default function CalendarioView(){
     const [filters] = useState(defaultFilters);
     const { data: names, usersMutate } = useGetNameUser();
     const [userData, setUserData] = useState('');
-    const {data: reasons} = useGetMotivos('');
+    const {data: reasons} = useGetMotivos(user?.idPuesto);
     const theme = useTheme();
 
     const [presencialDialog, setOpenPresencialDialog] = useState(false);
@@ -86,7 +86,7 @@ export default function CalendarioView(){
         selectedEnd
     } = useCalendar();
 
-    const { events, eventsLoading} = GetCustomEvents(date);
+    const { events, eventsLoading} = GetCustomEvents(date, user?.idUsuario);
 
     const { horarios, horariosGet } = useGetHorariosPresenciales({idEspecialista : user?.idUsuario});
 
@@ -117,9 +117,9 @@ export default function CalendarioView(){
           arg.revert();
         }
         else{
-          onDropEvent(arg, dropUpdate);
+          onDropEvent({arg, idUsuario: user?.idUsuario}, dropUpdate);
         }
-      }, [onDropEvent]);
+      }, [onDropEvent, user?.idUsuario]);
 
      const hours = { // horarios laborales
         start: dayjs(new Date).format('HH:mm'),
