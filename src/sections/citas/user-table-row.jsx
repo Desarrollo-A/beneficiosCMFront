@@ -1,15 +1,8 @@
-import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
-import IconButton from '@mui/material/IconButton';
-import ListItemText from '@mui/material/ListItemText';
 
-import { useBoolean } from 'src/hooks/use-boolean';
-
-import Iconify from 'src/components/iconify';
-import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import Label from 'src/components/label';
 
 // ----------------------------------------------------------------------
@@ -26,8 +19,6 @@ export default function RowResumenTerapias({ row, area, idUs, rol }) {
     metodoPago,
     horario,
     estatus, } = row;
-
-  const popover = usePopover();
 
   return (
       <TableRow>

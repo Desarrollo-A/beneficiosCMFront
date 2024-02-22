@@ -165,8 +165,13 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
               onClose={confirm.onFalse}
               title="¿Deseas guardar los registros?"
               action={
-                <>
-                  <LoadingButton variant="contained" loading={btnLoad} onClick={() => {
+                <>  
+                  <Button variant="contained" color="error" onClick={() => {
+                    confirm.onFalse();
+                  }}>
+                    No
+                  </Button>
+                  <LoadingButton variant="contained" color="success" loading={btnLoad} onClick={() => {
                     setBtnLoad(true);
                     handleCreateAndSend(1);
                     confirm.onFalse();
@@ -174,11 +179,6 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
                   }}>
                     Si
                   </LoadingButton>
-                  <Button variant="contained" onClick={() => {
-                    confirm.onFalse();
-                  }}>
-                    No
-                  </Button>
                 </>
               }
             />

@@ -24,12 +24,10 @@ export default function UserQuickEditForm({
   currentUser,
   open,
   onClose,
-  areasMutate,
   usersMutate,
   popoverOnClose,
 }) {
   const { enqueueSnackbar } = useSnackbar();
-
   const { user: datosUser } = useAuthContext();
 
   const NewUserSchema = Yup.object().shape({
@@ -56,8 +54,6 @@ export default function UserQuickEditForm({
   const defaultValues = useMemo(
     () => ({
       id: currentUser?.id || '',
-      contrato: currentUser?.contrato || '',
-      empleado: currentUser?.empleado || '',
       nombre: currentUser?.nombre || '',
       sexo: currentUser?.sexo || '',
       telefono: currentUser?.telefono || '',
@@ -106,7 +102,6 @@ export default function UserQuickEditForm({
       reset();
       onClose();
       usersMutate();
-      areasMutate();
       popoverOnClose();
     } catch (error) {
       reset();
@@ -167,18 +162,6 @@ export default function UserQuickEditForm({
                 Femenino
               </MenuItem>
             </RHFSelect>
-            <RHFTextField
-              name="contrato"
-              label="Contrato"
-              defaultValue={currentUser.contrato}
-              disabled
-            />
-            <RHFTextField
-              name="empleado"
-              label="Empleado"
-              defaultValue={currentUser.empleado}
-              disabled
-            />
             <RHFTextField name="telefono" label="Teléfono" defaultValue={currentUser.telefono} />
             <RHFTextField
               name="correo"
@@ -215,7 +198,6 @@ UserQuickEditForm.propTypes = {
   currentUser: PropTypes.object,
   onClose: PropTypes.func,
   open: PropTypes.bool,
-  areasMutate: PropTypes.func,
   usersMutate: PropTypes.func,
   popoverOnClose: PropTypes.func,
 };

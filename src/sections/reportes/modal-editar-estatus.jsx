@@ -133,7 +133,7 @@ export default function EditarEstatus({ open, onClose, id, est, estatusVal }) {
 EditarEstatus.propTypes = {
   onClose: PropTypes.func,
   open: PropTypes.bool,
-  id: PropTypes.number,
+  id: PropTypes.any,
   est: PropTypes.number,
   estatusVal: PropTypes.string,
 };

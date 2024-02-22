@@ -33,7 +33,6 @@ import {
   checkInvoice,
   getModalities,
   consultarCita,
-  getPendientes,
   getSpecialists,
   useGetBenefits,
   lastAppointment,
