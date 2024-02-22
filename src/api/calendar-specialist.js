@@ -202,6 +202,8 @@ export async function createAppointment(eventData, modalitie, datosUser) {
   const horaInicio = dayjs(fechaInicio).format('HH:mm a');
   const horaFinal = dayjs(fechaFinal).format('HH:mm a');
 
+  let bussinessHours = true;
+
   switch (datosUser.idPuesto) {
     case 537:
       especialidad = 'nutrición';
@@ -229,6 +231,10 @@ export async function createAppointment(eventData, modalitie, datosUser) {
     oficina = 'Confirmado por especialista';
   }
 
+  if(eventData.hora_inicio < '08:00:00' || eventData.hora_final > '18:00:00'){
+    bussinessHours = false;
+  }
+
   const dataTransaction = {
     usuario: eventData.paciente.idUsuario,
     folio: uuidv4(),
@@ -237,7 +243,7 @@ export async function createAppointment(eventData, modalitie, datosUser) {
     metodoPago: 3,
   };
 
-  if (start > now) {
+  if (start > now && bussinessHours) {
     if (fundacion === 1 || eventData.paciente.tipoPuesto === 'Operativa') {
       transaction = await fetcherPost(registar_transaccion, dataTransaction);
 
@@ -315,10 +321,7 @@ export async function createAppointment(eventData, modalitie, datosUser) {
 
     create = await fetcherPost(create_appointment, data);
 
-    if (
-      (create.result && fundacion === 1) ||
-      (create.result && eventData.paciente.tipoPuesto === 'Operativa')
-    ) {
+    if ((create.result && fundacion === 1) || (create.result && eventData.paciente.tipoPuesto === 'Operativa')) {
       const googleEvent = await fetcherPost(insert_google_event, googleData);
       fetcherPost(sendMail, mailMessage);
 
@@ -332,7 +335,7 @@ export async function createAppointment(eventData, modalitie, datosUser) {
       }
     }
   } else {
-    create = { result: false, msg: 'No se puede agendar cita en dias anteriores' };
+    create = { result: false, msg: 'Se debe agendar dentro de límite del horario laboral' };
   }
 
   return create;

@@ -42,7 +42,7 @@ export default function AgendaDialog({ open, onClose, id, start, end, sede, ...p
     id: yup.number().nullable(true),
     start: yup.string().transform(parseStartDate).required(),
     end: yup.string().test('check-min', "Fecha final debe ser mayor a la fecha inicial", checkMin ).transform(parseEndDate).required(),
-    sede: yup.number().required().typeError('Debes elegir una opcion.'),
+    sede: yup.number().required().typeError('Debes elegir una opción.'),
     especialista: yup.number(),
   });
 
