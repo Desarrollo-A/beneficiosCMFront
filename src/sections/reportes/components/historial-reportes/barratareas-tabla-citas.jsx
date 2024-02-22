@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { es } from 'date-fns/locale';
 import { useState, useEffect, useCallback } from 'react';
 
 import Stack from '@mui/material/Stack';
@@ -12,6 +13,8 @@ import FormControl from '@mui/material/FormControl';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 import { endpoints } from 'src/utils/axios';
 
@@ -40,7 +43,7 @@ export default function BarraTareasTabla({
   rol,
   _eu,
   idUsuario,
-
+  modOptions
 }) {
   const popover = usePopover();
 
@@ -67,6 +70,8 @@ export default function BarraTareasTabla({
 
   const [selectEsp, setSelectEsp] = useState([]);
 
+  const [mod, setMod] = useState([filters.modalidad]);
+
   const [dt, setDt] = useState({
     esp: rol === 4 ? area : _eu,
     fhI: fechaI,
@@ -74,6 +79,7 @@ export default function BarraTareasTabla({
     roles: rol,
     idUsr: idUsuario,
     idEsp: selectEsp,
+    modalidad: mod
   });
 
   useEffect(() => {
@@ -85,6 +91,7 @@ export default function BarraTareasTabla({
         roles: rol,
         idUsr: idUsuario,
         idEsp: selectEsp,
+        modalidad: mod
       });
     }
   }, [
@@ -94,7 +101,8 @@ export default function BarraTareasTabla({
     fechaF,
     _eu,
     idUsuario,
-    selectEsp
+    selectEsp,
+    mod
   ]);
 
 
@@ -184,6 +192,17 @@ export default function BarraTareasTabla({
         typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value
       );
       setSelectEsp(event.target.value);
+    },
+    [onFilters]
+  );
+
+  const handleFilterModalidad = useCallback(
+    (event) => {
+      onFilters(
+        'modalidad',
+        typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value
+      );
+      setMod(event.target.value);
     },
     [onFilters]
   );
@@ -302,7 +321,7 @@ export default function BarraTareasTabla({
           <FormControl
             sx={{
               flexShrink: 0,
-              width: { xs: 1, md: 200 },
+              width: { xs: 1, md: 400 },
             }}
           >
             <InputLabel>Especialistas</InputLabel>
@@ -333,29 +352,116 @@ export default function BarraTareasTabla({
           null
         )}
 
-        <DatePicker
-          label="Fecha inicio"
-          value={filters.startDate}
-          onChange={handleFilterStartDate}
-          slotProps={{
-            textField: {
-              fullWidth: true,
-            },
-          }}
+        <FormControl
           sx={{
-            maxWidth: { md: 200 },
+            flexShrink: 0,
+            width: { xs: 1, md: 275 },
           }}
-        />
+        >
+          <InputLabel>Modalidad</InputLabel>
 
-        <DatePicker
-          label="Fecha fin"
-          value={filters.endDate}
-          onChange={handleFilterEndDate}
-          slotProps={{ textField: { fullWidth: true } }}
-          sx={{
-            maxWidth: { md: 200 },
-          }}
-        />
+          <Select
+            multiple
+            value={filters.modalidad}
+            onChange={handleFilterModalidad}
+            input={<OutlinedInput label="Modalidad" />}
+            renderValue={(selected) => selected.map((value) => value).join(', ')}
+            MenuProps={{
+              PaperProps: {
+                sx: { maxHeight: 240 },
+              },
+            }}
+          >
+            {modOptions.map((option, index) => (
+              <MenuItem key={index} value={option}>
+                <Checkbox disableRipple size="small" checked={filters.modalidad.includes(option)} />
+                {option}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        {rol === 3 ? (
+          <>
+            <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
+              <DatePicker
+                label="Fecha inicio"
+                value={filters.startDate}
+                onChange={handleFilterStartDate}
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                  },
+                }}
+                sx={{
+                  maxWidth: { md: 300 },
+                }}
+              />
+            </LocalizationProvider>
+
+            <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
+              <DatePicker
+                label="Fecha fin"
+                value={filters.endDate}
+                onChange={handleFilterEndDate}
+                slotProps={{ textField: { fullWidth: true } }}
+                sx={{
+                  maxWidth: { md: 300 },
+                }}
+              />
+            </LocalizationProvider>
+          </>
+        ) : (
+          null
+        )}
+
+      </Stack>
+
+      <Stack
+        spacing={2}
+        alignItems={{ xs: 'flex-end', md: 'center' }}
+        direction={{
+          xs: 'column',
+          md: 'row',
+        }}
+        sx={{
+          p: 2.5,
+          pr: { xs: 2.5, md: 1 },
+        }}
+      >
+        {rol === 4 ? (
+          <>
+            <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
+              <DatePicker
+                label="Fecha inicio"
+                value={filters.startDate}
+                onChange={handleFilterStartDate}
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                  },
+                }}
+                sx={{
+                  maxWidth: { md: 200 },
+                }}
+              />
+            </LocalizationProvider>
+
+            <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
+              <DatePicker
+                label="Fecha fin"
+                value={filters.endDate}
+                onChange={handleFilterEndDate}
+                slotProps={{ textField: { fullWidth: true } }}
+                sx={{
+                  maxWidth: { md: 200 },
+                }}
+              />
+            </LocalizationProvider>
+          </>
+        ) : (
+          null
+        )}
 
         <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
@@ -422,4 +528,5 @@ BarraTareasTabla.propTypes = {
   rol: PropTypes.any,
   _eu: PropTypes.any,
   idUsuario: PropTypes.any,
+  modOptions: PropTypes.any
 };
