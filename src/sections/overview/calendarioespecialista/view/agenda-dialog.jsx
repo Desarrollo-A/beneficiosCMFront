@@ -45,7 +45,7 @@ export default function AgendaDialog({ open, onClose, id, start, end, sede, ...p
     id: yup.number().nullable(true),
     start: yup.string().transform(parseStartDate).required(),
     end: yup.string().transform(parseEndDate).required(),
-    sede: yup.number().required(),
+    sede: yup.string().required('Se debe seleccionar una sede'),
     especialista: yup.number(),
   });
 

@@ -202,7 +202,6 @@ export async function createAppointment(eventData, modalitie, datosUser) {
   const horaInicio = dayjs(fechaInicio).format('HH:mm a');
   const horaFinal = dayjs(fechaFinal).format('HH:mm a');
 
-  let msg = '';
   let bussinessHours = true;
 
   switch (datosUser.idPuesto) {
