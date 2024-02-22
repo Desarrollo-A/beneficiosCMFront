@@ -35,7 +35,7 @@ export default function Header({ onOpenNav }) {
 
   const { user: datosUser, authenticated } = useAuthContext();
 
-  const idUsr = authenticated ? datosUser.idUsuario : undefined;
+  const idUsr = authenticated ? datosUser?.idUsuario : undefined;
 
   const settings = useSettingsContext();
 

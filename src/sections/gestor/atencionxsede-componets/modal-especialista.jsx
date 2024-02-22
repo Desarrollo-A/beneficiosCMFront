@@ -157,7 +157,7 @@ export default function ModalEspecialista({ open, onClose, id, estatusVal, puest
 ModalEspecialista.propTypes = {
   onClose: PropTypes.func,
   open: PropTypes.bool,
-  id: PropTypes.number,
+  id: PropTypes.any,
   estatusVal: PropTypes.string,
   puesto: PropTypes.any,
 };

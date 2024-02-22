@@ -40,7 +40,7 @@ export default function SedeSnAsignar({ onDelete, sx, modalidadesData, puestosDa
   return (
     <>
 
-      {user.idRol === "4" || user.idRol === 4 ? (
+      {user?.idRol === "4" || user?.idRol === 4 ? (
         <BankingContacts
           list={puestosData}
           modalidadesData={modalidadesData}
@@ -65,7 +65,7 @@ export default function SedeSnAsignar({ onDelete, sx, modalidadesData, puestosDa
       >
         <ModalAsignarSede
           idSede={sd}
-          idPuesto={user.idPuesto}
+          idPuesto={user?.idPuesto}
           open={modal.value}
           onClose={handleClose}
           modalidadesData={modalidadesData}
