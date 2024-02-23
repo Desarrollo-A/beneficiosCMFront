@@ -51,14 +51,14 @@ export default function ModalModalidad({ open, onClose, id, est, estatusVal, mod
 
         const update = await updateEstatus(data);
 
-        if (update.estatus === true) {
-          enqueueSnackbar(update.msj, { variant: 'success' });
+        if (update.result === true) {
+          enqueueSnackbar(update.msg, { variant: 'success' });
 
           mutate(endpoints.gestor.getAtencionXsede);
           mutate(endpoints.gestor.getAtencionXsedeEsp);
 
         } else {
-          enqueueSnackbar(update.msj, { variant: 'error' });
+          enqueueSnackbar(update.msg, { variant: 'error' });
         }
 
       } else {

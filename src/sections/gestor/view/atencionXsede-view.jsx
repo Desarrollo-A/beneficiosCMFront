@@ -338,7 +338,7 @@ export default function AtencionXsedeView() {
           </TabPanel>
           ) : (
             null
-          )};
+          )}
         </TabContext>
 
       </Card>
