@@ -32,10 +32,10 @@ export default function AgendaDialog({ open, onClose, id, start, end, sede, ...p
   const { sedes } = useGetSedesPresenciales({ idEspecialista: user?.idUsuario });
 
   const checkMin = (value, context) => {
-    const end = new Date(value)
-    const start = context.from[0].value.start
+    const endd = new Date(value)
+    const startt = context.from[0].value.start
 
-    return end > start
+    return endd > startt
   }
 
   const formSchema = yup.object({
@@ -99,8 +99,8 @@ export default function AgendaDialog({ open, onClose, id, start, end, sede, ...p
             <Stack direction="column" spacing={2}>
               <Stack direction="row" spacing={2}>
                 <RHFHidden name="especialista" value={user?.idUsuario} />
-                <RHFDatePicker name="start" label="Inicio" value={start} disablePast={true} />
-                <RHFDatePicker name="end" label="Final" value={end} disablePast={true} />
+                <RHFDatePicker name="start" label="Inicio" value={start} disablePast />
+                <RHFDatePicker name="end" label="Final" value={end} disablePast />
               </Stack>
               <RHFSelect name="sede" label="Sede" value="">
                 <MenuItem key={0} value={0}>

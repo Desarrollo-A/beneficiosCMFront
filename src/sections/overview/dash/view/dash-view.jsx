@@ -15,9 +15,9 @@ import { endpoints } from 'src/utils/axios';
 
 import { bgGradient } from 'src/theme/css';
 import { useAuthContext } from 'src/auth/hooks';
+import { useGetMeta } from 'src/api/especialistas';
 import { SeoIllustration } from 'src/assets/illustrations';
 import { useGetGeneral, usePostGeneral } from 'src/api/general';
-import { useGetMeta, useGetCitasArea } from 'src/api/especialistas';
 
 // import { _appAuthors, _appRelated, _appFeatured, _appInvoices, _appInstalled } from 'src/_mock';
 
