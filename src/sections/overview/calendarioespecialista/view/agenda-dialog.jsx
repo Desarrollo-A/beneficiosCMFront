@@ -13,6 +13,8 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 
+import { parseEndDate, parseStartDate } from 'src/utils/general';
+
 import { useAuthContext } from 'src/auth/hooks';
 import { setHorarioPresencial, useGetSedesPresenciales } from 'src/api/especialistas';
 
@@ -104,7 +106,7 @@ export default function AgendaDialog({ open, onClose, id, start, end, sede, ...p
               </Stack>
               <RHFSelect name="sede" label="Sede" value="">
                 <MenuItem key={0} value={0}>
-                  Sin horario
+                  Limpiar
                 </MenuItem>
                 {sedes.map((s, index) => (
                   <MenuItem key={index} value={s.value}>
@@ -126,16 +128,6 @@ export default function AgendaDialog({ open, onClose, id, start, end, sede, ...p
       </FormProvider>
     </Dialog>
   );
-}
-
-function parseStartDate(value, originalValue) {
-  // originalValue.setUTCHours(0,0,0,0);
-  return originalValue.toISOString();
-}
-
-function parseEndDate(value, originalValue) {
-  // originalValue.setUTCHours(23,59,59,0);
-  return originalValue.toISOString();
 }
 
 AgendaDialog.propTypes = {
