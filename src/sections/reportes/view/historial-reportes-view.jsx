@@ -164,7 +164,7 @@ export default function HistorialReportesView() {
   const headerBase = ["ID Colaborador", "Especialista", "Paciente", "Oficina", "Departamento", "Sede", "Modalidad", "Sexo", "Motivo consulta", "Pago Generado", "Método de pago", "Estatus",
     "Horario cita"];
 
-  const [dataValue, setReportData] = useState('general');
+  const [dataValue, setReportData] = useState(0);
 
   const { espeUserData } = usePostGeneral(user?.idUsuario, endpoints.reportes.getEspeUser, "espeUserData");
 
@@ -338,11 +338,11 @@ export default function HistorialReportesView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Historial Reportes"
+          heading="Reporte de ingresos"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Reportes'/* , href: paths.dashboard.user.root */ },
-            { name: 'Historial' },
+            { name: 'Reportes' },
+            { name: 'Ingresos' },
           ]}
           sx={{
             mb: { xs: 3, md: 5 },

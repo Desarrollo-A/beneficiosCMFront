@@ -15,11 +15,10 @@ import { endpoints } from 'src/utils/axios';
 
 import { bgGradient } from 'src/theme/css';
 import { useAuthContext } from 'src/auth/hooks';
+import { useGetMeta } from 'src/api/especialistas';
 import { SeoIllustration } from 'src/assets/illustrations';
 import { useGetGeneral, usePostGeneral } from 'src/api/general';
-import { useGetMeta, useGetCitasArea } from 'src/api/especialistas';
-
-// import { _appAuthors, _appRelated, _appFeatured, _appInvoices, _appInstalled } from 'src/_mock';
+import { useModalidad } from 'src/api/dash';
 
 import { useSettingsContext } from 'src/components/settings';
 
@@ -28,16 +27,11 @@ import WidgetConteo from '../widget-conteo';
 import GraficaMetas from '../grafica-metas';
 import EncuestaBarra from '../barra-encuesta';
 import GraficaMetasArea from '../grafica-metas-area';
-// import AppTopRelated from '../app-top-related';
 import EncuestaPorcentaje from '../porcentaje-encuesta';
 
 // ----------------------------------------------------------------------
 
 export default function DashView() {
-
-  /* const { email } = useGetGeneral(endpoints.encuestas.sendMail, "email");
-
-  console.log(email); */
 
   const { user } = useAuthContext();
 
@@ -59,66 +53,11 @@ export default function DashView() {
     puestos = user?.idPuesto;
   }
 
-  function formatDate(date) {
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const day = date.getDate().toString().padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
-
-  function getTrimesterDates() {
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth();
-
-    const trimStart = new Date(currentYear, Math.floor(currentMonth / 3) * 3, 1);
-    const trimEnd = new Date(trimStart);
-    trimEnd.setMonth(trimStart.getMonth() + 3);
-    trimEnd.setDate(trimEnd.getDate() - 1);
-
-    return {
-      trimStart: formatDate(trimStart),
-      trimEnd: formatDate(trimEnd),
-    };
-  }
-
-  const { trimStart, trimEnd } = getTrimesterDates();
-
-  function rangeMonth() {
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth();
-
-    // Primer día del mes actual
-    const firstDayMonth = new Date(currentYear, currentMonth, 1);
-    const formFirstDay = formatDate(firstDayMonth);
-
-    // Último día del mes actual
-    const lastDayMonth = new Date(currentYear, currentMonth + 1, 0);
-    const formLastDay = formatDate(lastDayMonth);
-
-    return {
-      firstDayMonth: formFirstDay,
-      lastDayMonth: formLastDay,
-    };
-  }
-
-  const { firstDayMonth, lastDayMonth } = rangeMonth();
-
   const [espe, setEspe] = useState({ idData: idDt, idRol: user?.idRol });
-
-  /*  const [ meta, setMeta] = useState({
-     idData: idDt,
-     idRol: user?.idRol,
-     inicio: trimStart,
-     fin: trimEnd
-   }); */
 
   const [areas, setAreas] = useState(puestos);
 
   const [ps, setPs] = useState(158);
-
-  // const { citas } = useGetCitasArea({puesto: ps});
 
   const { preguntaData } = usePostGeneral(areas, endpoints.dashboard.getPregunta, "preguntaData");
 
@@ -134,7 +73,9 @@ export default function DashView() {
 
   const { penalizadaData } = usePostGeneral(espe, endpoints.dashboard.getCtPenalizadas, "penalizadaData");
 
-  // const { metasData } = usePostGeneral(meta, endpoints.dashboard.getMetas, "metasData");
+  const { virtualData } = useModalidad(espe, endpoints.dashboard.getCtVirtuales, "virtualData");
+
+  const { presencialData } = useModalidad(espe, endpoints.dashboard.getCtPresenciales, "presencialData");
 
   const { meta: metaData } = useGetMeta({ especialista: user?.idUsuario })
 
@@ -264,22 +205,6 @@ export default function DashView() {
 
     setEspe({ idData: event.target.value, idRol: user?.idRol });
 
-    /* if (event.target.value === 158) {
-      setMeta({
-        idData: event.target.value,
-        idRol: user?.idRol,
-        inicio: trimStart,
-        fin: trimEnd
-      })
-    } else {
-      setMeta({
-        idData: event.target.value,
-        idRol: user?.idRol,
-        inicio: firstDayMonth,
-        fin: lastDayMonth
-      })
-    } */
-
   };
 
   const [value, setValue] = useState(new Date());
@@ -293,29 +218,6 @@ export default function DashView() {
   }, []);
 
   const theme = useTheme();
-
-
-  // const appRelated = ['Chrome', 'Drive', 'Dropbox', 'Evernote', 'Github'].map(
-  //   (name, index) => {
-  //     const system = [2, 4].includes(index) ? 'Windows' : 'Mac';
-
-  //     const shortcut =
-  //       (name === 'Chrome' && '/assets/icons/app/ic_chrome.svg') ||
-  //       (name === 'Drive' && '/assets/icons/app/ic_drive.svg') ||
-  //       (name === 'Dropbox' && '/assets/icons/app/ic_dropbox.svg') ||
-  //       (name === 'Evernote' && '/assets/icons/app/ic_evernote.svg') ||
-  //       '/assets/icons/app/ic_github.svg';
-
-  //     return {
-  //       /* id: _mock.id(index), */
-  //       name,
-  //       system,
-  //       shortcut,
-  //       /* ratingNumber: _mock.number.rating(index),
-  //       totalReviews: _mock.number.nativeL(index), */
-  //     };
-  //   }
-  // );
 
   return (
     <>
@@ -348,7 +250,7 @@ export default function DashView() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '360px'
+                width: '90%'
               }}
             >
               <Clock value={value} />
@@ -358,7 +260,10 @@ export default function DashView() {
 
 
           {rol === "4" || rol === 4 ? (
-            <FormControl fullWidth>
+            <Grid  md={12}>
+            <FormControl sx={{
+            width: "100%" ,
+          }}>
               <InputLabel id="demo-simple-select-label">Área</InputLabel>
               <Select
                 labelId="demo-simple-select-label"
@@ -374,6 +279,7 @@ export default function DashView() {
                 ))}
               </Select>
             </FormControl>
+            </Grid>
 
           ) : (
 
@@ -383,7 +289,7 @@ export default function DashView() {
           )}
 
           {pacientesData.map((i, index) => (
-            <Grid xs={12} sm={6} md={3} key={index}>
+            <Grid xs={12} sm={6} md={2} key={index}>
               <WidgetConteo
                 title={rol === '2' || rol === 2 ? 'Total citas' : 'Total pacientes'}
                 total={i.pacientes}
@@ -394,17 +300,18 @@ export default function DashView() {
           ))}
 
           {asistenciaData.map((i, index) => (
-            <Grid xs={12} sm={6} md={3} key={index}>
+            <Grid xs={12} sm={6} md={2} key={index}>
               <WidgetConteo
                 title="Total citas asistidas"
                 total={i.asistencia}
+                sx={{ backgroundColor: "#DDFAD7" }}
                 icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/check.png`} />}
               />
             </Grid>
           ))}
 
           {canceladaData.map((i, index) => (
-            <Grid xs={12} sm={6} md={3} key={index}>
+            <Grid xs={12} sm={6} md={2} key={index}>
               <WidgetConteo
                 title="Total citas canceladas"
                 total={i.cancelada}
@@ -415,12 +322,34 @@ export default function DashView() {
           ))}
 
           {penalizadaData.map((i, index) => (
-            <Grid xs={12} sm={6} md={3} key={index}>
+            <Grid xs={12} sm={6} md={2} key={index}>
               <WidgetConteo
                 title="Total citas penalizadas"
                 total={i.penalizada}
                 color="error"
                 icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/dolar.png`} />}
+              />
+            </Grid>
+          ))}
+
+          {virtualData.map((i, index) => (
+            <Grid xs={12} sm={6} md={2} key={index}>
+              <WidgetConteo
+                title="Total citas virtuales"
+                total={i.virtual}
+                sx={{backgroundColor: "#E5D7FA"}}
+                icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/virtual.png`} />}
+              />
+            </Grid>
+          ))}
+
+          {presencialData.map((i, index) => (
+            <Grid xs={12} sm={6} md={2} key={index}>
+              <WidgetConteo
+                title="Total citas presenciales"
+                total={i.presencial}
+                sx={{backgroundColor: "#D7E4FA"}}
+                icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/ubicacion.png`} />}
               />
             </Grid>
           ))}
@@ -491,10 +420,6 @@ export default function DashView() {
             </>
 
           )}
-
-          {/* <Grid xs={12} md={6} lg={4}>
-            <AppTopRelated title="Evaluacion de especialistas" list={_appRelated} />
-          </Grid> */}
 
         </Grid>
 

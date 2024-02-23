@@ -197,6 +197,8 @@ export const endpoints = {
     getCtAsistidas: '/GeneralController/getCtAsistidas',
     getCtCanceladas: '/GeneralController/getCtCanceladas',
     getCtPenalizadas: '/GeneralController/getCtPenalizadas',
+    getCtPresenciales: '/GeneralController/getCtPresenciales',
+    getCtVirtuales: '/GeneralController/getCtVirtuales',
     getMetas: '/DashboardController/getMetas',
     getMetaAdmin: '/DashboardController/getMetaAdmin'
   },
