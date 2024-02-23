@@ -25,7 +25,6 @@ import uuidv4 from 'src/utils/uuidv4';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetEventReasons } from 'src/api/calendar-specialist';
-import { useGetDiasPresenciales, useGetSedesPresenciales } from 'src/api/especialistas';
 import {
   sendMail,
   crearCita,
@@ -37,13 +36,16 @@ import {
   useGetBenefits,
   lastAppointment,
   checaPrimeraCita,
+  getCitasSinPagar,
   getAtencionXSede,
   cancelAppointment,
   updateAppointment,
+  getDiasDisponibles,
   getCitasSinEvaluar,
   getCitasFinalizadas,
   updateDetailPacient,
   getHorariosOcupados,
+  getSedesPresenciales,
   getCitasSinFinalizar,
   getOficinaByAtencion,
   registrarDetalleDePago,
@@ -56,6 +58,7 @@ import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider from 'src/components/hook-form/form-provider';
 
+import EvaluateDialog from './evaluate-dialog';
 import CalendarPreview from './calendar-preview';
 import AppointmentSchedule from './appointment-schedule';
 
@@ -94,20 +97,17 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const [event, setEvent] = useState({});
   const [btnDisabled, setBtnDisabled] = useState(false);
   const [btnNotificationDisabled, setBtnNotificationDisabled] = useState(false);
+  const [btnPayDisabled, setBtnPayDisabled] = useState(false);
+  const [btnEvaluateDisabled, setBtnEvaluateDisabled] = useState(false);
   const [btnConfirmAction, setBtnConfirmAction] = useState(false);
+  const [openEvaluateDialog, setOpenEvaluateDialog] = useState(false);
+  const [pendiente, setPendiente] = useState({});
+  const [sedesAtencionEspecialista, setSedesAtencionEspecialista] = useState({});
+  const [diasPresenciales, setDiasPresenciales] = useState([]);
 
   const { user: datosUser } = useAuthContext();
 
-  console.log(datosUser);
-
   const { data: benefits } = useGetBenefits(datosUser.idSede);
-
-  const { sedes } = useGetSedesPresenciales({ idEspecialista: selectedValues.especialista });
-
-  const { diasPresenciales } = useGetDiasPresenciales({
-    especialista: selectedValues.especialista,
-    sede: datosUser.idSede,
-  });
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -194,11 +194,22 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       return false;
     }
 
-    // TERMINAS CITAS SIN EVALUAR
-    const citasSinEvaluar = await getCitasSinEvaluar(datosUser.idUsuario, selectedValues.beneficio);
+    // Si tiene citas sin evaluar no lo deja agendar
+    const citasSinEvaluar = await getCitasSinEvaluar(datosUser.idUsuario);
     // Si tiene citas en proceso no lo tengo que dejar agendar citas
     if (citasSinEvaluar.result) {
-      enqueueSnackbar('Evalúa tu cita previa para poder agendar otra cita', {
+      enqueueSnackbar('Evalúa tus citas previas para poder agendar otra cita', {
+        variant: 'error',
+      });
+      onClose();
+      return false;
+    }
+
+    // Si tiene citas sin pagar no lo deja agendar
+    const citasSinPagar = await getCitasSinPagar(datosUser.idUsuario);
+    // Si tiene citas en proceso no lo tengo que dejar agendar citas
+    if (citasSinPagar.result) {
+      enqueueSnackbar('Realiza el pago de tus citas por asistir para poder agendar otra cita', {
         variant: 'error',
       });
       onClose();
@@ -440,6 +451,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   };
 
   const onPay = async () => {
+    setBtnPayDisabled(true);
     let precio = 50;
     let metodoPago = 1;
     if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
@@ -487,6 +499,13 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     return !registrarPago.result;
   };
 
+  const onEvaluate = async () => {
+    setBtnEvaluateDisabled(true);
+    setPendiente(currentEvent);
+    setOpenEvaluateDialog(true);
+    return true;
+  };
+
   const handleChange = async (input, value) => {
     setBtnDisabled(false);
     setOficina({});
@@ -517,6 +536,17 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
           especialista: datosUltimaCita.data[0].idEspecialista,
           modalidad: datosUltimaCita.data[0].tipoCita,
         });
+        /* ************************************* */
+        const sedesEspecialista = await getSedesPresenciales(
+          datosUltimaCita.data[0].idEspecialista
+        );
+        setSedesAtencionEspecialista(sedesEspecialista.result ? sedesEspecialista.data : []);
+        const diasDisponibles = await getDiasDisponibles(
+          datosUltimaCita.data[0].idEspecialista,
+          datosUser.idSede
+        );
+        setDiasPresenciales(diasDisponibles.result ? diasDisponibles.data : []);
+        /* ************************************* */
       } else {
         // DEFAULT SELECTED VALUES
         setSelectedValues({
@@ -528,8 +558,12 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       const data = await getSpecialists(datosUser.idSede, datosUser.idArea, value);
       setEspecialistas(data?.data);
     } else if (input === 'especialista') {
-      console.log('especialista', value);
-
+      /* ************************************* */
+      const sedesEspecialista = await getSedesPresenciales(value);
+      setSedesAtencionEspecialista(sedesEspecialista.result ? sedesEspecialista.data : []);
+      const diasDisponibles = await getDiasDisponibles(value, datosUser.idSede);
+      setDiasPresenciales(diasDisponibles.result ? diasDisponibles.data : []);
+      /* ************************************* */
       setErrorEspecialista(false);
       const modalitiesData = await getModalities(datosUser.idSede, value);
       setModalidades(modalitiesData?.data);
@@ -556,8 +590,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       }
       getHorariosDisponibles(selectedValues.beneficio, value);
     } else if (input === 'modalidad') {
-      // console.log('modalidad', value)
-
       setSelectedValues({
         ...selectedValues,
         modalidad: value,
@@ -571,6 +603,12 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       );
       setOficina(data);
     } else if (input === 'all') {
+      /* ************************************* */
+      const sedesEspecialista = await getSedesPresenciales(value.idEspecialista);
+      setSedesAtencionEspecialista(sedesEspecialista.result ? sedesEspecialista.data : []);
+      const diasDisponibles = await getDiasDisponibles(value.idEspecialista, datosUser.idSede);
+      setDiasPresenciales(diasDisponibles.result ? diasDisponibles.data : []);
+      /* ************************************* */
       setSelectedValues({
         beneficio: value.idPuesto,
         especialista: value.idEspecialista,
@@ -705,7 +743,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
       return dayOfWeek !== 0 && (horarioACubrir?.data[0]?.sabados !== '0' || dayOfWeek !== 6);
     });
-    console.log('Todos los dias', diasProximos);
 
     // Traemos citas y horarios bloqueados por parte del usuario y especialsita
     const horariosOcupados = await getHorariosOcupados(
@@ -714,7 +751,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       initialValue.format('YYYY-MM-DD'),
       lastDayOfNextMonth.format('YYYY-MM-DD')
     );
-    console.log('Horarios no disponibles', horariosOcupados);
 
     // Dias laborables con horario.
     const diasLaborablesConHorario = diasProximos.map((item) => {
@@ -736,7 +772,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
       return elemento;
     });
-    console.log('Dias con horario laboral', diasLaborablesConHorario);
 
     const fechasEn5minutos = diasLaborablesConHorario
       .map((item) => {
@@ -773,11 +808,9 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     // Este proceso solo es para quitar en el calendario visualmente los dias que no están ///
     // ///////////////////////////////////////////////////////////////////////////////////////
     const diasDisponibles = obtenerSoloFechas(registrosCadaHora);
-    console.log('Dias a mostrar', diasDisponibles);
     setDiasHabilitados(diasDisponibles);
 
     const diasOcupadosFiltro = filtradoDias(diasProximos, diasDisponibles);
-    console.log('Dias a quitar', diasOcupadosFiltro);
 
     const year = initialValue.year();
 
@@ -804,11 +837,9 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
             `${year + 1}-12-25`,
           ];
 
-    console.log('Festivos a quitar', diasFestivos);
     const diasADeshabilitar = new Set([...diasOcupadosFiltro, ...diasFestivos]);
 
     setDiasOcupados([...diasADeshabilitar]);
-    console.log('Todo a quitar', [diasADeshabilitar]);
     setIsLoading(false);
   };
 
@@ -890,8 +921,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const isDisabledFromSQLServer = diasOcupados.includes(formattedDate);
     let noPresencial = false;
     if (selectedValues.modalidad === 1) {
-      if (sedes.length > 1) {
-        noPresencial = !diasPresenciales.includes(formattedDate);
+      if (sedesAtencionEspecialista?.length > 1) {
+        noPresencial = !diasPresenciales.includes(formattedDate); // Deshabilitar si no esta entre los dias
       }
     }
 
@@ -919,6 +950,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       horarioCita,
       tipoCita,
       atencionPorSede,
+      datosUser.idSede,
       1,
       idUsuario,
       idUsuario,
@@ -1580,14 +1612,15 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                   Cerrar
                 </Button>
                 {currentEvent?.id && currentEvent?.estatus === 6 && (
-                  <Button
+                  <LoadingButton
                     variant="contained"
                     color="success"
                     disabled={currentEvent?.estatus !== 6}
+                    loading={btnPayDisabled}
                     onClick={onPay}
                   >
                     Pagar
-                  </Button>
+                  </LoadingButton>
                 )}
                 {!currentEvent?.id && (
                   <LoadingButton
@@ -1597,6 +1630,16 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                     loading={btnDisabled}
                   >
                     Agendar
+                  </LoadingButton>
+                )}
+                {currentEvent?.estatus === 4 && currentEvent?.evaluacion === null && (
+                  <LoadingButton
+                    onClick={onEvaluate}
+                    variant="contained"
+                    color="success"
+                    loading={btnEvaluateDisabled}
+                  >
+                    Evaluar
                   </LoadingButton>
                 )}
               </DialogActions>
@@ -1748,6 +1791,18 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         btnNotificationDisabled={btnNotificationDisabled}
         setBtnNotificationDisabled={setBtnNotificationDisabled}
       />
+      {pendiente && openEvaluateDialog && (
+        <EvaluateDialog
+          open={openEvaluateDialog}
+          pendiente={pendiente}
+          mutate={() => {
+            setOpenEvaluateDialog(false);
+            appointmentMutate();
+            onClose();
+          }}
+          cerrar={() => setOpenEvaluateDialog(false)}
+        />
+      )}
     </>
   );
 }

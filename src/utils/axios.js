@@ -70,6 +70,7 @@ export const endpoints = {
     login2: '/api/auth/login',
     register: '/api/auth/register',
     logout: '/LoginController/logout',
+    registerUser: 'LoginController/addRegistroEmpleado',
   },
   mail: {
     list: '/api/mail/list',
@@ -89,8 +90,8 @@ export const endpoints = {
   },
   user: {
     list: 'Usuario/getUsersExternos',
-    session : 'usuario/session',
-    authorized : 'usuario/authorized',
+    session: 'usuario/session',
+    authorized: 'usuario/authorized',
     update: 'Usuario/updateUser',
     areas: 'Usuario/getAreas',
     batch: 'Usuario/insertBatchUsers',
@@ -149,6 +150,7 @@ export const endpoints = {
     getCitasFinalizadas: 'CalendarioController/getCitasFinalizadasUsuario',
     getCitasSinFinalizar: 'CalendarioController/getCitasSinFinalizarUsuario',
     getCitasSinEvaluar: 'CalendarioController/getCitasSinEvaluarUsuario',
+    getCitasSinPagar: 'CalendarioController/getCitasSinPagarUsuario',
     getAtencionPorSede: 'CalendarioController/getAtencionPorSede',
     createAppointment: 'CalendarioController/createAppointmentByColaborator',
     registrarDetallePago: 'CalendarioController/registrarTransaccionPago',
@@ -161,6 +163,8 @@ export const endpoints = {
     insertGoogleEvent: 'CalendarioController/insertGoogleEvent',
     updateGoogleEvent: 'CalendarioController/updateGoogleEvent',
     deleteGoogleEvent: 'CalendarioController/deleteGoogleEvent',
+    getSedesEspecialista: 'CalendarioController/getSedesDeAtencionEspecialista',
+    getDisponibilidadEspecialista: 'CalendarioController/getDiasDisponiblesAtencionEspecialista',
   },
   reportes: {
     lista: '/ReportesController/citas',
@@ -175,7 +179,7 @@ export const endpoints = {
     getCierrePacientes: '/ReportesController/getCierrePacientes',
     getCierreIngresos: '/ReportesController/getCierreIngresos',
     getSelectEspe: '/ReportesController/getSelectEspe',
-    getEspeUser: '/ReportesController/getEspeUser'
+    getEspeUser: '/ReportesController/getEspeUser',
   },
   dashboard: {
     usersCount: '/GeneralController/usrCount',
@@ -195,7 +199,7 @@ export const endpoints = {
     getCtCanceladas: '/GeneralController/getCtCanceladas',
     getCtPenalizadas: '/GeneralController/getCtPenalizadas',
     getMetas: '/DashboardController/getMetas',
-    getMetaAdmin: '/DashboardController/getMetaAdmin'
+    getMetaAdmin: '/DashboardController/getMetaAdmin',
   },
   encuestas: {
     encuestaInsert: '/EncuestasController/encuestaInsert',
@@ -236,14 +240,14 @@ export const endpoints = {
     updateOficina: '/GestorController/updateOficina',
     insertOficinas: '/GestorController/insertOficinas',
     updateSede: '/GestorController/updateSede',
-    insertSedes: '/GestorController/insertSedes'
+    insertSedes: '/GestorController/insertSedes',
   },
-  avisosPrivacidad : {
-    getEspecialidadToSelect : '/AvisosPrivacidadController/getEspecialidades',
-    getAvisoDePrivacidad : '/AvisosPrivacidadController/getAvisoPrivacidad',
-    actualizarArchivoPrivacidad: '/AvisosPrivacidadController/actualizarArchivoPrivacidad'
+  avisosPrivacidad: {
+    getEspecialidadToSelect: '/AvisosPrivacidadController/getEspecialidades',
+    getAvisoDePrivacidad: '/AvisosPrivacidadController/getAvisoPrivacidad',
+    actualizarArchivoPrivacidad: '/AvisosPrivacidadController/actualizarArchivoPrivacidad',
   },
-  citas : {
-    getCitas : '/GeneralController/getCitas',
+  citas: {
+    getCitas: '/GeneralController/getCitas',
   },
 };

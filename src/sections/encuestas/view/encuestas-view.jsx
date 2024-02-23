@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 
 import Container from '@mui/material/Container';
 
@@ -14,9 +14,12 @@ import FormularioEncuesta from '../formulario-encuesta';
 export default function EncuestasView() {
   const settings = useSettingsContext();
 
-  const location = useLocation();
+  // const location = useLocation();
 
-  const searchParams = new URLSearchParams(location.search);
+  const [searchParams] = useSearchParams();
+
+  // const searchParams = new URLSearchParams(location.search);
+
   const idEncuesta = searchParams.get('idEncuesta');
 
   return (

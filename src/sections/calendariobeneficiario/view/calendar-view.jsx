@@ -67,7 +67,6 @@ export default function CalendarView() {
     onChangeView,
     onClickEvent,
     selectedDate,
-    onSelectRange,
     selectEventId,
   } = useCalendar();
 
@@ -120,7 +119,7 @@ export default function CalendarView() {
             />
             <Calendar
               weekends
-              editable = {false} // en false para prevenir un drag del evento
+              editable={false} // en false para prevenir un drag del evento
               selectable
               locales={allLocales}
               locale="es"
@@ -135,7 +134,13 @@ export default function CalendarView() {
               select={dialog.onTrue}
               eventClick={onClickEvent}
               height={smUp ? 720 : 'auto'}
-              plugins={[listPlugin, dayGridPlugin, timelinePlugin, timeGridPlugin, interactionPlugin]}
+              plugins={[
+                listPlugin,
+                dayGridPlugin,
+                timelinePlugin,
+                timeGridPlugin,
+                interactionPlugin,
+              ]}
             />
           </StyledCalendar>
         </Card>

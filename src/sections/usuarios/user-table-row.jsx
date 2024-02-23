@@ -17,7 +17,7 @@ import UserQuickEditForm from './edit-user-dialog';
 
 // ----------------------------------------------------------------------
 
-export default function UserTableRow({ row, selected, onDisableRow, areasMutate, usersMutate }) {
+export default function UserTableRow({ row, selected, onDisableRow, usersMutate }) {
   const { id, nombre, telefono, sexo, correo, estatus } = row;
 
   const confirm = useBoolean();
@@ -55,7 +55,6 @@ export default function UserTableRow({ row, selected, onDisableRow, areasMutate,
         currentUser={row}
         open={quickEdit.value}
         onClose={quickEdit.onFalse}
-        areasMutate={areasMutate}
         usersMutate={usersMutate}
         popoverOnClose={popover.onClose}
       />
@@ -118,6 +117,5 @@ UserTableRow.propTypes = {
   onDisableRow: PropTypes.func,
   row: PropTypes.object,
   selected: PropTypes.bool,
-  areasMutate: PropTypes.func,
   usersMutate: PropTypes.func,
 };

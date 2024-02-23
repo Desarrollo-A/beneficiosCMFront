@@ -1,7 +1,7 @@
 import { mutate } from 'swr';
-import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useSearchParams } from 'react-router-dom';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -27,7 +27,11 @@ import FormProvider, {
 
 // ----------------------------------------------------------------------
 
-export default function FormularioEncuesta({ idEncuesta }) {
+export default function FormularioEncuesta() {
+
+  const [searchParams] = useSearchParams();
+
+  const idEncuesta = searchParams.get('idEncuesta');
 
   const router = useRouter();
 
@@ -199,5 +203,4 @@ export default function FormularioEncuesta({ idEncuesta }) {
 }
 
 FormularioEncuesta.propTypes = {
-  idEncuesta: PropTypes.any,
 };

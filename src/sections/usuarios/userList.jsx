@@ -139,11 +139,11 @@ export default function UserList({ userData, usersMutate }) {
         enqueueSnackbar(`¡Se ha actualizado el usuario exitosamente!`, { variant: 'success' });
         usersMutate();
       } else {
-        enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'success' });
+        enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'warning' });
       }
     } catch (error) {
       console.error('Error en handleDisableUser:', error);
-      enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'danger' });
+      enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'error' });
     }
   };
 

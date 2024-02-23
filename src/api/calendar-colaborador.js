@@ -7,9 +7,6 @@ import { endpoints, fetcherPost } from 'src/utils/axios';
 
 import { useAuthContext } from 'src/auth/hooks';
 
-// Se hizo el intento con el useAuthContext pero se manda a declarar más veces y da mas errores debido a su uso como componente
-const session = sessionStorage.getItem('accessToken');
-
 // ----------------------------------------------------------------------
 
 // Trae todos los beneficios que puede gozar la sede.
@@ -99,9 +96,17 @@ export function getCitasSinFinalizar(usuario, beneficio) {
 }
 
 // Traer las citas sin evaluar y ya terminadas
-export function getCitasSinEvaluar(usuario, beneficio) {
+export function getCitasSinEvaluar(usuario) {
   const URL = [endpoints.calendarioColaborador.getCitasSinEvaluar];
-  const cita = fetcherPost(URL, { usuario, beneficio });
+  const cita = fetcherPost(URL, { usuario });
+
+  return cita;
+}
+
+// Traer las citas sin evaluar y ya terminadas
+export function getCitasSinPagar(usuario) {
+  const URL = [endpoints.calendarioColaborador.getCitasSinPagar];
+  const cita = fetcherPost(URL, { usuario });
 
   return cita;
 }
@@ -200,6 +205,27 @@ export function useGetPendientes() {
   return memoizedValue;
 }
 
+export function getPendientes(id) {
+  const URL = [endpoints.calendarioColaborador.getPendientes];
+  const pendientes = fetcherPost(URL, { idUsuario: id });
+
+  return pendientes;
+}
+
+export function getSedesPresenciales(id) {
+  const URL = [endpoints.calendarioColaborador.getSedesEspecialista];
+  const pendientes = fetcherPost(URL, { idUsuario: id });
+
+  return pendientes;
+}
+
+export function getDiasDisponibles(idUsuario, idSede) {
+  const URL = [endpoints.calendarioColaborador.getDisponibilidadEspecialista];
+  const dias = fetcherPost(URL, { idUsuario, idSede });
+
+  return dias;
+}
+
 // Función para crear cita
 export function crearCita(
   titulo,
@@ -209,6 +235,7 @@ export function crearCita(
   fechaInicio,
   tipoCita,
   idAtencionXSede,
+  idSede,
   estatusCita,
   creadoPor,
   modificadoPor,
@@ -224,6 +251,7 @@ export function crearCita(
     fechaInicio,
     tipoCita,
     idAtencionXSede,
+    idSede,
     estatusCita,
     creadoPor,
     modificadoPor,
@@ -283,7 +311,6 @@ export function useGetAppointmentsByUser(current, id) {
 }
 
 export function cancelAppointment(currentEvent, id, cancelType, idUsuario) {
-
   const URL = [endpoints.calendario.cancelAppointment];
   const data = {
     idCita: id,
