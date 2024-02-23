@@ -1,7 +1,7 @@
 import { mutate } from 'swr';
-import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useSearchParams } from 'react-router-dom';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -27,15 +27,19 @@ import FormProvider, {
 
 // ----------------------------------------------------------------------
 
-export default function FormularioEncuesta({ idEncuesta }) {
+export default function FormularioEncuesta() {
+
+  const [searchParams] = useSearchParams();
+
+  const idEncuesta = searchParams.get('idEncuesta');
 
   const router = useRouter();
 
   const { user } = useAuthContext();
 
-  const array = [idEncuesta, user.idUsuario];
+  const array = [idEncuesta, user?.idUsuario];
 
-  const { getData } = usePostGeneral(user.idUsuario, endpoints.encuestas.getEncNotificacion, "getData");
+  const { getData } = usePostGeneral(user?.idUsuario, endpoints.encuestas.getEncNotificacion, "getData");
 
   const validarData = usePost(array, endpoints.encuestas.getEcuestaValidacion, "validarData");
 
@@ -84,7 +88,7 @@ export default function FormularioEncuesta({ idEncuesta }) {
 
       return {
         ...item,
-        idUsuario: user.idUsuario,
+        idUsuario: user?.idUsuario,
         idEnc: idEncuesta,
         idArea: encuestaData[0]?.idArea,
         resp: data[respKey]
@@ -199,5 +203,4 @@ export default function FormularioEncuesta({ idEncuesta }) {
 }
 
 FormularioEncuesta.propTypes = {
-  idEncuesta: PropTypes.any,
 };

@@ -45,18 +45,18 @@ export default function DashView() {
 
   let idDt = "";
 
-  const rol = user.idRol
+  const rol = user?.idRol
   let puestos = 0;
 
   if (rol === "4" || rol === 4) {
     idDt = 158;
     puestos = 158;
   } else if (rol === "2" || rol === 2 || rol === "3" || rol === 3) {
-    idDt = user.idUsuario;
-    puestos = user.idPuesto;
+    idDt = user?.idUsuario;
+    puestos = user?.idPuesto;
   } else if (rol === "1" || rol === 1) {
-    idDt = user.idPuesto;
-    puestos = user.idPuesto;
+    idDt = user?.idPuesto;
+    puestos = user?.idPuesto;
   }
 
   function formatDate(date) {
@@ -105,16 +105,20 @@ export default function DashView() {
 
   const { firstDayMonth, lastDayMonth } = rangeMonth();
 
-  const [espe, setEspe] = useState({ idData: idDt, idRol: user.idRol });
+  const [espe, setEspe] = useState({ idData: idDt, idRol: user?.idRol });
 
-  const [ setMeta] = useState({
-    idData: idDt,
-    idRol: user.idRol,
-    inicio: trimStart,
-    fin: trimEnd
-  });
+  /*  const [ meta, setMeta] = useState({
+     idData: idDt,
+     idRol: user?.idRol,
+     inicio: trimStart,
+     fin: trimEnd
+   }); */
 
   const [areas, setAreas] = useState(puestos);
+
+  const [ps, setPs] = useState(158);
+
+  // const { citas } = useGetCitasArea({puesto: ps});
 
   const { preguntaData } = usePostGeneral(areas, endpoints.dashboard.getPregunta, "preguntaData");
 
@@ -132,7 +136,7 @@ export default function DashView() {
 
   // const { metasData } = usePostGeneral(meta, endpoints.dashboard.getMetas, "metasData");
 
-  const { meta: metaData } = useGetMeta({especialista : user.idUsuario})
+  const { meta: metaData } = useGetMeta({ especialista: user?.idUsuario })
 
   const [pgDt, setPgDt] = useState('');
 
@@ -254,25 +258,27 @@ export default function DashView() {
 
   const handleChangeArea = (event) => {
 
+    setPs(event.target.value);
+
     setAreas(event.target.value);
 
-    setEspe({ idData: event.target.value, idRol: user.idRol });
+    setEspe({ idData: event.target.value, idRol: user?.idRol });
 
-    if (event.target.value === 158) {
+    /* if (event.target.value === 158) {
       setMeta({
         idData: event.target.value,
-        idRol: user.idRol,
+        idRol: user?.idRol,
         inicio: trimStart,
         fin: trimEnd
       })
     } else {
       setMeta({
         idData: event.target.value,
-        idRol: user.idRol,
+        idRol: user?.idRol,
         inicio: firstDayMonth,
         fin: lastDayMonth
       })
-    }
+    } */
 
   };
 
@@ -292,14 +298,14 @@ export default function DashView() {
   // const appRelated = ['Chrome', 'Drive', 'Dropbox', 'Evernote', 'Github'].map(
   //   (name, index) => {
   //     const system = [2, 4].includes(index) ? 'Windows' : 'Mac';
-  
+
   //     const shortcut =
   //       (name === 'Chrome' && '/assets/icons/app/ic_chrome.svg') ||
   //       (name === 'Drive' && '/assets/icons/app/ic_drive.svg') ||
   //       (name === 'Dropbox' && '/assets/icons/app/ic_dropbox.svg') ||
   //       (name === 'Evernote' && '/assets/icons/app/ic_evernote.svg') ||
   //       '/assets/icons/app/ic_github.svg';
-  
+
   //     return {
   //       /* id: _mock.id(index), */
   //       name,
@@ -421,19 +427,21 @@ export default function DashView() {
 
           {rol === "1" || rol === 1 || rol === "3" || rol === 3 || rol === "4" || rol === 4 ? (
             <>
-              {user.idRol === 1 && user.idAreaBeneficio ?
+              {user?.idRol === 1 && user?.idAreaBeneficio || user?.idRol === 4 ?
                 <Grid xs={12}>
-                  <GraficaMetasArea />
+                  <GraficaMetasArea
+                    puesto={ps}
+                    area={user?.idAreaBeneficio ? user?.idAreaBeneficio : ''} />
                 </Grid>
-              : null }
-              {user.idRol === 3 && metaData ?
+                : null}
+              {user?.idRol === 3 && metaData ?
                 <Grid xs={12} sm={6} md={4}>
                   <GraficaMetas data={metaData} />
                 </Grid>
-              : null}
+                : null}
 
               {sn === 0 ? (
-                <Grid xs={12} sm={6} md={8}>
+                <Grid xs={12} sm={6} md={rol === 1 || rol === 4 ? 12 : 8}>
                   <EncuestaBarra
                     idPregunta={pg}
                     chart={{
@@ -460,7 +468,7 @@ export default function DashView() {
 
               ) : (
 
-                <Grid xs={12} sm={6} md={8}>
+                <Grid xs={12} sm={6} md={rol === 1 || rol === 4 ? 12 : 8}>
                   <EncuestaPorcentaje
                     idPregunta={pg}
                     data={_ecommerceSalesOverview}

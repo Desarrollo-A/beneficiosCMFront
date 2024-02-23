@@ -70,6 +70,7 @@ export const endpoints = {
     login2: '/api/auth/login',
     register: '/api/auth/register',
     logout: '/LoginController/logout',
+    registerUser: 'LoginController/addRegistroEmpleado',
   },
   mail: {
     list: '/api/mail/list',
@@ -198,7 +199,7 @@ export const endpoints = {
     getCtCanceladas: '/GeneralController/getCtCanceladas',
     getCtPenalizadas: '/GeneralController/getCtPenalizadas',
     getMetas: '/DashboardController/getMetas',
-    getMetaAdmin: '/DashboardController/getMetaAdmin'
+    getMetaAdmin: '/DashboardController/getMetaAdmin',
   },
   encuestas: {
     encuestaInsert: '/EncuestasController/encuestaInsert',

@@ -9,7 +9,7 @@ import Button from '@mui/material/Button';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemButton from '@mui/material/ListItemButton';
 
-// import { paths } from 'src/routes/paths';
+import { paths } from 'src/routes/paths';
 // import { useRouter } from 'src/routes/hooks';
 
 import { endpoints } from 'src/utils/axios';
@@ -46,7 +46,7 @@ export default function NotificationEncuesta({ notification }) {
   const friendAction = (
     <Stack spacing={1} direction="row" sx={{ mt: 1.5 }}>
       <Link
-        to={`/dashboard/encuestas/contestar?idEncuesta=${notification.idEncuesta}`}
+        to={`${paths.dashboard.encuestas.contestar}?idEncuesta=${notification.idEncuesta}`}
         >
           <Button size="small" variant="contained"
         key={notification.idArea}

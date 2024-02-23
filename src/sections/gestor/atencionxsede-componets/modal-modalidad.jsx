@@ -128,7 +128,7 @@ export default function ModalModalidad({ open, onClose, id, est, estatusVal, mod
 ModalModalidad.propTypes = {
   onClose: PropTypes.func,
   open: PropTypes.bool,
-  id: PropTypes.number,
+  id: PropTypes.any,
   est: PropTypes.number,
   estatusVal: PropTypes.string,
   modalidadesData: PropTypes.any,

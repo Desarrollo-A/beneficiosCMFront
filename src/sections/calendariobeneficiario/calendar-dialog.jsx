@@ -1,7 +1,6 @@
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
 import * as yup from 'yup';
-import { stubTrue } from 'lodash';
 import PropTypes from 'prop-types';
 import utc from 'dayjs/plugin/utc';
 import { useForm } from 'react-hook-form';
@@ -33,7 +32,6 @@ import {
   checkInvoice,
   getModalities,
   consultarCita,
-  getPendientes,
   getSpecialists,
   useGetBenefits,
   lastAppointment,
@@ -952,6 +950,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       horarioCita,
       tipoCita,
       atencionPorSede,
+      datosUser.idSede,
       1,
       idUsuario,
       idUsuario,

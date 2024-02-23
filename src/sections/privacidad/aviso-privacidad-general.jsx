@@ -155,7 +155,7 @@ export default function AvisoPrivacidadGeneral() {
         console.error('Error al obtener datos del servicio SQL', error);
       }
     };
-
+    
     if (typeof especialidadesDisponibles === 'object' && especialidadesDisponibles.length > 0) {
       console.log('1', especialidadesDisponibles);
       if (especialidadesDisponibles.length > 0) {

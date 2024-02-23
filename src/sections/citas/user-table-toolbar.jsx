@@ -1,18 +1,9 @@
-import { mutate } from 'swr';
 import PropTypes from 'prop-types';
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback } from 'react';
 
 import Stack from '@mui/material/Stack';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
 import InputAdornment from '@mui/material/InputAdornment';
-
-import { endpoints } from 'src/utils/axios';
-
-import { useGetGeneral } from 'src/api/general';
 
 import Iconify from 'src/components/iconify';
 
@@ -20,10 +11,7 @@ import Iconify from 'src/components/iconify';
 
 export default function ToolbarResumenTerapias({
   filters,
-  onFilters,
-  //
-  handleChangeId,
-  rol
+  onFilters
 }) {
 
   const handleFilterName = useCallback(
@@ -33,29 +21,8 @@ export default function ToolbarResumenTerapias({
     [onFilters]
   );
 
-  const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
-
-  const [especialistas, setEspecialistas] = useState([]);
-
-  useEffect(() => {
-    if (especialistasData.length) {
-      setEspecialistas(especialistasData);
-    }
-  }, [especialistasData]);
-
-  const [area, setArea] = useState(158);
-
-  const handleChange = useCallback(
-    (event) => {
-      setArea(event.target.value);
-      handleChangeId(event.target.value);
-      mutate(endpoints.reportes.pacientes);
-    },
-    [handleChangeId]
-  );
 
   return (
-
     <Stack
       spacing={2}
       alignItems={{ xs: 'flex-end', md: 'center' }}
@@ -83,17 +50,12 @@ export default function ToolbarResumenTerapias({
             ),
           }}
         />
-
       </Stack>
     </Stack>
-
-
   );
 }
 
 ToolbarResumenTerapias.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
-  handleChangeId: PropTypes.func,
-  rol: PropTypes.any,
 };

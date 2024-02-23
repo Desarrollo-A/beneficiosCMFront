@@ -182,7 +182,7 @@ export default function ModalAgregarOficinas({ open, onClose }) {
               'idSede': sed,
               'ubi': ubic,
               'estatus': est,
-              'creadoPor': user.idUsuario,
+              'creadoPor': user?.idUsuario,
             });
           confirm.onFalse();
         }}>
