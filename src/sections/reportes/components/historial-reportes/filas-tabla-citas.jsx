@@ -22,6 +22,7 @@ export default function FilasTabla({ row, selected, rol, rel }) {
     oficina,
     depto,
     sede,
+    modalidad,
     paciente,
     estatus,
     horario,
@@ -56,6 +57,8 @@ export default function FilasTabla({ row, selected, rol, rel }) {
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{depto}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{sede}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{modalidad}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{sexo}</TableCell>
 
