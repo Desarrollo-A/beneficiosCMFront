@@ -1,11 +1,9 @@
 import PropTypes from 'prop-types';
-import { Controller, useFormContext } from 'react-hook-form';
 import { es } from 'date-fns/locale';
+import { Controller, useFormContext } from 'react-hook-form';
 
-import TextField from '@mui/material/TextField';
-
-import { MobileDatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { MobileDatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 
 // ----------------------------------------------------------------------
 
@@ -58,5 +56,6 @@ export default function RHFDatePicker({ name, label, value, helperText, ...other
 RHFDatePicker.propTypes = {
   label: PropTypes.string,
   name: PropTypes.string,
-  value: PropTypes.any
+  value: PropTypes.any,
+  helperText: PropTypes.any
 };

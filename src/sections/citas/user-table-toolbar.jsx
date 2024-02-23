@@ -1,13 +1,9 @@
 import PropTypes from 'prop-types';
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback } from 'react';
 
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
-
-import { endpoints } from 'src/utils/axios';
-
-import { useGetGeneral } from 'src/api/general';
 
 import Iconify from 'src/components/iconify';
 
@@ -15,10 +11,7 @@ import Iconify from 'src/components/iconify';
 
 export default function ToolbarResumenTerapias({
   filters,
-  onFilters,
-  //
-  handleChangeId,
-  rol
+  onFilters
 }) {
 
   const handleFilterName = useCallback(
@@ -28,15 +21,6 @@ export default function ToolbarResumenTerapias({
     [onFilters]
   );
 
-  const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
-
-  const [especialistas, setEspecialistas] = useState([]);
-
-  useEffect(() => {
-    if (especialistasData.length) {
-      setEspecialistas(especialistasData);
-    }
-  }, [especialistasData]);
 
   return (
     <Stack
@@ -74,6 +58,4 @@ export default function ToolbarResumenTerapias({
 ToolbarResumenTerapias.propTypes = {
   filters: PropTypes.object,
   onFilters: PropTypes.func,
-  handleChangeId: PropTypes.func,
-  rol: PropTypes.any,
 };
