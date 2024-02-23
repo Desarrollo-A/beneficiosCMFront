@@ -72,6 +72,18 @@ export default function BarraTareasTabla({
 
   const [mod, setMod] = useState([filters.modalidad]);
 
+  const report = [
+    { value: 0, label: 'Reporte general' },
+    { value: 1, label: 'Reporte por asistir' },
+    { value: 2, label: 'Reporte canceladas' },
+    { value: 3, label: 'Reporte penalizaciones' },
+    { value: 4, label: 'Reporte finalizados' },
+    { value: 5, label: 'Reporte justificiones' },
+    
+  ];
+
+  const [currentStatus, setCurrentStatus] = useState(report[0].value);
+
   const [dt, setDt] = useState({
     esp: rol === 4 ? area : _eu,
     fhI: fechaI,
@@ -79,7 +91,8 @@ export default function BarraTareasTabla({
     roles: rol,
     idUsr: idUsuario,
     idEsp: selectEsp,
-    modalidad: mod
+    modalidad: mod,
+    reporte: currentStatus
   });
 
   useEffect(() => {
@@ -91,7 +104,8 @@ export default function BarraTareasTabla({
         roles: rol,
         idUsr: idUsuario,
         idEsp: selectEsp,
-        modalidad: mod
+        modalidad: mod,
+        reporte: currentStatus
       });
     }
   }, [
@@ -102,7 +116,8 @@ export default function BarraTareasTabla({
     _eu,
     idUsuario,
     selectEsp,
-    mod
+    mod,
+    currentStatus
   ]);
 
 
@@ -147,14 +162,6 @@ export default function BarraTareasTabla({
     },
     [onFilters]
   );
-
-  const report = [
-    { value: 'general', label: 'Reporte General' },
-    { value: 'faltas', label: 'Reporte de Faltas' },
-    { value: 'justificadas', label: 'Reporte de Justificiones' },
-  ];
-
-  const [currentStatus, setCurrentStatus] = useState(report[0].value);
 
   const handleChangeStatus = useCallback((event) => {
     setCurrentStatus(event.target.value);
@@ -218,30 +225,33 @@ export default function BarraTareasTabla({
   return (
     <>
 
-      {dataValue === 'general' ? (
+      <Stack
+        spacing={2}
+        sx={{
+          p: 2.5,
+          pr: { xs: 2.5, md: 2.5 },
+        }}
+      >
+        <Grid container spacing={SPACING} disableEqualOverflow>
 
-        <Stack
-          spacing={2}
-          sx={{
-            p: 2.5,
-            pr: { xs: 2.5, md: 2.5 },
-          }}
-        >
-          <Grid container spacing={SPACING} disableEqualOverflow>
-            <Grid xs={12} md={6}>
-              <WidgetPacientes title="Total de pacientes" total={_pa} icon={<BookingIllustration />} />
-            </Grid>
-
-            <Grid xs={12} md={6}>
-              <WidgetIngresos title="Total de ingresos" total={_in} icon={<CheckInIllustration />} />
-            </Grid>
+          <Grid xs={12} md={6}>
+            <WidgetPacientes
+              title="Total de pacientes"
+              total={dataValue === 0 || dataValue === 4 ? _pa : 0}
+              icon={<BookingIllustration />}
+            />
           </Grid>
 
-        </Stack>
+          <Grid xs={12} md={6}>
+            <WidgetIngresos
+              title="Total de ingresos"
+              total={_in}
+              icon={<CheckInIllustration />}
+            />
+          </Grid>
+        </Grid>
 
-      ) : (
-        null
-      )}
+      </Stack>
 
       <Stack
         spacing={2}
