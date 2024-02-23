@@ -217,7 +217,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
       return;
     }
 
-    setModalitie({ id: value?.label, idAtencionXSede: value?.value, oficina: value?.oficina, sede: value?.sede, especialidad: value?.especialidad, especialista: value?.especialista });
+    setModalitie({ id: value?.label, idAtencionXSede: value?.value, oficina: value?.oficina, sede: value?.sede, especialidad: value?.especialidad, especialista: value?.especialista, modalidad: value.modalidad });
   };
 
   const validarAntiguedad = (fechaIngreso, fechaHoy) => {
@@ -314,7 +314,8 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
                 oficina: mod.ubicacionOficina,
                 sede: mod.lugarAtiende,
                 especialidad: mod.idPuesto,
-                especialista: mod.especialista
+                especialista: mod.especialista,
+                modalidad: mod.tipoCita
               }))}
             />
           ) : (

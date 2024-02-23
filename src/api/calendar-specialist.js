@@ -266,6 +266,8 @@ export async function createAppointment(eventData, modalitie, datosUser) {
       especialidad,
       reagenda: 0,
       tipoPuesto: eventData.paciente.tipoPuesto,
+      idSede: eventData.paciente.idSede,
+      modalidad: modalitie.modalidad
     };
 
     const mailMessage = {
@@ -595,7 +597,9 @@ export async function reschedule(eventData, idDetalle, cancelType, datosUser) {
     reagenda: 1,
     tipoPuesto: eventData.tipoPuesto,
     idEventoGoogle: eventData.idEventoGoogle,
-    oldEventTipo: eventData.oldEventTipo
+    oldEventTipo: eventData.oldEventTipo,
+    idSede: eventData.idSede,
+    modalidad: eventData.modalidad
   };
 
   const cancelData = {

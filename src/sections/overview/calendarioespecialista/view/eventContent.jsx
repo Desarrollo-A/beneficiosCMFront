@@ -49,7 +49,7 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
   const [open2, setOpen2] = useState(false);
   const type = currentEvent?.type;
   const fechasFolio = currentEvent?.fechasFolio ? currentEvent?.fechasFolio.split(',') : [];
-  
+  const [btnLoading, setBtnLoading] = useState(false);
   const [dateTitle, setDateTitle] = useState(dayjs(selectedDate).format('dddd, DD MMMM YYYY'));
   const pastCheck = selectedDate < new Date(); // checar si la fecha del evento es inferior a la fecha actual
   const disableInputs = (currentEvent?.estatus !== 1 && currentEvent?.estatus !== 6) || pastCheck; // deshabilitar inputs
@@ -108,6 +108,7 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
 
   const onSubmit = handleSubmit(async (data) => {
     let save = '';
+    setBtnLoading(true);
 
     const eventData = {
       // se da el formato juntando la fecha elegida y la hora que se elige con los minutos
@@ -399,6 +400,7 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
             <LoadingButton
               type="submit"
               variant="contained"
+              loading={btnLoading}
               disabled={dateError || hourError}
               color="success"
             >
