@@ -951,6 +951,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       horarioCita,
       tipoCita,
       atencionPorSede,
+      datosUser.idSede,
       1,
       idUsuario,
       idUsuario,
