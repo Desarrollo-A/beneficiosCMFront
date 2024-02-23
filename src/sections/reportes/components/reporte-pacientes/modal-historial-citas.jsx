@@ -93,7 +93,7 @@ HistorialCitas.propTypes = {
 };
 
 function OrderItem({ item, lastTimeline }) {
-  const { titulo, estatus, estatusCita, horario, especialista, motivoCita } = item; // tipoCita
+  const { estatus, estatusCita, horario, especialista, motivoCita } = item; // tipoCita
 
   return (
     <TimelineItem>
