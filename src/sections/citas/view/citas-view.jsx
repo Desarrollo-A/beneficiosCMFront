@@ -61,7 +61,6 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 
 export default function CitasView() {
-
   const table = useTable();
 
   const settings = useSettingsContext();
@@ -78,17 +77,19 @@ export default function CitasView() {
 
   let puestos = 0;
 
-  if (rol === "4" || rol === 4) {
+  if (rol === '4' || rol === 4) {
     puestos = 158;
   } else {
     puestos = user?.idPuesto;
   }
 
   const [area, setArea] = useState(puestos);
+  const { citasData } = usePostGeneral(user?.idUsuario, endpoints.citas.getCitas, 'citasData');
 
-  const { citasData } = usePostGeneral(user?.idUsuario, endpoints.citas.getCitas, "citasData");
-
-  const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
+  const { especialistasData } = useGetGeneral(
+    endpoints.reportes.especialistas,
+    'especialistasData'
+  );
 
   const [tableData, setTableData] = useState([]);
 
@@ -96,7 +97,7 @@ export default function CitasView() {
 
   const [especialistas, setEspecialistas] = useState([]);
 
-  const _rp = especialistas.flatMap((es) => (es.nombre));
+  const _rp = especialistas.flatMap((es) => es.nombre);
 
   const dataFiltered = applyFilter({
     inputData: tableData,
@@ -166,24 +167,20 @@ export default function CitasView() {
     setArea(newAr);
 
     setEspecialistas(especialistasData);
-  }
+  };
 
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
           heading="Citas"
-          links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Citas', },
-          ]}
+          links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Citas' }]}
           sx={{
             mb: { xs: 3, md: 5 },
           }}
         />
 
         <Card>
-
           <UserTableToolbar
             filters={filters}
             onFilters={handleFilters}
@@ -207,7 +204,6 @@ export default function CitasView() {
           )}
 
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
-
             <Scrollbar>
               <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
                 <TableHeadCustom
@@ -256,7 +252,7 @@ export default function CitasView() {
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
             onRowsPerPageChange={table.onChangeRowsPerPage}
-          //
+            //
           />
         </Card>
       </Container>
