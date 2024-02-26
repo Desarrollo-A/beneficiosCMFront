@@ -1,16 +1,15 @@
+import PropTypes from 'prop-types';
+
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 
-import { useAuthContext } from 'src/auth/hooks';
 import { useGetCitasArea } from 'src/api/especialistas';
 
 import Chart, { useChart } from 'src/components/chart';
 
-export default function GraficaMetasArea({ ...other }) {
+export default function GraficaMetasArea({ area, puesto, ...other }) {
 
-  const { user } = useAuthContext();
-
-  const { citas } = useGetCitasArea({area : user.idAreaBeneficio})
+  const { citas } = useGetCitasArea({puesto, area})
 
   const data = {
     name : 'Citas',
@@ -70,3 +69,8 @@ export default function GraficaMetasArea({ ...other }) {
     : null
   )
 }
+
+GraficaMetasArea.propTypes = {
+  area: PropTypes.any,
+  puesto: PropTypes.any,
+};

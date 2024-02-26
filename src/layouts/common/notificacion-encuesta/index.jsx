@@ -29,7 +29,7 @@ export default function NotifiEncuesta() {
 
   const idUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
 
-  const { getData } = usePostGeneral(idUser.idUsuario, endpoints.encuestas.getEncNotificacion, "getData");
+  const { getData } = usePostGeneral(idUser?.idUsuario, endpoints.encuestas.getEncNotificacion, "getData");
 
   const drawer = useBoolean();
 

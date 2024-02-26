@@ -20,7 +20,24 @@ import { usePostGeneral } from 'src/api/general';
 // ----------------------------------------------------------------------
 export default function HistorialCitas({ open, onClose, idUsuario, area, idUs, rol }) {
 
-  const [data] = useState({ 
+  let espe = '';
+  switch (area) {
+    case 158:
+      espe = 'Quantum Balance';
+      break;
+    case 585:
+      espe = 'Psicología';
+      break;
+    case 537:
+      espe = 'Nutrición';
+      break; 
+    case 686:
+      espe = 'Guía Espiritual';
+      break;  
+    default:
+  }
+
+  const [data] = useState({
     idUser: idUsuario,
     espe: area,
     idEspe: idUs,
@@ -33,7 +50,12 @@ export default function HistorialCitas({ open, onClose, idUsuario, area, idUs, r
 
     <Card >
       <CardHeader title='Historial Citas' subheader={citasData[0]?.nombre} />
-
+      <Typography variant="caption" sx={{
+        color: 'text.disabled', p: 3,
+        pr: { xs: 2.5, md: 2.5 },
+      }}>
+        {espe}
+      </Typography>
       <Timeline
         sx={{
           m: 0,
@@ -71,7 +93,7 @@ HistorialCitas.propTypes = {
 };
 
 function OrderItem({ item, lastTimeline }) {
-  const { titulo, estatus, estatusCita, horario, especialista, motivoCita } = item; // tipoCita
+  const { estatus, estatusCita, horario, especialista, motivoCita } = item; // tipoCita
 
   return (
     <TimelineItem>
@@ -95,14 +117,14 @@ function OrderItem({ item, lastTimeline }) {
       </TimelineSeparator>
 
       <TimelineContent>
-        <Typography variant="subtitle2">{titulo}</Typography>
+        <Typography variant="subtitle2">{horario}</Typography>
 
         <Typography variant="caption" sx={{ color: 'text.disabled' }}>
-          {horario}{" | "}{estatus}
+          {estatus}
         </Typography>
         <Stack spacing={1} >
           <Typography variant="caption" sx={{ color: 'text.disabled' }}>
-            {especialista}
+            Especialista: {especialista}
           </Typography>
         </Stack>
         <Stack spacing={1} >

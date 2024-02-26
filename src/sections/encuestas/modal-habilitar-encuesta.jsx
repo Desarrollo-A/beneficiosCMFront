@@ -28,6 +28,8 @@ export default function EncuestaHabilitar({ open, onClose, idEncuesta, puestos }
 
   const [pregunta, setPregunta] = useState('');
 
+  const [btnLoad, setBtnLoad] = useState(false);
+
   const handleChange = (event) => {
     setPregunta(event.target.value);
   }
@@ -58,17 +60,25 @@ export default function EncuestaHabilitar({ open, onClose, idEncuesta, puestos }
           mutate(endpoints.encuestas.getEncNotificacion);
           mutate(endpoints.encuestas.getEstatusUno);
 
+          setBtnLoad(false);
+
         } else {
           enqueueSnackbar(update.msj, { variant: 'error' });
+
+          setBtnLoad(false);
         }
 
       } catch (error) {
         console.error("Error en handleEstatus:", error);
         enqueueSnackbar(`¡No se pudieron actualizar los datos de usuario!`, { variant: 'danger' });
+
+        setBtnLoad(false);
       }
 
     } else {
       enqueueSnackbar(`¡No se selecciono el número de días!`, { variant: 'danger' });
+
+      setBtnLoad(false);
     }
 
   };
@@ -106,14 +116,15 @@ export default function EncuestaHabilitar({ open, onClose, idEncuesta, puestos }
       </Stack>
 
       <DialogActions>
-        <Button variant="contained" color="success" onClick={() => {
+        <Button variant="contained" color="error" onClick={onClose}>
+          Cerrar
+        </Button>
+        <Button variant="contained" color="success" loading={btnLoad} onClick={() => {
+          setBtnLoad(true);
           handleEstatus(pregunta);
           confirm.onFalse();
         }}>
           Habilitar
-        </Button>
-        <Button variant="outlined" onClick={onClose}>
-          Cerrar
         </Button>
       </DialogActions>
 

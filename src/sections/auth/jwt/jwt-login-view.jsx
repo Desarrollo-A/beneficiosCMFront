@@ -76,7 +76,7 @@ export default function JwtLoginView() {
   const isMobile = useMediaQuery('(max-width: 960px)');
 
   const renderHead = (
-    <Stack spacing={0} sx={{ mb: 0 }}>
+    <Stack spacing={1} sx={{ mb: 0 }}>
       <div>
         <Box
           component="img"

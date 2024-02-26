@@ -24,6 +24,7 @@ import {
 
 import { fDate } from 'src/utils/format-time';
 
+import { useAuthContext } from 'src/auth/hooks';
 import {
   reRender,
   reschedule,
@@ -34,6 +35,7 @@ import {
 import Iconify from 'src/components/iconify';
 
 export default function CancelEventDialog({ type, currentEvent, pastCheck, reasons, onClose, close, selectedDate }) {
+  const { user } = useAuthContext(); // variable del la sesion del usuario
   dayjs.locale('es'); // valor para cambiar el idioma del dayjs
   const [assist, setAssist] = useState('');
   const [cancelType, setCancelType] = useState('');
@@ -71,7 +73,7 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
 
   const endEvent = async () => {
     try {
-      const resp = await endAppointment(currentEvent, reason);
+      const resp = await endAppointment(currentEvent, reason, user?.idUsuario);
 
       if (resp.result) {
         enqueueSnackbar(resp.msg);
@@ -102,6 +104,7 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
       fundacion: currentEvent?.externo,
       oldEventStart: currentEvent?.start,
       oldEventEnd: currentEvent?.end,
+      oldEventTipo: currentEvent?.tipoCita,
       beneficio: currentEvent?.beneficio,
       especialista: currentEvent?.especialista,
       sede: currentEvent?.sede,
@@ -109,15 +112,17 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
       correo: currentEvent?.correo,
       fechaCreacion: currentEvent?.fechaCreacion,
       idEventoGoogle: currentEvent?.idEventoGoogle,
-      tipoPuesto: currentEvent?.tipoPuesto
+      tipoPuesto: currentEvent?.tipoPuesto,
+      idSede: currentEvent?.idSede,
+      modalidad: currentEvent?.modalidad
     };
     switch (cancelType) {
       case 8:
-        resp = await reschedule(eventData, eventData.idDetalle, cancelType);
+        resp = await reschedule(eventData, eventData.idDetalle, cancelType, user);
         break;
 
       default:
-        resp = await cancelAppointment(currentEvent, currentEvent?.id, cancelType);
+        resp = await cancelAppointment(currentEvent, currentEvent?.id, cancelType, user?.idUsuario);
         break;
     }
 

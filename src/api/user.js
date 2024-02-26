@@ -1,12 +1,8 @@
 import useSWR from 'swr';
 import { useMemo } from 'react';
-import { Base64 } from 'js-base64';
 import { useLocation } from 'react-router-dom';
 
 import { endpoints, fetcherGet, fetcherPost } from 'src/utils/axios';
-
-// ----------------------------------------------------------------------
-const datosUser = sessionStorage.getItem('accessToken') ? JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2])): '';
 
 export function useGetUsers() {
   const URL = endpoints.user.list;
@@ -23,11 +19,10 @@ export function useGetUsers() {
   return memoizedValue;
 }
 
-export function useGetNameUser() {
-  // funcion para traer los usuarios disponibles en select de cita QB.
+export function useGetNameUser(idUsuario) { // funcion para traer los usuarios disponibles en select de cita.
   const URL = endpoints.user.names;
 
-  const { data, mutate } = useSWR(URL, (url) => fetcherPost(url, datosUser.idUsuario));
+  const { data, mutate } = useSWR(URL, (url) => fetcherPost(url, idUsuario));
 
   const memoizedValue = useMemo(
     () => ({

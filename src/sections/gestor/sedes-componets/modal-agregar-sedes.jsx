@@ -152,7 +152,7 @@ export default function ModalAgregarSedes({ open, onClose }) {
               'sede': sed,
               'abreviacion': abre,
               'estatus': est,
-              'creadoPor': user.idUsuario,
+              'creadoPor': user?.idUsuario,
             });
           confirm.onFalse();
         }}>

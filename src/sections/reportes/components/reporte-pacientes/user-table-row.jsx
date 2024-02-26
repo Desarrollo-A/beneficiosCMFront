@@ -19,6 +19,7 @@ import HistorialCitas from './modal-historial-citas'
 // ----------------------------------------------------------------------
 
 export default function RowResumenTerapias({ row, area, idUs, rol }) {
+
   const {
     nombre,
     correo,

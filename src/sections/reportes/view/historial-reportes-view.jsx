@@ -40,9 +40,9 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-import FilasTabla from '../filas-tabla-citas';
-import FiltrosTabla from '../filtros-tabla-citas';
-import BarraTareasTabla from '../barratareas-tabla-citas';
+import FilasTabla from '../components/historial-reportes/filas-tabla-citas';
+import FiltrosTabla from '../components/historial-reportes/filtros-tabla-citas';
+import BarraTareasTabla from '../components/historial-reportes/barratareas-tabla-citas';
 
 // ----------------------------------------------------------------------
 
@@ -58,6 +58,7 @@ const defaultFilters = {
   startDate: diaMesUno,
   endDate: diaActual,
   especialista: [],
+  modalidad: [],
 };
 
 // ----------------------------------------------------------------------
@@ -78,6 +79,7 @@ function handleDownloadExcel(datosTabla, rol) {
         { label: "Oficina", value: "oficina" },
         { label: "Departamento", value: "area" },
         { label: "Sede", value: "sede" },
+        { label: "Modalidad", value: "modalidad" },
         { label: "Sexo", value: "sexo" },
         { label: "Motivo consulta", value: "motivoCita" },
         { label: "Pago generado", value: "pagoGenerado" },
@@ -130,16 +132,12 @@ function handleDownloadPDF(datosTabla, header, rol) {
 
   let data = [];
 
-  if (rol === "1" || rol === 1) {
-    data = datosTabla.map(item => ([item.idColab, item.paciente,
-    item.oficina, item.area, item.sede, item.sexo, item.horario, item.motivoCita, item.pagoGenerado, item.metodoPago, item.estatus]))
-  }
-  else if (rol === "2" || rol === 2) {
+  if (rol === "2" || rol === 2) {
     data = datosTabla.map(item => ([item.idColab, item.especialista,
     item.oficina, item.area, item.sede, item.sexo, item.estatus, item.horario]))
   } else {
     data = datosTabla.map(item => ([item.idColab, item.especialista, item.paciente,
-    item.oficina, item.area, item.sede, item.sexo, item.horario, item.motivoCita, item.pagoGenerado, item.metodoPago, item.estatus,]))
+    item.oficina, item.area, item.sede, item.modalidad, item.sexo, item.horario, item.motivoCita, item.pagoGenerado, item.metodoPago, item.estatus,]))
   }
 
   autoTable(doc, {
@@ -163,10 +161,10 @@ export default function HistorialReportesView() {
 
   let header = [];
 
-  const headerBase = ["ID Colaborador", "Especialista", "Paciente", "Oficina", "Departamento", "Sede", "Sexo", "Motivo consulta", "Pago Generado", "Método de pago", "Estatus",
+  const headerBase = ["ID Colaborador", "Especialista", "Paciente", "Oficina", "Departamento", "Sede", "Modalidad", "Sexo", "Motivo consulta", "Pago Generado", "Método de pago", "Estatus",
     "Horario cita"];
 
-  const [dataValue, setReportData] = useState('general');
+  const [dataValue, setReportData] = useState(0);
 
   const { espeUserData } = usePostGeneral(user?.idUsuario, endpoints.reportes.getEspeUser, "espeUserData");
 
@@ -180,6 +178,8 @@ export default function HistorialReportesView() {
 
   const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
 
+  const { modalidadesData } = useGetGeneral(endpoints.gestor.getModalidades, "modalidadesData");
+
   const [datosTabla, setDatosTabla] = useState([]);
 
   const [especialistas, setEspecialistas] = useState([]);
@@ -187,6 +187,8 @@ export default function HistorialReportesView() {
   const _rp = especialistas.flatMap((es) => (es.nombre));
 
   const _eu = esp.flatMap((es) => (es.puesto));
+
+  const _mod = modalidadesData.flatMap((es) => (es.modalidad));
 
   defaultFilters.area = user?.idRol !== 4 ? _eu : [];
 
@@ -214,6 +216,7 @@ export default function HistorialReportesView() {
     { id: '', label: 'Oficina' },
     { id: '', label: 'Departamento' },
     { id: '', label: 'Sede' },
+    { id: '', label: 'Modalidad' },
     { id: '', label: 'Sexo' },
     { id: '', label: 'Motivo Consulta', width: 1 },
     { id: '', label: 'Pago generado' },
@@ -335,11 +338,11 @@ export default function HistorialReportesView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Historial Reportes"
+          heading="Reporte de ingresos"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Reportes'/* , href: paths.dashboard.user.root */ },
-            { name: 'Historial' },
+            { name: 'Reportes' },
+            { name: 'Ingresos' },
           ]}
           sx={{
             mb: { xs: 3, md: 5 },
@@ -353,6 +356,7 @@ export default function HistorialReportesView() {
             onFilters={handleFilters}
             //
             roleOptions={_rp}
+            modOptions={_mod}
             handleChangeReport={handleChangeReport}
             table={table}
             tot={dataFiltered.length}
@@ -489,7 +493,7 @@ export default function HistorialReportesView() {
 // ----------------------------------------------------------------------
 
 function applyFilter({ inputData, comparator, filters, dateError }) {
-  const { name, area, startDate, endDate, especialista } = filters;
+  const { name, area, startDate, endDate, especialista, modalidad } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
 
@@ -535,6 +539,10 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
 
   if (especialista.length) {
     inputData = inputData.filter((i) => especialista.includes(i.especialista));
+  }
+
+  if (modalidad.length) {
+    inputData = inputData.filter((i) => modalidad.includes(i.modalidad));
   }
 
   return inputData;

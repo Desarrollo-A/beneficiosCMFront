@@ -90,10 +90,9 @@ export default function PreRegisterUser({ currentUser }) {
   });
 
   const styles = {
-    backgroundSize: 'cover',
-    backgroundRepeat: 'no-repeat',
-    backgroundPosition: 'center center',
-    backgroundImage: 'url(/assets/background/bgRegister.jpg)',
+    background: 'linear-gradient(135deg, #f5f5f8 22px,#0000000a 22px,#0000000a 24px,transparent 24px,transparent 67px,#0000000a 67px,#0000000a 69px,transparent 69px),linear-gradient(225deg, #f5f5f8 22px,#0000000a 22px,#0000000a 24px,transparent 24px,transparent 67px,#0000000a 67px,#0000000a 69px,transparent 69px) 0 64px',
+    backgroundColor: 'rgb(245,245,248)',
+    backgroundSize: '64px 128px',
     height: '100%',
     display: 'flex',
     justifyContent: 'center',
@@ -104,7 +103,7 @@ export default function PreRegisterUser({ currentUser }) {
     <Grid container sx={styles}>
       <Grid xs={12} sm={12} md={3}>
         <FormProvider methods={methods} onSubmit={onSubmit}>
-          <div style={{ height: '50%', backgroundColor: 'white', borderRadius: '25px' }}>
+          <div style={{ height: '70%', backgroundColor: 'white', borderRadius: '25px' }}>
             <DialogContent>
               <Box
                 rowGap={3}

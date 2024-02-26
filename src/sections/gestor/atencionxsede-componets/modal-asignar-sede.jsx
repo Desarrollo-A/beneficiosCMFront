@@ -94,8 +94,8 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
 
         const insert = await insertData(combinedArray);
 
-        if (insert.estatus === true) {
-          enqueueSnackbar(insert.msj, { variant: 'success' });
+        if (insert.result === true) {
+          enqueueSnackbar(insert.msg, { variant: 'success' });
           resetForm();
 
           mutate(endpoints.gestor.getAtencionXsede);
@@ -104,7 +104,7 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
           setBtnLoad(false);
 
         } else {
-          enqueueSnackbar(insert.msj, { variant: 'error' });
+          enqueueSnackbar(insert.msg, { variant: 'error' });
           setBtnLoad(false);
         }
 
@@ -165,8 +165,13 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
               onClose={confirm.onFalse}
               title="¿Deseas guardar los registros?"
               action={
-                <>
-                  <LoadingButton variant="contained" loading={btnLoad} onClick={() => {
+                <>  
+                  <Button variant="contained" color="error" onClick={() => {
+                    confirm.onFalse();
+                  }}>
+                    No
+                  </Button>
+                  <LoadingButton variant="contained" color="success" loading={btnLoad} onClick={() => {
                     setBtnLoad(true);
                     handleCreateAndSend(1);
                     confirm.onFalse();
@@ -174,11 +179,6 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
                   }}>
                     Si
                   </LoadingButton>
-                  <Button variant="contained" onClick={() => {
-                    confirm.onFalse();
-                  }}>
-                    No
-                  </Button>
                 </>
               }
             />
