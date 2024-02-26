@@ -3,6 +3,7 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import Stack from '@mui/material/Stack';
+import { LoadingButton } from '@mui/lab';
 import Button from '@mui/material/Button';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
@@ -94,7 +95,6 @@ export default function ModalEspecialista({ open, onClose, id, estatusVal, puest
   return (
 
     <>
-
       { val === true ? (
 
         <>
@@ -129,13 +129,13 @@ export default function ModalEspecialista({ open, onClose, id, estatusVal, puest
             <Button variant="contained" color="error" onClick={onClose}>
               Cerrar
             </Button>
-            <Button variant="contained" color="success" loading={btnLoad} onClick={() => {
+            <LoadingButton variant="contained" color="success" loading={btnLoad} onClick={() => {
               setBtnLoad(true);
               handleEstatus(estatus);
               confirm.onFalse();
             }}>
               Guardar
-            </Button>
+            </LoadingButton>
           </DialogActions>
         </>
       ) : (
@@ -148,9 +148,8 @@ export default function ModalEspecialista({ open, onClose, id, estatusVal, puest
           </DialogActions>
         </>
       )}
-
     </>
-
+    
   );
 }
 

@@ -16,6 +16,7 @@ import { endpoints } from 'src/utils/axios';
 import { bgGradient } from 'src/theme/css';
 import { useModalidad } from 'src/api/dash';
 import { useAuthContext } from 'src/auth/hooks';
+import { usePostSelect } from 'src/api/reportes';
 import { useGetMeta } from 'src/api/especialistas';
 import { SeoIllustration } from 'src/assets/illustrations';
 import { useGetGeneral, usePostGeneral } from 'src/api/general';
@@ -33,32 +34,25 @@ import EncuestaPorcentaje from '../porcentaje-encuesta';
 
 export default function DashView() {
   const { user } = useAuthContext();
-
   const settings = useSettingsContext();
-
-  let idDt = '';
-
+  const [_es, set_es] = useState('0');
   const rol = user?.idRol;
   let puestos = 0;
-
-  if (rol === '4' || rol === 4) {
-    idDt = 158;
+  if (rol === 4) {
     puestos = 158;
-  } else if (rol === '2' || rol === 2 || rol === '3' || rol === 3) {
-    idDt = user?.idUsuario;
-    puestos = user?.idPuesto;
-  } else if (rol === '1' || rol === 1) {
-    idDt = user?.idPuesto;
+  } else if (rol === 2 || rol === 3) {
     puestos = user?.idPuesto;
   }
 
-  const [espe, setEspe] = useState({ idData: idDt, idRol: user?.idRol });
-
   const [areas, setAreas] = useState(puestos);
-
   const [ps, setPs] = useState(158);
+  const [valEsp, setValEsp] = useState({idData: ps, idRol: user?.idRol, slEs: _es, idUser: user?.idUsuario});
 
-  const { preguntaData } = usePostGeneral(areas, endpoints.dashboard.getPregunta, 'preguntaData');
+  useEffect(() => {
+    setValEsp({idData: ps, idRol: user?.idRol, slEs: _es, idUser: user?.idUsuario});
+  }, [ps, user, _es]);
+
+  const { preguntaData } = usePostGeneral(areas, endpoints.dashboard.getPregunta, "preguntaData");
 
   const { encValidData } = usePostGeneral(
     areas,
@@ -71,36 +65,21 @@ export default function DashView() {
     'especialistasData'
   );
 
-  const { pacientesData } = usePostGeneral(espe, endpoints.dashboard.getPacientes, 'pacientesData');
+  const { pacientesData } = usePostGeneral(valEsp, endpoints.dashboard.getPacientes, "pacientesData");
 
-  const { asistenciaData } = usePostGeneral(
-    espe,
-    endpoints.dashboard.getCtAsistidas,
-    'asistenciaData'
-  );
+  const { asistenciaData } = usePostGeneral(valEsp, endpoints.dashboard.getCtAsistidas, "asistenciaData");
 
-  const { canceladaData } = usePostGeneral(
-    espe,
-    endpoints.dashboard.getCtCanceladas,
-    'canceladaData'
-  );
+  const { canceladaData } = usePostGeneral(valEsp, endpoints.dashboard.getCtCanceladas, "canceladaData");
 
-  const { penalizadaData } = usePostGeneral(
-    espe,
-    endpoints.dashboard.getCtPenalizadas,
-    'penalizadaData'
-  );
+  const { penalizadaData } = usePostGeneral(valEsp, endpoints.dashboard.getCtPenalizadas, "penalizadaData");
 
-  const { virtualData } = useModalidad(espe, endpoints.dashboard.getCtVirtuales, 'virtualData');
+  const { virtualData } = useModalidad(valEsp, endpoints.dashboard.getCtVirtuales, "virtualData");
 
-  const { presencialData } = useModalidad(
-    espe,
-    endpoints.dashboard.getCtPresenciales,
-    'presencialData'
-  );
+  const { presencialData } = useModalidad(valEsp, endpoints.dashboard.getCtPresenciales, "presencialData");
 
-  const { meta: metaData } = useGetMeta({ especialista: user?.idUsuario });
+  const { espData } = usePostSelect(ps, endpoints.gestor.getEsp, "espData");
 
+  const { meta: metaData } = useGetMeta({ especialista: rol === 4 && _es !== '0' ? _es : user?.idUsuario });
   const [pgDt, setPgDt] = useState('');
 
   const [dflt, setDflt] = useState('');
@@ -229,7 +208,13 @@ export default function DashView() {
 
     setAreas(event.target.value);
 
-    setEspe({ idData: event.target.value, idRol: user?.idRol });
+
+    set_es('0')
+
+  };
+
+  const handleChangeEsp = (event) => {
+    set_es(event.target.value);
   };
 
   const [value, setValue] = useState(new Date());
@@ -284,170 +269,217 @@ export default function DashView() {
                 width: '100%',
               }}
             >
-              <InputLabel id="demo-simple-select-label">Área</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={!areas ? '' : areas}
-                label="Área"
-                onChange={(e) => handleChangeArea(e)}
-              >
-                {especialistasData.map((i, index) => (
-                  <MenuItem key={index} value={i.idPuesto}>
-                    {i.nombre}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+              <Clock value={value} />
+            </Card>
           </Grid>
-        ) : (
-          ''
-        )}
 
-        {pacientesData.map((i, index) => (
-          <Grid xs={12} sm={6} md={2} key={index}>
-            <WidgetConteo
-              title={rol === '2' || rol === 2 ? 'Total citas' : 'Total pacientes'}
-              total={i.pacientes}
-              color="info"
-              icon={
-                <img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/usuario.png`} />
-              }
-            />
-          </Grid>
-        ))}
 
-        {asistenciaData.map((i, index) => (
-          <Grid xs={12} sm={6} md={2} key={index}>
-            <WidgetConteo
-              title="Total citas asistidas"
-              total={i.asistencia}
-              sx={{ backgroundColor: '#DDFAD7' }}
-              icon={
-                <img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/check.png`} />
-              }
-            />
-          </Grid>
-        ))}
 
-        {canceladaData.map((i, index) => (
-          <Grid xs={12} sm={6} md={2} key={index}>
-            <WidgetConteo
-              title="Total citas canceladas"
-              total={i.cancelada}
-              color="warning"
-              icon={
-                <img
-                  alt="icon"
-                  src={`${import.meta.env.BASE_URL}assets/icons/glass/cancelar.png`}
-                />
-              }
-            />
-          </Grid>
-        ))}
-
-        {penalizadaData.map((i, index) => (
-          <Grid xs={12} sm={6} md={2} key={index}>
-            <WidgetConteo
-              title="Total citas penalizadas"
-              total={i.penalizada}
-              color="error"
-              icon={
-                <img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/dolar.png`} />
-              }
-            />
-          </Grid>
-        ))}
-
-        {virtualData.map((i, index) => (
-          <Grid xs={12} sm={6} md={2} key={index}>
-            <WidgetConteo
-              title="Total citas virtuales"
-              total={i.virtual}
-              sx={{ backgroundColor: '#E5D7FA' }}
-              icon={
-                <img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/virtual.png`} />
-              }
-            />
-          </Grid>
-        ))}
-
-        {presencialData.map((i, index) => (
-          <Grid xs={12} sm={6} md={2} key={index}>
-            <WidgetConteo
-              title="Total citas presenciales"
-              total={i.presencial}
-              sx={{ backgroundColor: '#D7E4FA' }}
-              icon={
-                <img
-                  alt="icon"
-                  src={`${import.meta.env.BASE_URL}assets/icons/glass/ubicacion.png`}
-                />
-              }
-            />
-          </Grid>
-        ))}
-
-        {rol === '1' || rol === 1 || rol === '3' || rol === 3 || rol === '4' || rol === 4 ? (
-          <>
-            {(user?.idRol === 1 && user?.idAreaBeneficio) || user?.idRol === 4 ? (
-              <Grid xs={12}>
-                <GraficaMetasArea
-                  puesto={ps}
-                  area={user?.idAreaBeneficio ? user?.idAreaBeneficio : ''}
-                />
+          {rol === "4" || rol === 4 ? (
+            <>
+              <Grid md={6}>
+                <FormControl sx={{
+                  width: "100%",
+                }}>
+                  <InputLabel id="demo-simple-select-label">Área</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={!areas ? '' : areas}
+                    label="Área"
+                    onChange={(e) => handleChangeArea(e)}
+                  >
+                    {especialistasData.map((i, index) => (
+                      <MenuItem key={index} value={i.idPuesto}>
+                        {i.nombre}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Grid>
-            ) : null}
-            {user?.idRol === 3 && metaData ? (
-              <Grid xs={12} sm={6} md={4}>
-                <GraficaMetas data={metaData} />
-              </Grid>
-            ) : null}
 
-            {sn === 0 ? (
-              <Grid xs={12} sm={6} md={rol === 1 || rol === 4 ? 12 : 8}>
-                <EncuestaBarra
-                  idPregunta={pg}
-                  chart={{
-                    categories: respArray,
-                    series: [
-                      {
-                        type: 'data',
-                        data: [
-                          {
-                            name: 'Total',
-                            data: resultArray,
-                          },
-                        ],
-                      },
-                    ],
-                  }}
-                  user={user}
-                  handleChangePg={handleChangePg}
-                  idEncuesta={idEncuesta}
-                  idArea={areas}
-                  handleChangeIdPg={handleChangeIdPg}
-                />
+              <Grid md={6}>
+                <FormControl sx={{
+                  width: "100%",
+                }}>
+                  <InputLabel id="demo-simple-select-label">Especialista</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={_es}
+                    label="Especialista"
+                    onChange={(e) => handleChangeEsp(e)}
+                  >
+                    <MenuItem value='0'>
+                        Todos
+                    </MenuItem>
+                    {espData.map((i, index) => (
+                      <MenuItem key={index} value={i.idUsuario}>
+                        {i.nombre}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Grid>
-            ) : (
-              <Grid xs={12} sm={6} md={rol === 1 || rol === 4 ? 12 : 8}>
-                <EncuestaPorcentaje
-                  idPregunta={pg}
-                  data={_ecommerceSalesOverview}
-                  user={user}
-                  handleChangePg={handleChangePg}
-                  selectPg={selectPg}
-                  idEncuesta={idEncuesta}
-                  idArea={areas}
-                  handleChangeIdPg={handleChangeIdPg}
-                />
-              </Grid>
-            )}
-          </>
-        ) : (
-          ''
-        )}
-      </Grid>
-    </Container>
+            </>
+          ) : (
+
+            <>
+            </>
+
+          )}
+
+          {pacientesData.map((i, index) => (
+            <Grid xs={12} sm={6} md={2} key={index}>
+              <WidgetConteo
+                title={rol === '2' || rol === 2 ? 'Total citas' : 'Total pacientes'}
+                total={i.pacientes}
+                color="info"
+                icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/usuario.png`} />}
+              />
+            </Grid>
+          ))}
+
+          {asistenciaData.map((i, index) => (
+            <Grid xs={12} sm={6} md={2} key={index}>
+              <WidgetConteo
+                title="Total citas asistidas"
+                total={i.asistencia}
+                sx={{ backgroundColor: "#DDFAD7" }}
+                icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/check.png`} />}
+              />
+            </Grid>
+          ))}
+
+          {canceladaData.map((i, index) => (
+            <Grid xs={12} sm={6} md={2} key={index}>
+              <WidgetConteo
+                title="Total citas canceladas"
+                total={i.cancelada}
+                color="warning"
+                icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/cancelar.png`} />}
+              />
+            </Grid>
+          ))}
+
+          {penalizadaData.map((i, index) => (
+            <Grid xs={12} sm={6} md={2} key={index}>
+              <WidgetConteo
+                title="Total citas penalizadas"
+                total={i.penalizada}
+                color="error"
+                icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/dolar.png`} />}
+              />
+            </Grid>
+          ))}
+
+          {virtualData.map((i, index) => (
+            <Grid xs={12} sm={6} md={2} key={index}>
+              <WidgetConteo
+                title="Total citas virtuales"
+                total={i.virtual}
+                sx={{ backgroundColor: "#E5D7FA" }}
+                icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/virtual.png`} />}
+              />
+            </Grid>
+          ))}
+
+          {presencialData.map((i, index) => (
+            <Grid xs={12} sm={6} md={2} key={index}>
+              <WidgetConteo
+                title="Total citas presenciales"
+                total={i.presencial}
+                sx={{ backgroundColor: "#D7E4FA" }}
+                icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/ubicacion.png`} />}
+              />
+            </Grid>
+          ))}
+
+          {rol === 1 || rol === 3 || rol === 4 ? (
+            <>
+              {user?.idRol === 1 && user?.idAreaBeneficio || (user?.idRol === 4 && _es === '0') ?
+                <Grid xs={12}>
+                  <GraficaMetasArea
+                    puesto={ps}
+                    area={user?.idAreaBeneficio ? user?.idAreaBeneficio : ''} />
+                </Grid>
+                : null
+              }
+              {(user?.idRol === 3 && metaData) || (user?.idRol === 4 && _es !== '0' && metaData)?
+                <Grid xs={12} sm={6} md={4}>
+                  <GraficaMetas data={metaData} />
+                </Grid>
+                : null}
+
+              {sn === 0 ? (
+                <Grid xs={12} sm={6} md={(rol === 4 && _es !== '0' ? 8 : 12) || (rol === 4 && _es === '0' ? 12 : 8)}>
+                  <EncuestaBarra
+                    idPregunta={pg}
+                    chart={{
+                      categories: respArray,
+                      series: [
+                        {
+                          type: 'data',
+                          data: [
+                            {
+                              name: 'Total',
+                              data: resultArray,
+                            }
+                          ],
+                        },
+                      ],
+                    }}
+                    user={user}
+                    handleChangePg={handleChangePg}
+                    idEncuesta={idEncuesta}
+                    idArea={areas}
+                    handleChangeIdPg={handleChangeIdPg}
+                  />
+                </Grid>
+
+              ) : (
+
+                <Grid xs={12} sm={6} md={(rol === 4 && _es !== '0' ? 8 : 12) || (user?.idRol === 4 && _es !== '0' ? 12 : 8)}>
+                  <EncuestaPorcentaje
+                    idPregunta={pg}
+                    data={_ecommerceSalesOverview}
+                    user={user}
+                    handleChangePg={handleChangePg}
+                    selectPg={selectPg}
+                    idEncuesta={idEncuesta}
+                    idArea={areas}
+                    handleChangeIdPg={handleChangeIdPg}
+                  />
+                </Grid>
+
+              )}
+
+            </>
+
+          ) : (
+
+            <>
+            </>
+
+          )}
+
+        </Grid>
+
+
+
+      </Container>
+
+      {/* <Grid xs={12} md={6} lg={12}>
+          <GraficaBarras
+            title="Registro de Citas"
+            chart={{
+              categories: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+              series: propGrafic
+            }}
+            year={year}
+            handleChangeYear={handleChangeYear}
+          />
+        </Grid>  */}
+    </
   );
 }
