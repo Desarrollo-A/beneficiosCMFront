@@ -21,7 +21,6 @@ export default function ToolbarResumenTerapias({
     [onFilters]
   );
 
-
   return (
     <Stack
       spacing={2}
