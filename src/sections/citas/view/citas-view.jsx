@@ -86,20 +86,6 @@ export default function CitasView() {
 
   const [area, setArea] = useState(puestos);
 
-  const [dt, setDt] = useState({
-    idRol: user?.idRol,
-    esp: area,
-    idUs: user?.idUsuario,
-  });
-
-  useEffect(() => {
-    setDt({
-      idRol: user?.idRol,
-      esp: area,
-      idUs: user?.idUsuario,
-    });
-  }, [area, user ]);
-
   const { citasData } = usePostGeneral(user?.idUsuario, endpoints.citas.getCitas, "citasData");
 
   const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
