@@ -19,6 +19,7 @@ import { useUpdate } from 'src/api/reportes';
 import { usePostGeneral } from 'src/api/general';
 
 import { useSnackbar } from 'src/components/snackbar';
+import { LoadingButton } from '@mui/lab';
 // ----------------------------------------------------------------------
 
 export default function ModalEspecialista({ open, onClose, id, estatusVal, puesto }) {
@@ -94,7 +95,6 @@ export default function ModalEspecialista({ open, onClose, id, estatusVal, puest
   return (
 
     <>
-
       { val === true ? (
 
         <>
@@ -129,13 +129,13 @@ export default function ModalEspecialista({ open, onClose, id, estatusVal, puest
             <Button variant="contained" color="error" onClick={onClose}>
               Cerrar
             </Button>
-            <Button variant="contained" color="success" loading={btnLoad} onClick={() => {
+            <LoadingButton variant="contained" color="success" loading={btnLoad} onClick={() => {
               setBtnLoad(true);
               handleEstatus(estatus);
               confirm.onFalse();
             }}>
               Guardar
-            </Button>
+            </LoadingButton>
           </DialogActions>
         </>
       ) : (
@@ -148,9 +148,8 @@ export default function ModalEspecialista({ open, onClose, id, estatusVal, puest
           </DialogActions>
         </>
       )}
-
     </>
-
+    
   );
 }
 
