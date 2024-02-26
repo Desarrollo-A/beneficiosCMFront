@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useNavigate, useLocation } from 'react-router';
 
+import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
@@ -109,7 +110,31 @@ export default function JwtRegisterView() {
   };
 
   const renderHead = (
-    <Stack spacing={2} sx={{ mb: 5, position: 'relative' }}>
+    <Stack spacing={1} sx={{ mb: 0 }}>´
+      <Box
+        component="img"
+        alt="auth"
+        src={`${import.meta.env.BASE_URL}assets/img/logoBeneficios.svg`}
+        sx={{
+          maxWidth: { xs: 480, lg: 560, xl: 720 },
+          position: 'absolute',
+          width: { xs: '25%', md: '16%' },
+          left: '64%',
+          top: { xs: '10%', md: '-9%' }
+        }}
+      />
+      <Box
+          component="img"
+          alt="auth"
+          src={`${import.meta.env.BASE_URL}assets/img/beneficiosBrand.svg`}
+          sx={{
+            maxWidth: {
+              xs: 480,
+              lg: 560,
+              xl: 720,
+            }
+          }}
+        />
       <Typography variant="h4">Registro de usuarios</Typography>
 
       <Stack direction="row" spacing={0.5}>
@@ -118,6 +143,7 @@ export default function JwtRegisterView() {
         <Link href={import.meta.env.BASE_URL} component={RouterLink} variant="subtitle2">
           Iniciar sesión
         </Link>
+        <Box mb={7} />
       </Stack>
     </Stack>
   );

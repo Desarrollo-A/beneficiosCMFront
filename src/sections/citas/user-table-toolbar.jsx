@@ -11,8 +11,7 @@ import Iconify from 'src/components/iconify';
 
 export default function ToolbarResumenTerapias({
   filters,
-  onFilters,
-  //
+  onFilters
 }) {
 
   const handleFilterName = useCallback(
