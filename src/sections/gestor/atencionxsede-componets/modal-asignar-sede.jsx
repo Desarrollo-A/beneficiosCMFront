@@ -94,8 +94,8 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
 
         const insert = await insertData(combinedArray);
 
-        if (insert.estatus === true) {
-          enqueueSnackbar(insert.msj, { variant: 'success' });
+        if (insert.result === true) {
+          enqueueSnackbar(insert.msg, { variant: 'success' });
           resetForm();
 
           mutate(endpoints.gestor.getAtencionXsede);
@@ -104,7 +104,7 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
           setBtnLoad(false);
 
         } else {
-          enqueueSnackbar(insert.msj, { variant: 'error' });
+          enqueueSnackbar(insert.msg, { variant: 'error' });
           setBtnLoad(false);
         }
 
