@@ -120,3 +120,30 @@ export function usePostSelect(dataValue, URL, nameData) {
     return { ...memoizedVal };
 }
 
+export function useCheckModalidades(idEspecialista, idOficina, tipoCita){
+  const modalidad = tipoCita === 1 ? 2 : 1;
+  const URL = endpoints.gestor.checkModalidades;
+
+  const dataValue = {
+    idEspecialista,
+    idOficina,
+    modalidad
+  };
+  const {data} = useSWR(URL, url => fetcherPost(url, dataValue), options);
+
+  // const checkModalites = await fetcherPost(url, dataValue);
+
+  useEffect(() => {
+    mutate(URL);
+  }, [URL, idOficina, idEspecialista, tipoCita]);
+
+  const memoizedValue = useMemo(() => {
+    const result = data;
+
+    return {
+      checkModalidades: result || '',
+    };
+  }, [data]);
+
+  return memoizedValue;
+}

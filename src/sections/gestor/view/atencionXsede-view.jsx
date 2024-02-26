@@ -296,6 +296,9 @@ export default function AtencionXsedeView() {
                           key={row.id}
                           row={row}
                           rol={rol}
+                          idOficina={row.idOficina}
+                          tipoCita={row.tipoCita}
+                          idEspecialista={row.idEspecialista}
                           modalidadesData={modalidadesData}
                           selected={table.selected.includes(row.id)}
                           onSelectRow={() => table.onSelectRow(row.id)}
