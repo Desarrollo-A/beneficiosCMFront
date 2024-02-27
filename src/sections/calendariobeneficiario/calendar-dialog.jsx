@@ -96,7 +96,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const [horarioSeleccionado, setHorarioSeleccionado] = useState('');
   const [event, setEvent] = useState({});
   const [btnDisabled, setBtnDisabled] = useState(false);
-  const [btnNotificationDisabled, setBtnNotificationDisabled] = useState(false);
   const [btnPayDisabled, setBtnPayDisabled] = useState(false);
   const [btnEvaluateDisabled, setBtnEvaluateDisabled] = useState(false);
   const [btnConfirmAction, setBtnConfirmAction] = useState(false);
@@ -1799,13 +1798,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         </DialogActions>
       </Dialog>
 
-      <CalendarPreview
-        event={event}
-        open={open2}
-        handleClose={handleClose}
-        btnNotificationDisabled={btnNotificationDisabled}
-        setBtnNotificationDisabled={setBtnNotificationDisabled}
-      />
+      <CalendarPreview event={event} open={open2} handleClose={handleClose} />
       {pendiente && openEvaluateDialog && (
         <EvaluateDialog
           open={openEvaluateDialog}

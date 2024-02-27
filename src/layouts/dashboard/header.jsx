@@ -141,7 +141,7 @@ export default function Header({ onOpenNav }) {
     fechActual: fechaActual,
   });
 
-  const { getData } = usePostGeneral(dataNot, endpoints.encuestas.getEncNotificacion, 'getData');
+  // const { getData } = usePostGeneral(dataNot, endpoints.encuestas.getEncNotificacion, 'getData');
 
   const renderContent = (
     <>
@@ -166,7 +166,7 @@ export default function Header({ onOpenNav }) {
       >
         {/* <NotificationsPopover /> */}
 
-        {getData.length > 0 && <NotifiEncuesta data={getData} />}
+        {/* {getData.length > 0 && <NotifiEncuesta data={getData} />} */}
 
         <SettingsButton />
 
