@@ -296,6 +296,10 @@ export default function AtencionXsedeView() {
                           key={row.id}
                           row={row}
                           rol={rol}
+                          idOficina={row.idOficina}
+                          tipoCita={row.tipoCita}
+                          idEspecialista={row.idEspecialista}
+                          idArea={row.idArea}
                           modalidadesData={modalidadesData}
                           selected={table.selected.includes(row.id)}
                           onSelectRow={() => table.onSelectRow(row.id)}
@@ -338,7 +342,7 @@ export default function AtencionXsedeView() {
           </TabPanel>
           ) : (
             null
-          )};
+          )}
         </TabContext>
 
       </Card>

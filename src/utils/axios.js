@@ -236,6 +236,7 @@ export const endpoints = {
     insertAtxSede: '/GestorController/insertAtxSede',
     updateModalidad: '/GestorController/updateModalidad',
     updateEspecialista: '/GestorController/updateEspecialista',
+    updateArea: '/GestorController/updateArea',
     getEsp: '/GestorController/getEsp',
     getAtencionXsedeEsp: '/GestorController/getAtencionXsedeEsp',
     getOfi: '/GestorController/getOficinas',
@@ -243,6 +244,8 @@ export const endpoints = {
     insertOficinas: '/GestorController/insertOficinas',
     updateSede: '/GestorController/updateSede',
     insertSedes: '/GestorController/insertSedes',
+    checkModalidades: '/GestorController/checkModalidades',
+    getAreas: '/GestorController/getAreas'
   },
   avisosPrivacidad: {
     getEspecialidadToSelect: '/AvisosPrivacidadController/getEspecialidades',

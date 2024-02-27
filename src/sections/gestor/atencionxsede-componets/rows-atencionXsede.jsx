@@ -14,21 +14,23 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
+import ModalArea from './modal-area';
 import ModalModalidad from './modal-modalidad';
 import ModalEspecialista from './modal-especialista';
 
 // ----------------------------------------------------------------------
 
-export default function RowsAtencionXsede({ row, selected, onEditRow, onDeleteRow, modalidadesData, rol, close }) {
+export default function RowsAtencionXsede({ row, selected, onEditRow, onDeleteRow, modalidadesData, rol, close, idOficina, tipoCita, idEspecialista, idArea }) {
   const { id, sede, oficina, ubicación, nombre, puesto, idPuesto, modalidad, estatus } = row;
 
   const popover = usePopover();
 
   const modalEsp = useBoolean();
 
-  const modalMod = useBoolean();
-
   const [open, setOpen] = useState(false);
+  const [open2, setOpen2] = useState(false);
+  const [open3, setOpen3] = useState(false);
+  const [open4, setOpen4] = useState(false);
 
   // const [close] = useState(false);
 
@@ -39,6 +41,31 @@ export default function RowsAtencionXsede({ row, selected, onEditRow, onDeleteRo
   const handleClose = () => {
     setOpen(false);
   }
+
+  const handleOpen2 = () => {
+    setOpen2(true);
+  }
+
+  const handleClose2 = () => {
+    setOpen2(false);
+  }
+
+  const handleOpen3 = () => { // cambiar para que todos se puedan abrir en uno solo
+    setOpen3(true);
+  }
+
+  const handleClose3 = () => {
+    setOpen3(false);
+  }
+
+  const handleOpen4 = () => {
+    setOpen4(true);
+  }
+
+  const handleClose4 = () => {
+    setOpen4(false);
+  }
+
 
   return (
     <>
@@ -96,7 +123,7 @@ export default function RowsAtencionXsede({ row, selected, onEditRow, onDeleteRo
         )}
       </TableRow>
 
-      <ModalModalidad estatusVal={modalidad} modalidadesData={modalidadesData} id={id} open={modalMod.value} onClose={modalMod.onFalse} />
+      
 
       <CustomPopover
         open={popover.open}
@@ -106,8 +133,8 @@ export default function RowsAtencionXsede({ row, selected, onEditRow, onDeleteRo
       >
         <MenuItem
           onClick={() => {
-            modalMod.onTrue();
-            popover.onClose();
+            handleOpen2();
+          
           }}
         >
           <Iconify icon="tabler:repeat" />
@@ -122,6 +149,24 @@ export default function RowsAtencionXsede({ row, selected, onEditRow, onDeleteRo
           <Iconify icon="fa6-solid:user-pen" />
           Cambio de especialista
         </MenuItem>
+
+        <MenuItem
+          onClick={() => {
+            handleOpen3();
+          }}
+        >
+          <Iconify icon="material-symbols:edit-document-rounded" />
+          Cambio de área
+        </MenuItem>
+
+        <MenuItem
+          onClick={() => {
+            handleOpen4();
+          }}
+        >
+          <Iconify icon="material-symbols:auto-delete" />
+          Deshabilitar
+        </MenuItem>
       </CustomPopover>
 
       <Dialog
@@ -135,6 +180,40 @@ export default function RowsAtencionXsede({ row, selected, onEditRow, onDeleteRo
         <ModalEspecialista estatusVal={nombre} id={id} puesto={idPuesto} open={modalEsp.value} onClose={handleClose} />
       </Dialog>
 
+      <Dialog
+        maxWidth={false}
+        open={open2}
+        onClose={close}
+        PaperProps={{
+          sx: { maxWidth: 720 },
+        }}
+      >
+      <ModalModalidad
+        estatusVal={modalidad} 
+        modalidadesData={modalidadesData} 
+        id={id} 
+        onClose={handleClose2}
+        idOficina={idOficina}
+        tipoCita={tipoCita}
+        idEspecialista={idEspecialista} 
+        idArea={idArea} />
+      </Dialog>
+
+      <Dialog
+        maxWidth={false}
+        open={open3}
+        onClose={close}
+        PaperProps={{
+          sx: { maxWidth: 720 },
+        }}
+      >
+        <ModalArea
+          id={id} 
+          onClose={handleClose3}
+          idArea={idArea} 
+        />
+      </Dialog>
+
     </>
   );
 }
@@ -146,5 +225,9 @@ RowsAtencionXsede.propTypes = {
   selected: PropTypes.bool,
   modalidadesData: PropTypes.any,
   rol: PropTypes.any,
-  close: PropTypes.func
+  close: PropTypes.func,
+  idOficina: PropTypes.number,
+  tipoCita: PropTypes.number,
+  idEspecialista: PropTypes.number,
+  idArea: PropTypes.number
 };

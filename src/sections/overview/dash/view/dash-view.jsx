@@ -143,7 +143,7 @@ export default function DashView() {
 
   const [dflt, setDflt] = useState('');
 
-  const [pg, setPg] = useState('');
+  const [pg, setPg] = useState('1');
 
   const [sn, setSn] = useState('');
 
@@ -322,7 +322,6 @@ export default function DashView() {
       setPg('');
       setRespPreg([]);
     },
-
     []
   );
 

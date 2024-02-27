@@ -41,6 +41,8 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
 
   const [mod, setMod] = useState([]);
 
+  const [selectArea, setSelectArea] = useState({idArea: null});
+
   const { oficinaData } = usePostGeneral(idSede, endpoints.gestor.getOficinasVal, "oficinaData");
 
   const { especiaData } = usePostGeneral(es, endpoints.gestor.getEspecialistasVal, "especiaData");
@@ -55,6 +57,10 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
 
   const handleMod = (newPg) => {
     setMod(newPg);
+  }
+
+  const handleArea = (newPg) => {
+    setSelectArea(newPg);
   }
 
   const NewInvoiceSchema = Yup.object().shape({
@@ -84,9 +90,10 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
     const combinedArray = {
       ...mod,
       ...esp,
+      ...selectArea
     };
 
-    if (!isEmpty(combinedArray) && !isEmpty(mod) && !isEmpty(esp)) {
+    if (!isEmpty(combinedArray) && !isEmpty(mod) && !isEmpty(esp) && Number.isInteger(selectArea.idArea) ) {
       try {
         await new Promise((resolve) => setTimeout(resolve, 500));
 
@@ -94,8 +101,8 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
 
         const insert = await insertData(combinedArray);
 
-        if (insert.estatus === true) {
-          enqueueSnackbar(insert.msj, { variant: 'success' });
+        if (insert.result === true) {
+          enqueueSnackbar(insert.msg, { variant: 'success' });
           resetForm();
 
           mutate(endpoints.gestor.getAtencionXsede);
@@ -104,7 +111,7 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
           setBtnLoad(false);
 
         } else {
-          enqueueSnackbar(insert.msj, { variant: 'error' });
+          enqueueSnackbar(insert.msg, { variant: 'error' });
           setBtnLoad(false);
         }
 
@@ -139,7 +146,9 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
               especiaData={especiaData} 
               modalidadesData={modalidadesData}
               handleMod={handleMod}
-              handleEsp={handleEsp} />
+              handleEsp={handleEsp} 
+              handleArea={handleArea}
+              />
 
             </DialogContent>
 

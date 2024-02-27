@@ -124,7 +124,7 @@ export default function ModalListaSedes({ idPuesto, open, onClose, modalidadesDa
         open={open2}
         onClose={popover.onClose}
         PaperProps={{
-          sx: { maxWidth: 720 },
+          sx: { maxWidth: 1000 },
         }}
       >
         <ModalAsignarSede idSede={sd} idPuesto={idPuesto} open={modal.value} onClose={handleClose} modalidadesData={modalidadesData} />
