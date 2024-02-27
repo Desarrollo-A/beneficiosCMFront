@@ -273,7 +273,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       datosUser.idUsuario,
       null,
       selectedValues.beneficio,
-      null
+      null,
+      selectedValues.modalidad
     );
     if (!agendar.result) {
       enqueueSnackbar(agendar.msg, {
@@ -372,7 +373,12 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       return false;
     }
 
-    const email = await sendMail(scheduledAppointment.data[0], 1, correosNotificar);
+    const email = await sendMail(
+      scheduledAppointment.data[0],
+      1,
+      correosNotificar,
+      datosUser.idUsuario
+    );
 
     if (!email.result) {
       console.error('No se pudo notificar al usuario');
@@ -441,7 +447,12 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       return false;
     }
 
-    const email = await sendMail(scheduledAppointment.data[0], 2, correosNotificar);
+    const email = await sendMail(
+      scheduledAppointment.data[0],
+      2,
+      correosNotificar,
+      datosUser.idUsuario
+    );
 
     if (!email.result) {
       console.error('No se pudo notificar al usuario');
@@ -940,7 +951,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     idUsuario,
     detallePago,
     beneficio,
-    idGoogleEvent
+    idGoogleEvent,
+    modalidad
   ) => {
     const registrarCita = await crearCita(
       titulo,
@@ -955,7 +967,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       idUsuario,
       idUsuario,
       detallePago,
-      idGoogleEvent
+      idGoogleEvent,
+      modalidad
     );
     if (registrarCita.result) {
       const updateDetail = await updateDetailPacient(datosUser.idUsuario, beneficio);
@@ -1097,7 +1110,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       datosUser.idUsuario,
       currentEvent.idDetalle,
       selectedValues.beneficio,
-      currentEvent.idEventoGoogle
+      currentEvent.idEventoGoogle,
+      currentEvent.modalidad
     );
 
     if (!agendar.result) {
@@ -1161,7 +1175,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         oldEventEnd: currentEvent.end,
       },
       3,
-      correosNotificar
+      correosNotificar,
+      datosUser.idUsuario
     );
     if (!email.result) {
       console.error('No se pudo notificar al usuario');
