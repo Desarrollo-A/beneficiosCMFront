@@ -9,13 +9,8 @@ import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
-import Dialog from '@mui/material/Dialog';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 
 import { RouterLink } from 'src/routes/components';
 import { useRouter, useSearchParams } from 'src/routes/hooks';
@@ -206,7 +201,7 @@ export default function JwtRegisterView() {
 
       {renderTerms}
 
-      <Dialog
+      {/* <Dialog
         open={open}
         onClose={handleClose}
         scroll={scroll}
@@ -234,7 +229,7 @@ Praesent commodo cursus magna, vel scelerisque nisl consectetur et.`,
           <Button onClick={handleClose}>Cancel</Button>
           <Button onClick={handleClose}>Subscribe</Button>
         </DialogActions>
-      </Dialog>
+      </Dialog> */}
     </>
   );
 }
