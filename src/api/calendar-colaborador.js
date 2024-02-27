@@ -240,7 +240,8 @@ export function crearCita(
   creadoPor,
   modificadoPor,
   detallePago,
-  idGoogleEvent
+  idGoogleEvent,
+  modalidad
 ) {
   const URL_CITA = [endpoints.calendarioColaborador.createAppointment];
   const axs = fetcherPost(URL_CITA, {
@@ -257,6 +258,7 @@ export function crearCita(
     modificadoPor,
     detallePago,
     idGoogleEvent,
+    modalidad,
   });
 
   return axs;
@@ -336,7 +338,7 @@ export function consultarCita(idCita) {
 }
 
 // Actualizar el registro de detalle paciente que indica que un usuario esta activo en el beneficio.
-export function sendMail(event, typeEmail, correo) {
+export function sendMail(event, typeEmail, correo, idUsuario) {
   const URL = [endpoints.calendario.mailEspecialista];
   let imagen = '';
   let view = '';
@@ -394,6 +396,7 @@ export function sendMail(event, typeEmail, correo) {
     horaFinalOld,
     view,
     correo,
+    idUsuario,
   };
 
   const mail = fetcherPost(URL, data);
@@ -428,15 +431,6 @@ export function insertGoogleCalendarEvent(
     email,
   });
 
-  console.log({
-    title,
-    start,
-    end,
-    location,
-    description,
-    attendees,
-    email,
-  });
   return insertEvent;
 }
 
