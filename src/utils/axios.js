@@ -236,6 +236,7 @@ export const endpoints = {
     insertAtxSede: '/GestorController/insertAtxSede',
     updateModalidad: '/GestorController/updateModalidad',
     updateEspecialista: '/GestorController/updateEspecialista',
+    updateArea: '/GestorController/updateArea',
     getEsp: '/GestorController/getEsp',
     getAtencionXsedeEsp: '/GestorController/getAtencionXsedeEsp',
     getOfi: '/GestorController/getOficinas',
