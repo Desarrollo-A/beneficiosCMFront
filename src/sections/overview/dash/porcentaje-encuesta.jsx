@@ -19,7 +19,7 @@ import { usePostGeneral } from 'src/api/general';
 
 export default function EncuestaPorcentaje({ title, subheader, data, user, handleChangePg, selectPg, idEncuesta, idArea, idPregunta, handleChangeIdPg, ...other }) {
 
-  const { preguntaData } = usePostGeneral(user.idPuesto, endpoints.dashboard.getPregunta, "preguntaData");
+  const { preguntaData } = usePostGeneral(user?.idPuesto, endpoints.dashboard.getPregunta, "preguntaData");
 
   const [pregunta, setPregunta] = useState(idPregunta);
 

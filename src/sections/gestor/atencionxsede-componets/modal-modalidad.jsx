@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
@@ -16,13 +15,13 @@ import { useBoolean } from 'src/hooks/use-boolean';
 
 import { endpoints } from 'src/utils/axios';
 
-import { useUpdate } from 'src/api/reportes';
+import { useUpdate, useCheckModalidades } from 'src/api/reportes';
 // import { useGetGeneral } from 'src/api/general';
 
 import { useSnackbar } from 'src/components/snackbar';
 // ----------------------------------------------------------------------
 
-export default function ModalModalidad({ open, onClose, id, est, estatusVal, modalidadesData }) {
+export default function ModalModalidad({ open, onClose, id, est, estatusVal, modalidadesData, idOficina, tipoCita, idEspecialista }) {
 
   const confirm = useBoolean();
 
@@ -35,7 +34,8 @@ export default function ModalModalidad({ open, onClose, id, est, estatusVal, mod
   }
 
   const updateEstatus = useUpdate(endpoints.gestor.updateModalidad);
-
+  const {checkModalidades} = useCheckModalidades(idEspecialista, idOficina, tipoCita);
+  
   const handleEstatus = async (i) => {
 
     try {
@@ -51,14 +51,14 @@ export default function ModalModalidad({ open, onClose, id, est, estatusVal, mod
 
         const update = await updateEstatus(data);
 
-        if (update.estatus === true) {
-          enqueueSnackbar(update.msj, { variant: 'success' });
+        if (update.result === true) {
+          enqueueSnackbar(update.msg, { variant: 'success' });
 
           mutate(endpoints.gestor.getAtencionXsede);
           mutate(endpoints.gestor.getAtencionXsedeEsp);
 
         } else {
-          enqueueSnackbar(update.msj, { variant: 'error' });
+          enqueueSnackbar(update.msg, { variant: 'error' });
         }
 
       } else {
@@ -73,15 +73,9 @@ export default function ModalModalidad({ open, onClose, id, est, estatusVal, mod
   }
 
   return (
-    <Dialog
-      fullWidth
-      maxWidth="sm"
-      open={open}
-      onClose={onClose}
-      
-    >
-
-      <Stack spacing={1} >
+    <>
+      {checkModalidades?.result ? 
+      (<Stack spacing={1} >
 
         <DialogTitle>¿Estás seguro que deseas cambiar la modalidad?</DialogTitle>
 
@@ -106,7 +100,9 @@ export default function ModalModalidad({ open, onClose, id, est, estatusVal, mod
 
         </FormControl>
 
-      </Stack>
+      </Stack>)
+      : <DialogTitle>{checkModalidades?.msg}</DialogTitle>}
+      
 
       <DialogActions>
         <Button variant="contained" color="error" onClick={onClose}>
@@ -119,17 +115,18 @@ export default function ModalModalidad({ open, onClose, id, est, estatusVal, mod
           Guardar
         </Button>
       </DialogActions>
-
-    </Dialog>
-
+</>
   );
 }
 
 ModalModalidad.propTypes = {
   onClose: PropTypes.func,
   open: PropTypes.bool,
-  id: PropTypes.number,
+  id: PropTypes.any,
   est: PropTypes.number,
   estatusVal: PropTypes.string,
   modalidadesData: PropTypes.any,
+  idOficina: PropTypes.number,
+  tipoCita: PropTypes.number,
+  idEspecialista: PropTypes.number
 };

@@ -43,7 +43,7 @@ export default function UserListView() {
     if (usersData) {
       const obj = usersData.map((i) => ({
         id: i.idUsuario,
-        contrato: i.numContrato,
+        contrato: i.idContrato,
         empleado: i.numEmpleado,
         nombre: i.nombre,
         telefono: i.telPersonal,

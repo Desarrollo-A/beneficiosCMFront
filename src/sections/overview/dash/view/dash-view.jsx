@@ -14,12 +14,12 @@ import { alpha, useTheme } from '@mui/material/styles';
 import { endpoints } from 'src/utils/axios';
 
 import { bgGradient } from 'src/theme/css';
+import { useModalidad } from 'src/api/dash';
 import { useAuthContext } from 'src/auth/hooks';
+import { usePostSelect } from 'src/api/reportes';
 import { useGetMeta } from 'src/api/especialistas';
 import { SeoIllustration } from 'src/assets/illustrations';
 import { useGetGeneral, usePostGeneral } from 'src/api/general';
-
-// import { _appAuthors, _appRelated, _appFeatured, _appInvoices, _appInstalled } from 'src/_mock';
 
 import { useSettingsContext } from 'src/components/settings';
 
@@ -28,117 +28,62 @@ import WidgetConteo from '../widget-conteo';
 import GraficaMetas from '../grafica-metas';
 import EncuestaBarra from '../barra-encuesta';
 import GraficaMetasArea from '../grafica-metas-area';
-// import AppTopRelated from '../app-top-related';
 import EncuestaPorcentaje from '../porcentaje-encuesta';
 
 // ----------------------------------------------------------------------
 
 export default function DashView() {
 
-  /* const { email } = useGetGeneral(endpoints.encuestas.sendMail, "email");
-
-  console.log(email); */
-
   const { user } = useAuthContext();
 
   const settings = useSettingsContext();
 
-  let idDt = "";
+  const [_es, set_es] = useState('0');
 
-  const rol = user.idRol
+  const rol = user?.idRol
   let puestos = 0;
 
-  if (rol === "4" || rol === 4) {
-    idDt = 158;
+  if (rol === 4) {
     puestos = 158;
-  } else if (rol === "2" || rol === 2 || rol === "3" || rol === 3) {
-    idDt = user.idUsuario;
-    puestos = user.idPuesto;
-  } else if (rol === "1" || rol === 1) {
-    idDt = user.idPuesto;
-    puestos = user.idPuesto;
+  } else if (rol === 2 || rol === 3) {
+    puestos = user?.idPuesto;
   }
-
-  function formatDate(date) {
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const day = date.getDate().toString().padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
-
-  function getTrimesterDates() {
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth();
-
-    const trimStart = new Date(currentYear, Math.floor(currentMonth / 3) * 3, 1);
-    const trimEnd = new Date(trimStart);
-    trimEnd.setMonth(trimStart.getMonth() + 3);
-    trimEnd.setDate(trimEnd.getDate() - 1);
-
-    return {
-      trimStart: formatDate(trimStart),
-      trimEnd: formatDate(trimEnd),
-    };
-  }
-
-  const { trimStart, trimEnd } = getTrimesterDates();
-
-  function rangeMonth() {
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth();
-
-    // Primer día del mes actual
-    const firstDayMonth = new Date(currentYear, currentMonth, 1);
-    const formFirstDay = formatDate(firstDayMonth);
-
-    // Último día del mes actual
-    const lastDayMonth = new Date(currentYear, currentMonth + 1, 0);
-    const formLastDay = formatDate(lastDayMonth);
-
-    return {
-      firstDayMonth: formFirstDay,
-      lastDayMonth: formLastDay,
-    };
-  }
-
-  const { firstDayMonth, lastDayMonth } = rangeMonth();
-
-  const [espe, setEspe] = useState({ idData: idDt, idRol: user.idRol });
-
-  const [ setMeta] = useState({
-    idData: idDt,
-    idRol: user.idRol,
-    inicio: trimStart,
-    fin: trimEnd
-  });
 
   const [areas, setAreas] = useState(puestos);
 
-  const { preguntaData } = usePostGeneral(areas, endpoints.dashboard.getPregunta, "preguntaData");
+  const [ps, setPs] = useState(158);
 
-  const { encValidData } = usePostGeneral(areas, endpoints.encuestas.getValidEncContestada, "encValidData");
+  const [valEsp, setValEsp] = useState({idData: ps, idRol: user?.idRol, slEs: _es, idUser: user?.idUsuario});
+
+  useEffect(() => {
+    setValEsp({idData: ps, idRol: user?.idRol, slEs: _es, idUser: user?.idUsuario});
+  }, [ps, user, _es]);
+
+  const { preguntaData } = usePostGeneral(areas, endpoints.dashboard.getPregunta, "preguntaData");
 
   const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
 
-  const { pacientesData } = usePostGeneral(espe, endpoints.dashboard.getPacientes, "pacientesData");
+  const { pacientesData } = usePostGeneral(valEsp, endpoints.dashboard.getPacientes, "pacientesData");
 
-  const { asistenciaData } = usePostGeneral(espe, endpoints.dashboard.getCtAsistidas, "asistenciaData");
+  const { asistenciaData } = usePostGeneral(valEsp, endpoints.dashboard.getCtAsistidas, "asistenciaData");
 
-  const { canceladaData } = usePostGeneral(espe, endpoints.dashboard.getCtCanceladas, "canceladaData");
+  const { canceladaData } = usePostGeneral(valEsp, endpoints.dashboard.getCtCanceladas, "canceladaData");
 
-  const { penalizadaData } = usePostGeneral(espe, endpoints.dashboard.getCtPenalizadas, "penalizadaData");
+  const { penalizadaData } = usePostGeneral(valEsp, endpoints.dashboard.getCtPenalizadas, "penalizadaData");
 
-  // const { metasData } = usePostGeneral(meta, endpoints.dashboard.getMetas, "metasData");
+  const { virtualData } = useModalidad(valEsp, endpoints.dashboard.getCtVirtuales, "virtualData");
 
-  const { meta: metaData } = useGetMeta({especialista : user.idUsuario})
+  const { presencialData } = useModalidad(valEsp, endpoints.dashboard.getCtPresenciales, "presencialData");
+
+  const { espData } = usePostSelect(ps, endpoints.gestor.getEsp, "espData");
+
+  const { meta: metaData } = useGetMeta({ especialista: rol === 4 && _es !== '0' ? _es : user?.idUsuario });
 
   const [pgDt, setPgDt] = useState('');
 
   const [dflt, setDflt] = useState('');
 
-  const [pg, setPg] = useState('');
+  const [pg, setPg] = useState('1');
 
   const [sn, setSn] = useState('');
 
@@ -180,11 +125,9 @@ export default function DashView() {
     if (preguntaData.length > 0) {
       setIdEncuesta(preguntaData[0]?.idEncuesta)
     }
-  }, [preguntaData])
+  }, [preguntaData]);
 
   useEffect(() => {
-
-    if (encValidData === true) {
 
       if (preguntaData && Array.isArray(pregunta) && pregunta.length === 0) {
 
@@ -214,8 +157,7 @@ export default function DashView() {
       } else {
         alert("Error")
       }
-    }
-  }, [preguntaData, pregunta, respData, encValidData]);
+  }, [preguntaData, pregunta, respData]);
 
   useEffect(() => {
     if (preguntaData && Array.isArray(pregunta) && pregunta.length === 0) {
@@ -254,25 +196,17 @@ export default function DashView() {
 
   const handleChangeArea = (event) => {
 
+    setPs(event.target.value);
+
     setAreas(event.target.value);
 
-    setEspe({ idData: event.target.value, idRol: user.idRol });
+    set_es('0')
 
-    if (event.target.value === 158) {
-      setMeta({
-        idData: event.target.value,
-        idRol: user.idRol,
-        inicio: trimStart,
-        fin: trimEnd
-      })
-    } else {
-      setMeta({
-        idData: event.target.value,
-        idRol: user.idRol,
-        inicio: firstDayMonth,
-        fin: lastDayMonth
-      })
-    }
+  };
+
+  const handleChangeEsp = (event) => {
+
+    set_es(event.target.value);
 
   };
 
@@ -288,31 +222,7 @@ export default function DashView() {
 
   const theme = useTheme();
 
-
-  // const appRelated = ['Chrome', 'Drive', 'Dropbox', 'Evernote', 'Github'].map(
-  //   (name, index) => {
-  //     const system = [2, 4].includes(index) ? 'Windows' : 'Mac';
-  
-  //     const shortcut =
-  //       (name === 'Chrome' && '/assets/icons/app/ic_chrome.svg') ||
-  //       (name === 'Drive' && '/assets/icons/app/ic_drive.svg') ||
-  //       (name === 'Dropbox' && '/assets/icons/app/ic_dropbox.svg') ||
-  //       (name === 'Evernote' && '/assets/icons/app/ic_evernote.svg') ||
-  //       '/assets/icons/app/ic_github.svg';
-  
-  //     return {
-  //       /* id: _mock.id(index), */
-  //       name,
-  //       system,
-  //       shortcut,
-  //       /* ratingNumber: _mock.number.rating(index),
-  //       totalReviews: _mock.number.nativeL(index), */
-  //     };
-  //   }
-  // );
-
   return (
-    <>
 
       <Container maxWidth={settings.themeStretch ? false : 'xl'}>
 
@@ -342,33 +252,60 @@ export default function DashView() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '360px'
+                width: '90%'
               }}
             >
               <Clock value={value} />
             </Card>
           </Grid>
 
-
-
           {rol === "4" || rol === 4 ? (
-            <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">Área</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={!areas ? '' : areas}
-                label="Área"
-                onChange={(e) => handleChangeArea(e)}
-              >
-                {especialistasData.map((i, index) => (
-                  <MenuItem key={index} value={i.idPuesto}>
-                    {i.nombre}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            <>
+              <Grid md={6}>
+                <FormControl sx={{
+                  width: "100%",
+                }}>
+                  <InputLabel id="demo-simple-select-label">Área</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={!areas ? '' : areas}
+                    label="Área"
+                    onChange={(e) => handleChangeArea(e)}
+                  >
+                    {especialistasData.map((i, index) => (
+                      <MenuItem key={index} value={i.idPuesto}>
+                        {i.nombre}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
 
+              <Grid md={6}>
+                <FormControl sx={{
+                  width: "100%",
+                }}>
+                  <InputLabel id="demo-simple-select-label">Especialista</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={_es}
+                    label="Especialista"
+                    onChange={(e) => handleChangeEsp(e)}
+                  >
+                    <MenuItem value='0'>
+                        Todos
+                    </MenuItem>
+                    {espData.map((i, index) => (
+                      <MenuItem key={index} value={i.idUsuario}>
+                        {i.nombre}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+            </>
           ) : (
 
             <>
@@ -377,7 +314,7 @@ export default function DashView() {
           )}
 
           {pacientesData.map((i, index) => (
-            <Grid xs={12} sm={6} md={3} key={index}>
+            <Grid xs={12} sm={6} md={2} key={index}>
               <WidgetConteo
                 title={rol === '2' || rol === 2 ? 'Total citas' : 'Total pacientes'}
                 total={i.pacientes}
@@ -388,17 +325,18 @@ export default function DashView() {
           ))}
 
           {asistenciaData.map((i, index) => (
-            <Grid xs={12} sm={6} md={3} key={index}>
+            <Grid xs={12} sm={6} md={2} key={index}>
               <WidgetConteo
                 title="Total citas asistidas"
                 total={i.asistencia}
+                sx={{ backgroundColor: "#DDFAD7" }}
                 icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/check.png`} />}
               />
             </Grid>
           ))}
 
           {canceladaData.map((i, index) => (
-            <Grid xs={12} sm={6} md={3} key={index}>
+            <Grid xs={12} sm={6} md={2} key={index}>
               <WidgetConteo
                 title="Total citas canceladas"
                 total={i.cancelada}
@@ -409,7 +347,7 @@ export default function DashView() {
           ))}
 
           {penalizadaData.map((i, index) => (
-            <Grid xs={12} sm={6} md={3} key={index}>
+            <Grid xs={12} sm={6} md={2} key={index}>
               <WidgetConteo
                 title="Total citas penalizadas"
                 total={i.penalizada}
@@ -419,21 +357,46 @@ export default function DashView() {
             </Grid>
           ))}
 
-          {rol === "1" || rol === 1 || rol === "3" || rol === 3 || rol === "4" || rol === 4 ? (
+          {virtualData.map((i, index) => (
+            <Grid xs={12} sm={6} md={2} key={index}>
+              <WidgetConteo
+                title="Total citas virtuales"
+                total={i.virtual}
+                sx={{ backgroundColor: "#E5D7FA" }}
+                icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/virtual.png`} />}
+              />
+            </Grid>
+          ))}
+
+          {presencialData.map((i, index) => (
+            <Grid xs={12} sm={6} md={2} key={index}>
+              <WidgetConteo
+                title="Total citas presenciales"
+                total={i.presencial}
+                sx={{ backgroundColor: "#D7E4FA" }}
+                icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/ubicacion.png`} />}
+              />
+            </Grid>
+          ))}
+
+          {rol === 1 || rol === 3 || rol === 4 ? (
             <>
-              {user.idRol === 1 && user.idAreaBeneficio ?
+              {user?.idRol === 1 && user?.idAreaBeneficio || (user?.idRol === 4 && _es === '0') ?
                 <Grid xs={12}>
-                  <GraficaMetasArea />
+                  <GraficaMetasArea
+                    puesto={ps}
+                    area={user?.idAreaBeneficio ? user?.idAreaBeneficio : ''} />
                 </Grid>
-              : null }
-              {user.idRol === 3 && metaData ?
+                : null
+              }
+              {(user?.idRol === 3 && metaData) || (user?.idRol === 4 && _es !== '0' && metaData)?
                 <Grid xs={12} sm={6} md={4}>
                   <GraficaMetas data={metaData} />
                 </Grid>
-              : null}
+                : null}
 
               {sn === 0 ? (
-                <Grid xs={12} sm={6} md={8}>
+                <Grid xs={12} sm={6} md={(rol === 4 && _es !== '0' ? 8 : 12) || (rol === 4 && _es === '0' ? 12 : 8)}>
                   <EncuestaBarra
                     idPregunta={pg}
                     chart={{
@@ -460,7 +423,7 @@ export default function DashView() {
 
               ) : (
 
-                <Grid xs={12} sm={6} md={8}>
+                <Grid xs={12} sm={6} md={(rol === 4 && _es !== '0' ? 8 : 12) || (user?.idRol === 4 && _es !== '0' ? 12 : 8)}>
                   <EncuestaPorcentaje
                     idPregunta={pg}
                     data={_ecommerceSalesOverview}
@@ -484,27 +447,10 @@ export default function DashView() {
 
           )}
 
-          {/* <Grid xs={12} md={6} lg={4}>
-            <AppTopRelated title="Evaluacion de especialistas" list={_appRelated} />
-          </Grid> */}
-
         </Grid>
 
 
 
       </Container>
-
-      {/* <Grid xs={12} md={6} lg={12}>
-          <GraficaBarras
-            title="Registro de Citas"
-            chart={{
-              categories: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
-              series: propGrafic
-            }}
-            year={year}
-            handleChangeYear={handleChangeYear}
-          />
-        </Grid>  */}
-    </>
   );
 }

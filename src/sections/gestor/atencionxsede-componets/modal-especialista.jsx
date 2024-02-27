@@ -3,6 +3,7 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import Stack from '@mui/material/Stack';
+import { LoadingButton } from '@mui/lab';
 import Button from '@mui/material/Button';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
@@ -30,6 +31,8 @@ export default function ModalEspecialista({ open, onClose, id, estatusVal, puest
   const { enqueueSnackbar } = useSnackbar();
 
   const [estatus, setEstatus] = useState('');
+
+  const [btnLoad, setBtnLoad] = useState(false);
 
   let val = true;
 
@@ -66,17 +69,25 @@ export default function ModalEspecialista({ open, onClose, id, estatusVal, puest
           mutate(endpoints.gestor.getAtencionXsede);
           mutate(endpoints.gestor.getAtencionXsedeEsp);
 
+          setBtnLoad(false);
+
         } else {
           enqueueSnackbar(update.msj, { variant: 'error' });
+
+          setBtnLoad(false);
         }
 
       } else {
         enqueueSnackbar(`¡No se selecciono alguna opción!`, { variant: 'danger' });
+
+        setBtnLoad(false);
       }
 
     } catch (error) {
       console.error("Error en handleEstatus:", error);
       enqueueSnackbar(`¡No se pudieron actualizar los datos de usuario!`, { variant: 'danger' });
+
+      setBtnLoad(false);
     }
 
   }
@@ -84,7 +95,6 @@ export default function ModalEspecialista({ open, onClose, id, estatusVal, puest
   return (
 
     <>
-
       { val === true ? (
 
         <>
@@ -119,12 +129,13 @@ export default function ModalEspecialista({ open, onClose, id, estatusVal, puest
             <Button variant="contained" color="error" onClick={onClose}>
               Cerrar
             </Button>
-            <Button variant="contained" color="success" onClick={() => {
+            <LoadingButton variant="contained" color="success" loading={btnLoad} onClick={() => {
+              setBtnLoad(true);
               handleEstatus(estatus);
               confirm.onFalse();
             }}>
               Guardar
-            </Button>
+            </LoadingButton>
           </DialogActions>
         </>
       ) : (
@@ -137,16 +148,15 @@ export default function ModalEspecialista({ open, onClose, id, estatusVal, puest
           </DialogActions>
         </>
       )}
-
     </>
-
+    
   );
 }
 
 ModalEspecialista.propTypes = {
   onClose: PropTypes.func,
   open: PropTypes.bool,
-  id: PropTypes.number,
+  id: PropTypes.any,
   estatusVal: PropTypes.string,
   puesto: PropTypes.any,
 };

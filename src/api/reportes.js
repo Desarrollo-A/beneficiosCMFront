@@ -1,7 +1,7 @@
 import useSWR, { mutate } from 'swr';
 import { useMemo, useEffect } from 'react';
 
-import { endpoints, fetcherPost } from 'src/utils/axios';
+import { endpoints, fetcherGet, fetcherPost } from 'src/utils/axios';
 
 const options = {
   revalidateIfStale: false,
@@ -120,3 +120,52 @@ export function usePostSelect(dataValue, URL, nameData) {
     return { ...memoizedVal };
 }
 
+export function useCheckModalidades(idEspecialista, idOficina, tipoCita){
+  const modalidad = tipoCita === 1 ? 2 : 1;
+  const URL = endpoints.gestor.checkModalidades;
+
+  const dataValue = {
+    idEspecialista,
+    idOficina,
+    modalidad
+  };
+  const {data} = useSWR(URL, url => fetcherPost(url, dataValue), options);
+
+  // const checkModalites = await fetcherPost(url, dataValue);
+
+  useEffect(() => {
+    mutate(URL);
+  }, [URL, idOficina, idEspecialista, tipoCita]);
+
+  const memoizedValue = useMemo(() => {
+    const result = data;
+
+    return {
+      checkModalidades: result || '',
+    };
+  }, [data]);
+
+  return memoizedValue;
+}
+
+export function useGetAreas(){
+  const URL = endpoints.gestor.getAreas;
+
+  const {data} = useSWR(URL, url => fetcherGet(url), options);
+
+  // const checkModalites = await fetcherPost(url, dataValue);
+
+  useEffect(() => {
+    mutate(URL);
+  }, [URL]);
+
+  const memoizedValue = useMemo(() => {
+    const areas = data;
+
+    return {
+      areas: areas?.data || []
+    };
+  }, [data]);
+
+  return memoizedValue;
+}

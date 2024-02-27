@@ -198,6 +198,8 @@ export const endpoints = {
     getCtAsistidas: '/GeneralController/getCtAsistidas',
     getCtCanceladas: '/GeneralController/getCtCanceladas',
     getCtPenalizadas: '/GeneralController/getCtPenalizadas',
+    getCtPresenciales: '/GeneralController/getCtPresenciales',
+    getCtVirtuales: '/GeneralController/getCtVirtuales',
     getMetas: '/DashboardController/getMetas',
     getMetaAdmin: '/DashboardController/getMetaAdmin',
   },
@@ -241,6 +243,8 @@ export const endpoints = {
     insertOficinas: '/GestorController/insertOficinas',
     updateSede: '/GestorController/updateSede',
     insertSedes: '/GestorController/insertSedes',
+    checkModalidades: '/GestorController/checkModalidades',
+    getAreas: '/GestorController/getAreas'
   },
   avisosPrivacidad: {
     getEspecialidadToSelect: '/AvisosPrivacidadController/getEspecialidades',

@@ -22,6 +22,7 @@ export default function FilasTabla({ row, selected, rol, rel }) {
     oficina,
     depto,
     sede,
+    modalidad,
     paciente,
     estatus,
     horario,
@@ -30,7 +31,8 @@ export default function FilasTabla({ row, selected, rol, rel }) {
     motivoCita,
     metodoPago,
     estatusCita,
-    pagoGenerado
+    pagoGenerado,
+    color
   } = row;
   const quickEdit = useBoolean();
 
@@ -57,6 +59,8 @@ export default function FilasTabla({ row, selected, rol, rel }) {
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{sede}</TableCell>
 
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{modalidad}</TableCell>
+
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{sexo}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{motivoCita}</TableCell>
@@ -68,14 +72,7 @@ export default function FilasTabla({ row, selected, rol, rel }) {
         <TableCell>
           <Label
             variant="soft"
-            color={
-              (estatus === 'Asistencia' && 'success') ||
-              (estatus === 'Por asistir' && 'info') ||
-              (estatus === 'Penalización' && 'warning') ||
-              (estatus === 'Cancelada' && 'error') ||
-              (estatus === 'Justificado' && 'secondary') ||
-              'default'
-            }
+            sx={{backgroundColor: `${color}0f`, color}}
           >
             {estatus}
           </Label>
@@ -83,7 +80,7 @@ export default function FilasTabla({ row, selected, rol, rel }) {
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{horario}</TableCell>
 
-        {estatusCita === 3 && (observaciones === null || observaciones === "") ? (
+        {estatusCita === 3 && (observaciones === null || observaciones === "") && rol === 4 ? (
           <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }} >
             <Tooltip title="Justificar" placement="top" arrow>
               <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>

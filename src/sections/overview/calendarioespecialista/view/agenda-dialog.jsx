@@ -1,6 +1,5 @@
 import * as yup from 'yup';
 import PropTypes from 'prop-types';
-import { es } from 'date-fns/locale';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -13,8 +12,6 @@ import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 import { parseEndDate, parseStartDate } from 'src/utils/general';
 
@@ -30,24 +27,24 @@ import { RHFSelect, RHFHidden, RHFDatePicker } from 'src/components/hook-form';
 export default function AgendaDialog({ open, onClose, id, start, end, sede, ...props }) {
   const theme = useTheme();
 
-  const espa = {
-    // idioma de los botones
-    okButtonLabel: 'Seleccionar',
-    cancelButtonLabel: 'Cancelar',
-    datePickerToolbarTitle: 'Selecciona una fecha',
-  };
-
   const { enqueueSnackbar } = useSnackbar();
 
   const { user } = useAuthContext();
 
   const { sedes } = useGetSedesPresenciales({ idEspecialista: user?.idUsuario });
 
+  const checkMin = (value, context) => {
+    const endd = new Date(value)
+    const startt = context.from[0].value.start
+
+    return endd > startt
+  }
+
   const formSchema = yup.object({
     id: yup.number().nullable(true),
     start: yup.string().transform(parseStartDate).required(),
-    end: yup.string().transform(parseEndDate).required(),
-    sede: yup.number().required(),
+    end: yup.string().test('check-min', "Fecha final debe ser mayor a la fecha inicial", checkMin ).transform(parseEndDate).required(),
+    sede: yup.number().required().typeError('Debes elegir una opción.'),
     especialista: yup.number(),
   });
 
@@ -104,14 +101,8 @@ export default function AgendaDialog({ open, onClose, id, start, end, sede, ...p
             <Stack direction="column" spacing={2}>
               <Stack direction="row" spacing={2}>
                 <RHFHidden name="especialista" value={user?.idUsuario} />
-                <LocalizationProvider
-                  adapterLocale={es}
-                  dateAdapter={AdapterDateFns}
-                  localeText={espa}
-                >
-                  <RHFDatePicker name="start" label="Inicio" value={start} />
-                  <RHFDatePicker name="end" label="Final" value={end} />
-                </LocalizationProvider>
+                <RHFDatePicker name="start" label="Inicio" value={start} disablePast />
+                <RHFDatePicker name="end" label="Final" value={end} disablePast />
               </Stack>
               <RHFSelect name="sede" label="Sede" value="">
                 <MenuItem key={0} value={0}>

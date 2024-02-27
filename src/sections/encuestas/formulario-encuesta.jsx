@@ -37,9 +37,9 @@ export default function FormularioEncuesta() {
 
   const { user } = useAuthContext();
 
-  const array = [idEncuesta, user.idUsuario];
+  const array = [idEncuesta, user?.idUsuario];
 
-  const { getData } = usePostGeneral(user.idUsuario, endpoints.encuestas.getEncNotificacion, "getData");
+  const { getData } = usePostGeneral(user?.idUsuario, endpoints.encuestas.getEncNotificacion, "getData");
 
   const validarData = usePost(array, endpoints.encuestas.getEcuestaValidacion, "validarData");
 
@@ -88,7 +88,7 @@ export default function FormularioEncuesta() {
 
       return {
         ...item,
-        idUsuario: user.idUsuario,
+        idUsuario: user?.idUsuario,
         idEnc: idEncuesta,
         idArea: encuestaData[0]?.idArea,
         resp: data[respKey]
