@@ -21,7 +21,7 @@ import { useUpdate, useCheckModalidades } from 'src/api/reportes';
 import { useSnackbar } from 'src/components/snackbar';
 // ----------------------------------------------------------------------
 
-export default function ModalModalidad({ open, onClose, id, est, estatusVal, modalidadesData, idOficina, tipoCita, idEspecialista }) {
+export default function ModalModalidad({ open, onClose, id, est, estatusVal, modalidadesData, idOficina, tipoCita, idEspecialista, idArea }) {
 
   const confirm = useBoolean();
 
@@ -34,7 +34,7 @@ export default function ModalModalidad({ open, onClose, id, est, estatusVal, mod
   }
 
   const updateEstatus = useUpdate(endpoints.gestor.updateModalidad);
-  const {checkModalidades} = useCheckModalidades(idEspecialista, idOficina, tipoCita);
+  const {checkModalidades} = useCheckModalidades(idEspecialista, idOficina, tipoCita, idArea);
   
   const handleEstatus = async (i) => {
 
@@ -108,12 +108,14 @@ export default function ModalModalidad({ open, onClose, id, est, estatusVal, mod
         <Button variant="contained" color="error" onClick={onClose}>
           Cerrar
         </Button>
+        { checkModalidades?.result ? 
         <Button variant="contained" color="success" onClick={() => {
           handleEstatus(estatus);
           confirm.onFalse();
         }}>
           Guardar
         </Button>
+        :'' }
       </DialogActions>
 </>
   );
@@ -128,5 +130,6 @@ ModalModalidad.propTypes = {
   modalidadesData: PropTypes.any,
   idOficina: PropTypes.number,
   tipoCita: PropTypes.number,
-  idEspecialista: PropTypes.number
+  idEspecialista: PropTypes.number,
+  idArea: PropTypes.number
 };
