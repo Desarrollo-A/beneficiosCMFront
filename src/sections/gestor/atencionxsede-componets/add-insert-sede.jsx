@@ -7,13 +7,14 @@ import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
 
+import { useGetAreas } from 'src/api/reportes';
 import { useAuthContext } from 'src/auth/hooks';
 
-import { RHFSelect } from 'src/components/hook-form';
+import { RHFSelect, RHFAutocomplete } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 
-export default function AddInsertSede({ idSede, especiaData, oficinaData, modalidadesData, handleEsp, handleMod }) {
+export default function AddInsertSede({ idSede, especiaData, oficinaData, modalidadesData, handleEsp, handleMod, handleArea }) {
 
   const { user } = useAuthContext();
 
@@ -24,6 +25,8 @@ export default function AddInsertSede({ idSede, especiaData, oficinaData, modali
   const [, setMod] = useState('');
 
   const [bol, setBol] = useState(false);
+
+  const { areas} = useGetAreas();
 
   useFieldArray({
     control,
@@ -56,89 +59,94 @@ export default function AddInsertSede({ idSede, especiaData, oficinaData, modali
     });
   }
 
+  const handleChangeArea = (value) => {
+    handleArea({idArea: value?.key?.idArea});
+  }
+
+  const handleKeyDown = async () => {
+    handleArea({idArea: null});
+  }
+
   const handleChangeEsp = (e) => {
     handleEsp({ especialista: e.target.value });
   }
 
   return (
     <Box sx={{ p: 3 }}>
-
       <Stack divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3}>
-
         <Stack alignItems="flex-end" spacing={1.5}>
           <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ width: 1 }}>
-
             <RHFSelect
-              name='oficina'
+              name="oficina"
               size="small"
               label="Oficina"
-              defaultValue=''
-              InputLabelProps={{ shrink: true }}
+              defaultValue=""
+              // InputLabelProps={{ shrink: false }}
               onChange={(e) => handleChangeOfi(e)}
             >
-
               <Divider sx={{ borderStyle: 'dashed' }} />
 
               {oficinaData.map((i) => (
-                <MenuItem
-                  key={i.idOficina}
-                  value={i.idOficina}
-                >
+                <MenuItem key={i.idOficina} value={i.idOficina}>
                   {i.oficina}
                 </MenuItem>
               ))}
             </RHFSelect>
 
             <RHFSelect
-              name='especialista'
+              name="especialista"
               size="small"
               label="Especialista"
-              defaultValue=''
-              InputLabelProps={{ shrink: true }}
+              defaultValue=""
               onChange={(e) => handleChangeEsp(e)}
             >
-
               <Divider sx={{ borderStyle: 'dashed' }} />
 
               {especiaData.map((i) => (
-                <MenuItem
-                  key={i.idUsuario}
-                  value={i.idUsuario}
-                >
+                <MenuItem key={i.idUsuario} value={i.idUsuario}>
                   {i.nombre}
                 </MenuItem>
               ))}
             </RHFSelect>
 
+            <Stack spacing={3} sx={{ width: 900 }}>
+              <RHFAutocomplete
+                name="area"
+                label="Área"
+                size="small"
+                value=""
+                onChange={(_event, value, reason) => {
+                  handleChangeArea(value);
+                }}
+                onKeyDown={(e) => {
+                  handleKeyDown();
+                }}
+                  options = { areas?.map((i) => ({
+                  key: i,
+                  value: i.idArea,
+                  label: i.nombre,
+                }))}
+              />
+            </Stack>
             {bol !== false ? (
               <RHFSelect
-                name='modalidad'
+                name="modalidad"
                 size="small"
                 label="Modalidad"
-                InputLabelProps={{ shrink: true }}
-                defaultValue=''
+                defaultValue=""
                 onChange={(e) => handleChangeMod(e)}
               >
-
                 <Divider sx={{ borderStyle: 'dashed' }} />
 
                 {modalidadesData.map((i) => (
-                  <MenuItem
-                    key={i.idOpcion}
-                    value={i.idOpcion}
-                  >
+                  <MenuItem key={i.idOpcion} value={i.idOpcion}>
                     {i.modalidad}
                   </MenuItem>
                 ))}
               </RHFSelect>
-            ) : (
-              null
-            )}
-
+            ) : null}
           </Stack>
-
         </Stack>
-
       </Stack>
     </Box>
   );
@@ -151,4 +159,5 @@ AddInsertSede.propTypes = {
   modalidadesData: PropTypes.any,
   handleEsp: PropTypes.any,
   handleMod: PropTypes.any,
+  handleArea: PropTypes.any
 };

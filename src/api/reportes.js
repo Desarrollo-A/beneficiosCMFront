@@ -1,7 +1,7 @@
 import useSWR, { mutate } from 'swr';
 import { useMemo, useEffect } from 'react';
 
-import { endpoints, fetcherPost } from 'src/utils/axios';
+import { endpoints, fetcherGet, fetcherPost } from 'src/utils/axios';
 
 const options = {
   revalidateIfStale: false,
@@ -142,6 +142,28 @@ export function useCheckModalidades(idEspecialista, idOficina, tipoCita){
 
     return {
       checkModalidades: result || '',
+    };
+  }, [data]);
+
+  return memoizedValue;
+}
+
+export function useGetAreas(){
+  const URL = endpoints.gestor.getAreas;
+
+  const {data} = useSWR(URL, url => fetcherGet(url), options);
+
+  // const checkModalites = await fetcherPost(url, dataValue);
+
+  useEffect(() => {
+    mutate(URL);
+  }, [URL]);
+
+  const memoizedValue = useMemo(() => {
+    const areas = data;
+
+    return {
+      areas: areas?.data || []
     };
   }, [data]);
 
