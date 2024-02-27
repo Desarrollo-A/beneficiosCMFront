@@ -101,7 +101,7 @@ export default function ModalModalidad({ open, onClose, id, est, estatusVal, mod
         </FormControl>
 
       </Stack>)
-      : <DialogTitle>No hay más especialistas para cambiar</DialogTitle>}
+      : <DialogTitle>{checkModalidades?.msg}</DialogTitle>}
       
 
       <DialogActions>
