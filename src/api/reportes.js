@@ -120,15 +120,18 @@ export function usePostSelect(dataValue, URL, nameData) {
     return { ...memoizedVal };
 }
 
-export function useCheckModalidades(idEspecialista, idOficina, tipoCita){
+export function useCheckModalidades(idEspecialista, idOficina, tipoCita, idArea){
   const modalidad = tipoCita === 1 ? 2 : 1;
   const URL = endpoints.gestor.checkModalidades;
+  const area = idArea === null ? 0 : idArea;
 
   const dataValue = {
     idEspecialista,
     idOficina,
-    modalidad
+    modalidad,
+    idArea: area
   };
+
   const {data} = useSWR(URL, url => fetcherPost(url, dataValue), options);
 
   // const checkModalites = await fetcherPost(url, dataValue);
@@ -163,7 +166,9 @@ export function useGetAreas(){
     const areas = data;
 
     return {
-      areas: areas?.data || []
+      areas: areas?.data || [],
+      areasResult: areas?.result || '',
+      areasMsg: areas?.msg || ''
     };
   }, [data]);
 

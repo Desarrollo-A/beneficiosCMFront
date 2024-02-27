@@ -14,12 +14,13 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
+import ModalArea from './modal-area';
 import ModalModalidad from './modal-modalidad';
 import ModalEspecialista from './modal-especialista';
 
 // ----------------------------------------------------------------------
 
-export default function RowsAtencionXsede({ row, selected, onEditRow, onDeleteRow, modalidadesData, rol, close, idOficina, tipoCita, idEspecialista }) {
+export default function RowsAtencionXsede({ row, selected, onEditRow, onDeleteRow, modalidadesData, rol, close, idOficina, tipoCita, idEspecialista, idArea }) {
   const { id, sede, oficina, ubicación, nombre, puesto, idPuesto, modalidad, estatus } = row;
 
   const popover = usePopover();
@@ -187,14 +188,30 @@ export default function RowsAtencionXsede({ row, selected, onEditRow, onDeleteRo
           sx: { maxWidth: 720 },
         }}
       >
-      <ModalModalidad 
+      <ModalModalidad
         estatusVal={modalidad} 
         modalidadesData={modalidadesData} 
         id={id} 
         onClose={handleClose2}
-        idOficina={row.idOficina}
-        tipoCita={row.tipoCita}
-        idEspecialista={row.idEspecialista} />
+        idOficina={idOficina}
+        tipoCita={tipoCita}
+        idEspecialista={idEspecialista} 
+        idArea={idArea} />
+      </Dialog>
+
+      <Dialog
+        maxWidth={false}
+        open={open3}
+        onClose={close}
+        PaperProps={{
+          sx: { maxWidth: 720 },
+        }}
+      >
+        <ModalArea
+          id={id} 
+          onClose={handleClose3}
+          idArea={idArea} 
+        />
       </Dialog>
 
     </>
@@ -211,5 +228,6 @@ RowsAtencionXsede.propTypes = {
   close: PropTypes.func,
   idOficina: PropTypes.number,
   tipoCita: PropTypes.number,
-  idEspecialista: PropTypes.number
+  idEspecialista: PropTypes.number,
+  idArea: PropTypes.number
 };

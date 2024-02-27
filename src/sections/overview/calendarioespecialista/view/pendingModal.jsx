@@ -219,6 +219,7 @@ export default function PendingModal() {
                 <Autocomplete
                   id="motivos"
                   name="motivos"
+                  noOptionsText='Sin opciones'
                   multiple
                   limitTags={2}
                   getOptionDisabled={(option) => // deshabilita las opciones que ya hayan sido seleccionadas
