@@ -69,6 +69,7 @@ export default function HistorialCitas({ open, onClose, idUsuario, area, idUs, r
         {citasData.map((item, index) => (
           <OrderItem key={index} item={item} lastTimeline={index === citasData.length - 1} />
         ))}
+        
       </Timeline>
 
       <DialogActions>

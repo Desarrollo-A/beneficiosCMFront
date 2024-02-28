@@ -5,10 +5,7 @@ import PropTypes from 'prop-types';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
+import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -26,26 +23,17 @@ export default function EncuestaHabilitar({ open, onClose, idEncuesta, puestos }
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const [pregunta, setPregunta] = useState('');
-
   const [btnLoad, setBtnLoad] = useState(false);
-
-  const handleChange = (event) => {
-    setPregunta(event.target.value);
-  }
 
   const updateEstatus = useUpdate(endpoints.encuestas.updateEstatus);
 
-  const handleEstatus = async (vig) => {
-
-    if (vig !== '') {
+  const handleEstatus = async () => {
 
       try {
 
         const data = {
           'idEncuesta': idEncuesta,
           'estatus': 1,
-          'vigencia': vig,
           'area': puestos
         };
 
@@ -75,12 +63,6 @@ export default function EncuestaHabilitar({ open, onClose, idEncuesta, puestos }
         setBtnLoad(false);
       }
 
-    } else {
-      enqueueSnackbar(`¡No se selecciono el número de días!`, { variant: 'danger' });
-
-      setBtnLoad(false);
-    }
-
   };
 
   return (
@@ -90,28 +72,15 @@ export default function EncuestaHabilitar({ open, onClose, idEncuesta, puestos }
       open={open}
       onClose={onClose}
       PaperProps={{
-        sx: { maxWidth: 720 },
+        sx: { maxWidth: 420 },
       }}
     >
 
       {/* <DialogTitle>Trimestre</DialogTitle> */}
 
       <Stack spacing={1} >
-        <FormControl spacing={3} sx={{ p: 3 }}>
-          <InputLabel spacing={3} sx={{ p: 3 }} id="demo-simple-select-label">Dias para constestar</InputLabel>
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            label="Dias para constestar"
-            value={pregunta}
-            onChange={(e) => handleChange(e)}
-          >
-            <MenuItem value={1}>1</MenuItem>
-            <MenuItem value={2}>2</MenuItem>
-            <MenuItem value={3}>3</MenuItem>
-          </Select>
 
-        </FormControl>
+        <DialogTitle>¿Estás seguro que deseas habilitar la encuesta seleccionada?</DialogTitle>
 
       </Stack>
 
@@ -121,7 +90,7 @@ export default function EncuestaHabilitar({ open, onClose, idEncuesta, puestos }
         </Button>
         <Button variant="contained" color="success" loading={btnLoad} onClick={() => {
           setBtnLoad(true);
-          handleEstatus(pregunta);
+          handleEstatus();
           confirm.onFalse();
         }}>
           Habilitar

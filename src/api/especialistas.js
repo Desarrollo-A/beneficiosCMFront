@@ -199,3 +199,33 @@ export async function setHorarioPresencial(data) {
 
   return res.data;
 }
+
+export function useGetEspecialistasPorArea(object) {
+  const params = new URLSearchParams(object).toString()
+  const URL = `${endpoints.gestor.getEsp}?${params}`
+
+  const accessToken = sessionStorage.getItem('accessToken');
+
+  const config = {
+    headers : {
+      token : accessToken
+    }
+  }
+
+  const { data, isLoading, error, isValidating, mutate } = useSWR([URL, config], fetcherGet);
+  
+  const memoizedValue = useMemo(
+    () => ({
+      especialistas: data || [],
+      especialistasLoading: isLoading,
+      especialistasError: error,
+      especialistasValidating: isValidating,
+      especialistasEmpty: !isLoading && !data?.length,
+      especialistasGet : mutate,
+    }),
+    [data, error, isLoading, isValidating, mutate]
+  );
+
+  return memoizedValue;
+}
+

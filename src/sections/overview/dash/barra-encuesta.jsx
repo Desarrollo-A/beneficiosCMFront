@@ -49,27 +49,55 @@ function handleDownloadExcel(chart, title) {
 
 // ----------------------------------------------------------------------
 
-export default function EncuestaBarra({ title, subheader, chart, user, handleChangePg, selectPg, idEncuesta, idArea, idPregunta, handleChangeIdPg, ...other }) {
+export default function EncuestaBarra({ 
+  title,
+  subheader, 
+  chart, 
+  user, 
+  handleChangePg, 
+  selectPg, 
+  idEncuesta, 
+  idArea, 
+  idPregunta, 
+  _es, 
+  fechaI,
+  fechaF,
+  handleChangeIdPg, 
+  ...other 
+}) {
 
   const [seriesData, setSeriesData] = useState('data');
 
   const { preguntaData } = usePostGeneral(user.idPuesto, endpoints.dashboard.getPregunta, "preguntaData");
 
-  const [pregunta, setPregunta] = useState(idPregunta);
+  const [pregunta, setPregunta] = useState('');
 
   const handleChangeSct = useCallback(
     (e) => {
       handleChangePg([
         { idPregunta: e.target.value },
         { idEncuesta },
+        { idEspecialista: user?.idRol === 3 ? user?.idUsuario : _es},
         { idArea },
+        { idRol: user?.idRol },
+        {fhI: fechaI},
+        {fhF: fechaF },
       ]);
 
       handleChangeIdPg(e.target.value);
 
       setPregunta(e.target.value);
     },
-    [handleChangePg, idEncuesta, idArea, handleChangeIdPg]
+    [
+      handleChangePg, 
+      idEncuesta, 
+      idArea, 
+      handleChangeIdPg, 
+      user, 
+      _es,
+      fechaI,
+      fechaF
+    ]
   );
 
   const { categories, colors, series, options } = chart;
@@ -135,7 +163,7 @@ export default function EncuestaBarra({ title, subheader, chart, user, handleCha
               labelId="demo-simple-select-label"
               id="demo-simple-select"
               label="Pregunta"
-              value={!pregunta ? '' : pregunta}
+              value={pregunta}
               onChange={(e) => handleChangeSct(e)}
             >
               {preguntaData.map((i) => (
@@ -230,4 +258,7 @@ EncuestaBarra.propTypes = {
   idArea: PropTypes.number,
   idPregunta: PropTypes.any,
   handleChangeIdPg: PropTypes.func,
+  _es: PropTypes.any,
+  fechaI: PropTypes.any,
+  fechaF: PropTypes.any,
 };

@@ -1,6 +1,6 @@
-import useSWR from 'swr';
 import axios from 'axios';
-import { useMemo } from 'react';
+import useSWR, { mutate } from 'swr';
+import { useMemo, useEffect } from 'react';
 
 import { fetcherPost } from 'src/utils/axios';
 
@@ -61,3 +61,27 @@ export const fetcherInsert = async (args) => {
 
   return res.data;
 };
+
+export function useGetCountRespuestas(dataValue, URL, nameData) {
+  const { data, isLoading, error, isValidating } = useSWR(
+    URL,
+    (url) => fetcherPost(url, dataValue),
+    options
+  );
+
+  useEffect(() => {
+    mutate(URL);
+  }, [URL, dataValue]);
+    
+    const memoizedVal = useMemo(
+      () => ({
+        [nameData]: data?.data || [],
+        dataLoading: isLoading,
+        dataError: error,
+        dataValidating: isValidating,
+        dataEmpty: !isLoading,
+      }),
+      [data?.data, error, isLoading, isValidating, nameData]
+    );
+    return { ...memoizedVal };
+}
