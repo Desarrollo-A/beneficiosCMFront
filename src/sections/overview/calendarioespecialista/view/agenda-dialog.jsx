@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import * as yup from 'yup';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
@@ -21,7 +22,6 @@ import { setHorarioPresencial, useGetSedesPresenciales } from 'src/api/especiali
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider from 'src/components/hook-form/form-provider';
 import { RHFSelect, RHFHidden, RHFDatePicker } from 'src/components/hook-form';
-import dayjs from 'dayjs';
 
 // -------------------------------------------------------------------
 
