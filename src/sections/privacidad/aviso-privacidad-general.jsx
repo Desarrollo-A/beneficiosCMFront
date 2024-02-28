@@ -157,7 +157,6 @@ export default function AvisoPrivacidadGeneral() {
     };
     
     if (typeof especialidadesDisponibles === 'object' && especialidadesDisponibles.length > 0) {
-      console.log('1', especialidadesDisponibles);
       if (especialidadesDisponibles.length > 0) {
         especialidadesDisponibles.forEach((especialidad) => {
           if (user.idPuesto === especialidad.idPuesto && once === 0) {
