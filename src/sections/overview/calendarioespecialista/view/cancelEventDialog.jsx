@@ -194,11 +194,12 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
               <Autocomplete
                 id="motivos"
                 name="motivos"
+                openText='Abrir'
+                clearText='Borrar'
                 noOptionsText='Sin opciones'
                 multiple
-                limitTags={2}
                 getOptionDisabled={(option) => // deshabilita las opciones que ya hayan sido seleccionadas
-                  reason.some((selectedOption) => selectedOption.value === option.value)
+                  reason.some((selectedOption) => (selectedOption.value === option.value || reason.length > 4))
                 }
 
                 onChange={(event, value) => {

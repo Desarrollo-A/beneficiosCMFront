@@ -50,6 +50,7 @@ const TABLE_HEAD = [
   { id: 'id', label: 'ID', width: 48 },
   { id: 'sede', label: 'Sede', width: 180 },
   { id: 'oficina', label: 'Oficina', width: 260 },
+  { id: 'beneficio', label: 'Beneficio', width: 180 },
   { id: 'area', label: 'Área', width: 180 },
   { id: 'especialista', label: 'Especialista', width: 220 },
   { id: 'modalidad', label: 'Modalidad', width: 180 },

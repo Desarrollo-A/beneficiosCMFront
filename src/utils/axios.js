@@ -237,6 +237,7 @@ export const endpoints = {
     updateModalidad: '/GestorController/updateModalidad',
     updateEspecialista: '/GestorController/updateEspecialista',
     updateArea: '/GestorController/updateArea',
+    updateEstatus: '/GestorController/updateEstatus',
     getEsp: '/GestorController/getEsp',
     getAtencionXsedeEsp: '/GestorController/getAtencionXsedeEsp',
     getOfi: '/GestorController/getOficinas',

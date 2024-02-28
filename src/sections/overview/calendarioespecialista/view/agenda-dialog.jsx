@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import * as yup from 'yup';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
@@ -34,10 +35,10 @@ export default function AgendaDialog({ open, onClose, id, start, end, sede, ...p
   const { sedes } = useGetSedesPresenciales({ idEspecialista: user?.idUsuario });
 
   const checkMin = (value, context) => {
-    const endd = new Date(value)
-    const startt = context.from[0].value.start
+    const endd = dayjs(new Date(value)).format('YYYY-MM-DD');
+    const startt = dayjs(context.from[0].value.start).format('YYYY-MM-DD');
 
-    return endd > startt
+    return endd >= startt
   }
 
   const formSchema = yup.object({
@@ -56,7 +57,6 @@ export default function AgendaDialog({ open, onClose, id, start, end, sede, ...p
   const { handleSubmit } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
-    console.log(data);
 
     const response = await setHorarioPresencial(data);
 
