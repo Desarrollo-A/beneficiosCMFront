@@ -11,7 +11,6 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 
 import UserQuickEditForm from './modal-editar-citas';
-import { style } from '@mui/system';
 
 // ----------------------------------------------------------------------
 
