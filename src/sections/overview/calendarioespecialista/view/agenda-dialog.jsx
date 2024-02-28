@@ -21,6 +21,7 @@ import { setHorarioPresencial, useGetSedesPresenciales } from 'src/api/especiali
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider from 'src/components/hook-form/form-provider';
 import { RHFSelect, RHFHidden, RHFDatePicker } from 'src/components/hook-form';
+import dayjs from 'dayjs';
 
 // -------------------------------------------------------------------
 
@@ -34,10 +35,10 @@ export default function AgendaDialog({ open, onClose, id, start, end, sede, ...p
   const { sedes } = useGetSedesPresenciales({ idEspecialista: user?.idUsuario });
 
   const checkMin = (value, context) => {
-    const endd = new Date(value)
-    const startt = context.from[0].value.start
+    const endd = dayjs(new Date(value)).format('YYYY-MM-DD');
+    const startt = dayjs(context.from[0].value.start).format('YYYY-MM-DD');
 
-    return endd > startt
+    return endd >= startt
   }
 
   const formSchema = yup.object({
