@@ -120,7 +120,6 @@ export default function BarraTareasTabla({
     currentStatus
   ]);
 
-
   const [condi, setCondi] = useState(true);
 
   useEffect(() => {

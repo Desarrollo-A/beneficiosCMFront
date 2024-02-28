@@ -11,6 +11,7 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 
 import UserQuickEditForm from './modal-editar-citas';
+import { style } from '@mui/system';
 
 // ----------------------------------------------------------------------
 
@@ -35,6 +36,8 @@ export default function FilasTabla({ row, selected, rol, rel }) {
     color
   } = row;
   const quickEdit = useBoolean();
+
+
 
   return (
     <>
@@ -63,7 +66,15 @@ export default function FilasTabla({ row, selected, rol, rel }) {
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{sexo}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{motivoCita}</TableCell>
+        <Tooltip title={motivoCita.length > 19 ? motivoCita : ''} placement="top" arrow>
+          <TableCell sx={{
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+            minWidth: '160px',
+            maxWidth: '100px', 
+          }}>{motivoCita}</TableCell>
+        </Tooltip>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{pagoGenerado}</TableCell>
 

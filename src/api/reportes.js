@@ -103,11 +103,11 @@ export function usePostSelect(dataValue, URL, nameData) {
     options
   );
 
-  /*
+  
     useEffect(() => {
       mutate(URL);
     }, [URL, dataValue]);
-    */
+   
     
     const memoizedVal = useMemo(
       () => ({
