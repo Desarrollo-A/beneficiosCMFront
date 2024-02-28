@@ -17,18 +17,13 @@ import { updateGoogleCalendarEvent } from 'src/api/calendar-colaborador';
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 
-export default function CalendarPreview({
-  event,
-  open,
-  handleClose,
-  btnNotificationDisabled,
-  setBtnNotificationDisabled,
-}) {
+export default function CalendarPreview({ event, open, handleClose }) {
   const [email, setEmail] = useState('');
   const [emails, setEmails] = useState([]);
   const [errorMessage, setErrorMessage] = useState('Formato de correo erróneo');
   const [errorEmail, setErrorEmail] = useState(false);
   const [sendEmails, setSendEmails] = useState(false);
+  const [btnNotificationDisabled, setBtnNotificationDisabled] = useState(false);
 
   const { enqueueSnackbar } = useSnackbar();
   // const { user: datosUser } = useAuthContext();
@@ -100,6 +95,7 @@ export default function CalendarPreview({
       variant: 'success',
     });
     handleClose();
+    setBtnNotificationDisabled(false);
     return true;
   };
 
@@ -459,6 +455,4 @@ CalendarPreview.propTypes = {
   event: PropTypes.object,
   open: PropTypes.bool,
   handleClose: PropTypes.func,
-  btnNotificationDisabled: PropTypes.bool,
-  setBtnNotificationDisabled: PropTypes.func,
 };
