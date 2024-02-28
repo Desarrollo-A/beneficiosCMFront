@@ -221,9 +221,10 @@ export default function PendingModal() {
                   name="motivos"
                   noOptionsText='Sin opciones'
                   multiple
-                  limitTags={2}
+                  openText='Abrir'
+                  clearText='Borrar'
                   getOptionDisabled={(option) => // deshabilita las opciones que ya hayan sido seleccionadas
-                  reason.some((selectedOption) => selectedOption.value === option.value)
+                  reason.some((selectedOption) => (selectedOption.value === option.value || reason.length > 4))
                 }
                   onChange={(event, value) => {
                     setReason(value);
