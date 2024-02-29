@@ -76,7 +76,7 @@ export default function RowsAtencionXsede({ row, selected, onEditRow, onDeleteRo
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{sede}</TableCell>
 
-        <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
+        <TableCell sx={{ whiteSpace: 'nowrap', alignItems: 'center' }}>
 
           <ListItemText
             primary={oficina}
