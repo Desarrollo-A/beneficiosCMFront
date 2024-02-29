@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import Box from '@mui/material/Box';
@@ -38,7 +38,7 @@ export default function ModalPoliticas({ open, onClose }) {
           <DialogContent>
             El sistema de <b style={{ color: '#003764' }}>BENEFICIOS MADERAS</b> pertenece a Ciudad Maderas, se define como
             aquél medio que ayuda a facilitar la gestión y agenda de los colaboradores con los diversos beneficios que
-            ofrece la empresa como; AGREGAR de esta manera los colaboradores pueden visualizar la disponibilidad de los
+            ofrece la empresa como; Quantum Balance, Nutrición, Psicología, Guía Espiritual en que esta manera los colaboradores pueden visualizar la disponibilidad de los
             servicios que ofrece Ciudad Maderas y agendar citas con el área de interés.
           </DialogContent>
 
@@ -402,12 +402,12 @@ export default function ModalPoliticas({ open, onClose }) {
         </Stack>
 
         <DialogContent style={{ textAlign: 'center' }}>
-          <Button sx={{width:'200px'}} variant="contained" color="error" onClick={onClose}>
+          <Button sx={{ width: '200px' }} variant="contained" color="error" onClick={onClose}>
             Cerrar
           </Button>
         </DialogContent>
 
-        <Box mb={3}/>
+        <Box mb={3} />
 
       </DialogContent>
 
