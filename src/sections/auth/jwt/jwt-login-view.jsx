@@ -25,11 +25,14 @@ import { PATH_AFTER_LOGIN } from 'src/config-global';
 import Iconify from 'src/components/iconify';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
+import ModalPoliticas from './modal-politicas';
 
 export default function JwtLoginView() {
   const { login } = useAuthContext();
 
   const router = useRouter();
+
+  const quickEdit = useBoolean();
 
   const [errorMsg, setErrorMsg] = useState('');
   const [numEmpleado, setnumEmpleado] = useState('');
@@ -150,9 +153,12 @@ export default function JwtLoginView() {
       >
         Iniciar
       </LoadingButton>
+    </Stack >
+  );
 
-      <>
-        {isMobile && (
+  const logoMd = (
+    <Stack>
+      {isMobile && (
           <Box
             component="img"
             alt="auth"
@@ -179,8 +185,28 @@ export default function JwtLoginView() {
             }}
           />
         )}
-      </>
-    </Stack >
+    </Stack>
+  );
+
+  const renderTerms = (
+    <Typography
+      component="div"
+      sx={{
+        color: 'text.secondary',
+        mt: 2.5,
+        typography: 'caption',
+        textAlign: 'center',
+      }}
+    >
+      <ModalPoliticas open={quickEdit.value} onClose={quickEdit.onFalse} />
+      
+      {'Al registrarme, acepto '}
+      {' las '}
+      <Link underline="always" color="text.primary" onClick={quickEdit.onTrue}>
+        Políticas de privacidad
+      </Link>
+      .
+    </Typography>
   );
 
   return (
@@ -189,6 +215,10 @@ export default function JwtLoginView() {
       {renderHead}
 
       {renderForm}
+
+      {logoMd}
+
+      {renderTerms}
     </FormProvider>
   );
 }

@@ -11,9 +11,12 @@ import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 import { RouterLink } from 'src/routes/components';
 import { useRouter, useSearchParams } from 'src/routes/hooks';
+
+import { useBoolean } from 'src/hooks/use-boolean';
 
 import instance from 'src/utils/axiosCH';
 
@@ -21,12 +24,18 @@ import { useAuthContext } from 'src/auth/hooks';
 import { PATH_AFTER_LOGIN, PATH_AFTER_REGISTRO } from 'src/config-global';
 
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
+
+import ModalPoliticas from './modal-politicas';
 // ----------------------------------------------------------------------
 
 export default function JwtRegisterView() {
   const [numEmpleado, setnumEmpleado] = useState('');
 
   const { register } = useAuthContext();
+
+  const quickEdit = useBoolean();
+
+  const isMobile = useMediaQuery('(max-width: 960px)');
 
   const router = useRouter();
   const navigate = useNavigate();
@@ -158,9 +167,11 @@ export default function JwtRegisterView() {
         textAlign: 'center',
       }}
     >
+      <ModalPoliticas open={quickEdit.value} onClose={quickEdit.onFalse} />
+
       {'Al registrarme, acepto '}
       {' las '}
-      <Link underline="always" color="text.primary" onclick="">
+      <Link underline="always" color="text.primary" onClick={quickEdit.onTrue}>
         Políticas de privacidad
       </Link>
       .
@@ -193,6 +204,38 @@ export default function JwtRegisterView() {
     </FormProvider>
   );
 
+  const logoMd = (
+    <Stack>
+      {isMobile && (
+          <Box
+            component="img"
+            alt="auth"
+            src={`${import.meta.env.BASE_URL}assets/img/logoMaderas.svg`}
+            sx={{
+              maxWidth: { xs: 480, lg: 560, xl: 720 },
+              position: 'absolute',
+              width: { xs: '50%', md: '21%' },
+              left: '25%',
+              top: { xs: '83%'}
+            }}
+          />
+        )}
+        {!isMobile && (
+          <Box
+            component="img"
+            alt="auth"
+            src={`${import.meta.env.BASE_URL}assets/img/logoMaderas.svg`}
+            sx={{
+              position: 'absolute',
+              left: '37%',
+              width: { xs: '55%', md: '26%' },
+              top: { md: '103%' }
+            }}
+          />
+        )}
+    </Stack>
+  );
+
   return (
     <>
       {renderHead}
@@ -200,6 +243,8 @@ export default function JwtRegisterView() {
       {renderForm}
 
       {renderTerms}
+
+      {logoMd}
 
       {/* <Dialog
         open={open}
