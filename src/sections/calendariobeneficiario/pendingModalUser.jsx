@@ -183,7 +183,7 @@ export default function PendingModalUser() {
   return (
     <>
       {pendientes?.data?.pago?.length > 0 && ( // si hay pendientes se mostrara el modal
-        <Dialog open={open} fullWidth maxWidth="sm">
+        <Dialog open={open} fullWidth maxWidth="sm" disableEnforceFocus>
           <DialogContent>
             <Stack
               direction="row"
