@@ -199,7 +199,7 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
                 noOptionsText='Sin opciones'
                 multiple
                 getOptionDisabled={(option) => // deshabilita las opciones que ya hayan sido seleccionadas
-                  reason.some((selectedOption) => (selectedOption.value === option.value || reason.length > 4))
+                  reason.some((selectedOption) => (selectedOption.value === option.value))
                 }
 
                 onChange={(event, value) => {
