@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useNavigate, useLocation } from 'react-router';
 
+import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
@@ -171,10 +172,9 @@ export default function JwtRegisterView() {
 
       {'Al registrarme, acepto '}
       {' las '}
-      <Link underline="always" color="text.primary" onClick={quickEdit.onTrue}>
+      <Button variant="outlined" color="primary" sx={{height:"20px"}} onClick={quickEdit.onTrue}>
         Políticas de privacidad
-      </Link>
-      .
+      </Button>
     </Typography>
   );
 
