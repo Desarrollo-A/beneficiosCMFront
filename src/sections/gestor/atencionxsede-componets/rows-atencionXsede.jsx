@@ -31,6 +31,7 @@ export default function RowsAtencionXsede({ row, selected, onEditRow, onDeleteRo
   const [open, setOpen] = useState(false);
   const [open2, setOpen2] = useState(false);
   const [open3, setOpen3] = useState(false);
+  const [open4, setOpen4] = useState(false);
 
   // const [close] = useState(false);
 
@@ -56,6 +57,14 @@ export default function RowsAtencionXsede({ row, selected, onEditRow, onDeleteRo
 
   const handleClose3 = () => {
     setOpen3(false);
+  }
+
+  const handleOpen4 = () => {
+    setOpen4(true);
+  }
+
+  const handleClose4 = () => {
+    setOpen4(false);
   }
 
 
