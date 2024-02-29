@@ -4,9 +4,6 @@ import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-
-import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
@@ -52,13 +49,7 @@ export default function UserTableFiltersResult({
           </Block>
         )}
 
-        <Button
-          color="error"
-          onClick={onResetFilters}
-          startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
-        >
-          Limpiar
-        </Button>
+        
       </Stack>
     </Stack>
   );
