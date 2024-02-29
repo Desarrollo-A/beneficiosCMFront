@@ -201,7 +201,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
 
     setPatient(value.values);
 
-    const modalidades = await getModalities(value?.idSede, user.idUsuario);
+    const modalidades = await getModalities(value?.idSede, user?.idUsuario, patient?.idArea);
     if (modalidades.result) setAllModalities(modalidades.data);
   };
 
