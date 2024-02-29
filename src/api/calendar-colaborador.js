@@ -44,9 +44,9 @@ export function getSpecialists(sede, area, beneficio) {
 }
 
 // Trae las modalidades de los datos seleccionados (presencial o en linea)
-export function getModalities(sede, especialista) {
+export function getModalities(sede, especialista, area) {
   const URL = [endpoints.especialistas.modalities];
-  const modalities = fetcherPost(URL, { sede, especialista });
+  const modalities = fetcherPost(URL, { sede, especialista, area });
 
   return modalities;
 }
