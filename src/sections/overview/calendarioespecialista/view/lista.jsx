@@ -304,6 +304,8 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
             <RHFAutocomplete
               name="tipoCita"
               label="Tipo de cita"
+              disabled={ !allModalities.length > 0 }
+              helperText = {!allModalities.length > 0 ? 'No hay horarios disponibles' : ''}
               value={modalitie.id}
               onChange={(_event, value) => {
                 handleModalitie(value);

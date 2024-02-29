@@ -195,6 +195,7 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
                 id="motivos"
                 name="motivos"
                 openText='Abrir'
+                ListboxProps={{ style: { maxHeight: 200 } }}
                 clearText='Borrar'
                 noOptionsText='Sin opciones'
                 multiple
@@ -244,6 +245,7 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
                     variant="outlined"
                     {...params}
                     label="Selecciona los motivos de la cita"
+                    style={{ maxHeight: '150px' }}
                   />
                 )}
               />

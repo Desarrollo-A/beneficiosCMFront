@@ -47,15 +47,15 @@ import FiltersAtencionXsede from '../atencionxsede-componets/filters-atencionXse
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'id', label: 'ID', width: 48 },
-  { id: 'sede', label: 'Sede', width: 180 },
-  { id: 'oficina', label: 'Oficina', width: 800 },
-  { id: 'beneficio', label: 'Beneficio', width: 180 },
-  { id: 'area', label: 'Área', width: 180 },
-  { id: 'especialista', label: 'Especialista', width: 220 },
-  { id: 'modalidad', label: 'Modalidad', width: 180 },
-  { id: 'estatus', label: 'Estatus', width: 100 },
-  { id: '', width: 88 },
+  { id: 'id', label: 'ID'},
+  { id: 'sede', label: 'Sede' },
+  { id: 'oficina', label: 'Oficina' },
+  { id: 'beneficio', label: 'Beneficio' },
+  { id: 'area', label: 'Área' },
+  { id: 'especialista', label: 'Especialista'},
+  { id: 'modalidad', label: 'Modalidad' },
+  { id: 'estatus', label: 'Estatus' },
+  { id: '' },
 ];
 
 const defaultFilters = {

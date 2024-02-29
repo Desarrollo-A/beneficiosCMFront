@@ -221,6 +221,7 @@ export default function PendingModal() {
                   name="motivos"
                   noOptionsText='Sin opciones'
                   multiple
+                  ListboxProps={{ style: { maxHeight: 200 } }}
                   limitTags={2}
                   openText='Abrir'
                   clearText='Borrar'
@@ -270,6 +271,7 @@ export default function PendingModal() {
                       {...params}
                       label="Selecciona los motivos de la cita"
                       placeholder="motivos"
+                      style={{ maxHeight: '150px' }}
                     />
                   )}
                 />
