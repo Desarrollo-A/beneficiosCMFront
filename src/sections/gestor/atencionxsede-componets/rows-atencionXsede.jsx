@@ -31,7 +31,7 @@ export default function RowsAtencionXsede({ row, selected, onEditRow, onDeleteRo
   const [open, setOpen] = useState(false);
   const [open2, setOpen2] = useState(false);
   const [open3, setOpen3] = useState(false);
-  const [open4, setOpen4] = useState(false);
+  const [open4, setOpen4] = useState(false); // ver si se puede solo en una
 
   // const [close] = useState(false);
 
