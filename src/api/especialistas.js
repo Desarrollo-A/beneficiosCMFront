@@ -202,7 +202,7 @@ export async function setHorarioPresencial(data) {
 
 export function useGetEspecialistasPorArea(object) {
   const params = new URLSearchParams(object).toString()
-  const URL = `${endpoints.gestor.getEsp}?${params}`
+  const URL = `${endpoints.dashboard.getEsp}?${params}`
 
   const accessToken = sessionStorage.getItem('accessToken');
 

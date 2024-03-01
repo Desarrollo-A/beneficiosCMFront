@@ -202,6 +202,7 @@ export const endpoints = {
     getCtVirtuales: '/GeneralController/getCtVirtuales',
     getMetas: '/DashboardController/getMetas',
     getMetaAdmin: '/DashboardController/getMetaAdmin',
+    getEsp: '/DashboardController/getEsp',
   },
   encuestas: {
     encuestaInsert: '/EncuestasController/encuestaInsert',

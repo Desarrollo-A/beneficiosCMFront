@@ -129,9 +129,7 @@ export default function EncuestaBarra({
     },
     [popover,]
   );
-
-
-
+  
   const handleExcel = async e => {
     e.preventDefault();
     handleDownloadExcel(
