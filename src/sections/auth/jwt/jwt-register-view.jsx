@@ -9,6 +9,7 @@ import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -171,10 +172,9 @@ export default function JwtRegisterView() {
 
       {'Al registrarme, acepto '}
       {' las '}
-      <Link underline="always" color="text.primary" onClick={quickEdit.onTrue}>
+      <Button variant="outlined" color="primary" sx={{height:"20px"}} onClick={quickEdit.onTrue}>
         Políticas de privacidad
-      </Link>
-      .
+      </Button>
     </Typography>
   );
 

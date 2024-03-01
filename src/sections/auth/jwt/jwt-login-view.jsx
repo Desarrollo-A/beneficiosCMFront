@@ -5,6 +5,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
+import { Button } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
 import IconButton from '@mui/material/IconButton';
@@ -202,9 +203,9 @@ export default function JwtLoginView() {
       
       {'Al registrarme, acepto '}
       {' las '}
-      <Link underline="always" color="text.primary" onClick={quickEdit.onTrue}>
+      <Button variant="outlined" color="primary" sx={{height:"20px"}} onClick={quickEdit.onTrue}>
         Políticas de privacidad
-      </Link>
+      </Button>
       .
     </Typography>
   );
