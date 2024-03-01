@@ -15,6 +15,7 @@ import styles from './style.css';
 export default function ModalPoliticas({ open, onClose }) {
 
   return (
+    
     <Dialog
       fullWidth
       maxWidth={false}
@@ -27,6 +28,7 @@ export default function ModalPoliticas({ open, onClose }) {
       }}
     >
 
+<div className="scroll-shadows">
       <DialogContent>
 
         <DialogTitle sx={{ textAlign: 'center', color: '#003764' }}>TÉRMINOS Y CONDICIONES</DialogTitle>
@@ -410,6 +412,7 @@ export default function ModalPoliticas({ open, onClose }) {
         <Box mb={3} />
 
       </DialogContent>
+      </div>
 
     </Dialog>
 
