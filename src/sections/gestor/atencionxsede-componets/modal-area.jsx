@@ -84,6 +84,7 @@ export default function ModalArea({ id, onClose, idArea }) {
               id="area"
               name="area"
               noOptionsText='Sin opciones'
+              isOptionEqualToValue={(option, value) => option.value === value.value}
               getOptionDisabled={(option) => option.value === idArea}
               onChange={(e, value, reason) => handleChange(e, value, reason)}
               onKeyDown={(e) => {
