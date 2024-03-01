@@ -1,7 +1,5 @@
 import Container from '@mui/material/Container';
 
-import { paths } from 'src/routes/paths';
-
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
@@ -20,11 +18,9 @@ export default function InvoiceCreateView() {
         links={[
           {
             name: 'Encuestas',
-            href: paths.dashboard.root,
           },
           {
             name: 'Crear encuesta',
-            href: paths.dashboard.invoice.root,
           },
          /*  {
             name: 'New Invoice',

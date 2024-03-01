@@ -340,7 +340,6 @@ export default function HistorialReportesView() {
         <CustomBreadcrumbs
           heading="Reporte de ingresos"
           links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Reportes' },
             { name: 'Ingresos' },
           ]}

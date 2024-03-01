@@ -216,7 +216,6 @@ export default function AtencionXsedeView() {
       <CustomBreadcrumbs
         heading="Atención por sede"
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
           { name: 'Gestor' },
           { name: 'Atención por sede' },
         ]}

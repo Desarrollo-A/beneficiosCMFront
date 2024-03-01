@@ -70,7 +70,7 @@ export default function FilasTabla({ row, selected, rol, rel }) {
             textOverflow: 'ellipsis',
             overflow: 'hidden',
             whiteSpace: 'nowrap',
-            minWidth: '160px',
+            minWidth: '200px',
             maxWidth: '100px', 
           }}>{motivoCita}</TableCell>
         </Tooltip>

@@ -232,8 +232,7 @@ export default function OficinasView() {
         <CustomBreadcrumbs
           heading="Oficinas"
           links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Gestor', /* href: paths.dashboard.user.root */ },
+            { name: 'Gestor' },
             { name: 'Oficinas' },
           ]}
           sx={{

@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 
+import Tooltip from '@mui/material/Tooltip';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 
@@ -18,7 +19,8 @@ export default function RowResumenTerapias({ row, area, idUs, rol }) {
     pagoGenerado,
     metodoPago,
     horario,
-    estatus, } = row;
+    estatus,
+    color } = row;
 
   return (
       <TableRow>
@@ -29,7 +31,15 @@ export default function RowResumenTerapias({ row, area, idUs, rol }) {
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{especialista}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{motivoCita}</TableCell>
+        <Tooltip title={motivoCita.length > 19 ? motivoCita : ''} placement="top" arrow>
+          <TableCell sx={{
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+            minWidth: '200px',
+            maxWidth: '100px', 
+          }}>{motivoCita}</TableCell>
+        </Tooltip>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{sede}</TableCell>
 
@@ -44,14 +54,7 @@ export default function RowResumenTerapias({ row, area, idUs, rol }) {
         <TableCell>
           <Label
             variant="soft"
-            color={
-              (estatus === 'Asistencia' && 'success') ||
-              (estatus === 'Por asistir' && 'info') ||
-              (estatus === 'Penalización' && 'warning') ||
-              (estatus === 'Cancelada' && 'error') ||
-              (estatus === 'Justificado' && 'secondary') ||
-              'default'
-            }
+            sx={{backgroundColor: `${color}0f`, color}}
           >
             {estatus}
           </Label>

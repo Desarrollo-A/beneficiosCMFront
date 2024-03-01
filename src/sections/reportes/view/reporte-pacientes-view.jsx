@@ -272,8 +272,7 @@ export default function ReportePacientesView() {
         <CustomBreadcrumbs
           heading="Pacientes"
           links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Reportes', /* href: paths.dashboard.user.root */ },
+            { name: 'Reportes' },
             { name: 'Pacientes' },
           ]}
           sx={{

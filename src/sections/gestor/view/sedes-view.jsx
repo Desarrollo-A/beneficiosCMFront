@@ -230,8 +230,7 @@ export default function SedesView() {
         <CustomBreadcrumbs
           heading="Sedes"
           links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Gestor', /* href: paths.dashboard.user.root */ },
+            { name: 'Gestor' },
             { name: 'Sedes' },
           ]}
           sx={{
