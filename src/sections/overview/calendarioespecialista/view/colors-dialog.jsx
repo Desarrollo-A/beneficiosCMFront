@@ -12,7 +12,7 @@ export default function ColorsDialog({ onClose }) {
     },
     {
       color: '#ff0000',
-      text: 'Cita cancelada',
+      text: 'Cita cancelada colaborador / especialista',
     },
     {
       color: '#808080',
@@ -30,20 +30,13 @@ export default function ColorsDialog({ onClose }) {
       color: '#00ffff',
       text: 'Cita pendiente de pago',
     },
-    {
-      color: '#ff0000',
-      text: 'Cita cancelada por especialista',
-    },
-    {
-      color: '#ffa500',
-      text: 'Cita que se ha reagendado',
-    },
+
     {
       color: '#ff0000',
       text: 'Cita con pago pendiente expirado',
     },
     {
-      color: '#f1ff37',
+      color: '#ffe800',
       text: 'Primera cita',
     },
     {
@@ -88,7 +81,7 @@ export default function ColorsDialog({ onClose }) {
                     height: 30,
                     borderRadius: 20,
                     bgcolor: color.color,
-                    opacity: 0.8,
+                    opacity: 0.7,
                     '&:hover': {
                       opacity: 0.7,
                     },
