@@ -283,6 +283,7 @@ export async function createAppointment(eventData, modalitie, datosUser) {
       tituloEmail: 'Reservación',
       temaEmail: 'Se ha agendado tu cita con: ',
       correo: eventData.paciente.correo,
+      idUsuario: datosUser.idUsuario
     };
 
     const googleData = {
@@ -415,6 +416,7 @@ export async function cancelAppointment(currentEvent, id, cancelType, idUsuario)
     especialista: currentEvent.especialista,
     view: 'email-cancelar',
     correo: currentEvent?.correo,
+    idUsuario
   };
 
   const delDate = await fetcherPost(cancel_appointment, data);
@@ -492,6 +494,7 @@ export async function endAppointment(currentEvent, reason, idUsuario) {
     view: 'email-end',
     correo: currentEvent?.correo,
     link: 'https://prueba.gphsis.com/beneficiosmaderas/dashboard/calendariobeneficiario',
+    idUsuario
   };
 
   const update = await fetcherPost(end_appointment, data);
@@ -623,6 +626,7 @@ export async function reschedule(eventData, idDetalle, cancelType, datosUser) {
     horaFinalOld: dayjs(eventData.oldEventEnd).format('HH:mm: a'),
     view: 'email-reschedule',
     correo: eventData?.correo,
+    idUsuario: datosUser?.idUsuario
   };
 
   response = await fetcherPost(check_invoice, idDetalle);
