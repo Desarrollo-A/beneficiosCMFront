@@ -73,9 +73,8 @@ function handleDownloadExcel(datosTabla, rol) {
       sheet: "Historial Reportes",
       columns: [
         { label: "ID Colaborador", value: "idColab" },
-        { label: "Paciente", value: "paciente" },
         { label: "Especialista", value: "especialista" },
-        { label: "Horario cita", value: "horario" },
+        { label: "Paciente", value: "paciente" },
         { label: "Oficina", value: "oficina" },
         { label: "Departamento", value: "area" },
         { label: "Sede", value: "sede" },
@@ -85,6 +84,7 @@ function handleDownloadExcel(datosTabla, rol) {
         { label: "Pago generado", value: "pagoGenerado" },
         { label: "Método de pago", value: "metodoPago" },
         { label: "Estatus", value: "estatus" },
+        { label: "Horario cita", value: "horario" },
       ],
       content: datosTabla,
     },
@@ -137,7 +137,7 @@ function handleDownloadPDF(datosTabla, header, rol) {
     item.oficina, item.area, item.sede, item.sexo, item.estatus, item.horario]))
   } else {
     data = datosTabla.map(item => ([item.idColab, item.especialista, item.paciente,
-    item.oficina, item.area, item.sede, item.modalidad, item.sexo, item.horario, item.motivoCita, item.pagoGenerado, item.metodoPago, item.estatus,]))
+    item.oficina, item.area, item.sede, item.modalidad, item.sexo, item.motivoCita, item.pagoGenerado, item.metodoPago, item.estatus, item.horario,]))
   }
 
   autoTable(doc, {
@@ -218,7 +218,7 @@ export default function HistorialReportesView() {
     { id: '', label: 'Sede' },
     { id: '', label: 'Modalidad' },
     { id: '', label: 'Sexo' },
-    { id: '', label: 'Motivo Consulta', width: 1 },
+    { id: '', label: 'Motivo Consulta' },
     { id: '', label: 'Pago generado' },
     { id: '', label: 'Método de pago' },
     { id: '', label: 'Estatus' },
