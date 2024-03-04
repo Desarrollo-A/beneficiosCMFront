@@ -33,6 +33,6 @@ export const MAPBOX_API = import.meta.env.VITE_MAPBOX_API;
 
 // ROOT PATH AFTER LOGIN SUCCESSFUL
 export const PATH_AFTER_LOGIN = paths.dashboard.general.dash; // as '/dashboard'
-
+export const PATH_AFTER_VERIFICACION = paths.auth.jwt.verificacion;
 export const PATH_AFTER_REGISTRO = paths.auth.jwt.preRegister; // 
 
