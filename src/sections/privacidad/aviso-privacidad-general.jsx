@@ -159,14 +159,14 @@ export default function AvisoPrivacidadGeneral() {
     if (typeof especialidadesDisponibles === 'object' && especialidadesDisponibles.length > 0) {
       if (especialidadesDisponibles.length > 0) {
         especialidadesDisponibles.forEach((especialidad) => {
-          if (user.idPuesto === especialidad.idPuesto && once === 0) {
+          if (user?.idPuesto === especialidad.idPuesto && once === 0) {
             handleChange(especialidad);
             once += 1;
           }
         });
       }
     }
-  }, [especialidadesDisponibles, user.idPuesto]);
+  }, [especialidadesDisponibles, user?.idPuesto]);
 
   useEffect(() => {
     if (actualizarView) {
@@ -352,12 +352,12 @@ export default function AvisoPrivacidadGeneral() {
                 {especialidadesDisponibles !== undefined &&
                   especialidadesDisponibles.length > 0 &&
                   especialidadesDisponibles.map((elemento, index) =>
-                    user.idPuesto === elemento.idPuesto || user?.idRol === 4 ? (
+                    user?.idPuesto === elemento?.idPuesto || user?.idRol === 2 || user?.idRol === 4 ? (
                       <MenuItem value={elemento} key={elemento.idOpcion}>
                         {elemento.nombre}
                       </MenuItem>
                     ) : (
-                      ''
+                      null
                     )
                   )}
               </Select>
