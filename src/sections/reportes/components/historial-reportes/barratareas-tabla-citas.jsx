@@ -79,7 +79,6 @@ export default function BarraTareasTabla({
     { value: 3, label: 'Reporte penalizaciones' },
     { value: 4, label: 'Reporte finalizados' },
     { value: 5, label: 'Reporte justificiones' },
-    
   ];
 
   const [currentStatus, setCurrentStatus] = useState(report[0].value);
