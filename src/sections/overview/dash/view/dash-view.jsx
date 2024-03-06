@@ -336,6 +336,8 @@ export default function DashView() {
     []
   );
 
+  const fhF = new Date(fechaF);
+
   return (
 
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
@@ -429,6 +431,7 @@ export default function DashView() {
             <DatePicker
               label="Fecha inicio"
               value={datePikerI()}
+              maxDate={fhF.setDate(fhF.getDate() + 1)}
               onChange={handleFilterStartDate}
               slotProps={{
                 textField: {
@@ -443,6 +446,7 @@ export default function DashView() {
           <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
             <DatePicker
               label="Fecha fin"
+              minDate={fechaI}
               value={datePikerF()}
               onChange={handleFilterEndDate}
               slotProps={{ textField: { fullWidth: true } }}
