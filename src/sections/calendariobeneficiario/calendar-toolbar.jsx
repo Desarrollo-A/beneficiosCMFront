@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
+import { Dialog } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
@@ -12,7 +13,7 @@ import { useResponsive } from 'src/hooks/use-responsive';
 
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import { Dialog } from '@mui/material';
+
 import ColorsDialog from '../overview/calendarioespecialista/view/colors-dialog';
 
 // ----------------------------------------------------------------------
@@ -104,14 +105,11 @@ export default function CalendarToolbar({
           open={open}
           fullWidth
           maxWidth="xs"
-          
           onClose={() => handleClose()}
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
-          <ColorsDialog 
-            onClose={() => handleClose()}
-          />
+          <ColorsDialog onClose={() => handleClose()} />
         </Dialog>
 
         {loading && (

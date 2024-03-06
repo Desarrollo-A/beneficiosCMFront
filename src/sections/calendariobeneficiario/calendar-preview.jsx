@@ -75,12 +75,12 @@ export default function CalendarPreview({ event, open, handleClose }) {
       'programador.analista36@ciudadmaderas.com', // datosUser.correo, Sustituir correo de analista.
       [
         'programador.analista36@ciudadmaderas.com', // datosUser.correo Sustituir correo de analista.
-        'artturo.alarcon@gmail.com',
-        'programador.analista34@ciudadmaderas.com',
-        'programador.analista32@ciudadmaderas.com',
-        'programador.analista12@ciudadmaderas.com',
-        'tester.ti2@ciudadmaderas.com',
-        'tester.ti3@ciudadmaderas.com',
+        // 'artturo.alarcon@gmail.com',
+        // 'programador.analista34@ciudadmaderas.com',
+        // 'programador.analista32@ciudadmaderas.com',
+        // 'programador.analista12@ciudadmaderas.com',
+        // 'tester.ti2@ciudadmaderas.com',
+        // 'tester.ti3@ciudadmaderas.com',
         ...emails,
       ]
     );

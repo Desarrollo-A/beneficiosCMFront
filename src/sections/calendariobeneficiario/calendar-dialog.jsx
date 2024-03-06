@@ -23,6 +23,7 @@ import DialogContent from '@mui/material/DialogContent';
 
 import uuidv4 from 'src/utils/uuidv4';
 
+import { getNuevoHash } from 'src/api/api';
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetEventReasons } from 'src/api/calendar-specialist';
 import {
@@ -232,7 +233,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const tieneCitas = await checaPrimeraCita(datosUser.idUsuario, selectedValues.especialista);
 
     let tipoCita = 2;
-    let precio = 50;
+    let precio = 50.0;
     let metodoPago = 1;
     // PROCESO DE AGENDAR: Se le valida que es nuevo usuario y se le agenda su cita.
     if (tieneCitas.result === true) {
@@ -240,7 +241,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     }
     if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
       tipoCita = 1;
-      precio = 0;
+      precio = 0.0;
       metodoPago = 3;
     }
 
@@ -281,25 +282,97 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       });
       return onClose();
     }
-    if (metodoPago === 1) {
-      setOpen(true);
-      // SIMULACIÓN DE PAGO
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      setOpen(false);
+
+    if (precio === 50.0) {
+      // const cl_folio = uuidv4().substring(0, 20);
+      const cl_folio = '12345678912345678901';
+      const cl_referencia = `${datosUser.idUsuario}1${dayjs(ahora).format(
+        'YYYYMMDDHHmmss'
+      )}ABC123987A${selectedValues.beneficio}${selectedValues.especialista}${
+        selectedValues.modalidad
+      }`;
+      const dl_monto = '50.00';
+      const servicio = 501; // Consultas
+      const cl_concepto = 1;
+
+      const hash = `${cl_folio}|${cl_referencia}|${dl_monto}|${servicio}|${cl_concepto}|`;
+
+      const nuevoHash = await getNuevoHash(hash);
+
+      console.log(cl_folio, cl_referencia, dl_monto, servicio, cl_concepto, hash, nuevoHash.data);
+
+      const params = `width=${window.screen.width}, height=${window.screen.height}, top=0, left=0, fullscreen=yes, scrollbars=yes, directories=no`;
+
+      /* ****************************************************** */
+      const windowName = `w_${Date.now()}${Math.floor(Math.random() * 100000).toString()}`;
+      const form = document.createElement('form');
+      form.setAttribute('method', 'POST');
+      form.setAttribute('action', 'https://multipagos.bb.com.mx/Estandar/index2.php');
+
+      form.setAttribute('target', windowName);
+
+      const hiddenField1 = document.createElement('input');
+      hiddenField1.setAttribute('type', 'hidden');
+      hiddenField1.setAttribute('name', 'cl_folio');
+      hiddenField1.setAttribute('value', cl_folio);
+      form.appendChild(hiddenField1);
+
+      const hiddenField2 = document.createElement('input');
+      hiddenField2.setAttribute('type', 'hidden');
+      hiddenField2.setAttribute('name', 'cl_referencia');
+      hiddenField2.setAttribute('value', cl_referencia);
+      form.appendChild(hiddenField2);
+
+      const hiddenField3 = document.createElement('input');
+      hiddenField3.setAttribute('type', 'hidden');
+      hiddenField3.setAttribute('name', 'dl_monto');
+      hiddenField3.setAttribute('value', dl_monto);
+      form.appendChild(hiddenField3);
+
+      const hiddenField4 = document.createElement('input');
+      hiddenField4.setAttribute('type', 'hidden');
+      hiddenField4.setAttribute('name', 'servicio');
+      hiddenField4.setAttribute('value', servicio);
+      form.appendChild(hiddenField4);
+
+      const hiddenField5 = document.createElement('input');
+      hiddenField5.setAttribute('type', 'hidden');
+      hiddenField5.setAttribute('name', 'cl_concepto');
+      hiddenField5.setAttribute('value', cl_concepto);
+      form.appendChild(hiddenField5);
+
+      const hiddenField6 = document.createElement('input');
+      hiddenField6.setAttribute('type', 'hidden');
+      hiddenField6.setAttribute('name', 'hash');
+      hiddenField6.setAttribute('value', nuevoHash.data.trim());
+      form.appendChild(hiddenField6);
+
+      // const hiddenField7 = document.createElement('input');
+      // hiddenField7.setAttribute('type', 'hidden');
+      // hiddenField7.setAttribute('name', 'nvoHash');
+      // hiddenField7.setAttribute('value', nuevoHash.data);
+      // form.appendChild(hiddenField7);
+
+      document.body.appendChild(form);
+
+      window.open('', windowName, params);
+      form.target = windowName;
+      form.submit();
+      document.body.removeChild(form);
     }
-    const registrarPago = await registrarDetalleDePago(
-      datosUser.idUsuario,
-      uuidv4(),
-      tipoCita,
-      precio,
-      metodoPago
-    );
-    if (!registrarPago.result) {
-      enqueueSnackbar('¡Ha surgido un error al generar el detalle de pago!', {
-        variant: 'error',
-      });
-      return onClose();
-    }
+    // const registrarPago = await registrarDetalleDePago(
+    //   datosUser.idUsuario,
+    //   uuidv4(),
+    //   tipoCita,
+    //   precio,
+    //   metodoPago
+    // );
+    // if (!registrarPago.result) {
+    //   enqueueSnackbar('¡Ha surgido un error al generar el detalle de pago!', {
+    //     variant: 'error',
+    //   });
+    //   return onClose();
+    // }
 
     // Evento de google
     const startDate = dayjs(horarioSeleccionado);
@@ -308,23 +381,23 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     let organizador = 'programador.analista36@ciudadmaderas.com';
     let correosNotificar = [
       organizador, // datosUser.correo Sustituir correo de analista
-      'programador.analista34@ciudadmaderas.com',
-      'programador.analista32@ciudadmaderas.com',
-      'programador.analista12@ciudadmaderas.com',
-      'tester.ti2@ciudadmaderas.com',
-      'tester.ti3@ciudadmaderas.com',
+      // 'programador.analista34@ciudadmaderas.com',
+      // 'programador.analista32@ciudadmaderas.com',
+      // 'programador.analista12@ciudadmaderas.com',
+      // 'tester.ti2@ciudadmaderas.com',
+      // 'tester.ti3@ciudadmaderas.com',
       // algun correo de especialista
     ];
 
     if (datosUser.correo === null) {
-      organizador = 'programador.analista12@ciudadmaderas.com'; // especialista
+      organizador = 'programador.analista34@ciudadmaderas.com'; // especialista
       correosNotificar = [
         organizador, // datosUser.correo Sustituir correo de analista
-        'programador.analista36@ciudadmaderas.com',
-        'programador.analista34@ciudadmaderas.com',
-        'programador.analista32@ciudadmaderas.com',
-        'tester.ti2@ciudadmaderas.com',
-        'tester.ti3@ciudadmaderas.com',
+        // 'programador.analista36@ciudadmaderas.com',
+        // 'programador.analista34@ciudadmaderas.com',
+        // 'programador.analista32@ciudadmaderas.com',
+        // 'tester.ti2@ciudadmaderas.com',
+        // 'tester.ti3@ciudadmaderas.com',
       ];
     }
     const newGoogleEvent = await insertGoogleCalendarEvent(
@@ -348,7 +421,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       datosUser.idUsuario,
       agendar.data,
       1,
-      registrarPago.data,
+      null, // registrarPago.data
       null,
       newGoogleEvent.data.id
     );
@@ -406,22 +479,22 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     let organizador = 'programador.analista36@ciudadmaderas.com';
     let correosNotificar = [
       organizador,
-      'programador.analista34@ciudadmaderas.com',
-      'programador.analista32@ciudadmaderas.com',
-      'programador.analista12@ciudadmaderas.com',
-      'tester.ti2@ciudadmaderas.com',
-      'tester.ti3@ciudadmaderas.com',
+      // 'programador.analista34@ciudadmaderas.com',
+      // 'programador.analista32@ciudadmaderas.com',
+      // 'programador.analista12@ciudadmaderas.com',
+      // 'tester.ti2@ciudadmaderas.com',
+      // 'tester.ti3@ciudadmaderas.com',
       // currentEvent.correoEspecialista
     ];
     if (datosUser.correo === null) {
       organizador = 'programador.analista12@ciudadmaderas.com'; // currentEvent.correoEspecialista;
       correosNotificar = [
         organizador,
-        'programador.analista36@ciudadmaderas.com',
-        'programador.analista34@ciudadmaderas.com',
-        'programador.analista32@ciudadmaderas.com',
-        'tester.ti2@ciudadmaderas.com',
-        'tester.ti3@ciudadmaderas.com',
+        // 'programador.analista36@ciudadmaderas.com',
+        // 'programador.analista34@ciudadmaderas.com',
+        // 'programador.analista32@ciudadmaderas.com',
+        // 'tester.ti2@ciudadmaderas.com',
+        // 'tester.ti3@ciudadmaderas.com',
       ];
     }
 
@@ -462,7 +535,44 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
   const onPay = async () => {
     setBtnPayDisabled(true);
-    let precio = 50;
+    const cl_folio = uuidv4().substring(0, 20);
+    const cl_referencia = datosUser.idUsuario;
+    const dl_monto = 50.0;
+    const servicio = 501; // Consultas
+    const cl_concepto = 1;
+
+    const hash = `${cl_folio}|${cl_referencia}|${dl_monto}|${servicio}|${cl_concepto}|`;
+
+    const params = `width=${window.screen.width}, height=${window.screen.height}, top=0, left=0, fullscreen=yes, scrollbars=yes, directories=no`;
+    window.open(' ', 'popup', params);
+
+    const formData = {
+      cl_folio,
+      cl_referencia,
+      dl_monto,
+      servicio,
+      cl_concepto,
+      hash,
+    };
+
+    // Finalmente, envía los datos del formulario a la URL especificada
+    await fetch('https://multipagos.bb.com.mx/Estandar/index2.php', {
+      method: 'POST',
+      body: JSON.stringify(formData),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => {
+        // Aquí puedes manejar la respuesta del servidor
+        console.log(response);
+      })
+      .catch((error) => {
+        // Aquí puedes manejar cualquier error que ocurra durante el envío
+        console.error('Error:', error);
+      });
+
+    let precio = 50.0;
     let metodoPago = 1;
     if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
       precio = 0;
@@ -484,9 +594,12 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         null,
         currentEvent.idEventoGoogle
       );
-      setOpen(true);
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      setOpen(false);
+      /* ********************************** */
+      // setOpen(true);
+      // await new Promise((resolve) => setTimeout(resolve, 2000));
+      // setOpen(false);
+
+      /* ********************************** */
       if (update.result) {
         enqueueSnackbar('¡Se ha generado el pago con éxito!', {
           variant: 'success',
@@ -1125,11 +1238,11 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     let organizador = 'programador.analista36@ciudadmaderas.com';
     let correosNotificar = [
       organizador, // datosUser.correo Sustituir correo de analista
-      'programador.analista34@ciudadmaderas.com',
-      'programador.analista32@ciudadmaderas.com',
-      'programador.analista12@ciudadmaderas.com',
-      'tester.ti2@ciudadmaderas.com',
-      'tester.ti3@ciudadmaderas.com',
+      // 'programador.analista34@ciudadmaderas.com',
+      // 'programador.analista32@ciudadmaderas.com',
+      // 'programador.analista12@ciudadmaderas.com',
+      // 'tester.ti2@ciudadmaderas.com',
+      // 'tester.ti3@ciudadmaderas.com',
       // Algun correo de especialista
     ];
 
@@ -1137,11 +1250,11 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       organizador = 'programador.analista12@ciudadmaderas.com'; // Algun correo de especialista
       correosNotificar = [
         organizador, // datosUser.correo Sustituir correo de analista
-        'programador.analista36@ciudadmaderas.com',
-        'programador.analista34@ciudadmaderas.com',
-        'programador.analista32@ciudadmaderas.com',
-        'tester.ti2@ciudadmaderas.com',
-        'tester.ti3@ciudadmaderas.com',
+        // 'programador.analista36@ciudadmaderas.com',
+        // 'programador.analista34@ciudadmaderas.com',
+        // 'programador.analista32@ciudadmaderas.com',
+        // 'tester.ti2@ciudadmaderas.com',
+        // 'tester.ti3@ciudadmaderas.com',
       ];
     }
 

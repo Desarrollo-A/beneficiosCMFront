@@ -63,6 +63,9 @@ export const endpoints = {
   chat: '/api/chat',
   kanban: '/api/kanban',
   calendar: '/api/calendar',
+  api: {
+    nuevoHash: '/Api/nuevoHash',
+  },
   auth: {
     me: '/LoginController/check',
     me2: '/LoginController/me',
@@ -247,7 +250,7 @@ export const endpoints = {
     updateSede: '/GestorController/updateSede',
     insertSedes: '/GestorController/insertSedes',
     checkModalidades: '/GestorController/checkModalidades',
-    getAreas: '/GestorController/getAreas'
+    getAreas: '/GestorController/getAreas',
   },
   avisosPrivacidad: {
     getEspecialidadToSelect: '/AvisosPrivacidadController/getEspecialidades',
