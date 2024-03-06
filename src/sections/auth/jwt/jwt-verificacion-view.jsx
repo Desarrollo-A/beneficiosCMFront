@@ -97,7 +97,7 @@ export default function Verificacion({ email, formReg }) {
         /* mutate(endpoints.gestor.getOfi); */
 
         setBtnLoad(false);
-        setCountdown(12);
+        setCountdown(120);
         setShowAlternativeButton(false);
 
       } else {

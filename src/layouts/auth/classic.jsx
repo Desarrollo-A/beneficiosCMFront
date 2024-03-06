@@ -16,8 +16,8 @@ export default function AuthClassicLayout({ children, image, title }) {
         mx: 'auto',
         maxWidth: { xs: 350, md: 500 },
         px: { xs: 2, md: 8 },
-        pt: { xs: 15, md: 0 },
-        pb: { xs: 15, md: 0 },
+        pt: { xs: 5, md: 0 },
+        pb: { xs: 10, md: 0 },
         position: 'relative',
         left: { md: '18%' } 
       }}
