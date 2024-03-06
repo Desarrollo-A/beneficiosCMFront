@@ -19,6 +19,7 @@ const AmplifyForgotPasswordPage = lazy(() => import('src/pages/auth/amplify/forg
 const JwtLoginPage = lazy(() => import('src/pages/auth/jwt/login'));
 const JwtRegisterPage = lazy(() => import('src/pages/auth/jwt/register'));
 const JwtpreRegisterPage = lazy(() => import('src/pages/auth/jwt/preRegister'));
+const JwtVerificacionPage = lazy(() => import('src/pages/auth/jwt/verificacion'));
 // FIREBASE
 const FirebaseLoginPage = lazy(() => import('src/pages/auth/firebase/login'));
 const FirebaseRegisterPage = lazy(() => import('src/pages/auth/firebase/register'));
@@ -103,6 +104,13 @@ const authJwt = {
       path: 'preRegister',
       element: (
           <JwtpreRegisterPage />
+       
+      ),
+    },
+    {
+      path: 'verificacion',
+      element: (
+          <JwtVerificacionPage />
        
       ),
     },

@@ -101,6 +101,8 @@ export const endpoints = {
     decodePass: '/Usuario/decodePass',
     updatePass: '/Usuario/updatePass',
     menu: 'Usuario/menu',
+    verificacion: 'Usuario/sendMail',
+    token: 'Usuario/GetToken',
   },
   benefits: {
     list: 'CalendarioController/getBeneficiosPorSede',
