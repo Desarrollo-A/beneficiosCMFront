@@ -530,8 +530,8 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
     if (startDate && endDate) {
       inputData = inputData.filter(
         (order) =>
-          fTimestamp(order.fechaModificacion) >= fTimestamp(startDate) &&
-          fTimestamp(order.fechaModificacion) <= fTimestamp(endDate)
+          fTimestamp(order.fechaInicio) >= fTimestamp(startDate) &&
+          fTimestamp(order.fechaInicio) <= fTimestamp(endDate)
       );
     }
   }
