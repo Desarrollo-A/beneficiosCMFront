@@ -186,10 +186,10 @@ export async function createAppointment(eventData, modalitie, datosUser) {
   let oficina = modalitie?.oficina || 'virtual';
 
   const fechaInicio = dayjs(`${eventData.fechaInicio} ${eventData.hora_inicio}`).format(
-    'YYYY/MM/D HH:mm:ss'
+    'YYYY/MM/DD HH:mm:ss'
   );
   const fechaFinal = dayjs(`${eventData.fechaFinal} ${eventData.hora_final}`).format(
-    'YYYY/MM/D HH:mm:ss'
+    'YYYY/MM/DD HH:mm:ss'
   );
   const fundacion = eventData.paciente.externo;
 
