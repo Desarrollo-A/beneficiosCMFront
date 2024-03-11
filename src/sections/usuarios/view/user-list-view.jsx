@@ -245,7 +245,13 @@ export default function UserListView() {
 
         <UserList userData={userData} usersMutate={usersMutate} />
       </Container>
-      <Dialog fullWidth maxWidth="sm" open={upload.value} onClose={handleCloseDialog}>
+      <Dialog
+        fullWidth
+        maxWidth="sm"
+        open={upload.value}
+        onClose={handleCloseDialog}
+        disableEnforceFocus
+      >
         <DialogTitle sx={{ p: (theme) => theme.spacing(3, 3, 2, 3) }}>Agregar usuarios</DialogTitle>
 
         <DialogContent dividers sx={{ pt: 1, pb: 0, border: 'none' }}>

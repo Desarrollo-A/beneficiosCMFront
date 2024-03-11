@@ -64,7 +64,7 @@ export const endpoints = {
   kanban: '/api/kanban',
   calendar: '/api/calendar',
   api: {
-    nuevoHash: '/Api/nuevoHash',
+    encodedHash: '/Api/encodedHash',
   },
   auth: {
     me: '/LoginController/check',

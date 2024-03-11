@@ -80,9 +80,9 @@ export function getOficinaByAtencion(sede, beneficio, especialista, modalidad) {
 }
 
 // Checa si el usuario tiene primera cita
-export function checaPrimeraCita(usuario, especialista) {
+export function checaPrimeraCita(usuario, beneficio) {
   const URL = [endpoints.calendarioColaborador.isPrimeraCita];
-  const primeraCita = fetcherPost(URL, { usuario, especialista });
+  const primeraCita = fetcherPost(URL, { usuario, beneficio });
 
   return primeraCita;
 }
@@ -128,9 +128,27 @@ export function getAtencionXSede(especialista, sede, modalidad) {
 }
 
 // Registrar el detalle de pago
-export function registrarDetalleDePago(usuario, folio, concepto, cantidad, metodoPago) {
+export function registrarDetalleDePago(
+  usuario,
+  folio,
+  referencia,
+  concepto,
+  cantidad,
+  metodoPago,
+  estatusPago,
+  idCita
+) {
   const URL = [endpoints.calendarioColaborador.registrarDetallePago];
-  const detalle = fetcherPost(URL, { usuario, folio, concepto, cantidad, metodoPago });
+  const detalle = fetcherPost(URL, {
+    usuario,
+    folio,
+    referencia,
+    concepto,
+    cantidad,
+    metodoPago,
+    estatusPago,
+    idCita,
+  });
 
   return detalle;
 }

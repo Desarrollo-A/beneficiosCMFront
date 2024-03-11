@@ -23,7 +23,7 @@ import DialogContent from '@mui/material/DialogContent';
 
 import uuidv4 from 'src/utils/uuidv4';
 
-import { getNuevoHash } from 'src/api/api';
+import { getEncodedHash } from 'src/api/api';
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetEventReasons } from 'src/api/calendar-specialist';
 import {
@@ -142,27 +142,29 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const año = horarioSeleccionado.substring(0, 4);
     const mes = horarioSeleccionado.substring(5, 7);
 
+    // *** VERIFICA FECHA ANTIGUEDADA ***
     if (datosUser.fechaIngreso > fechaActual) {
-      enqueueSnackbar('¡Existe un error con la fecha de antigüedad!', {
-        variant: 'error',
-      });
+      enqueueSnackbar('¡Existe un error con la fecha de antigüedad!', { variant: 'error' });
       onClose();
       return false;
     }
 
     // Validamos la antiguedad: Mandamos fechaIngreso, fechaDeHoy, isPracticante, idBeneficio.
-    const tieneAntiguedad = validarAntiguedad(datosUser.fechaIngreso, fechaActual);
+    const AREAS = Object.freeze({
+      VENTAS: 25,
+    });
 
-    // 25 Es ventas :)
-    if (!tieneAntiguedad && datosUser.idArea !== 25) {
+    const tieneAntiguedad = validarAntiguedad(datosUser.fechaIngreso, fechaActual);
+    // Escluimos a ventas por su tipo de contratación
+    if (!tieneAntiguedad && datosUser.idArea !== AREAS.VENTAS) {
       enqueueSnackbar('¡No cuentas con la antigüedad suficiente para hacer uso del beneficio!', {
-        variant: 'error',
+        variant: 'danger',
       });
       onClose();
       return false;
     }
 
-    // Consultamos su atencionXSede
+    // *** VERIFICAMOS QUE EXISTA LA ATENCIÓN A SU SEDE ***
     const idAtencionPorSede = await getAtencionXSede(
       selectedValues.especialista,
       datosUser.idSede,
@@ -170,209 +172,99 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     );
     if (!idAtencionPorSede.result) {
       enqueueSnackbar(
-        '¡Surgió un error al intentar conocer los beneficios brindados para su sede!',
+        '¡Surgió un error al in tentar conocer los beneficios brindados para su sede!',
         {
-          variant: 'error',
+          variant: 'danger',
         }
       );
       onClose();
       return false;
     }
 
-    // Revisamos si tiene citas sin estatus de finalizar
+    // *** VALIDAMOS SI TIENE CITAS SIN FINALIZAR ***
     const citasSinFinalizar = await getCitasSinFinalizar(
       datosUser.idUsuario,
       selectedValues.beneficio
     );
-
-    // Si tiene citas en proceso no lo tengo que dejar agendar citas
     if (citasSinFinalizar.result) {
       enqueueSnackbar('Ya tienes una cita en proceso de este beneficio', {
-        variant: 'error',
+        variant: 'danger',
       });
       onClose();
       return false;
     }
 
-    // Si tiene citas sin evaluar no lo deja agendar
+    // *** VALIDAMOS SI TIENE CITAS SIN EVALUAR ***
     const citasSinEvaluar = await getCitasSinEvaluar(datosUser.idUsuario);
     // Si tiene citas en proceso no lo tengo que dejar agendar citas
     if (citasSinEvaluar.result) {
       enqueueSnackbar('Evalúa tus citas previas para poder agendar otra cita', {
-        variant: 'error',
+        variant: 'danger',
       });
       onClose();
       return false;
     }
 
-    // Si tiene citas sin pagar no lo deja agendar
+    // *** VALIDAMOS SI TIENE CITAS SIN PAGAR ***
     const citasSinPagar = await getCitasSinPagar(datosUser.idUsuario);
     // Si tiene citas en proceso no lo tengo que dejar agendar citas
     if (citasSinPagar.result) {
       enqueueSnackbar('Realiza el pago de tus citas por asistir para poder agendar otra cita', {
-        variant: 'error',
+        variant: 'danger',
       });
       onClose();
       return false;
     }
 
+    // *** VALIDAMOS SI YA GOZO SUS BENEFICIOS ***
     const citasFinalizadas = await getCitasFinalizadas(datosUser.idUsuario, mes, año);
-
     if (citasFinalizadas.result === true && citasFinalizadas?.data.length >= 2) {
       enqueueSnackbar(
         'Ya cuentas con la cantidad máxima de beneficios brindados en el mes seleccionado',
         {
-          variant: 'error',
+          variant: 'danger',
         }
       );
       onClose();
       return false;
     }
 
-    // Proceso de agenda
-    const tieneCitas = await checaPrimeraCita(datosUser.idUsuario, selectedValues.especialista);
+    // *** INICIA PROCESO DE AGENDAR CITA ***
+    const TIPO_CITA = Object.freeze({
+      PRIMERA_CITA: 1,
+      CITA_NORMAL: 2,
+      CITA_EXTRA: 3,
+    });
 
-    let tipoCita = 2;
-    let precio = 50.0;
-    let metodoPago = 1;
+    const tieneCitas = await checaPrimeraCita(datosUser.idUsuario, selectedValues.beneficio);
+
+    let tipoCita = TIPO_CITA.CITA_NORMAL;
+
     // PROCESO DE AGENDAR: Se le valida que es nuevo usuario y se le agenda su cita.
-    if (tieneCitas.result === true) {
-      tipoCita = 1;
-    }
-    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
-      tipoCita = 1;
-      precio = 0.0;
-      metodoPago = 3;
-    }
+    if (tieneCitas.result === true) tipoCita = TIPO_CITA.PRIMERA_CITA;
 
     let nombreBeneficio = '';
+    let abreviatura = '';
     switch (selectedValues.beneficio) {
       case 158:
         nombreBeneficio = 'quantum balance';
+        abreviatura = 'QUAN';
         break;
       case 537:
         nombreBeneficio = 'nutrición';
+        abreviatura = 'NUTR';
         break;
       case 585:
         nombreBeneficio = 'psicología';
+        abreviatura = 'PSIC';
         break;
       case 686:
         nombreBeneficio = 'guía espiritual';
+        abreviatura = 'GUIA';
         break;
       default:
         break;
     }
-
-    const agendar = await agendarCita(
-      `Cita ${nombreBeneficio} - ${datosUser.nombre}`,
-      selectedValues.especialista,
-      '',
-      horarioSeleccionado,
-      1,
-      idAtencionPorSede.data[0].idAtencionXSede,
-      datosUser.idUsuario,
-      null,
-      selectedValues.beneficio,
-      null,
-      selectedValues.modalidad
-    );
-    if (!agendar.result) {
-      enqueueSnackbar(agendar.msg, {
-        variant: 'error',
-      });
-      return onClose();
-    }
-
-    if (precio === 50.0) {
-      // const cl_folio = uuidv4().substring(0, 20);
-      const cl_folio = '12345678912345678901';
-      const cl_referencia = `${datosUser.idUsuario}1${dayjs(ahora).format(
-        'YYYYMMDDHHmmss'
-      )}ABC123987A${selectedValues.beneficio}${selectedValues.especialista}${
-        selectedValues.modalidad
-      }`;
-      const dl_monto = '50.00';
-      const servicio = 501; // Consultas
-      const cl_concepto = 1;
-
-      const hash = `${cl_folio}|${cl_referencia}|${dl_monto}|${servicio}|${cl_concepto}|`;
-
-      const nuevoHash = await getNuevoHash(hash);
-
-      console.log(cl_folio, cl_referencia, dl_monto, servicio, cl_concepto, hash, nuevoHash.data);
-
-      const params = `width=${window.screen.width}, height=${window.screen.height}, top=0, left=0, fullscreen=yes, scrollbars=yes, directories=no`;
-
-      /* ****************************************************** */
-      const windowName = `w_${Date.now()}${Math.floor(Math.random() * 100000).toString()}`;
-      const form = document.createElement('form');
-      form.setAttribute('method', 'POST');
-      form.setAttribute('action', 'https://multipagos.bb.com.mx/Estandar/index2.php');
-
-      form.setAttribute('target', windowName);
-
-      const hiddenField1 = document.createElement('input');
-      hiddenField1.setAttribute('type', 'hidden');
-      hiddenField1.setAttribute('name', 'cl_folio');
-      hiddenField1.setAttribute('value', cl_folio);
-      form.appendChild(hiddenField1);
-
-      const hiddenField2 = document.createElement('input');
-      hiddenField2.setAttribute('type', 'hidden');
-      hiddenField2.setAttribute('name', 'cl_referencia');
-      hiddenField2.setAttribute('value', cl_referencia);
-      form.appendChild(hiddenField2);
-
-      const hiddenField3 = document.createElement('input');
-      hiddenField3.setAttribute('type', 'hidden');
-      hiddenField3.setAttribute('name', 'dl_monto');
-      hiddenField3.setAttribute('value', dl_monto);
-      form.appendChild(hiddenField3);
-
-      const hiddenField4 = document.createElement('input');
-      hiddenField4.setAttribute('type', 'hidden');
-      hiddenField4.setAttribute('name', 'servicio');
-      hiddenField4.setAttribute('value', servicio);
-      form.appendChild(hiddenField4);
-
-      const hiddenField5 = document.createElement('input');
-      hiddenField5.setAttribute('type', 'hidden');
-      hiddenField5.setAttribute('name', 'cl_concepto');
-      hiddenField5.setAttribute('value', cl_concepto);
-      form.appendChild(hiddenField5);
-
-      const hiddenField6 = document.createElement('input');
-      hiddenField6.setAttribute('type', 'hidden');
-      hiddenField6.setAttribute('name', 'hash');
-      hiddenField6.setAttribute('value', nuevoHash.data.trim());
-      form.appendChild(hiddenField6);
-
-      // const hiddenField7 = document.createElement('input');
-      // hiddenField7.setAttribute('type', 'hidden');
-      // hiddenField7.setAttribute('name', 'nvoHash');
-      // hiddenField7.setAttribute('value', nuevoHash.data);
-      // form.appendChild(hiddenField7);
-
-      document.body.appendChild(form);
-
-      window.open('', windowName, params);
-      form.target = windowName;
-      form.submit();
-      document.body.removeChild(form);
-    }
-    // const registrarPago = await registrarDetalleDePago(
-    //   datosUser.idUsuario,
-    //   uuidv4(),
-    //   tipoCita,
-    //   precio,
-    //   metodoPago
-    // );
-    // if (!registrarPago.result) {
-    //   enqueueSnackbar('¡Ha surgido un error al generar el detalle de pago!', {
-    //     variant: 'error',
-    //   });
-    //   return onClose();
-    // }
 
     // Evento de google
     const startDate = dayjs(horarioSeleccionado);
@@ -400,66 +292,244 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         // 'tester.ti3@ciudadmaderas.com',
       ];
     }
-    const newGoogleEvent = await insertGoogleCalendarEvent(
-      `Cita ${nombreBeneficio} - ${datosUser.nombre}`,
-      startDate.format('YYYY-MM-DDTHH:mm:ss'),
-      endDate.format('YYYY-MM-DDTHH:mm:ss'),
-      oficina?.data ? oficina.data[0].ubicación : 'Oficina virtual ',
-      `Cita de ${datosUser.nombre} en ${nombreBeneficio}`,
-      correosNotificar, // Sustituir valores de correos
-      organizador // datosUser.correo
+
+    const GOOGLE_EVENT = Object.freeze({
+      TITULO: `Cita ${nombreBeneficio} - ${datosUser.nombre}`,
+      INICIO_CITA: startDate.format('YYYY-MM-DDTHH:mm:ss'),
+      FIN_CITA: endDate.format('YYYY-MM-DDTHH:mm:ss'),
+      OFICINA: oficina?.data ? oficina.data[0].ubicación : 'Oficina virtual ',
+      DESCRIPCION: `Cita de ${datosUser.nombre} en ${nombreBeneficio}`,
+    });
+
+    // const newGoogleEvent = await insertGoogleCalendarEvent(
+    //   GOOGLE_EVENT.TITULO,
+    //   GOOGLE_EVENT.INICIO_CITA,
+    //   GOOGLE_EVENT.FIN_CITA,
+    //   GOOGLE_EVENT.OFICINA,
+    //   GOOGLE_EVENT.DESCRIPCION,
+    //   correosNotificar, // Sustituir valores de correos
+    //   organizador // datosUser.correo
+    // );
+
+    // if (!newGoogleEvent.result) {
+    //   enqueueSnackbar('Error al conectar con la cuenta de google', {
+    //     variant: 'error',
+    //   });
+    // }
+
+    /* otro proceso */
+    const ESTATUS_CITA = Object.freeze({
+      POR_ASISTIR: 1,
+      CANCELADA: 2,
+      PENALIZADA: 3,
+      FINALIZADA: 4,
+      JUSTIFICADO: 5,
+      PENDIENTE_PAGO: 6,
+      CANCELADO_POR_ESPECIALISTA: 7,
+      REAGENDADA: 8,
+      PAGO_EXPIRADO: 9,
+      PROCESO_PAGO: 10,
+    });
+
+    const DATOS_CITA = Object.freeze({
+      TITULO: GOOGLE_EVENT.TITULO,
+      ID_ESPECIALISTA: selectedValues.especialista,
+      OBSERVACIONES: '',
+      HORA_CITA: horarioSeleccionado,
+      TIPO_CITA: tipoCita, // 1 PRIMERA CITA, 2 NORMAL, 3 CITA EXTRA
+      ID_ATENCION_POR_SEDE: idAtencionPorSede.data[0].idAtencionXSede,
+      ID_USUARIO: datosUser.idUsuario,
+      ID_DETALLE_PAGO: null,
+      ID_BENEFICIO: selectedValues.beneficio,
+      ID_GOOGLE_EVENT: null, // newGoogleEvent.result ? newGoogleEvent.data.id : null,
+      MODALIDAD: selectedValues.modalidad,
+      ESTATUS_CITA: ESTATUS_CITA.PENDIENTE_PAGO,
+    });
+
+    const agendar = await agendarCita(
+      GOOGLE_EVENT.TITULO,
+      DATOS_CITA.ID_ESPECIALISTA,
+      DATOS_CITA.OBSERVACIONES,
+      DATOS_CITA.HORA_CITA,
+      DATOS_CITA.TIPO_CITA,
+      DATOS_CITA.ID_ATENCION_POR_SEDE,
+      DATOS_CITA.ID_USUARIO,
+      DATOS_CITA.ID_DETALLE_PAGO,
+      DATOS_CITA.ID_BENEFICIO,
+      DATOS_CITA.ID_GOOGLE_EVENT,
+      DATOS_CITA.MODALIDAD,
+      DATOS_CITA.ESTATUS_CITA
     );
 
-    if (!newGoogleEvent.result) {
-      enqueueSnackbar('Error al conectar con la cuenta de google', {
-        variant: 'error',
+    if (!agendar.result) {
+      await deleteGoogleCalendarEvent(currentEvent.idEventoGoogle, organizador);
+      enqueueSnackbar(agendar.msg, {
+        variant: 'danger',
       });
       return onClose();
     }
-    // Mandar datos de google calendar
-    const update = await updateAppointment(
-      datosUser.idUsuario,
-      agendar.data,
-      1,
-      null, // registrarPago.data
-      null,
-      newGoogleEvent.data.id
-    );
-    if (!update.result) {
-      enqueueSnackbar('¡Ha surgido un error al intentar registrar el detalle de pago!', {
-        variant: 'error',
+
+    /* VALIDAR SI ES GRATUITA LA CITA */
+    let precio = 50.0;
+    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') precio = 0.0;
+
+    /* PAGO  */
+    const DATOS_PAGO = Object.freeze({
+      FOLIO: `${DATOS_CITA.ID_USUARIO}${dayjs(ahora).format('HHmmssYYYYMMDD')}`,
+      REFERENCIA: 'U88-QUAN-E64-C65',
+      // `U${DATOS_CITA.ID_USUARIO}-${abreviatura}-E${DATOS_CITA.ID_ESPECIALISTA}-C${agendar.data}}`,
+      // Referencia: 'U(idUsuario)-(NUTR, PSIC, GUIA, QUAN)-E(idEspecialista)-C(IDCITA)'
+      // Es importante que la referencia tenga está estructura para que se pueda enlazar el historial de pagos a una cita reagendada.
+      MONTO: 1.0,
+      // precio,
+      CONCEPTO: '1',
+      // 1,
+      SERVICIO: '501',
+    });
+
+    if (datosUser.tipoPuesto.toLowerCase() !== 'operativa') {
+      const pago = await bbPago(
+        DATOS_PAGO.FOLIO,
+        DATOS_PAGO.REFERENCIA,
+        DATOS_PAGO.MONTO,
+        DATOS_PAGO.CONCEPTO,
+        DATOS_PAGO.SERVICIO
+      );
+      if (pago === true)
+        console.log('Hacer algo para actualizar estatus a otro de proceso de pago');
+    }
+    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
+      const METODO_PAGO = Object.freeze({
+        NO_APLICA: 7,
       });
-      return onClose();
+
+      const ESTATUS_PAGO = Object.freeze({
+        COBRADO: 1,
+      });
+
+      const detallePago = await pagoGratuito(
+        DATOS_PAGO.FOLIO,
+        DATOS_PAGO.REFERENCIA,
+        DATOS_PAGO.MONTO,
+        DATOS_PAGO.CONCEPTO,
+        METODO_PAGO.NO_APLICA,
+        ESTATUS_PAGO.COBRADO,
+        agendar.data
+      );
     }
 
+    /* PAGO */
     enqueueSnackbar('¡Se ha agendado la cita con éxito!', {
       variant: 'success',
     });
     appointmentMutate();
+
+    /* *** PROCESO DE MUESTRA DE PREVIEW *** */
     const scheduledAppointment = await consultarCita(agendar.data);
     if (!scheduledAppointment.result) {
       enqueueSnackbar('¡Surgió un error al poder mostrar la previsualización de la cita!', {
-        variant: 'error',
+        variant: 'danger',
       });
-      onClose();
       return false;
-    }
-
-    const email = await sendMail(
-      scheduledAppointment.data[0],
-      1,
-      correosNotificar,
-      datosUser.idUsuario
-    );
-
-    if (!email.result) {
-      console.error('No se pudo notificar al usuario');
     }
 
     setEvent({ ...scheduledAppointment.data[0] });
     setOpen2(true);
+
+    // const email = await sendMail(
+    //   scheduledAppointment.data[0],
+    //   1,
+    //   correosNotificar,
+    //   datosUser.idUsuario
+    // );
+
+    // if (!email.result) {
+    //   console.error('No se pudo notificar al usuario');
+    // }
+
     return true;
   });
+
+  const bbPago = async (folio, referencia, monto, concepto, servicio) => {
+    const bbString = `${folio}|${referencia}|${monto}|${concepto}|${servicio}|`;
+    const hash = await getEncodedHash(bbString);
+
+    const regex = /^U\d+-[A-Z]{4}-E\d+-C\d+$/;
+    console.log(!hash.data, Number.isNaN(folio), !regex.test(referencia), servicio === 501);
+    // console.log(!hash.data, !folio.isNaN(), regex.test(referencia), servicio === '501');
+    if (!hash.data || Number.isNaN(folio) || !regex.test(referencia) || servicio === 501) {
+      enqueueSnackbar('Hubó un error al mostrar la ventana de pagos', {
+        variant: 'error',
+      });
+      return false;
+    }
+
+    const params = `width=${window.screen.width}, height=${window.screen.height}, top=0, left=0, fullscreen=yes, scrollbars=yes, directories=no`;
+
+    /* ARMARDO DEL FORM PARA ENVIO DE PARAMETROS Y ABRIR POPUP A LA MISMA VEZ */
+    const windowName = `w_${Date.now()}${Math.floor(Math.random() * 100000).toString()}`;
+    const form = document.createElement('form');
+    form.setAttribute('method', 'POST');
+    form.setAttribute('action', 'https://multipagos.bb.com.mx/Estandar/index2.php');
+    form.setAttribute('target', windowName);
+
+    const fields = [
+      { name: 'cl_folio', value: folio },
+      { name: 'cl_referencia', value: referencia },
+      { name: 'dl_monto', value: monto },
+      { name: 'cl_concepto', value: concepto },
+      { name: 'servicio', value: servicio },
+      { name: 'hash', value: hash.data.trim() },
+    ];
+
+    console.log('Fields', fields);
+
+    fields.forEach((field) => {
+      const hiddenField = document.createElement('input');
+      hiddenField.setAttribute('type', 'hidden');
+      hiddenField.setAttribute('name', field.name);
+      hiddenField.setAttribute('value', field.value);
+      form.appendChild(hiddenField);
+    });
+
+    document.body.appendChild(form);
+    console.log('Form', form);
+
+    window.open('', windowName, params);
+    form.target = windowName;
+    form.submit();
+    document.body.removeChild(form);
+    return true;
+  };
+
+  const pagoGratuito = async (
+    folio,
+    referencia,
+    cantidad,
+    concepto,
+    metodoPago,
+    estatusPago,
+    idCita
+  ) => {
+    const registrarPago = await registrarDetalleDePago(
+      datosUser.idUsuario,
+      folio,
+      referencia,
+      cantidad,
+      concepto,
+      metodoPago,
+      estatusPago,
+      idCita
+    );
+
+    if (!registrarPago.result) {
+      enqueueSnackbar('¡Ha surgido un error al generar el detalle de pago!', {
+        variant: 'error',
+      });
+      return onClose();
+    }
+    return false;
+  };
 
   const onCancel = async () => {
     setBtnConfirmAction(true);
@@ -1055,7 +1125,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
   const agendarCita = async (
     titulo,
-    especialistah,
+    especialista,
     observaciones,
     horarioCita,
     tipoCita,
@@ -1064,18 +1134,19 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     detallePago,
     beneficio,
     idGoogleEvent,
-    modalidad
+    modalidad,
+    estatusCita
   ) => {
     const registrarCita = await crearCita(
       titulo,
-      especialistah,
+      especialista,
       idUsuario,
       observaciones,
       horarioCita,
       tipoCita,
       atencionPorSede,
       datosUser.idSede,
-      1,
+      estatusCita,
       idUsuario,
       idUsuario,
       detallePago,
@@ -1137,14 +1208,14 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     if (!checkInvoiceDetail.result) {
       enqueueSnackbar('¡La cita no se puede reagendar más veces!', {
-        variant: 'error',
+        variant: 'danger',
       });
       return onClose();
     }
 
     if (datosUser.fechaIngreso > fechaActual) {
       enqueueSnackbar('¡Existe un error con la fecha de antigüedad!', {
-        variant: 'error',
+        variant: 'danger',
       });
       return onClose();
     }
@@ -1155,7 +1226,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     // 25 Es ventas :)
     if (!tieneAntiguedad && datosUser.idArea !== 25) {
       enqueueSnackbar('¡No cuentas con la antigüedad suficiente para hacer uso del beneficio!', {
-        variant: 'error',
+        variant: 'danger',
       });
       return onClose();
     }
@@ -1164,7 +1235,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     if (!cancel.result) {
       enqueueSnackbar('Surgió un error al intentar cancelar la cita previa', {
-        variant: 'error',
+        variant: 'danger',
       });
       return onClose();
     }
@@ -1177,7 +1248,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     // Si tiene citas en proceso no lo tengo que dejar agendar citas
     if (citasSinFinalizar.result) {
       enqueueSnackbar('Ya tienes una cita en proceso de este beneficio', {
-        variant: 'error',
+        variant: 'danger',
       });
       return onClose();
     }
@@ -1188,7 +1259,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       enqueueSnackbar(
         'Ya cuentas con la cantidad máxima  de beneficios brindados en el mes seleccionado',
         {
-          variant: 'error',
+          variant: 'danger',
         }
       );
       return onClose();
@@ -1212,7 +1283,30 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         break;
     }
 
-    const agendar = await agendarCita(
+    const GOOGLE_EVENT = Object.freeze({
+      TITULO: `Cita ${nombreBeneficio} - ${datosUser.nombre}`,
+      INICIO_CITA: startDate.format('YYYY-MM-DDTHH:mm:ss'),
+      FIN_CITA: endDate.format('YYYY-MM-DDTHH:mm:ss'),
+      OFICINA: oficina?.data ? oficina.data[0].ubicación : 'Oficina virtual ',
+      DESCRIPCION: `Cita de ${datosUser.nombre} en ${nombreBeneficio}`,
+    });
+
+    const DATOS_CITA = Object.freeze({
+      TITULO: GOOGLE_EVENT.TITULO,
+      ID_ESPECIALISTA: selectedValues.especialista,
+      OBSERVACIONES: '',
+      HORA_CITA: horarioSeleccionado,
+      TIPO_CITA: tipoCita, // 1 PRIMERA CITA, 2 NORMAL, 3 CITA EXTRA
+      ID_ATENCION_POR_SEDE: idAtencionPorSede.data[0].idAtencionXSede,
+      ID_USUARIO: datosUser.idUsuario,
+      ID_DETALLE_PAGO: null,
+      ID_BENEFICIO: selectedValues.beneficio,
+      ID_GOOGLE_EVENT: null, // newGoogleEvent.result ? newGoogleEvent.data.id : null,
+      MODALIDAD: selectedValues.modalidad,
+      ESTATUS_CITA: ESTATUS_CITA.PENDIENTE_PAGO,
+    });
+
+    const agenndar = await agendaarCita(
       `Cita ${nombreBeneficio} - ${datosUser.nombre}`,
       currentEvent?.idEspecialista,
       ' ',
@@ -1226,9 +1320,24 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       currentEvent.modalidad
     );
 
+    const agendar = await agendarCita(
+      GOOGLE_EVENT.TITULO,
+      DATOS_CITA.ID_ESPECIALISTA,
+      DATOS_CITA.OBSERVACIONES,
+      DATOS_CITA.HORA_CITA,
+      DATOS_CITA.TIPO_CITA,
+      DATOS_CITA.ID_ATENCION_POR_SEDE,
+      DATOS_CITA.ID_USUARIO,
+      DATOS_CITA.ID_DETALLE_PAGO,
+      DATOS_CITA.ID_BENEFICIO,
+      DATOS_CITA.ID_GOOGLE_EVENT,
+      DATOS_CITA.MODALIDAD,
+      DATOS_CITA.ESTATUS_CITA
+    );
+
     if (!agendar.result) {
       return enqueueSnackbar(agendar.msg, {
-        variant: 'error',
+        variant: 'danger',
       });
     }
 
@@ -1267,7 +1376,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     );
     if (!updateGoogleEvent.result) {
       enqueueSnackbar('No se pudo sincronizar el evento con la cuenta de google', {
-        variant: 'error',
+        variant: 'danger',
       });
       return onClose();
     }
@@ -1275,7 +1384,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const scheduledAppointment = await consultarCita(agendar.data);
     if (!scheduledAppointment.result) {
       enqueueSnackbar('¡Surgió un error al poder mostrar la previsualización de la cita!', {
-        variant: 'error',
+        variant: 'danger',
       });
       onClose();
       return false;
@@ -1780,6 +1889,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         maxWidth="sm"
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
+        disableEnforceFocus
       >
         <DialogContent sx={{ pb: 2 }}>
           <Stack
@@ -1813,6 +1923,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         open={reschedule}
         aria-labelledby="alert-dialog-title1"
         aria-describedby="alert-dialog-description1"
+        disableEnforceFocus
       >
         <DialogContent
           sx={
@@ -1879,7 +1990,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         </DialogActions>
       </Dialog>
 
-      <Dialog open={confirmCancel} maxWidth="sm">
+      <Dialog open={confirmCancel} maxWidth="sm" disableEnforceFocus>
         <DialogContent>
           <Stack
             direction="row"

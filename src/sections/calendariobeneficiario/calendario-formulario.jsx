@@ -25,7 +25,7 @@ export default function NuevaCitaForm({ open, especialidadElegida }) {
       <Button variant="outlined" onClick={handleClickOpen}>
         Open form dialog
       </Button>
-      <Dialog open={openModal} onClose={handleClose}>
+      <Dialog open={openModal} onClose={handleClose} disableEnforceFocus>
         <DialogTitle>Subscribe</DialogTitle>
         <DialogContent>
           <DialogContentText>

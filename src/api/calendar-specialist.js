@@ -290,6 +290,9 @@ export async function createAppointment(eventData, modalitie, datosUser) {
       idUsuario: datosUser.idUsuario,
     };
 
+    // const organizer = eventData.paciente.correo || datosUser.correo;
+    const organizer = 'programador.analista34@ciudadmaderas.com';
+
     const googleData = {
       title: eventData.title,
       start: dayjs(fechaInicio).format('YYYY-MM-DDTHH:mm:ss'),
@@ -322,8 +325,7 @@ export async function createAppointment(eventData, modalitie, datosUser) {
         //   responseStatus: 'accepted',
         // },
       ],
-
-      email: datosUser.correo,
+      email: organizer,
     };
 
     create = await fetcherPost(create_appointment, data);

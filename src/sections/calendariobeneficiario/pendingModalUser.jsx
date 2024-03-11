@@ -240,7 +240,7 @@ export default function PendingModalUser() {
         </Dialog>
       )}
       <CalendarPreview event={event} open={open2} handleClose={handleClose2} />
-      <Dialog open={open3} maxWidth="sm">
+      <Dialog open={open3} maxWidth="sm" disableEnforceFocus>
         <DialogContent sx={{ pb: 2 }}>
           <Stack
             direction="row"
@@ -274,7 +274,7 @@ export default function PendingModalUser() {
             cerrar={onClose}
           />
         )}
-      <Dialog open={confirmCancel} maxWidth="sm">
+      <Dialog open={confirmCancel} maxWidth="sm" disableEnforceFocus>
         <DialogContent>
           <Stack
             direction="row"

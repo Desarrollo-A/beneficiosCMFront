@@ -108,6 +108,7 @@ export default function CalendarToolbar({
           onClose={() => handleClose()}
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
+          disableEnforceFocus
         >
           <ColorsDialog onClose={() => handleClose()} />
         </Dialog>
