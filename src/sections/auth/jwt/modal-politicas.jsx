@@ -22,9 +22,6 @@ export default function ModalPoliticas({ open, onClose }) {
       open={open}
       PaperProps={{
         className: styles.scrollbar,
-        sx: {
-          maxWidth: 720,
-        }
       }}
     >
 
@@ -33,7 +30,7 @@ export default function ModalPoliticas({ open, onClose }) {
 
         <DialogTitle sx={{ textAlign: 'center', color: '#003764' }}>TÉRMINOS Y CONDICIONES</DialogTitle>
 
-        <Stack spacing={1} sx={{ textAlign: 'justify', margin: '40px' }}>
+        <Stack spacing={1} sx={{ textAlign: 'justify' }}>
 
           <DialogContent style={{ textAlign: 'center', fontWeight: 'bold', color: '#003764' }} variant="h7">OBJETIVO GENERAL </DialogContent>
 

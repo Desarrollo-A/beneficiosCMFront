@@ -1,21 +1,59 @@
 import PropTypes from 'prop-types';
+import { useState, useEffect} from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
 import { alpha, useTheme } from '@mui/material/styles';
 
 import { fNumber } from 'src/utils/format-number';
+
+import { useGetMeta } from 'src/api/especialistas';
 
 import Chart, { useChart } from 'src/components/chart';
 
 // ----------------------------------------------------------------------
 
-export default function GraficaMetas({ data, ...other }) {
+export default function GraficaMetas({ id }) {
   const theme = useTheme();
 
-  const { total, meta } = data;
+  const currentMonth = new Date().getMonth() + 1;
+
+  const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+
+  const handleChangeMes = (event) => {
+    setSelectedMonth(event.target.value);
+  };
+
+  const { meta: metaData } = useGetMeta({ especialista: id, mes: selectedMonth });
+
+  const [data, setData] = useState({total: 0, meta:0});
+
+  useEffect(() => {
+    if(metaData !== undefined){
+    setData(metaData);
+    }
+  }, [metaData]);
+
+  const total = data?.total;
+
+  const meta = data?.meta;
+
+  const months = Array.from({ length: currentMonth }, (_, index) => index + 1);
+
+  const getMonthName = (month) => {
+    const monthNames = [
+      "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+      "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+    ];
+    return monthNames[month - 1];
+  };
 
   const chartOptions = useChart({
 
@@ -51,8 +89,33 @@ export default function GraficaMetas({ data, ...other }) {
   });
 
   return (
-    <Card {...other}>
-      <CardHeader title='Meta de citas' sx={{ mb: 16.9 }} />
+    <Card>
+      <CardHeader title='Meta de citas' sx={{ mb: 1.8 }} />
+
+      <Grid container spacing={2} sx={{ p: 4 }}>
+
+          <Grid md={12} xs={12}>
+            <FormControl sx={{
+              width: "100%",
+              pr: { xs: 1, md: 1 },
+            }}>
+              <InputLabel id="demo-simple-select-label">Mes</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={selectedMonth}
+                label="Mes"
+                onChange={handleChangeMes}
+              >
+                {months.map(month => (
+                  <MenuItem key={month} value={month}>
+                    {getMonthName(month)}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+        </Grid>
 
       <Chart
         dir="ltr"
@@ -109,8 +172,5 @@ export default function GraficaMetas({ data, ...other }) {
 }
 
 GraficaMetas.propTypes = {
-  chart: PropTypes.object,
-  subheader: PropTypes.string,
-  title: PropTypes.string,
-  data: PropTypes.any
+  id: PropTypes.any
 };
