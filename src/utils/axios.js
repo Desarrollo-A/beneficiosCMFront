@@ -66,6 +66,7 @@ export const endpoints = {
   auth: {
     me: '/LoginController/check',
     me2: '/LoginController/me',
+    getUser: '/Usuario/getUserByNumEmp',
     login: '/LoginController/login',
     login2: '/api/auth/login',
     register: '/api/auth/register',
@@ -249,7 +250,7 @@ export const endpoints = {
     updateSede: '/GestorController/updateSede',
     insertSedes: '/GestorController/insertSedes',
     checkModalidades: '/GestorController/checkModalidades',
-    getAreas: '/GestorController/getAreas'
+    getAreas: '/GestorController/getAreas',
   },
   avisosPrivacidad: {
     getEspecialidadToSelect: '/AvisosPrivacidadController/getEspecialidades',

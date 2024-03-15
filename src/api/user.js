@@ -4,6 +4,14 @@ import { useLocation } from 'react-router-dom';
 
 import { endpoints, fetcherGet, fetcherPost } from 'src/utils/axios';
 
+// Consulta si existe un colaborador en la vista de ch y trae su info para registrarlo.
+export function getColaborador(num_empleado) {
+  const URL = [endpoints.auth.getUser];
+  const user = fetcherPost(URL, { num_empleado });
+
+  return user;
+}
+
 export function useGetUsers() {
   const URL = endpoints.user.list;
   const { data, mutate: revalidate } = useSWR(URL, (url) => fetcherPost(url, {}));
@@ -19,7 +27,8 @@ export function useGetUsers() {
   return memoizedValue;
 }
 
-export function useGetNameUser(idUsuario) { // funcion para traer los usuarios disponibles en select de cita.
+export function useGetNameUser(idUsuario) {
+  // funcion para traer los usuarios disponibles en select de cita.
   const URL = endpoints.user.names;
 
   const { data, mutate } = useSWR(URL, (url) => fetcherPost(url, idUsuario));
