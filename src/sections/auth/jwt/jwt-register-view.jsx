@@ -16,6 +16,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 
 import { RouterLink } from 'src/routes/components';
 import { useRouter, useSearchParams } from 'src/routes/hooks';
+import { useSnackbar } from 'src/components/snackbar';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
@@ -24,6 +25,8 @@ import instance from 'src/utils/axiosCH';
 import { useAuthContext } from 'src/auth/hooks';
 import { PATH_AFTER_LOGIN, PATH_AFTER_REGISTRO } from 'src/config-global';
 
+import { getColaborador } from 'src/api/user';
+
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
 import ModalPoliticas from './modal-politicas';
@@ -31,6 +34,8 @@ import ModalPoliticas from './modal-politicas';
 
 export default function JwtRegisterView() {
   const [numEmpleado, setnumEmpleado] = useState('');
+
+  const { enqueueSnackbar } = useSnackbar()
 
   const { register } = useAuthContext();
 
@@ -83,40 +88,47 @@ export default function JwtRegisterView() {
     }
   });
 
-  const validarNumEmpleado = () => {
-    if (numEmpleado.trim() === '') {
+  const validarNumEmpleado = async () => {
       //  console.log('Ingresar número de empleado válido');
-    } else {
       // Conectar axios con CH
-      const datos = Base64.encode(JSON.stringify({ num_empleado: numEmpleado }));
-      // console.log(datos);
+      // const datos = Base64.encode(JSON.stringify({ num_empleado: numEmpleado })); // VALLE01392
 
-      const config = {
-        headers: {
-          Authorization: '41EgSP8+YSqsyT1ZRuxTK3CYR11LOcyqopI2TTNJd3EL+aU3MUdJNsKGx8xOK+HH',
-          Accept: '*/*',
-          Origin: 'https://prueba.gphsis.com/auth/jwt/register',
-        },
-      };
+      // const config = {
+      //   headers: {
+      //     Authorization: '41EgSP8+YSqsyT1ZRuxTK3CYR11LOcyqopI2TTNJd3EL+aU3MUdJNsKGx8xOK+HH',
+      //     Accept: '*/*',
+      //     Origin: 'https://prueba.gphsis.com/auth/jwt/register',
+      //   },
+      // };
 
-      instance
-        .post('https://rh.gphsis.com/index.php/WS/data_colaborador_consultas', datos, config)
-        .then((response) => {
-          let datosResponse = Base64.decode(JSON.stringify(response.data));
-          datosResponse = JSON.parse(datosResponse);
-          // if(datosResponse.resultado === 0){ // se cambio ya que este no daba el resultado
-          if (datosResponse.data.length === 0) {
-            setErrorMsg('Número de empleado no encontrado');
-          } else {
-            navigate(PATH_AFTER_REGISTRO, { state: datosResponse });
-            location(PATH_AFTER_REGISTRO, { state: datosResponse });
-            router.push(returnTo || PATH_AFTER_REGISTRO);
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    }
+      const response = await getColaborador(numEmpleado);
+      if (!response.result) {
+        enqueueSnackbar('Número de empleado no encontrado', { variant: 'error' });
+        return false;
+      }
+      // alert(JSON.stringify(response.data[0]));
+      navigate(PATH_AFTER_REGISTRO, { state: response });
+      location(PATH_AFTER_REGISTRO, { state: response });
+      router.push(returnTo || PATH_AFTER_REGISTRO);
+      // instance
+      //   .post('https://rh.gphsis.com/index.php/WS/data_colaborador_consultas', datos, config)
+      //   .then((response) => {
+      //     let datosResponse = Base64.decode(JSON.stringify(response.data));
+      //     datosResponse = JSON.parse(datosResponse);
+      //     // if(datosResponse.resultado === 0){ // se cambio ya que este no daba el resultado
+      //     if (datosResponse.data.length === 0) {
+      //       setErrorMsg('Número de empleado no encontrado');
+      //     } else {
+      //       navigate(PATH_AFTER_REGISTRO, { state: datosResponse });
+      //       location(PATH_AFTER_REGISTRO, { state: datosResponse });
+      //       router.push(returnTo || PATH_AFTER_REGISTRO);
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     console.error(error);
+      //   });
+
+      return true;
   };
 
   const renderHead = (

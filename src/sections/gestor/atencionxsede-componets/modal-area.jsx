@@ -53,13 +53,18 @@ export default function ModalArea({ id, onClose, idArea }) {
           mutate(endpoints.gestor.getAtencionXsedeEsp);
         } else {
           enqueueSnackbar(update.msg, { variant: 'error' });
+          onClose();
         }
       } else {
         enqueueSnackbar(`¡No se selecciono alguna opción!`, { variant: 'error' });
+        onClose();
       }
+      setLoadingBtn(false);
     } catch (error) {
       enqueueSnackbar(`¡Error al actualizar el registro!`, { variant: 'error' });
+      onClose();
     }
+
   };
 
   const handleChange = (e, value, reason) => {

@@ -76,7 +76,7 @@ function handleDownloadExcel(datosTabla, rol) {
         { label: "Especialista", value: "especialista" },
         { label: "Paciente", value: "paciente" },
         { label: "Oficina", value: "oficina" },
-        { label: "Departamento", value: "area" },
+        { label: "Departamento", value: "depto" },
         { label: "Sede", value: "sede" },
         { label: "Modalidad", value: "modalidad" },
         { label: "Sexo", value: "sexo" },
@@ -90,21 +90,9 @@ function handleDownloadExcel(datosTabla, rol) {
     },
   ];
 
-  if (rol === "1" || rol === 1) {
+  if (rol === 3) {
     const arr = baseArray[0].columns;
     arr.splice(1, 1);
-
-    data = [
-      {
-        sheet: "Historial Reportes",
-        columns: arr,
-        content: datosTabla,
-      },
-    ];
-
-  } else if (rol === "2" || rol === 2) {
-    const arr = baseArray[0].columns;
-    arr.splice(2, 1);
 
     data = [
       {
@@ -132,14 +120,14 @@ function handleDownloadPDF(datosTabla, header, rol) {
 
   let data = [];
 
-  if (rol === "2" || rol === 2) {
-    data = datosTabla.map(item => ([item.idColab, item.especialista,
-    item.oficina, item.area, item.sede, item.sexo, item.estatus, item.horario]))
-  } else {
+  if(rol === 3){
+    data = datosTabla.map(item => ([item.idColab, item.paciente,
+      item.oficina, item.area, item.sede, item.modalidad, item.sexo, item.motivoCita, item.pagoGenerado, item.metodoPago !== null ? item.metodoPago : 'Pendiente de pago', item.estatus, item.horario,]))
+  }else{
     data = datosTabla.map(item => ([item.idColab, item.especialista, item.paciente,
-    item.oficina, item.area, item.sede, item.modalidad, item.sexo, item.motivoCita, item.pagoGenerado, item.metodoPago, item.estatus, item.horario,]))
+    item.oficina, item.area, item.sede, item.modalidad, item.sexo, item.motivoCita, item.pagoGenerado, item.metodoPago !== null ? item.metodoPago : 'Pendiente de pago', item.estatus, item.horario,]))
   }
-
+  
   autoTable(doc, {
     head: [header],
     body: data,
@@ -161,8 +149,8 @@ export default function HistorialReportesView() {
 
   let header = [];
 
-  const headerBase = ["ID Colaborador", "Especialista", "Paciente", "Oficina", "Departamento", "Sede", "Modalidad", "Sexo", "Motivo consulta", "Pago Generado", "Método de pago", "Estatus",
-    "Horario cita"];
+  const headerBase = ["ID Colaborador", "Especialista", "Paciente", "Oficina", "Departamento", "Sede",
+    "Modalidad", "Sexo", "Motivo consulta", "Pago Generado", "Método de pago", "Estatus", "Horario cita"];
 
   const [dataValue, setReportData] = useState(0);
 
@@ -172,7 +160,7 @@ export default function HistorialReportesView() {
 
   useEffect(() => {
     setEsp(espeUserData);
-  }, [espeUserData])
+  }, [espeUserData]);
 
   const { reportesData } = usePostGeneral(dataValue, endpoints.reportes.lista, "reportesData");
 
@@ -192,7 +180,7 @@ export default function HistorialReportesView() {
 
   defaultFilters.area = user?.idRol !== 4 ? _eu : [];
 
-  defaultFilters.especialista = user?.idRol === 3 ? nombreUser : [];
+  defaultFilters.especialista = user?.idRol !== 4 ? nombreUser : [];
 
   const table = useTable();
 
@@ -227,7 +215,7 @@ export default function HistorialReportesView() {
     /* { id: '', width: 88 }, */
   ];
 
-  if (rol === "3" || rol === 3) {
+  if (rol === 3) {
 
     TABLE_BASE.splice(1, 1);
     headerBase.splice(1, 1);
@@ -236,8 +224,8 @@ export default function HistorialReportesView() {
     header = headerBase;
 
   } else {
-    TABLE_HEAD = TABLE_BASE;
-    header = headerBase;
+  TABLE_HEAD = TABLE_BASE;
+  header = headerBase;
   }
 
   const dataFiltered = applyFilter({
@@ -338,10 +326,10 @@ export default function HistorialReportesView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Reporte de ingresos"
+          heading="Reporte historial"
           links={[
             { name: 'Reportes' },
-            { name: 'Ingresos' },
+            { name: 'Historial' },
           ]}
           sx={{
             mb: { xs: 3, md: 5 },
@@ -491,7 +479,7 @@ export default function HistorialReportesView() {
 
 // ----------------------------------------------------------------------
 
-function applyFilter({ inputData, comparator, filters, dateError }) {
+function applyFilter({ inputData, comparator, filters, dateError, rol }) {
   const { name, area, startDate, endDate, especialista, modalidad } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
@@ -518,7 +506,7 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
         (cita.sexo && cita.sexo.toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
         (cita.motivoCita && cita.motivoCita.toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
         (cita.metodoPago && cita.metodoPago.toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
-        (cita.oficina && cita.oficina.toLowerCase().indexOf(name.toLowerCase()) !== -1) 
+        (cita.oficina && cita.oficina.toLowerCase().indexOf(name.toLowerCase()) !== -1)
     );
   }
 
@@ -536,9 +524,9 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
     }
   }
 
-  if (especialista.length) {
-    inputData = inputData.filter((i) => especialista.includes(i.especialista));
-  }
+    if (especialista.length) {
+      inputData = inputData.filter((i) => especialista.includes(i.especialista));
+    }
 
   if (modalidad.length) {
     inputData = inputData.filter((i) => modalidad.includes(i.modalidad));

@@ -157,13 +157,13 @@ export default function ToolbarAtencionXsede({
             width: { xs: 1, md: 200 },
           }}
         >
-          <InputLabel>Área</InputLabel>
+          <InputLabel>Beneficio</InputLabel>
 
           <Select
             multiple
             value={filters.puesto}
             onChange={handleFilterPuesto}
-            input={<OutlinedInput label="Área" />}
+            input={<OutlinedInput label="Beneficio" />}
             renderValue={(selected) => selected.map((value) => value).join(', ')}
             MenuProps={{
               PaperProps: {
@@ -194,13 +194,13 @@ export default function ToolbarAtencionXsede({
           }}
           disabled
         >
-          <InputLabel>Área</InputLabel>
+          <InputLabel>Beneficio</InputLabel>
 
           <Select
             multiple
             value={[_puEs]}
             onChange={handleFilterPuesto}
-            input={<OutlinedInput label="Área" />}
+            input={<OutlinedInput label="Beneficio" />}
             renderValue={(selected) => selected.map((value) => value).join(', ')}
             MenuProps={{
               PaperProps: {

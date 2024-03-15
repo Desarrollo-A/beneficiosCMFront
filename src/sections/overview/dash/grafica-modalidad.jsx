@@ -18,6 +18,7 @@ import { endpoints } from 'src/utils/axios';
 import { fNumber } from 'src/utils/format-number';
 
 import { usePostGeneral } from 'src/api/general';
+import { useGetEspecialistasPorArea } from 'src/api/especialistas';
 
 import Chart, { useChart } from 'src/components/chart';
 
@@ -47,7 +48,6 @@ export default function GraficaModalidad({
   total, 
   chart, 
   beneficios, 
-  especialistas, 
   diaUnoMes,
   ultimoDiaMes,
   datePikerI,
@@ -86,6 +86,8 @@ export default function GraficaModalidad({
   }, [areas, _es, fechaI, fechaF]);
 
   const { modalidadData } = usePostGeneral(val, endpoints.dashboard.getCountModalidades, "modalidadData");
+
+  const { especialistas } = useGetEspecialistasPorArea({ areas });
 
   const _pre = modalidadData.flatMap((est) => (est.presencial));
 
@@ -285,7 +287,6 @@ GraficaModalidad.propTypes = {
   title: PropTypes.string,
   total: PropTypes.number,
   beneficios: PropTypes.any,
-  especialistas: PropTypes.any,
   diaUnoMes: PropTypes.any,
   ultimoDiaMes: PropTypes.any,
   datePikerI: PropTypes.any,

@@ -22,6 +22,7 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import { endpoints } from 'src/utils/axios';
 
 import { useGetGeneral, usePostGeneral } from 'src/api/general';
+import { useGetEspecialistasPorArea } from 'src/api/especialistas';
 
 import Chart, { useChart } from 'src/components/chart';
 
@@ -31,7 +32,6 @@ export default function GraficaEstatusCitas({
   title, 
   subheader, 
   beneficios, 
-  especialistas, 
   diaUnoMes,
   ultimoDiaMes,
   datePikerI,
@@ -60,6 +60,8 @@ export default function GraficaEstatusCitas({
     fhI: fechaI,
     fhF: fechaF
   });
+
+  const { especialistas } = useGetEspecialistasPorArea({ areas });
 
   const { estatusCitasData } = useGetGeneral(endpoints.dashboard.getEstatusCitas, "estatusCitasData");
 
@@ -301,7 +303,7 @@ export default function GraficaEstatusCitas({
 
         <Stack sx={{ py: 1 }}>
           <Box component="span" sx={{ mb: 0, typography: 'body2', color: 'text.secondary' }}>
-            Citas
+            Total
           </Box>
           {citas}
         </Stack>
@@ -314,7 +316,6 @@ GraficaEstatusCitas.propTypes = {
   subheader: PropTypes.string,
   title: PropTypes.string,
   beneficios: PropTypes.any,
-  especialistas: PropTypes.any,
   diaUnoMes: PropTypes.any,
   ultimoDiaMes: PropTypes.any,
   datePikerI: PropTypes.any,

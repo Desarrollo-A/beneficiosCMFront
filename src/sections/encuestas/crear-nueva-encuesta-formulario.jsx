@@ -106,7 +106,6 @@ export default function InvoiceNewEditForm() {
 
           router.push(paths.dashboard.encuestas.ver);
           mutate(endpoints.encuestas.encuestaMinima);
-          mutate(endpoints.encuestas.getEncNotificacion);
           mutate(endpoints.encuestas.getEstatusUno);
 
           setBtnLoad(false);

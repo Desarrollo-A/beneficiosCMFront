@@ -45,7 +45,6 @@ export default function EncuestaHabilitar({ open, onClose, idEncuesta, puestos }
           enqueueSnackbar(update.msj, { variant: 'success' });
 
           mutate(endpoints.encuestas.getEncuestasCreadas);
-          mutate(endpoints.encuestas.getEncNotificacion);
           mutate(endpoints.encuestas.getEstatusUno);
 
           setBtnLoad(false);

@@ -18,6 +18,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 import { endpoints } from 'src/utils/axios';
 
+import { useAuthContext } from 'src/auth/hooks';
 import { usePostSelect, usePostIngresos, usePostPacientes } from 'src/api/reportes';
 import {
   BookingIllustration,
@@ -47,6 +48,8 @@ export default function BarraTareasTabla({
 }) {
   const popover = usePopover();
 
+  const { user } = useAuthContext();
+
   const diaActual = new Date().toISOString().split('T')[0];
 
   function formatFirstDayOfMonth() {
@@ -62,13 +65,13 @@ export default function BarraTareasTabla({
 
   const diaUnoMes = formatFirstDayOfMonth();
 
-  const [area, setArea] = useState([filters.area]);
+  const [area, setArea] = useState([rol === 4 ? filters.area : _eu]);
 
   const [fechaI, setFechaI] = useState(diaUnoMes);
 
   const [fechaF, setFechaF] = useState(diaActual);
 
-  const [selectEsp, setSelectEsp] = useState([]);
+  const [selectEsp, setSelectEsp] = useState(rol === 3 ? [user?.nombre] : []);
 
   const [mod, setMod] = useState([filters.modalidad]);
 
@@ -289,72 +292,69 @@ export default function BarraTareasTabla({
           </TextField>
         </FormControl>
 
-        {rol === "4" || rol === 4 ? (
+        {rol === 4 ? (
 
-          <FormControl
-            sx={{
-              flexShrink: 0,
-              width: { xs: 1, md: 200 },
-            }}
-          >
-            <InputLabel>Área</InputLabel>
-
-            <Select
-              multiple
-              value={filters.area}
-              onChange={handleFilterRole}
-              input={<OutlinedInput label="Área" />}
-              renderValue={(selected) => selected.map((value) => value).join(', ')}
-              MenuProps={{
-                PaperProps: {
-                  sx: { maxHeight: 240 },
-                },
+          <>
+            <FormControl
+              sx={{
+                flexShrink: 0,
+                width: { xs: 1, md: 200 },
               }}
             >
-              {roleOptions.map((option, index) => (
-                <MenuItem key={index} value={option}>
-                  <Checkbox disableRipple size="small" checked={filters.area.includes(option)} />
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+              <InputLabel>Beneficio</InputLabel>
 
-        ) : (
-          null
-        )}
+              <Select
+                multiple
+                value={filters.area}
+                onChange={handleFilterRole}
+                input={<OutlinedInput label="Beneficio" />}
+                renderValue={(selected) => selected.map((value) => value).join(', ')}
+                MenuProps={{
+                  PaperProps: {
+                    sx: { maxHeight: 240 },
+                  },
+                }}
+              >
+                {roleOptions.map((option, index) => (
+                  <MenuItem key={index} value={option}>
+                    <Checkbox disableRipple size="small" checked={filters.area.includes(option)} />
+                    {option}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
-        {rol !== 3 ? (
-
-          <FormControl
-            sx={{
-              flexShrink: 0,
-              width: { xs: 1, md: 400 },
-            }}
-          >
-            <InputLabel>Especialistas</InputLabel>
-
-            <Select
-              multiple
-              disabled={condi}
-              value={filters.especialista}
-              onChange={handleFilterEspe}
-              input={<OutlinedInput label="Especialistas" />}
-              renderValue={(selected) => selected.map((value) => value).join(', ')}
-              MenuProps={{
-                PaperProps: {
-                  sx: { maxHeight: 240 },
-                },
+            <FormControl
+              sx={{
+                flexShrink: 0,
+                width: { xs: 1, md: 400 },
               }}
             >
-              {_esp.map((option) => (
-                <MenuItem key={option} value={option}>
-                  <Checkbox disableRipple size="small" checked={filters.especialista.includes(option)} />
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+              <InputLabel>Especialistas</InputLabel>
+
+              <Select
+                multiple
+                disabled={condi}
+                value={filters.especialista}
+                onChange={handleFilterEspe}
+                input={<OutlinedInput label="Especialistas" />}
+                renderValue={(selected) => selected.map((value) => value).join(', ')}
+                MenuProps={{
+                  PaperProps: {
+                    sx: { maxHeight: 240 },
+                  },
+                }}
+              >
+                {espData.map((option) => (
+                  <MenuItem key={option} value={option.nombre}>
+                    <Checkbox disableRipple size="small" checked={filters.especialista.includes(option.nombre)} />
+                    {option.nombre}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+          </>
 
         ) : (
           null

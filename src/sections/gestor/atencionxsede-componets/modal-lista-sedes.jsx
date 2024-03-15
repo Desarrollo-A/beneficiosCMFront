@@ -74,7 +74,7 @@ export default function ModalListaSedes({ idPuesto, open, onClose, modalidadesDa
                           bgcolor: 'currentColor',
                         }}
                       />
-                      {"Fecha de creación: "}{e.fechaCreacion}
+                      {/* {"Fecha de creación: "}{e.fechaCreacion} */}
                     </>
                   }
                   primaryTypographyProps={{

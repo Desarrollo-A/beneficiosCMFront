@@ -86,3 +86,11 @@ export function useGetAuthorized() {
 
   return memoizedValue;
 }
+
+// Consulta si existe un colaborador en la vista de ch y trae su info para registrarlo.
+export function getColaborador(num_empleado) {
+  const URL = [endpoints.auth.getUser];
+  const user = fetcherPost(URL, { num_empleado });
+
+  return user;
+}

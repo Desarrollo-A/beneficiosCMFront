@@ -20,6 +20,7 @@ import { endpoints } from 'src/utils/axios';
 import { usePostGeneral } from 'src/api/general';
 import { useGetCountRespuestas } from 'src/api/encuestas';
 import { MotivationIllustration } from 'src/assets/illustrations';
+import { useGetEspecialistasPorArea } from 'src/api/especialistas';
 
 import Iconify from 'src/components/iconify';
 import Chart, { useChart } from 'src/components/chart';
@@ -57,9 +58,7 @@ import GraficaNone from './grafica-none';
 
 export default function GraficaEncuestas({
     title,
-
     beneficios,
-    especialistas,
     diaUnoMes,
     ultimoDiaMes,
     datePikerI,
@@ -93,6 +92,8 @@ export default function GraficaEncuestas({
     const [respPreg, setRespPreg] = useState([]);
 
     const { preguntaData } = usePostGeneral(areas, endpoints.dashboard.getPregunta, "preguntaData");
+
+    const { especialistas } = useGetEspecialistasPorArea({ areas });
 
     const [pregunta, setPregunta] = useState(0);
 
@@ -436,7 +437,6 @@ export default function GraficaEncuestas({
 GraficaEncuestas.propTypes = {
     title: PropTypes.string,
     beneficios: PropTypes.any,
-    especialistas: PropTypes.any,
     diaUnoMes: PropTypes.any,
     ultimoDiaMes: PropTypes.any,
     datePikerI: PropTypes.any,

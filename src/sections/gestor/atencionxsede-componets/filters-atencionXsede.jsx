@@ -71,7 +71,7 @@ export default function FiltersAtencionXsede({
         )}
 
         {!!filters.puesto.length && (
-          <Block label="Área:">
+          <Block label="Beneficio:">
             {filters.puesto.map((item) => (
               <Chip key={item} label={item} size="small" onDelete={() => handleRemovePuesto(item)} />
             ))}

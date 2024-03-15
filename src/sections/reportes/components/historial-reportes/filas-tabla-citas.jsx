@@ -36,8 +36,6 @@ export default function FilasTabla({ row, selected, rol, rel }) {
   } = row;
   const quickEdit = useBoolean();
 
-
-
   return (
     <>
 
@@ -77,7 +75,7 @@ export default function FilasTabla({ row, selected, rol, rel }) {
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{pagoGenerado}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{metodoPago !== null ? metodoPago : 'Pendiente de pago'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{metodoPago}</TableCell>
 
         <TableCell>
           <Label
