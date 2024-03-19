@@ -44,8 +44,7 @@ const StyledChart = styled(Chart)(({ theme }) => ({
 
 export default function GraficaModalidad({ 
   title,
-  subheader, 
-  total, 
+  subheader,  
   chart, 
   beneficios, 
   diaUnoMes,
@@ -87,19 +86,48 @@ export default function GraficaModalidad({
 
   const { modalidadData } = usePostGeneral(val, endpoints.dashboard.getCountModalidades, "modalidadData");
 
+  const [data, setData] = useState([]);
+
+  const [base, setBase] = useState(0);
+
+  useEffect(() => {
+    if (modalidadData.length) {
+      setData(modalidadData);
+      setBase(100);
+    }
+  }, [modalidadData]);
+
   const { especialistas } = useGetEspecialistasPorArea({ areas });
 
-  const _pre = modalidadData.flatMap((est) => (est.presencial));
+  const [_pre, set_pre] = useState([0]);
 
-  const _vir = modalidadData.flatMap((est) => (est.virtual));
+  useEffect(() => {
+    if (data.length) {
+      set_pre(data.flatMap((est) => (est.presencial)));
+    }
+  }, [data]);
+
+  const [_vir, set_vir] = useState([0]);
+
+  useEffect(() => {
+    if (data.length) {
+      set_vir(data.flatMap((est) => (est.virtual)));
+    }
+  }, [data]);
 
   const tot = parseInt(_pre, 10) + parseInt(_vir, 10);
 
-  const pre = ((_pre * 100) / tot).toFixed(0);
+  const pre = tot === 0 ? 0 : ((_pre * 100) / tot).toFixed(0);
 
-  const vir = ((_vir * 100) / tot).toFixed(0);
+  const vir = tot === 0 ? 0 : ((_vir * 100) / tot).toFixed(0);
 
-  const countMod = [ pre, vir ];
+  const [countMod, setCountMod] = useState([ 0, 0 ]);
+
+  useEffect(() => {
+    if (data.length) {
+      setCountMod([ pre, vir ]);
+    }
+  }, [pre, vir, data]);
 
   const handleChangeArea = useCallback(
     (event) => {
@@ -285,7 +313,6 @@ GraficaModalidad.propTypes = {
   chart: PropTypes.object,
   subheader: PropTypes.string,
   title: PropTypes.string,
-  total: PropTypes.number,
   beneficios: PropTypes.any,
   diaUnoMes: PropTypes.any,
   ultimoDiaMes: PropTypes.any,

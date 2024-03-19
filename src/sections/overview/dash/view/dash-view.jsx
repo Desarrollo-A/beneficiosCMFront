@@ -159,7 +159,6 @@ export default function DashView() {
         {rol === 4 || rol === 3 ? (
           <>
 
-
             <Grid xs={12} md={6} lg={4}>
 
               <GraficaPacientes
@@ -192,7 +191,6 @@ export default function DashView() {
                 rol={rol}
                 puesto={puesto}
                 id={id}
-                total={70}
                 chart={{
                   series: [
                     { label: 'Presencial', value: 35 },
