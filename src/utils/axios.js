@@ -66,6 +66,7 @@ export const endpoints = {
   auth: {
     me: '/LoginController/check',
     me2: '/LoginController/me',
+    getUser: '/Usuario/getUserByNumEmp',
     login: '/LoginController/login',
     login2: '/api/auth/login',
     register: '/api/auth/register',
@@ -96,8 +97,8 @@ export const endpoints = {
     areas: 'Usuario/getAreas',
     batch: 'Usuario/insertBatchUsers',
     names: 'Usuario/getNameUser',
-    puesto: '/GeneralController/getPuesto',
-    sede: '/GeneralController/getSede',
+    /* puesto: '/GeneralController/getPuesto', */
+    /* sede: '/GeneralController/getSede', */
     decodePass: '/Usuario/decodePass',
     updatePass: '/Usuario/updatePass',
     menu: 'Usuario/menu',
@@ -176,35 +177,38 @@ export const endpoints = {
     citas: '/GeneralController/getAppointmentHistory',
     getEstatusPaciente: '/GeneralController/getEstatusPaciente',
     updateEstatusPaciente: '/GeneralController/updateEstatusPaciente',
-    getResumenTerapias: '/ReportesController/getResumenTerapias',
-    getEspeQua: '/ReportesController/getEspeQua',
+    /* getResumenTerapias: '/ReportesController/getResumenTerapias', */
+    /* getEspeQua: '/ReportesController/getEspeQua', */
     getCierrePacientes: '/ReportesController/getCierrePacientes',
     getCierreIngresos: '/ReportesController/getCierreIngresos',
     getSelectEspe: '/ReportesController/getSelectEspe',
     getEspeUser: '/ReportesController/getEspeUser',
   },
   dashboard: {
-    usersCount: '/GeneralController/usrCount',
-    citasCount: '/GeneralController/citasCount',
-    citasEstatus: '/DashboardController/citasCountStatus',
-    estatusTotal: '/DashboardController/totalStatusCitas',
-    fechaMinima: '/DashboardController/fechaMinima',
-    fechaAsistencia: '/DashboardController/estatusFechaAsistencia',
-    fechaCancelada: '/DashboardController/estatusFechaCancelada',
-    fechaPenalizada: '/DashboardController/estatusFechaPenalizada',
+    /* usersCount: '/GeneralController/usrCount', */
+    /* citasCount: '/GeneralController/citasCount', */
+    /* citasEstatus: '/DashboardController/citasCountStatus', */
+    /* estatusTotal: '/DashboardController/totalStatusCitas', */
+    /* fechaMinima: '/DashboardController/fechaMinima', */
+    /* fechaAsistencia: '/DashboardController/estatusFechaAsistencia',
+    fechaCancelada: '/DashboardController/estatusFechaCancelada', */
+    /* fechaPenalizada: '/DashboardController/estatusFechaPenalizada', */
     citasAnual: '/DashboardController/citasAnual',
     getPregunta: '/DashboardController/getPregunta',
     getRespuestas: '/DashboardController/getRespuestas',
     getCountRespuestas: '/DashboardController/getCountRespuestas',
     getPacientes: '/GeneralController/getPacientes',
-    getCtAsistidas: '/GeneralController/getCtAsistidas',
-    getCtCanceladas: '/GeneralController/getCtCanceladas',
-    getCtPenalizadas: '/GeneralController/getCtPenalizadas',
-    getCtPresenciales: '/GeneralController/getCtPresenciales',
-    getCtVirtuales: '/GeneralController/getCtVirtuales',
+    getCtAsistidas: '/DashboardController/getCtAsistidas',
+    getCtCanceladas: '/DashboardController/getCtCanceladas',
+    getCtPenalizadas: '/DashboardController/getCtPenalizadas',
     getMetas: '/DashboardController/getMetas',
-    getMetaAdmin: '/DashboardController/getMetaAdmin',
+    /* getMetaAdmin: '/DashboardController/getMetaAdmin', */
     getEsp: '/DashboardController/getEsp',
+    getEstatusCitas: '/GeneralController/getEstatusCitas',
+    getCountModalidades: '/GeneralController/getCountModalidades',
+    getCountEstatusCitas: '/GeneralController/getCountEstatusCitas',
+    getCountPacientes: '/GeneralController/getCountPacientes',
+    getCtDisponibles: '/DashboardController/getCtDisponibles',
   },
   encuestas: {
     encuestaInsert: '/EncuestasController/encuestaInsert',
@@ -216,9 +220,8 @@ export const endpoints = {
     getResp2: '/EncuestasController/getResp2',
     getResp3: '/EncuestasController/getResp3',
     getResp4: '/EncuestasController/getResp4',
-    getEncNotificacion: '/EncuestasController/getEncNotificacion',
-    getPuestos: '/EncuestasController/getPuestos',
-    getEcuestaValidacion: '/EncuestasController/getEcuestaValidacion',
+    /* getEncNotificacion: '/EncuestasController/getEncNotificacion', */
+    /* getEcuestaValidacion: '/EncuestasController/getEcuestaValidacion', */
     getEncuestasCreadas: '/EncuestasController/getEncuestasCreadas',
     updateEstatus: '/EncuestasController/updateEstatus',
     updateVigencia: '/EncuestasController/updateVigencia',

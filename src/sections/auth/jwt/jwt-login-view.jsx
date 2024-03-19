@@ -8,12 +8,12 @@ import Link from '@mui/material/Link';
 import { Button } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
+import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import InputAdornment from '@mui/material/InputAdornment';
-import Divider from '@mui/material/Divider';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';

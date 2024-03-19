@@ -141,7 +141,7 @@ export default function Verificacion({ email, formReg }) {
             <p>El código de verificación expiró</p>
 
           )}
-        </Box>
+        
 
         <DialogActions>
           {showAlternativeButton ? (
@@ -164,6 +164,8 @@ export default function Verificacion({ email, formReg }) {
             </LoadingButton>
           )}
         </DialogActions>
+        
+        </Box>
 
       </DialogContent>
     </FormProvider >

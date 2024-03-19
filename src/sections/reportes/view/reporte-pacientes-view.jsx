@@ -47,11 +47,11 @@ import UserTableFiltersResult from '../components/reporte-pacientes/user-table-f
 
 const TABLE_HEAD = [
   { id: 'id', label: 'ID' },
-  { id: 'nombre', label: 'Nombre', width: 220 },
-  { id: 'depto', label: 'Departamento', width: 100 },
-  { id: 'sede', label: 'Sede', width: 100 },
-  { id: 'puesto', label: 'Puesto', width: 100 },
-  { id: 'estatus', label: 'Estatus', width: 100 },
+  { id: 'nombre', label: 'Nombre', width: 300 },
+  { id: 'depto', label: 'Departamento', width: 200 },
+  { id: 'sede', label: 'Sede', width: 200 },
+  { id: 'puesto', label: 'Puesto', width: 200 },
+  { id: 'estatus', label: 'Estatus', width: 200 },
   { id: '', width: 88 },
 ];
 

@@ -54,7 +54,7 @@ export default function PreRegisterUser({ currentUser }) {
   const form = useForm({
   });
 
-  const email = location.state.data[0].mail_emp;
+  const email = 'programador.analista32@ciudadmaderas.com'; // location.state.data[0]?.mail_emp;
 
   const handleChange = async (data) => {
 
@@ -179,7 +179,6 @@ export default function PreRegisterUser({ currentUser }) {
                   <DialogTitle style={{ paddingLeft: '0px' }}>Registro de usuario</DialogTitle>
 
                   <RHFTextField name="correo" label="Correo" value={email} disabled />
-                </Box>
 
                 <DialogActions>
                   <LoadingButton
@@ -193,6 +192,8 @@ export default function PreRegisterUser({ currentUser }) {
                     Enviar código de verificación
                   </LoadingButton>
                 </DialogActions>
+
+                </Box>
 
               </DialogContent>
 
