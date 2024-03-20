@@ -1,3 +1,14 @@
+import 'dayjs/locale/es';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+
+dayjs.locale('es');
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(isSameOrBefore);
+
 export const validarTelefono = (numero) => {
   // Eliminar cualquier espacio en blanco
   numero = numero.replace(/\s/g, '');
@@ -12,6 +23,18 @@ export const validarCorreo = (correo) => {
 
   // Verificar si el correo cumple con el patrón de la expresión regular
   return regexCorreo.test(correo);
+};
+
+export const generarFechas = (fechaInicial, fechaFinal) => {
+  const resultado = [];
+  let fechaActual = dayjs(fechaInicial);
+
+  while (fechaActual.isSameOrBefore(fechaFinal, 'day')) {
+    resultado.push(fechaActual.format('YYYY-MM-DD'));
+    fechaActual = fechaActual.add(1, 'day');
+  }
+
+  return resultado;
 };
 
 export const parseStartDate = (value, originalValue) => originalValue.toISOString();
