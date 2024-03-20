@@ -1,6 +1,5 @@
 import * as Yup from 'yup';
 import { useState } from 'react';
-import { Base64 } from 'js-base64';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useNavigate, useLocation } from 'react-router';
@@ -16,17 +15,14 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 
 import { RouterLink } from 'src/routes/components';
 import { useRouter, useSearchParams } from 'src/routes/hooks';
-import { useSnackbar } from 'src/components/snackbar';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import instance from 'src/utils/axiosCH';
-
+import { getColaborador } from 'src/api/user';
 import { useAuthContext } from 'src/auth/hooks';
 import { PATH_AFTER_LOGIN, PATH_AFTER_REGISTRO } from 'src/config-global';
 
-import { getColaborador } from 'src/api/user';
-
+import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
 import ModalPoliticas from './modal-politicas';

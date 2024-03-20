@@ -128,7 +128,7 @@ export default function DashView() {
 
         <Grid xs={12} md={9}>
           <AppWelcome
-            title={`Bienvenido 👋 \n ${user?.nombre}`}
+            title={user?.sexo === 'M' ? `Bienvenida 👋 \n ${user?.nombre}` : `Bienvenido  👋 \n ${user?.nombre}`}
             img={<SeoIllustration />}
 
           />

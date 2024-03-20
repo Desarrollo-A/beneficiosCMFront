@@ -219,8 +219,6 @@ export default function BarraTareasTabla({
 
   const _in = cIngreData.flatMap((i) => (i.TotalIngreso));
 
-  const _esp = espData.flatMap((i) => (i.nombre));
-
   const SPACING = 3;
 
   return (
