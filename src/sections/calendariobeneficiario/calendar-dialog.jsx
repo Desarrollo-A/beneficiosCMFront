@@ -566,7 +566,12 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         });
       }
       const data = await getSpecialists(datosUser.idSede, datosUser.idArea, value);
-      setEspecialistas(data?.data);
+      if (!data?.data) {
+        enqueueSnackbar('¡No hay especialistas atendiendo tu sede/area!', { variant: 'error' });
+        setEspecialistas([]);
+      } else {
+        setEspecialistas(data?.data);
+      }
     } else if (input === 'especialista') {
       /* ************************************* */
       const sedesEspecialista = await getSedesPresenciales(value);
