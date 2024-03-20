@@ -54,7 +54,7 @@ export default function PreRegisterUser({ currentUser }) {
   const form = useForm({
   });
 
-  const email = 'programador.analista32@ciudadmaderas.com'; // location.state.data[0]?.mail_emp;
+  const email = location.state.data[0]?.mail_emp;
 
   const handleChange = async (data) => {
 
