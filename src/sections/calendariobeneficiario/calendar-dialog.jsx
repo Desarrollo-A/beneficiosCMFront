@@ -22,6 +22,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
 import uuidv4 from 'src/utils/uuidv4';
+import { generarFechas } from 'src/utils/general';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetEventReasons } from 'src/api/calendar-specialist';
@@ -644,18 +645,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
       getHorariosDisponibles(value.idPuesto, value.idEspecialista);
     }
-  };
-
-  const generarFechas = (fechaInicial, fechaFinal) => {
-    const resultado = [];
-    let fechaActual = dayjs(fechaInicial);
-
-    while (fechaActual.isSameOrBefore(fechaFinal, 'day')) {
-      resultado.push(fechaActual.format('YYYY-MM-DD'));
-      fechaActual = fechaActual.add(1, 'day');
-    }
-
-    return resultado;
   };
 
   const generarArregloMinutos = (horaInicio, horaFin) => {
