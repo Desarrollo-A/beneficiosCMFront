@@ -131,26 +131,32 @@ export default function GraficaPacientes({
     <Stack
       sx={{
         ...bgGradient({
-          direction: '135deg',
+          direction: '195deg',
           startColor: alpha(theme.palette[color].light, 0.2),
           endColor: alpha(theme.palette[color].main, 0.2),
         }),
         p: 3,
         borderRadius: 2,
         color: `${color}.darker`,
+        overflow: 'hidden',
+        position: 'relative',
         backgroundColor: 'common.white',
         ...sx,
       }}
       {...other}
     >
-      <Stack direction="row" justifyContent="space-between" sx={{ mb: 3 }}>
+      <Stack direction="row" sx={{ mb: 1 }}>
         <div>
           <Box sx={{ mb: 1, typography: 'subtitle2' }}>{title}</Box>
           <Box sx={{ typography: 'h3' }}>{(total)}</Box>
         </div>
 
         <div>
-          <Stack spacing={0.5} direction="row" alignItems="center" justifyContent="flex-end">
+          <Stack spacing={1}
+          direction="row"
+          flexWrap="wrap"
+          alignItems="center"
+          sx={{ typography: 'body2' }}>
 
             <Box sx={{ typography: 'subtitle2' }}>
               {percent > 0 && '+'}

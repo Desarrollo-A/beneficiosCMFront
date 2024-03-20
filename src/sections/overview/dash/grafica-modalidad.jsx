@@ -88,12 +88,9 @@ export default function GraficaModalidad({
 
   const [data, setData] = useState([]);
 
-  const [base, setBase] = useState(0);
-
   useEffect(() => {
     if (modalidadData.length) {
       setData(modalidadData);
-      setBase(100);
     }
   }, [modalidadData]);
 
