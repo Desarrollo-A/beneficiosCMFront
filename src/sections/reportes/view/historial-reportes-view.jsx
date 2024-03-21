@@ -46,7 +46,7 @@ import BarraTareasTabla from '../components/historial-reportes/barratareas-tabla
 
 // ----------------------------------------------------------------------
 
-const diaActual = new Date();
+const ultimoDiaMes = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
 
 const currentDate = new Date();
 const diaMesUno = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
@@ -56,7 +56,7 @@ const defaultFilters = {
   area: [],
   estatus: 'all',
   startDate: diaMesUno,
-  endDate: diaActual,
+  endDate: ultimoDiaMes,
   especialista: [],
   modalidad: [],
 };

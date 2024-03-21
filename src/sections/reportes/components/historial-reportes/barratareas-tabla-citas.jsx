@@ -50,7 +50,7 @@ export default function BarraTareasTabla({
 
   const { user } = useAuthContext();
 
-  const diaActual = new Date().toISOString().split('T')[0];
+  const ultimoDiaMes = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).toISOString().split('T')[0];
 
   function formatFirstDayOfMonth() {
     const currentDate = new Date(); // Obtener la fecha actual
@@ -69,7 +69,7 @@ export default function BarraTareasTabla({
 
   const [fechaI, setFechaI] = useState(diaUnoMes);
 
-  const [fechaF, setFechaF] = useState(diaActual);
+  const [fechaF, setFechaF] = useState(ultimoDiaMes);
 
   const [selectEsp, setSelectEsp] = useState(rol === 3 ? [user?.nombre] : []);
 

@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 
+import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
@@ -7,6 +8,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import { endpoints } from 'src/utils/axios';
 
@@ -151,7 +153,14 @@ export default function GraficaMetasArea() {
           height={(50 * citas.length) + 90}
         />
       </Card>
-      : null
+      :
+      <Card sx={{ pr: 2, pl: 1 }}>
+      <CardHeader title='Metas de citas de los especialistas' />
+
+      <Grid container spacing={1} sx={{ p: 5}} justifyContent="center" alignItems="center">
+          <CircularProgress />
+      </Grid>
+    </Card>
   )
 }
 

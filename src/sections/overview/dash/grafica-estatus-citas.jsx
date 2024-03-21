@@ -130,10 +130,10 @@ export default function GraficaEstatusCitas({
     colors: _estColor,
     labels: _estNom,
     stroke: {
-      colors: _estColor,
+      colors: ['#fff']
     },
     fill: {
-      opacity: 0.8,
+      opacity: 0.9,
     },
     legend: {
       position: 'right',
