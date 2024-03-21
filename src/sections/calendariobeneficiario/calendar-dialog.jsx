@@ -1452,6 +1452,45 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                         px: { xs: 1, md: 2 },
                         py: 1,
                         alignItems: 'center',
+                        display: 'flex',
+                      }}
+                    >
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          px: { xs: 1, md: 1 },
+                          py: 1,
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Iconify
+                          icon="ic:outline-place"
+                          width={30}
+                          sx={{ color: 'text.disabled' }}
+                        />
+                      </Stack>
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          px: { xs: 1, md: 2 },
+                          py: 1,
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                          PRIVADA AV. DE LAS TORRES 145, GALINDAS, 76177 SANTIAGO DE QUERéTARO, QRO.
+                        </Typography>
+                      </Stack>
+                    </Stack>
+                    <Stack
+                      alignItems="center"
+                      sx={{
+                        flexDirection: 'row',
+                        px: { xs: 1, md: 2 },
+                        py: 1,
+                        alignItems: 'center',
                       }}
                     >
                       {currentEvent?.modalidad === 1 ? (
@@ -1465,7 +1504,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                           <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
                             {currentEvent?.ubicación
                               ? currentEvent?.ubicación
-                              : 'Calle Callerinas, 00, Centro, 76000'}
+                              : 'Ubicación desconocida'}
                           </Typography>
                         </>
                       ) : (
