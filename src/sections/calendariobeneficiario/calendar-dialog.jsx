@@ -289,7 +289,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     }
     const registrarPago = await registrarDetalleDePago(
       datosUser.idUsuario,
-      uuidv4(),
+      uuidv4().substring(0, 20),
       tipoCita,
       precio,
       metodoPago
@@ -470,7 +470,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     }
     const registrarPago = await registrarDetalleDePago(
       datosUser.idUsuario,
-      uuidv4(),
+      uuidv4().substring(0, 20),
       1,
       precio,
       metodoPago
