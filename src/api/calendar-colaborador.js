@@ -10,7 +10,7 @@ import { useAuthContext } from 'src/auth/hooks';
 // ----------------------------------------------------------------------
 
 // Trae todos los beneficios que puede gozar la sede.
-export function useGetBenefits(sede) {
+export function useGetBenefits(sede, area) {
   const URL_BENEFITS = [endpoints.benefits.list];
   const {
     data,
@@ -18,7 +18,7 @@ export function useGetBenefits(sede) {
     isLoading,
     error,
     isValidating,
-  } = useSWR(URL_BENEFITS, (url) => fetcherPost(url, { sede }));
+  } = useSWR(URL_BENEFITS, (url) => fetcherPost(url, { sede, area }));
 
   const memoizedValue = useMemo(
     () => ({

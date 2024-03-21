@@ -107,7 +107,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
   const { user: datosUser } = useAuthContext();
 
-  const { data: benefits } = useGetBenefits(datosUser.idSede);
+  const { data: benefits } = useGetBenefits(datosUser.idSede, datosUser.idArea);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -531,7 +531,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       if (datosUltimaCita.result) {
         const modalitiesData = await getModalities(
           datosUser.idSede,
-          datosUltimaCita.data[0].idEspecialista
+          datosUltimaCita.data[0].idEspecialista,
+          datosUser.idArea
         );
         setModalidades(modalitiesData?.data);
         const data = await getOficinaByAtencion(
@@ -581,7 +582,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       setDiasPresenciales(diasDisponibles.result ? diasDisponibles.data : []);
       /* ************************************* */
       setErrorEspecialista(false);
-      const modalitiesData = await getModalities(datosUser.idSede, value);
+      const modalitiesData = await getModalities(datosUser.idSede, value, datosUser.idArea);
       setModalidades(modalitiesData?.data);
       if (modalitiesData.data.length > 0 && modalitiesData?.data.length === 1) {
         setSelectedValues({
@@ -632,7 +633,11 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       });
       const data = await getSpecialists(value.idSede, value.idArea, value.idPuesto);
       setEspecialistas(data?.data);
-      const modalitiesData = await getModalities(value.idSede, value.idEspecialista);
+      const modalitiesData = await getModalities(
+        value.idSede,
+        value.idEspecialista,
+        datosUser.idArea
+      );
       setModalidades(modalitiesData?.data);
 
       const oficinaAtencion = await getOficinaByAtencion(
