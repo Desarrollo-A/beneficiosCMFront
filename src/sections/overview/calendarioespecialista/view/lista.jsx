@@ -126,7 +126,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
 
     const eventData = {
       // se da el formato juntando la fecha elegida y la hora que se elige con los minutos
-      id: uuidv4(),
+      id: uuidv4().substring(0, 20),
       title: type === 'cancel' ? data?.title : `Cita con ${patient?.nombre}`,
       hora_inicio: !allDay ? dayjs(data?.start).format('HH:mm:ss') : defaultHour.horaInicio,
       hora_final: !allDay ? dayjs(defaultEnd).format('HH:mm:ss') : defaultHour.horaFinal,
