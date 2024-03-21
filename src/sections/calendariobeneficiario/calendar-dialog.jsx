@@ -568,7 +568,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       }
       const data = await getSpecialists(datosUser.idSede, datosUser.idArea, value);
       if (!data?.data) {
-        enqueueSnackbar('¡No hay especialistas atendiendo tu sede/area!', { variant: 'error' });
+        enqueueSnackbar('¡No hay especialistas atendiendo tu sede/área!', { variant: 'error' });
         setEspecialistas([]);
       } else {
         setEspecialistas(data?.data);
@@ -1300,67 +1300,83 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                         alignItems: 'center',
                       }}
                     >
-                      <Iconify
-                        icon="mdi:account-circle"
-                        width={30}
-                        sx={{ color: 'text.disabled' }}
-                      />
-                      {currentEvent?.estatus === 1 ? (
-                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                          Cita en {`${currentEvent?.beneficio} (por asistir)`}
-                        </Typography>
-                      ) : (
-                        ''
-                      )}
-                      {currentEvent?.estatus === 2 || currentEvent?.estatus === '7' ? (
-                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                          Cita en {`${currentEvent?.beneficio} (cancelado)`}
-                        </Typography>
-                      ) : (
-                        ''
-                      )}
-                      {currentEvent?.estatus === 3 ? (
-                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                          Cita en {`${currentEvent?.beneficio} (penalizado)`}
-                        </Typography>
-                      ) : (
-                        ''
-                      )}
-                      {currentEvent?.estatus === 4 ? (
-                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                          Cita en {`${currentEvent?.beneficio} (finalizada)`}
-                        </Typography>
-                      ) : (
-                        ''
-                      )}
-                      {currentEvent?.estatus === 5 ? (
-                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                          Cita en {`${currentEvent?.beneficio} (justificado)`}
-                        </Typography>
-                      ) : (
-                        ''
-                      )}
-                      {currentEvent?.estatus === 6 ? (
-                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                          Cita en {`${currentEvent?.beneficio} (pendiente de pago)`}
-                        </Typography>
-                      ) : (
-                        ''
-                      )}
-                      {currentEvent?.estatus === 8 ? (
-                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                          Cita en {`${currentEvent?.beneficio} (reagendado)`}
-                        </Typography>
-                      ) : (
-                        ''
-                      )}
-                      {currentEvent?.estatus === 9 ? (
-                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                          Cita en {`${currentEvent?.beneficio} (cita expirada)`}
-                        </Typography>
-                      ) : (
-                        ''
-                      )}
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Iconify
+                          icon="mdi:account-circle"
+                          width={30}
+                          sx={{ color: 'text.disabled' }}
+                        />
+                      </Stack>
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        {currentEvent?.estatus === 1 ? (
+                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                            Cita en {`${currentEvent?.beneficio} (por asistir)`}
+                          </Typography>
+                        ) : (
+                          ''
+                        )}
+                        {currentEvent?.estatus === 2 || currentEvent?.estatus === 7 ? (
+                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                            Cita en {`${currentEvent?.beneficio} (cancelado)`}
+                          </Typography>
+                        ) : (
+                          ''
+                        )}
+                        {currentEvent?.estatus === 3 ? (
+                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                            Cita en {`${currentEvent?.beneficio} (penalizado)`}
+                          </Typography>
+                        ) : (
+                          ''
+                        )}
+                        {currentEvent?.estatus === 4 ? (
+                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                            Cita en {`${currentEvent?.beneficio} (finalizada)`}
+                          </Typography>
+                        ) : (
+                          ''
+                        )}
+                        {currentEvent?.estatus === 5 ? (
+                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                            Cita en {`${currentEvent?.beneficio} (justificado)`}
+                          </Typography>
+                        ) : (
+                          ''
+                        )}
+                        {currentEvent?.estatus === 6 ? (
+                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                            Cita en {`${currentEvent?.beneficio} (pendiente de pago)`}
+                          </Typography>
+                        ) : (
+                          ''
+                        )}
+                        {currentEvent?.estatus === 8 ? (
+                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                            Cita en {`${currentEvent?.beneficio} (reagendado)`}
+                          </Typography>
+                        ) : (
+                          ''
+                        )}
+                        {currentEvent?.estatus === 9 ? (
+                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                            Cita en {`${currentEvent?.beneficio} (cita expirada)`}
+                          </Typography>
+                        ) : (
+                          ''
+                        )}
+                      </Stack>
                     </Stack>
                     <Stack
                       alignItems="center"
@@ -1371,14 +1387,30 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                         alignItems: 'center',
                       }}
                     >
-                      <Iconify
-                        icon="solar:user-id-broken"
-                        width={30}
-                        sx={{ color: 'text.disabled' }}
-                      />
-                      <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                        {currentEvent?.especialista ? currentEvent?.especialista : 'Especialista'}
-                      </Typography>
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Iconify
+                          icon="solar:user-id-broken"
+                          width={30}
+                          sx={{ color: 'text.disabled' }}
+                        />
+                      </Stack>
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                          {currentEvent?.especialista ? currentEvent?.especialista : 'Especialista'}
+                        </Typography>
+                      </Stack>
                     </Stack>
                     <Stack
                       alignItems="center"
@@ -1389,12 +1421,28 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                         alignItems: 'center',
                       }}
                     >
-                      <Iconify icon="mdi:phone" width={30} sx={{ color: 'text.disabled' }} />
-                      <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                        {currentEvent?.telefonoEspecialista
-                          ? currentEvent?.telefonoEspecialista
-                          : 'n/a'}
-                      </Typography>
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Iconify icon="mdi:phone" width={30} sx={{ color: 'text.disabled' }} />
+                      </Stack>
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                          {currentEvent?.telefonoEspecialista
+                            ? currentEvent?.telefonoEspecialista
+                            : 'n/a'}
+                        </Typography>
+                      </Stack>
                     </Stack>
                     <Stack
                       alignItems="center"
@@ -1405,18 +1453,34 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                         alignItems: 'center',
                       }}
                     >
-                      <Iconify
-                        icon="mdi:calendar-clock"
-                        width={30}
-                        sx={{ color: 'text.disabled' }}
-                      />
-                      <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                        {currentEvent?.id
-                          ? `${dayjs(currentEvent?.start).format('HH:mm a')} - ${dayjs(
-                              currentEvent?.end
-                            ).format('HH:mm a')}`
-                          : 'Fecha'}
-                      </Typography>
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Iconify
+                          icon="mdi:calendar-clock"
+                          width={30}
+                          sx={{ color: 'text.disabled' }}
+                        />
+                      </Stack>
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                          {currentEvent?.id
+                            ? `${dayjs(currentEvent?.start).format('HH:mm a')} - ${dayjs(
+                                currentEvent?.end
+                              ).format('HH:mm a')}`
+                            : 'Fecha'}
+                        </Typography>
+                      </Stack>
                     </Stack>
                     <Stack
                       alignItems="center"
@@ -1429,19 +1493,49 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                     >
                       {currentEvent?.modalidad === 1 ? (
                         <>
-                          <Iconify icon="mdi:earth" width={30} sx={{ color: 'text.disabled' }} />
-
-                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                            {currentEvent?.sede ? currentEvent?.sede : 'Querétaro'}
-                          </Typography>
+                          <Stack
+                            alignItems="center"
+                            sx={{
+                              alignItems: 'center',
+                              display: 'flex',
+                            }}
+                          >
+                            <Iconify icon="mdi:earth" width={30} sx={{ color: 'text.disabled' }} />
+                          </Stack>
+                          <Stack
+                            alignItems="center"
+                            sx={{
+                              alignItems: 'center',
+                              display: 'flex',
+                            }}
+                          >
+                            <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                              {currentEvent?.sede ? currentEvent?.sede : 'Sede desconocida'}
+                            </Typography>
+                          </Stack>
                         </>
                       ) : (
                         <>
-                          <Iconify icon="mdi:earth" width={30} sx={{ color: 'text.disabled' }} />
-
-                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                            {currentEvent?.sede ? `${currentEvent?.sede} (En línea)` : 'En línea'}
-                          </Typography>
+                          <Stack
+                            alignItems="center"
+                            sx={{
+                              alignItems: 'center',
+                              display: 'flex',
+                            }}
+                          >
+                            <Iconify icon="mdi:earth" width={30} sx={{ color: 'text.disabled' }} />
+                          </Stack>
+                          <Stack
+                            alignItems="center"
+                            sx={{
+                              alignItems: 'center',
+                              display: 'flex',
+                            }}
+                          >
+                            <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                              {currentEvent?.sede ? `${currentEvent?.sede} (En línea)` : 'En línea'}
+                            </Typography>
+                          </Stack>
                         </>
                       )}
                     </Stack>
@@ -1456,31 +1550,69 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                     >
                       {currentEvent?.modalidad === 1 ? (
                         <>
-                          <Iconify
-                            icon="ic:outline-place"
-                            width={30}
-                            sx={{ color: 'text.disabled' }}
-                          />
-
-                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                            {currentEvent?.ubicación
-                              ? currentEvent?.ubicación
-                              : 'Calle Callerinas, 00, Centro, 76000'}
-                          </Typography>
+                          <Stack
+                            alignItems="center"
+                            sx={{
+                              alignItems: 'center',
+                              display: 'flex',
+                            }}
+                          >
+                            <Iconify
+                              icon="ic:outline-place"
+                              width={30}
+                              sx={{ color: 'text.disabled' }}
+                            />
+                          </Stack>
+                          <Stack
+                            alignItems="center"
+                            sx={{
+                              alignItems: 'center',
+                              display: 'flex',
+                            }}
+                          >
+                            <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                              {currentEvent?.ubicación
+                                ? currentEvent?.ubicación
+                                : 'Ubicación desconocida'}
+                            </Typography>
+                          </Stack>
                         </>
                       ) : (
                         <>
-                          <Iconify
-                            icon="ic:outline-place"
-                            width={30}
-                            sx={{ color: 'text.disabled' }}
-                          />
-
-                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                            {currentEvent?.ubicación
-                              ? currentEvent?.ubicación
-                              : 'Remoto (En línea)'}
-                          </Typography>
+                          <Stack
+                            alignItems="center"
+                            sx={{
+                              alignItems: 'center',
+                              display: 'flex',
+                            }}
+                          >
+                            <Stack
+                              alignItems="center"
+                              sx={{
+                                alignItems: 'center',
+                                display: 'flex',
+                              }}
+                            >
+                              <Iconify
+                                icon="ic:outline-place"
+                                width={30}
+                                sx={{ color: 'text.disabled' }}
+                              />
+                            </Stack>
+                          </Stack>
+                          <Stack
+                            alignItems="center"
+                            sx={{
+                              alignItems: 'center',
+                              display: 'flex',
+                            }}
+                          >
+                            <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                              {currentEvent?.ubicación
+                                ? currentEvent?.ubicación
+                                : 'Remoto (En línea)'}
+                            </Typography>
+                          </Stack>
                         </>
                       )}
                     </Stack>
@@ -1492,14 +1624,27 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                         alignItems: 'center',
                       }}
                     >
-                      <Stack>
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
                         <Iconify
                           icon="ic:outline-email"
                           width={30}
                           sx={{ color: 'text.disabled' }}
                         />
                       </Stack>
-                      <Stack sx={{ flexDirection: 'col' }}>
+
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
                         <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
                           {currentEvent?.correoEspecialista
                             ? currentEvent?.correoEspecialista.toLowerCase()
@@ -1515,17 +1660,32 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                         alignItems: 'center',
                       }}
                     >
-                      <Iconify
-                        icon="fa-solid:money-bill"
-                        width={30}
-                        sx={{ color: 'text.disabled' }}
-                      />
-
-                      <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                        {currentEvent?.idDetalle === null || currentEvent?.idDetalle === 0
-                          ? 'Sin pago'
-                          : 'Pagado'}
-                      </Typography>
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Iconify
+                          icon="fa-solid:money-bill"
+                          width={30}
+                          sx={{ color: 'text.disabled' }}
+                        />
+                      </Stack>
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                          {currentEvent?.idDetalle === null || currentEvent?.idDetalle === 0
+                            ? 'Sin pago'
+                            : 'Pagado'}
+                        </Typography>
+                      </Stack>
                     </Stack>
                     {currentEvent?.fechasFolio && (
                       <Stack
@@ -1535,14 +1695,26 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                         spacing={2}
                         sx={{ px: { xs: 1, md: 2 }, py: 1 }}
                       >
-                        <Stack spacing={2} direction="row">
+                        <Stack
+                          alignItems="center"
+                          sx={{
+                            alignItems: 'center',
+                            display: 'flex',
+                          }}
+                        >
                           <Iconify
                             icon="mdi:clock-remove-outline"
                             width={30}
                             sx={{ color: 'text.disabled' }}
                           />
                         </Stack>
-                        <Stack>
+                        <Stack
+                          alignItems="center"
+                          sx={{
+                            alignItems: 'center',
+                            display: 'flex',
+                          }}
+                        >
                           {fechasFolio.map((fecha, i) => [
                             i > 0 && '',
                             <Typography

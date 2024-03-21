@@ -129,7 +129,7 @@ export default function CalendarPreview({ event, open, handleClose }) {
       <DialogContent>
         <Stack spacing={3} sx={{ paddingLeft: { xs: 1, md: 2 }, paddingRight: { xs: 1, md: 2 } }}>
           <Typography variant="subtitle1">
-            {event?.start ? dayjs(event.start).format('dddd, DD MMMM YYYY') : 'Fecha'}
+            {event?.start ? dayjs(event.start).format('dddd, DD MMMM YYYY') : 'Fecha desconocida'}
           </Typography>
         </Stack>
 
@@ -142,63 +142,79 @@ export default function CalendarPreview({ event, open, handleClose }) {
             alignItems: 'center',
           }}
         >
-          <Iconify icon="mdi:account-circle" width={30} sx={{ color: 'text.disabled' }} />
-          {event?.estatus === 1 ? (
-            <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-              Cita en {`${event?.beneficio} (por asistir)`}
-            </Typography>
-          ) : (
-            ''
-          )}
-          {event?.estatus === 2 || event?.estatus === '7' ? (
-            <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-              Cita en {`${event?.beneficio} (cancelado)`}
-            </Typography>
-          ) : (
-            ''
-          )}
-          {event?.estatus === 3 ? (
-            <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-              Cita en {`${event?.beneficio} (penalizado)`}
-            </Typography>
-          ) : (
-            ''
-          )}
-          {event?.estatus === 4 ? (
-            <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-              Cita en {`${event?.beneficio} (finalizada)`}
-            </Typography>
-          ) : (
-            ''
-          )}
-          {event?.estatus === 5 ? (
-            <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-              Cita en {`${event?.beneficio} (justificado)`}
-            </Typography>
-          ) : (
-            ''
-          )}
-          {event?.estatus === 6 ? (
-            <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-              Cita en {`${event?.beneficio} (pendiente de pago)`}
-            </Typography>
-          ) : (
-            ''
-          )}
-          {event?.estatus === 8 ? (
-            <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-              Cita en {`${event?.beneficio} (reagendado)`}
-            </Typography>
-          ) : (
-            ''
-          )}
-          {event?.estatus === 9 ? (
-            <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-              Cita en {`${event?.beneficio} (cita expirada)`}
-            </Typography>
-          ) : (
-            ''
-          )}
+          <Stack
+            alignItems="center"
+            sx={{
+              alignItems: 'center',
+              display: 'flex',
+            }}
+          >
+            <Iconify icon="mdi:account-circle" width={30} sx={{ color: 'text.disabled' }} />
+          </Stack>
+          <Stack
+            alignItems="center"
+            sx={{
+              alignItems: 'center',
+              display: 'flex',
+            }}
+          >
+            {event?.estatus === 1 ? (
+              <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                Cita en {`${event?.beneficio} (por asistir)`}
+              </Typography>
+            ) : (
+              ''
+            )}
+            {event?.estatus === 2 || event?.estatus === 7 ? (
+              <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                Cita en {`${event?.beneficio} (cancelado)`}
+              </Typography>
+            ) : (
+              ''
+            )}
+            {event?.estatus === 3 ? (
+              <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                Cita en {`${event?.beneficio} (penalizado)`}
+              </Typography>
+            ) : (
+              ''
+            )}
+            {event?.estatus === 4 ? (
+              <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                Cita en {`${event?.beneficio} (finalizada)`}
+              </Typography>
+            ) : (
+              ''
+            )}
+            {event?.estatus === 5 ? (
+              <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                Cita en {`${event?.beneficio} (justificado)`}
+              </Typography>
+            ) : (
+              ''
+            )}
+            {event?.estatus === 6 ? (
+              <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                Cita en {`${event?.beneficio} (pendiente de pago)`}
+              </Typography>
+            ) : (
+              ''
+            )}
+            {event?.estatus === 8 ? (
+              <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                Cita en {`${event?.beneficio} (reagendado)`}
+              </Typography>
+            ) : (
+              ''
+            )}
+            {event?.estatus === 9 ? (
+              <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                Cita en {`${event?.beneficio} (cita expirada)`}
+              </Typography>
+            ) : (
+              ''
+            )}
+          </Stack>
         </Stack>
         <Stack
           alignItems="center"
@@ -208,10 +224,26 @@ export default function CalendarPreview({ event, open, handleClose }) {
             py: 1,
           }}
         >
-          <Iconify icon="solar:user-id-broken" width={30} sx={{ color: 'text.disabled' }} />
-          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-            {event?.especialista ? event?.especialista : 'Especialista'}
-          </Typography>
+          <Stack
+            alignItems="center"
+            sx={{
+              alignItems: 'center',
+              display: 'flex',
+            }}
+          >
+            <Iconify icon="solar:user-id-broken" width={30} sx={{ color: 'text.disabled' }} />
+          </Stack>
+          <Stack
+            alignItems="center"
+            sx={{
+              alignItems: 'center',
+              display: 'flex',
+            }}
+          >
+            <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+              {event?.especialista ? event?.especialista : 'Especialista'}
+            </Typography>
+          </Stack>
         </Stack>
         <Stack
           alignItems="center"
@@ -222,10 +254,26 @@ export default function CalendarPreview({ event, open, handleClose }) {
             alignItems: 'center',
           }}
         >
-          <Iconify icon="mdi:phone" width={30} sx={{ color: 'text.disabled' }} />
-          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-            {event?.telefonoEspecialista ? event?.telefonoEspecialista : 'n/a'}
-          </Typography>
+          <Stack
+            alignItems="center"
+            sx={{
+              alignItems: 'center',
+              display: 'flex',
+            }}
+          >
+            <Iconify icon="mdi:phone" width={30} sx={{ color: 'text.disabled' }} />
+          </Stack>
+          <Stack
+            alignItems="center"
+            sx={{
+              alignItems: 'center',
+              display: 'flex',
+            }}
+          >
+            <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+              {event?.telefonoEspecialista ? event?.telefonoEspecialista : 'n/a'}
+            </Typography>
+          </Stack>
         </Stack>
         <Stack
           alignItems="center"
@@ -235,12 +283,30 @@ export default function CalendarPreview({ event, open, handleClose }) {
             py: 1,
           }}
         >
-          <Iconify icon="mdi:calendar-clock" width={30} sx={{ color: 'text.disabled' }} />
-          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-            {event?.id
-              ? `${dayjs(event?.start).format('HH:mm a')} - ${dayjs(event?.end).format('HH:mm a')}`
-              : 'Fecha'}
-          </Typography>
+          <Stack
+            alignItems="center"
+            sx={{
+              alignItems: 'center',
+              display: 'flex',
+            }}
+          >
+            <Iconify icon="mdi:calendar-clock" width={30} sx={{ color: 'text.disabled' }} />
+          </Stack>
+          <Stack
+            alignItems="center"
+            sx={{
+              alignItems: 'center',
+              display: 'flex',
+            }}
+          >
+            <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+              {event?.id
+                ? `${dayjs(event?.start).format('HH:mm a')} - ${dayjs(event?.end).format(
+                    'HH:mm a'
+                  )}`
+                : 'Fecha'}
+            </Typography>
+          </Stack>
         </Stack>
         <Stack
           alignItems="center"
@@ -252,19 +318,49 @@ export default function CalendarPreview({ event, open, handleClose }) {
         >
           {event?.modalidad === 1 ? (
             <>
-              <Iconify icon="mdi:earth" width={30} sx={{ color: 'text.disabled' }} />
-
-              <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                {event?.sede ? event?.sede : 'Querétaro'}
-              </Typography>
+              <Stack
+                alignItems="center"
+                sx={{
+                  alignItems: 'center',
+                  display: 'flex',
+                }}
+              >
+                <Iconify icon="mdi:earth" width={30} sx={{ color: 'text.disabled' }} />
+              </Stack>
+              <Stack
+                alignItems="center"
+                sx={{
+                  alignItems: 'center',
+                  display: 'flex',
+                }}
+              >
+                <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                  {event?.sede ? event?.sede : 'Querétaro'}
+                </Typography>
+              </Stack>
             </>
           ) : (
             <>
-              <Iconify icon="mdi:earth" width={30} sx={{ color: 'text.disabled' }} />
-
-              <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                {event?.sede ? `${event?.sede} (En línea)` : 'En línea'}
-              </Typography>
+              <Stack
+                alignItems="center"
+                sx={{
+                  alignItems: 'center',
+                  display: 'flex',
+                }}
+              >
+                <Iconify icon="mdi:earth" width={30} sx={{ color: 'text.disabled' }} />
+              </Stack>
+              <Stack
+                alignItems="center"
+                sx={{
+                  alignItems: 'center',
+                  display: 'flex',
+                }}
+              >
+                <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                  {event?.sede ? `${event?.sede} (En línea)` : 'En línea'}
+                </Typography>
+              </Stack>
             </>
           )}
         </Stack>
@@ -278,19 +374,49 @@ export default function CalendarPreview({ event, open, handleClose }) {
         >
           {event?.modalidad === 1 ? (
             <>
-              <Iconify icon="ic:outline-place" width={30} sx={{ color: 'text.disabled' }} />
-
-              <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                {event?.ubicación ? event?.ubicación : 'Calle Callerinas, 00, Centro, 76000'}
-              </Typography>
+              <Stack
+                alignItems="center"
+                sx={{
+                  alignItems: 'center',
+                  display: 'flex',
+                }}
+              >
+                <Iconify icon="ic:outline-place" width={30} sx={{ color: 'text.disabled' }} />
+              </Stack>
+              <Stack
+                alignItems="center"
+                sx={{
+                  alignItems: 'center',
+                  display: 'flex',
+                }}
+              >
+                <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                  {event?.ubicación ? event?.ubicación : 'Calle Callerinas, 00, Centro, 76000'}
+                </Typography>
+              </Stack>
             </>
           ) : (
             <>
-              <Iconify icon="ic:outline-place" width={30} sx={{ color: 'text.disabled' }} />
-
-              <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                {event?.ubicación ? event?.ubicación : 'Remoto (En línea)'}
-              </Typography>
+              <Stack
+                alignItems="center"
+                sx={{
+                  alignItems: 'center',
+                  display: 'flex',
+                }}
+              >
+                <Iconify icon="ic:outline-place" width={30} sx={{ color: 'text.disabled' }} />
+              </Stack>
+              <Stack
+                alignItems="center"
+                sx={{
+                  alignItems: 'center',
+                  display: 'flex',
+                }}
+              >
+                <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                  {event?.ubicación ? event?.ubicación : 'Remoto (En línea)'}
+                </Typography>
+              </Stack>
             </>
           )}
         </Stack>
@@ -301,10 +427,22 @@ export default function CalendarPreview({ event, open, handleClose }) {
             py: 1,
           }}
         >
-          <Stack>
+          <Stack
+            alignItems="center"
+            sx={{
+              alignItems: 'center',
+              display: 'flex',
+            }}
+          >
             <Iconify icon="ic:outline-email" width={30} sx={{ color: 'text.disabled' }} />
           </Stack>
-          <Stack sx={{ flexDirection: 'col' }}>
+          <Stack
+            alignItems="center"
+            sx={{
+              alignItems: 'center',
+              display: 'flex',
+            }}
+          >
             <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
               {event?.correo
                 ? event?.correoEspecialista.toLowerCase()
@@ -319,10 +457,22 @@ export default function CalendarPreview({ event, open, handleClose }) {
             py: 1,
           }}
         >
-          <Stack>
+          <Stack
+            alignItems="center"
+            sx={{
+              alignItems: 'center',
+              display: 'flex',
+            }}
+          >
             <Iconify icon="fa-solid:money-bill" width={30} sx={{ color: 'text.disabled' }} />
           </Stack>
-          <Stack sx={{ flexDirection: 'col' }}>
+          <Stack
+            alignItems="center"
+            sx={{
+              alignItems: 'center',
+              display: 'flex',
+            }}
+          >
             <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
               {event?.idDetalle === null || event?.idDetalle === 0 ? 'Sin pago' : 'Pagado'}
             </Typography>
