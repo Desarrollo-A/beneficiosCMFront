@@ -8,6 +8,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import ListItemText from '@mui/material/ListItemText';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
+import Divider from '@mui/material/Divider';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
@@ -71,10 +72,8 @@ export default function ModalListaSedes({ idPuesto, open, onClose, modalidadesDa
                           width: 2,
                           height: 2,
                           borderRadius: '50%',
-                          bgcolor: 'currentColor',
                         }}
                       />
-                      {/* {"Fecha de creación: "}{e.fechaCreacion} */}
                     </>
                   }
                   primaryTypographyProps={{
@@ -98,13 +97,16 @@ export default function ModalListaSedes({ idPuesto, open, onClose, modalidadesDa
                     handleOpen(e.idSede);
                   }}
                   sx={{
-                    top: -40,
-                    left: 200,
+                    top: -20,
+                    left: 250,
                   }}
                 >
                   Asignar <Iconify icon="lets-icons:add-duotone" />
                 </Button>
+
+                <Divider sx={{ my: 1, borderStyle: 'dashed' }} />
               </React.Fragment>
+
             ))}
 
           </DialogContent>
