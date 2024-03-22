@@ -10,13 +10,13 @@ export function useGetMenu() {
   const accessToken = sessionStorage.getItem('accessToken');
 
   const config = {
-    headers : {
-      token : accessToken
-    }
-  }
+    headers: {
+      token: accessToken,
+    },
+  };
 
   const { data, isLoading, error, isValidating } = useSWR([URL, config], fetcherGet);
-  
+
   const memoizedValue = useMemo(
     () => ({
       menu: data || [],

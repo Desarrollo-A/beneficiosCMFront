@@ -19,7 +19,8 @@ export function useGetUsers() {
   return memoizedValue;
 }
 
-export function useGetNameUser(idUsuario) { // funcion para traer los usuarios disponibles en select de cita.
+export function useGetNameUser(idUsuario) {
+  // funcion para traer los usuarios disponibles en select de cita.
   const URL = endpoints.user.names;
 
   const { data, mutate } = useSWR(URL, (url) => fetcherPost(url, idUsuario));
