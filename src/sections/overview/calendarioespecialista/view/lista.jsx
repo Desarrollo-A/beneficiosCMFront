@@ -126,7 +126,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
 
     const eventData = {
       // se da el formato juntando la fecha elegida y la hora que se elige con los minutos
-      id: uuidv4(),
+      id: uuidv4().substring(0, 20),
       title: type === 'cancel' ? data?.title : `Cita con ${patient?.nombre}`,
       hora_inicio: !allDay ? dayjs(data?.start).format('HH:mm:ss') : defaultHour.horaInicio,
       hora_final: !allDay ? dayjs(defaultEnd).format('HH:mm:ss') : defaultHour.horaFinal,
@@ -236,9 +236,11 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
     const diferenciaMeses = Math.floor(
       (diferenciaMilisegundos % milisegundosEnUnAnio) / (milisegundosEnUnDia * 30.44)
     );
-   
+   console.log(ingreso);
+   console.log(hoy);
     // Compara la diferencia de meses beneficio, y  puesto.
     if (diferenciaMeses >= 3 || diferenciaAnios > 0) {
+      console.log('si aqui');
       return true;
     }
     return false;
