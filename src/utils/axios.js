@@ -63,6 +63,9 @@ export const endpoints = {
   chat: '/api/chat',
   kanban: '/api/kanban',
   calendar: '/api/calendar',
+  api: {
+    encodedHash: '/Api/encodedHash',
+  },
   auth: {
     me: '/LoginController/check',
     me2: '/LoginController/me',
@@ -111,14 +114,14 @@ export const endpoints = {
   especialistas: {
     list: 'CalendarioController/getEspecialistaPorBeneficioYSede',
     modalities: 'CalendarioController/getModalidadesEspecialista',
-    sedes: 'especialistas/sedes',
-    horario: 'especialistas/horario',
-    horarios: 'especialistas/horarios',
-    disponibles: 'especialistas/disponibles',
-    meta: 'especialistas/meta',
+    sedes: 'Especialistas/sedes',
+    horario: 'Especialistas/horario',
+    horarios: 'Especialistas/horarios',
+    disponibles: 'Especialistas/disponibles',
+    meta: 'Especialistas/meta',
   },
   areas: {
-    citas: 'areas/citas',
+    citas: 'Areas/citas',
   },
   calendario: {
     getAllEvents: 'CalendarioController/getAllEvents',
@@ -252,7 +255,7 @@ export const endpoints = {
     updateSede: '/GestorController/updateSede',
     insertSedes: '/GestorController/insertSedes',
     checkModalidades: '/GestorController/checkModalidades',
-    getAreas: '/GestorController/getAreas'
+    getAreas: '/GestorController/getAreas',
   },
   avisosPrivacidad: {
     getEspecialidadToSelect: '/AvisosPrivacidadController/getEspecialidades',
