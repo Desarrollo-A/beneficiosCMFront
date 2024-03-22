@@ -100,7 +100,7 @@ export default function AccountChangePassword() {
       setPassword(pass.data);
     }
     getPassword();
-  }, [])
+  }, []);
 
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
@@ -166,7 +166,7 @@ export default function AccountChangePassword() {
           }}
         />
 
-        <LoadingButton type="submit" variant="contained" loading={isSubmitting} sx={{ ml: 'auto' }}>
+        <LoadingButton type="submit" variant="contained" color="success" loading={isSubmitting} sx={{ ml: 'auto' }}>
           Guardar
         </LoadingButton>
       </Stack>

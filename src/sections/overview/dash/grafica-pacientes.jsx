@@ -3,7 +3,9 @@ import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
+import Grid from '@mui/material/Unstable_Grid2';
 import { alpha, useTheme } from '@mui/material/styles';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import { endpoints } from 'src/utils/axios';
 import { fPercent } from 'src/utils/format-number';
@@ -128,6 +130,7 @@ export default function GraficaPacientes({
   });
 
   return (
+    total.length > 0 ?
     <Stack
       sx={{
         ...bgGradient({
@@ -176,6 +179,29 @@ export default function GraficaPacientes({
         height={50}
       />
     </Stack>
+    :
+    <Stack
+      sx={{
+        ...bgGradient({
+          direction: '195deg',
+          startColor: alpha(theme.palette[color].light, 0.2),
+          endColor: alpha(theme.palette[color].main, 0.2),
+        }),
+        p: 3,
+        borderRadius: 2,
+        color: `${color}.darker`,
+        overflow: 'hidden',
+        position: 'relative',
+        backgroundColor: 'common.white',
+        ...sx,
+      }}
+      {...other}
+    >
+
+    <Grid container spacing={1} sx={{ p: 5}} justifyContent="center" alignItems="center">
+        <CircularProgress />
+    </Grid>
+  </Stack>
   );
 }
 

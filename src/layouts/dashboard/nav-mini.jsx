@@ -1,5 +1,7 @@
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
+import Grid from '@mui/material/Unstable_Grid2';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import { useMockedUser } from 'src/hooks/use-mocked-user';
 
@@ -42,18 +44,28 @@ export default function NavMini() {
           borderRight: (theme) => `dashed 1px ${theme.palette.divider}`,
           ...hideScroll.x,
           ...bgBlur({
-            color:'#161c24',
+            color: '#161c24',
           }),
         }}
       >
         <Logo sx={{ mx: 'auto', my: 2 }} />
 
-        <NavSectionMini
-          data={navData}
-          slotProps={{
-            currentRole: user?.role,
-          }}
-        />
+        {navData.length > 0 ? (
+
+          <NavSectionMini
+            data={navData}
+            slotProps={{
+              currentRole: user?.role,
+            }}
+          />
+
+        ) : (
+
+          <Grid container spacing={1} sx={{ p: 3.5 }} justifyContent="center" alignItems="center">
+            <CircularProgress sx={{ color: 'white' }} />
+          </Grid>
+        )}
+        
       </Stack>
     </Box>
   );

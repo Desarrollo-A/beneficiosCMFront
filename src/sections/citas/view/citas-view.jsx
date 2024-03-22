@@ -84,7 +84,10 @@ export default function CitasView() {
   }
 
   const [area, setArea] = useState(puestos);
+
   const { citasData } = usePostGeneral(user?.idUsuario, endpoints.citas.getCitas, 'citasData');
+
+  console.log(citasData)
 
   const { especialistasData } = useGetGeneral(
     endpoints.reportes.especialistas,
@@ -221,9 +224,9 @@ export default function CitasView() {
                       table.page * table.rowsPerPage,
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
-                    .map((row) => (
+                    .map((row, index) => (
                       <UserTableRow
-                        key={row.id}
+                        key={index}
                         row={row}
                         area={area}
                         idUs={idUs}
@@ -305,8 +308,8 @@ function applyFilter({ inputData, comparator, filters }) {
         i.motivoCita.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
         i.sede.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
         i.oficina.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        i.pagoGenerado.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        i.metodoPago.toLowerCase().indexOf(name.toLowerCase()) !== -1
+        i.pagoGenerado.toLowerCase().indexOf(name.toLowerCase()) !== -1 /* ||
+        i.metodoPago.toLowerCase().indexOf(name.toLowerCase()) !== -1 */
     );
   }
 
