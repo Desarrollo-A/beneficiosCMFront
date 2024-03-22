@@ -8,12 +8,11 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 
-import styles from './style.css';
 
 // ----------------------------------------------------------------------
 
 export default function ModalPoliticas({ open, onClose }) {
-
+const styles = './style.css';
   return (
     
     <Dialog
