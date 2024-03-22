@@ -19,7 +19,10 @@ import { useGetEspecialistasPorArea } from 'src/api/especialistas';
 
 import { useSettingsContext } from 'src/components/settings';
 
+import {_appFeatured } from 'src/_mock';
+
 import AppWelcome from '../app-welcome';
+import AppFeatured from '../app-featured';
 import WidgetConteo from '../widget-conteo';
 import GraficaMetas from '../grafica-metas';
 import GraficaPacientes from '../grafica-pacientes';
@@ -126,7 +129,7 @@ export default function DashView() {
 
       <Grid container spacing={3}>
 
-        <Grid xs={12} md={9}>
+      <Grid xs={12} md={8}>
           <AppWelcome
             title={user?.sexo === 'M' ? `Bienvenida 👋 \n ${user?.nombre}` : `Bienvenido  👋 \n ${user?.nombre}`}
             img={<SeoIllustration />}
@@ -134,7 +137,11 @@ export default function DashView() {
           />
         </Grid>
 
-        <Grid container justifyContent="center" alignItems="center" xs={12} md={3}>
+        <Grid xs={12} md={4}>
+          <AppFeatured list={_appFeatured} />
+        </Grid>
+
+       {/*  <Grid container justifyContent="center" alignItems="center" xs={12} md={3}>
           <Card
             sx={{
               ...bgGradient({
@@ -154,7 +161,7 @@ export default function DashView() {
           >
             <Clock value={value} />
           </Card>
-        </Grid>
+        </Grid> */}
 
         {rol === 4 || rol === 3 ? (
           <>
