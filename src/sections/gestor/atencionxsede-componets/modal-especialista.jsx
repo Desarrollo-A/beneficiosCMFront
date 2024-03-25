@@ -7,10 +7,12 @@ import { LoadingButton } from '@mui/lab';
 import Button from '@mui/material/Button';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import Grid from '@mui/material/Unstable_Grid2';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
@@ -36,9 +38,9 @@ export default function ModalEspecialista({ open, onClose, id, estatusVal, puest
 
   let val = true;
 
-  if(espeData.length === 1  && espeData[0]?.nombre === estatusVal){
+  if (espeData.length === 1 && espeData[0]?.nombre === estatusVal) {
     val = false;
-  }else if(espeData.length !== 1  && espeData[0]?.nombre !== estatusVal){
+  } else if (espeData.length !== 1 && espeData[0]?.nombre !== estatusVal) {
     val = true;
   }
 
@@ -93,63 +95,75 @@ export default function ModalEspecialista({ open, onClose, id, estatusVal, puest
   }
 
   return (
-
     <>
-      { val === true ? (
+      {espeData.length > 0 ? (
 
         <>
-          <Stack spacing={1} >
+          {val === true ? (
 
-            <DialogTitle>¿Estás seguro que deseas cambiar al especialista?</DialogTitle>
+            <>
+              <Stack spacing={1} >
 
-            <FormControl spacing={3} sx={{ p: 3 }}>
+                <DialogTitle>¿Estás seguro que deseas cambiar al especialista?</DialogTitle>
 
-              <InputLabel spacing={3} sx={{ p: 3 }} id="demo-simple-select-label">Especialista</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                label="Especialista"
-                value={estatus}
-                onChange={(e) => handleChange(e)}
-              >
-                {espeData.map((i) => (
-                  i.nombre === estatusVal ? null : (
-                    <MenuItem key={i.idUsuario} value={i.idUsuario}>
-                      {i.nombre}
-                    </MenuItem>
-                  )
-                ))}
-              </Select>
+                <FormControl spacing={3} sx={{ p: 3 }}>
 
-            </FormControl>
+                  <InputLabel spacing={3} sx={{ p: 3 }} id="demo-simple-select-label">Especialista</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    label="Especialista"
+                    value={estatus}
+                    onChange={(e) => handleChange(e)}
+                  >
+                    {espeData.map((i) => (
+                      i.nombre === estatusVal ? null : (
+                        <MenuItem key={i.idUsuario} value={i.idUsuario}>
+                          {i.nombre}
+                        </MenuItem>
+                      )
+                    ))}
+                  </Select>
 
-          </Stack>
+                </FormControl>
 
-          <DialogActions>
-            <Button variant="contained" color="error" onClick={onClose}>
-              Cerrar
-            </Button>
-            <LoadingButton variant="contained" color="success" loading={btnLoad} onClick={() => {
-              setBtnLoad(true);
-              handleEstatus(estatus);
-              confirm.onFalse();
-            }}>
-              Guardar
-            </LoadingButton>
-          </DialogActions>
+              </Stack>
+
+              <DialogActions>
+                <Button variant="contained" color="error" onClick={onClose}>
+                  Cerrar
+                </Button>
+                <LoadingButton variant="contained" color="success" loading={btnLoad} onClick={() => {
+                  setBtnLoad(true);
+                  handleEstatus(estatus);
+                  confirm.onFalse();
+                }}>
+                  Guardar
+                </LoadingButton>
+              </DialogActions>
+            </>
+          ) : (
+            <>
+              <DialogTitle>No hay más especialistas para cambiar</DialogTitle>
+              <DialogActions>
+                <Button variant="contained" color="error" onClick={onClose}>
+                  Cerrar
+                </Button>
+              </DialogActions>
+            </>
+          )}
         </>
+
       ) : (
-        <>
-          <DialogTitle>No hay más especialistas para cambiar</DialogTitle>
-          <DialogActions>
-            <Button variant="contained" color="error" onClick={onClose}>
-              Cerrar
-            </Button>
-          </DialogActions>
-        </>
+        <Stack spacing={1} >
+          <Grid container sx={{ p: 5 }} justifyContent="center" alignItems="center">
+            <CircularProgress />
+          </Grid>
+        </Stack>
       )}
+
     </>
-    
+
   );
 }
 

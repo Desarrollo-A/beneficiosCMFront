@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -11,6 +11,7 @@ import CardHeader from '@mui/material/CardHeader';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import { alpha, useTheme } from '@mui/material/styles';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import { fNumber } from 'src/utils/format-number';
 
@@ -33,11 +34,11 @@ export default function GraficaMetas({ id }) {
 
   const { meta: metaData } = useGetMeta({ especialista: id, mes: selectedMonth });
 
-  const [data, setData] = useState({total: 0, meta:0});
+  const [data, setData] = useState({ total: 0, meta: 0 });
 
   useEffect(() => {
-    if(metaData !== undefined){
-    setData(metaData);
+    if (metaData !== undefined) {
+      setData(metaData);
     }
   }, [metaData]);
 
@@ -80,7 +81,7 @@ export default function GraficaMetas({ id }) {
           value: { offsetY: 10 },
           total: {
             label: "Citas",
-            text:`${total}`,
+            text: `${total}`,
             formatter: () => fNumber(total),
           },
         },
@@ -89,10 +90,12 @@ export default function GraficaMetas({ id }) {
   });
 
   return (
-    <Card>
-      <CardHeader title='Meta de citas' sx={{ mb: 1.8 }} />
+    metaData!== undefined ?
 
-      <Grid container spacing={2} sx={{ p: 4 }}>
+      <Card>
+        <CardHeader title='Meta de citas' sx={{ mb: 1.8 }} />
+
+        <Grid container spacing={2} sx={{ p: 4 }}>
 
           <Grid md={12} xs={12}>
             <FormControl sx={{
@@ -117,36 +120,36 @@ export default function GraficaMetas({ id }) {
           </Grid>
         </Grid>
 
-      <Chart
-        dir="ltr"
-        type="radialBar"
-        series={[total]}
-        options={chartOptions}
-        width="100%"
-        height={310}
-      />
+        <Chart
+          dir="ltr"
+          type="radialBar"
+          series={[total]}
+          options={chartOptions}
+          width="100%"
+          height={310}
+        />
 
-      <Stack spacing={2} sx={{ p: 5 }}>
-        <Stack
-          spacing={1}
-          direction="row"
-          alignItems="center"
-          sx={{
-            typography: 'subtitle2',
-          }}
-        >
-          <Box
+        <Stack spacing={2} sx={{ p: 5 }}>
+          <Stack
+            spacing={1}
+            direction="row"
+            alignItems="center"
             sx={{
-              width: 16,
-              height: 16,
-              borderRadius: 0.75,
-              bgcolor: theme.palette.primary.main,
+              typography: 'subtitle2',
             }}
-          />
-          <Box sx={{ color: 'text.secondary', flexGrow: 1 }}>Meta</Box>
-          {meta} citas
-        </Stack>
-        <Stack
+          >
+            <Box
+              sx={{
+                width: 16,
+                height: 16,
+                borderRadius: 0.75,
+                bgcolor: theme.palette.primary.main,
+              }}
+            />
+            <Box sx={{ color: 'text.secondary', flexGrow: 1 }}>Meta</Box>
+            {meta} citas
+          </Stack>
+          <Stack
             spacing={1}
             direction="row"
             alignItems="center"
@@ -166,8 +169,17 @@ export default function GraficaMetas({ id }) {
             <Box sx={{ color: 'text.secondary', flexGrow: 1 }}>Faltan</Box>
             {meta - total} citas
           </Stack>
-      </Stack>
-    </Card>
+        </Stack>
+      </Card>
+
+      :
+      <Card sx={{ pr: 2, pl: 1 }}>
+        <CardHeader title='Meta de citas' />
+
+        <Grid container spacing={1} sx={{ p: 5 }} justifyContent="center" alignItems="center">
+          <CircularProgress />
+        </Grid>
+      </Card>
   );
 }
 

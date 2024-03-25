@@ -11,6 +11,7 @@ import CardHeader from '@mui/material/CardHeader';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import CircularProgress from '@mui/material/CircularProgress';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
@@ -42,11 +43,11 @@ const StyledChart = styled(Chart)(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-export default function GraficaModalidad({ 
+export default function GraficaModalidad({
   title,
-  subheader,  
-  chart, 
-  beneficios, 
+  subheader,
+  chart,
+  beneficios,
   diaUnoMes,
   ultimoDiaMes,
   datePikerI,
@@ -118,11 +119,11 @@ export default function GraficaModalidad({
 
   const vir = tot === 0 ? 0 : ((_vir * 100) / tot).toFixed(0);
 
-  const [countMod, setCountMod] = useState([ 0, 0 ]);
+  const [countMod, setCountMod] = useState([0, 0]);
 
   useEffect(() => {
     if (data.length) {
-      setCountMod([ pre, vir ]);
+      setCountMod([pre, vir]);
     }
   }, [pre, vir, data]);
 
@@ -186,7 +187,7 @@ export default function GraficaModalidad({
         dataLabels: {
           value: { offsetY: 16 },
           total: {
-            text:`${tot}`,
+            text: `${tot}`,
             formatter: () => fNumber(tot),
           },
         },
@@ -196,112 +197,123 @@ export default function GraficaModalidad({
   });
 
   return (
+
     <Card {...other}>
-      <CardHeader title={title} subheader={subheader} sx={{ mb:0 }} />
+      <CardHeader title={title} subheader={subheader} sx={{ mb: 0 }} />
 
-      <Grid container spacing={2} sx={{ p: 3 }}>
-
-      {rol !== 3 ?(
+      {modalidadData.length > 0 ? (
         <>
-        <Grid md={6} xs={12}>
-          <FormControl sx={{
-            width: "100%",
-            pr: { xs: 1, md: 1 },
-          }}>
-            <InputLabel id="demo-simple-select-label">Beneficio</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={!areas ? '' : areas}
-              label="Beneficio"
-              onChange={(e) => handleChangeArea(e)}
-            >
-              {beneficios.map((i, index) => (
-                <MenuItem key={index} value={i.idPuesto}>
-                  {i.nombre}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
+          <Grid container spacing={2} sx={{ p: 3 }}>
 
-        <Grid md={6} xs={12}>
-          <FormControl sx={{
-            width: "100%",
-            pr: { xs: 1, md: 1 },
-          }}>
-            <InputLabel id="demo-simple-select-label">Especialista</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={_es}
-              label="Especialista"
-              onChange={(e) => handleChangeEsp(e)}
-            >
-              <MenuItem value='0'>
-                Todos
-              </MenuItem>
-              {especialistas.map((i, index) => (
-                <MenuItem key={index} value={i.idUsuario}>
-                  {i.nombre}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
+            {rol !== 3 ? (
+              <>
+                <Grid md={6} xs={12}>
+                  <FormControl sx={{
+                    width: "100%",
+                    pr: { xs: 1, md: 1 },
+                  }}>
+                    <InputLabel id="demo-simple-select-label">Beneficio</InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={!areas ? '' : areas}
+                      label="Beneficio"
+                      onChange={(e) => handleChangeArea(e)}
+                    >
+                      {beneficios.map((i, index) => (
+                        <MenuItem key={index} value={i.idPuesto}>
+                          {i.nombre}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+
+                <Grid md={6} xs={12}>
+                  <FormControl sx={{
+                    width: "100%",
+                    pr: { xs: 1, md: 1 },
+                  }}>
+                    <InputLabel id="demo-simple-select-label">Especialista</InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={_es}
+                      label="Especialista"
+                      onChange={(e) => handleChangeEsp(e)}
+                    >
+                      <MenuItem value='0'>
+                        Todos
+                      </MenuItem>
+                      {especialistas.map((i, index) => (
+                        <MenuItem key={index} value={i.idUsuario}>
+                          {i.nombre}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+              </>
+
+            ) : (
+              null
+            )}
+
+            <Grid md={6} xs={12}>
+              <FormControl sx={{
+                width: "100%",
+                pr: { xs: 1, md: 1 },
+              }}>
+                <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
+                  <DatePicker
+                    label="Fecha inicio"
+                    value={datePikerI()}
+                    maxDate={fhF.setDate(fhF.getDate() + 1)}
+                    onChange={handleFilterStartDate}
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                      },
+                    }}
+                  />
+                </LocalizationProvider>
+              </FormControl>
+            </Grid>
+
+            <Grid md={6} xs={12}>
+              <FormControl sx={{
+                width: "100%",
+                pr: { xs: 1, md: 1 },
+              }}>
+                <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
+                  <DatePicker
+                    label="Fecha fin"
+                    minDate={fhI}
+                    value={datePikerF()}
+                    onChange={handleFilterEndDate}
+                    slotProps={{ textField: { fullWidth: true } }}
+                  />
+                </LocalizationProvider>
+              </FormControl>
+            </Grid>
+          </Grid>
+
+          <StyledChart
+            dir="ltr"
+            type="radialBar"
+            series={countMod}
+            options={chartOptions}
+            width="100%"
+            height={300}
+          />
+
         </>
-        
-      ):(
-        null
+
+      ) : (
+        <Grid container spacing={1} sx={{ p: 5 }} justifyContent="center" alignItems="center">
+          <CircularProgress />
+        </Grid>
       )}
-
-        <Grid md={6} xs={12}>
-          <FormControl sx={{
-            width: "100%",
-            pr: { xs: 1, md: 1 },
-          }}>
-            <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
-              <DatePicker
-                label="Fecha inicio"
-                value={datePikerI()}
-                maxDate={fhF.setDate(fhF.getDate() + 1)}
-                onChange={handleFilterStartDate}
-                slotProps={{
-                  textField: {
-                    fullWidth: true,
-                  },
-                }}
-              />
-            </LocalizationProvider>
-          </FormControl>
-        </Grid>
-
-        <Grid md={6} xs={12}>
-          <FormControl sx={{
-            width: "100%",
-            pr: { xs: 1, md: 1 },
-          }}>
-            <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
-              <DatePicker
-                label="Fecha fin"
-                minDate={fhI}
-                value={datePikerF()}
-                onChange={handleFilterEndDate}
-                slotProps={{ textField: { fullWidth: true } }}
-              />
-            </LocalizationProvider>
-          </FormControl>
-        </Grid>
-      </Grid>
-
-      <StyledChart
-        dir="ltr"
-        type="radialBar"
-        series={countMod}
-        options={chartOptions}
-        width="100%"
-        height={300}
-      />
     </Card>
   );
 }

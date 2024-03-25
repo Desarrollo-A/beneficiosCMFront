@@ -12,6 +12,7 @@ import CardHeader from '@mui/material/CardHeader';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import CircularProgress from '@mui/material/CircularProgress';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
@@ -240,29 +241,83 @@ export default function GraficaEncuestas({
 
                 <CardHeader title={title} />
 
-                <Grid container spacing={2} sx={{ p: 6.5 }}>
+                {preguntaData.length > 0 ? (
+                    <>
 
-                    {rol !== 3 ? (
-                        <>
+                        <Grid container spacing={2} sx={{ p: 6.5 }}>
+
+                            {rol !== 3 ? (
+                                <>
+                                    <Grid md={6} xs={12}>
+                                        <FormControl sx={{
+                                            width: "100%",
+                                            pr: { xs: 1, md: 1 },
+                                        }}>
+                                            <InputLabel id="demo-simple-select-label">Beneficio</InputLabel>
+                                            <Select
+                                                labelId="demo-simple-select-label"
+                                                id="demo-simple-select"
+                                                value={!areas ? '' : areas}
+                                                label="Beneficio"
+                                                onChange={(e) => handleChangeArea(e)}
+                                            >
+                                                {beneficios.map((i, index) => (
+                                                    <MenuItem key={index} value={i.idPuesto}>
+                                                        {i.nombre}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+
+                                    <Grid md={6} xs={12}>
+                                        <FormControl sx={{
+                                            width: "100%",
+                                            pr: { xs: 1, md: 1 },
+                                        }}>
+                                            <InputLabel id="demo-simple-select-label">Especialista</InputLabel>
+                                            <Select
+                                                labelId="demo-simple-select-label"
+                                                id="demo-simple-select"
+                                                value={_es}
+                                                label="Especialista"
+                                                onChange={(e) => handleChangeEsp(e)}
+                                            >
+                                                <MenuItem value='0'>
+                                                    Todos
+                                                </MenuItem>
+                                                {especialistas.map((i, index) => (
+                                                    <MenuItem key={index} value={i.idUsuario}>
+                                                        {i.nombre}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+                                </>
+
+                            ) : (
+                                null
+                            )}
+
                             <Grid md={6} xs={12}>
                                 <FormControl sx={{
                                     width: "100%",
                                     pr: { xs: 1, md: 1 },
                                 }}>
-                                    <InputLabel id="demo-simple-select-label">Beneficio</InputLabel>
-                                    <Select
-                                        labelId="demo-simple-select-label"
-                                        id="demo-simple-select"
-                                        value={!areas ? '' : areas}
-                                        label="Beneficio"
-                                        onChange={(e) => handleChangeArea(e)}
-                                    >
-                                        {beneficios.map((i, index) => (
-                                            <MenuItem key={index} value={i.idPuesto}>
-                                                {i.nombre}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
+                                    <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
+                                        <DatePicker
+                                            label="Fecha inicio"
+                                            value={datePikerI()}
+                                            maxDate={fhF.setDate(fhF.getDate() + 1)}
+                                            onChange={handleFilterStartDate}
+                                            slotProps={{
+                                                textField: {
+                                                    fullWidth: true,
+                                                },
+                                            }}
+                                        />
+                                    </LocalizationProvider>
                                 </FormControl>
                             </Grid>
 
@@ -271,94 +326,43 @@ export default function GraficaEncuestas({
                                     width: "100%",
                                     pr: { xs: 1, md: 1 },
                                 }}>
-                                    <InputLabel id="demo-simple-select-label">Especialista</InputLabel>
+                                    <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
+                                        <DatePicker
+                                            label="Fecha fin"
+                                            minDate={fhI}
+                                            value={datePikerF()}
+                                            onChange={handleFilterEndDate}
+                                            slotProps={{ textField: { fullWidth: true } }}
+                                        />
+                                    </LocalizationProvider>
+                                </FormControl>
+                            </Grid>
+
+                            <Grid md={12} xs={12}>
+                                <FormControl sx={{
+                                    width: "100%",
+                                    pr: { xs: 1, md: 1 },
+                                }}>
+                                    <InputLabel id="demo-simple-select-label">Pregunta</InputLabel>
                                     <Select
                                         labelId="demo-simple-select-label"
                                         id="demo-simple-select"
-                                        value={_es}
-                                        label="Especialista"
-                                        onChange={(e) => handleChangeEsp(e)}
+                                        label="Pregunta"
+                                        value={pregunta}
+                                        onChange={(e) => handleChangeSct(e)}
                                     >
-                                        <MenuItem value='0'>
-                                            Todos
-                                        </MenuItem>
-                                        {especialistas.map((i, index) => (
-                                            <MenuItem key={index} value={i.idUsuario}>
-                                                {i.nombre}
+                                        {preguntaData.map((i) => (
+                                            <MenuItem key={i.idPregunta} value={i.idPregunta}>
+                                                {i.pregunta}
                                             </MenuItem>
                                         ))}
                                     </Select>
                                 </FormControl>
                             </Grid>
-                        </>
 
-                    ) : (
-                        null
-                    )}
+                        </Grid>
 
-                    <Grid md={6} xs={12}>
-                        <FormControl sx={{
-                            width: "100%",
-                            pr: { xs: 1, md: 1 },
-                        }}>
-                            <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
-                                <DatePicker
-                                    label="Fecha inicio"
-                                    value={datePikerI()}
-                                    maxDate={fhF.setDate(fhF.getDate() + 1)}
-                                    onChange={handleFilterStartDate}
-                                    slotProps={{
-                                        textField: {
-                                            fullWidth: true,
-                                        },
-                                    }}
-                                />
-                            </LocalizationProvider>
-                        </FormControl>
-                    </Grid>
-
-                    <Grid md={6} xs={12}>
-                        <FormControl sx={{
-                            width: "100%",
-                            pr: { xs: 1, md: 1 },
-                        }}>
-                            <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
-                                <DatePicker
-                                    label="Fecha fin"
-                                    minDate={fhI}
-                                    value={datePikerF()}
-                                    onChange={handleFilterEndDate}
-                                    slotProps={{ textField: { fullWidth: true } }}
-                                />
-                            </LocalizationProvider>
-                        </FormControl>
-                    </Grid>
-
-                    <Grid md={12} xs={12}>
-                        <FormControl sx={{
-                            width: "100%",
-                            pr: { xs: 1, md: 1 },
-                        }}>
-                            <InputLabel id="demo-simple-select-label">Pregunta</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                label="Pregunta"
-                                value={pregunta}
-                                onChange={(e) => handleChangeSct(e)}
-                            >
-                                {preguntaData.map((i) => (
-                                    <MenuItem key={i.idPregunta} value={i.idPregunta}>
-                                        {i.pregunta}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    </Grid>
-
-                </Grid>
-
-                {/* <Tooltip title="Exportar XLS" placement="top" arrow>
+                        {/* <Tooltip title="Exportar XLS" placement="top" arrow>
                     <MenuItem
                         sx={{ width: 50, ml: 2, mt: 2 }}
                         onClick={handleExcel}
@@ -369,54 +373,63 @@ export default function GraficaEncuestas({
                     </MenuItem>
                 </Tooltip> */}
 
-                <CardHeader
-                    action={
-                        <ButtonBase
-                            style={{ display: 'none' }}
-                            onClick={popover.onOpen}
-                            sx={{
-                                pl: 1,
-                                py: 0.5,
-                                pr: 0.5,
-                                borderRadius: 1,
-                                typography: 'subtitle2',
-                                bgcolor: 'background.neutral',
-                            }}
-                        >
-                            {seriesData}
+                        <CardHeader
+                            action={
+                                <ButtonBase
+                                    style={{ display: 'none' }}
+                                    onClick={popover.onOpen}
+                                    sx={{
+                                        pl: 1,
+                                        py: 0.5,
+                                        pr: 0.5,
+                                        borderRadius: 1,
+                                        typography: 'subtitle2',
+                                        bgcolor: 'background.neutral',
+                                    }}
+                                >
+                                    {seriesData}
 
-                            <Iconify
-                                width={16}
-                                icon={popover.open ? 'eva:arrow-ios-upward-fill' : 'eva:arrow-ios-downward-fill'}
-                                sx={{ ml: 0.5 }}
-                            />
-                        </ButtonBase>
-                    }
-                />
-
-                {respCountData.length !== 0 ? (
-                    <>
-                        {series.map((item) => (
-                            <Box key={item.type} sx={{ mt: 3, mx: 3 }}>
-                                {item.type === seriesData && (
-                                    <Chart
-                                        dir="ltr"
-                                        type="bar"
-                                        series={item.data}
-                                        options={chartOptions}
-                                        width="100%"
-                                        height={364}
+                                    <Iconify
+                                        width={16}
+                                        icon={popover.open ? 'eva:arrow-ios-upward-fill' : 'eva:arrow-ios-downward-fill'}
+                                        sx={{ ml: 0.5 }}
                                     />
-                                )}
-                            </Box>
-                        ))}
+                                </ButtonBase>
+                            }
+                        />
+
+                        {respCountData.length !== 0 ? (
+                            <>
+                                {series.map((item) => (
+                                    <Box key={item.type} sx={{ mt: 3, mx: 3 }}>
+                                        {item.type === seriesData && (
+                                            <Chart
+                                                dir="ltr"
+                                                type="bar"
+                                                series={item.data}
+                                                options={chartOptions}
+                                                width="100%"
+                                                height={364}
+                                            />
+                                        )}
+                                    </Box>
+                                ))}
+                            </>
+                        ) : (
+                            <GraficaNone
+                                title='No hay encuestas contestadas'
+                                img={<MotivationIllustration />}
+                            />
+                        )}
+
                     </>
+
                 ) : (
-                    <GraficaNone
-                        title='No hay encuestas contestadas'
-                        img={<MotivationIllustration />}
-                    />
+                    <Grid container spacing={1} sx={{ p: 5 }} justifyContent="center" alignItems="center">
+                        <CircularProgress />
+                    </Grid>
                 )}
+
             </Card>
 
             <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 140 }}>
@@ -430,6 +443,8 @@ export default function GraficaEncuestas({
                     </MenuItem>
                 ))}
             </CustomPopover>
+
+
         </>
     );
 }

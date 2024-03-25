@@ -90,8 +90,6 @@ export default function DashView() {
 
   const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
 
-  console.log(especialistasData.length)
-
   const { asistenciaData } = useGetCounts(id, endpoints.dashboard.getCtAsistidas, "asistenciaData");
 
   const { canceladaData } = useGetCounts(id, endpoints.dashboard.getCtCanceladas, "canceladaData");
