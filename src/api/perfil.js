@@ -28,4 +28,4 @@ export async function getDecodedPass() {
     const response = await instance.get(URL);
   
     return response.data;
-  }
+}

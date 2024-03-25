@@ -86,7 +86,7 @@ export default function SettingsDrawer() {
     </div>
   );
 
-  const renderDirection = (
+ /*  const renderDirection = (
     <div>
       <Typography variant="caption" component="div" sx={{ ...labelStyles }}>
         Dirección
@@ -99,7 +99,7 @@ export default function SettingsDrawer() {
         icons={['align_left', 'align_right']}
       />
     </div>
-  );
+  ); */
 
   const renderLayout = (
     <div>
@@ -177,7 +177,7 @@ export default function SettingsDrawer() {
 
           {renderContrast}
 
-          {renderDirection}
+          {/* {renderDirection} */}
 
           {renderLayout}
 

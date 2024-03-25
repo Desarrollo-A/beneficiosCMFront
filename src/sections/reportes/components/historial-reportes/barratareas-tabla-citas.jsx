@@ -236,7 +236,8 @@ export default function BarraTareasTabla({
           <Grid xs={12} md={6}>
             <WidgetPacientes
               title="Total de pacientes"
-              total={dataValue === 0 || dataValue === 4 ? _pa : 0}
+              total={_pa}
+              length={_pa.length}
               icon={<BookingIllustration />}
             />
           </Grid>
@@ -245,6 +246,7 @@ export default function BarraTareasTabla({
             <WidgetIngresos
               title="Total de ingresos"
               total={_in}
+              length={_in.length}
               icon={<CheckInIllustration />}
             />
           </Grid>

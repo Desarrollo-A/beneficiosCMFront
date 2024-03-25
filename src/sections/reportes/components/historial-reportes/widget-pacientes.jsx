@@ -2,10 +2,12 @@ import PropTypes from 'prop-types';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+import CircularProgress from '@mui/material/CircularProgress';
 
 // ----------------------------------------------------------------------
 
-export default function BookingWidgetSummary({ title, total, icon, sx, ...other }) {
+export default function BookingWidgetSummary({ title, total, icon, sx, length, ...other }) {
+
   return (
     <Card
       sx={{
@@ -18,8 +20,14 @@ export default function BookingWidgetSummary({ title, total, icon, sx, ...other 
       }}
       {...other}
     >
+      
       <Box>
-        <Box sx={{ mb: 1, typography: 'h3' }}>{(total)}</Box>
+        <Box sx={{ mb: 1, typography: 'h3' }}> 
+          {length > 0 ? ( 
+            total
+           ):(
+            <CircularProgress /> )}
+          </Box>
         <Box sx={{ color: 'text.secondary', typography: 'subtitle2' }}>{title}</Box>
       </Box>
 
@@ -43,4 +51,5 @@ BookingWidgetSummary.propTypes = {
   sx: PropTypes.object,
   title: PropTypes.string,
   total: PropTypes.any,
+  length: PropTypes.any,
 };
