@@ -355,9 +355,9 @@ export default function ReportePacientesView() {
                       table.page * table.rowsPerPage,
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
-                    .map((row) => (
+                    .map((row, index) => (
                       <UserTableRow
-                        key={row.id}
+                        key={index}
                         row={row}
                         area={area}
                         idUs={idUs}

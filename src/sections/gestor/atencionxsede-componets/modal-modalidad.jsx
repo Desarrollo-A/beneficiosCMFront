@@ -1,15 +1,18 @@
 import { mutate } from 'swr';
 import { useState } from 'react';
+import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import Grid from '@mui/material/Unstable_Grid2';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
@@ -34,8 +37,8 @@ export default function ModalModalidad({ open, onClose, id, est, estatusVal, mod
   }
 
   const updateEstatus = useUpdate(endpoints.gestor.updateModalidad);
-  const {checkModalidades} = useCheckModalidades(idEspecialista, idOficina, tipoCita, idArea);
-  
+  const { checkModalidades } = useCheckModalidades(idEspecialista, idOficina, tipoCita, idArea);
+
   const handleEstatus = async (i) => {
 
     try {
@@ -74,50 +77,60 @@ export default function ModalModalidad({ open, onClose, id, est, estatusVal, mod
 
   return (
     <>
-      {checkModalidades?.result ? 
-      (<Stack spacing={1} >
+      {!isEmpty(checkModalidades) ? (
+        <>
+          {checkModalidades?.result ?
+            (<Stack spacing={1} >
 
-        <DialogTitle>¿Estás seguro que deseas cambiar la modalidad?</DialogTitle>
+              <DialogTitle>¿Estás seguro que deseas cambiar la modalidad?</DialogTitle>
 
-        <FormControl spacing={3} sx={{ p: 3 }}>
+              <FormControl spacing={3} sx={{ p: 3 }}>
 
-          <InputLabel spacing={3} sx={{ p: 3 }} id="demo-simple-select-label">Modalidad</InputLabel>
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            label="Modalidad"
-            value={estatus}
-            onChange={(e) => handleChange(e)}
-          >
-            {modalidadesData.map((i) => (
-              i.modalidad === estatusVal ? null : (
-                <MenuItem key={i.idOpcion} value={i.idOpcion}>
-                  {i.modalidad}
-                </MenuItem>
-              )
-            ))}
-          </Select>
+                <InputLabel spacing={3} sx={{ p: 3 }} id="demo-simple-select-label">Modalidad</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  label="Modalidad"
+                  value={estatus}
+                  onChange={(e) => handleChange(e)}
+                >
+                  {modalidadesData.map((i) => (
+                    i.modalidad === estatusVal ? null : (
+                      <MenuItem key={i.idOpcion} value={i.idOpcion}>
+                        {i.modalidad}
+                      </MenuItem>
+                    )
+                  ))}
+                </Select>
 
-        </FormControl>
+              </FormControl>
 
-      </Stack>)
-      : <DialogTitle>{checkModalidades?.msg}</DialogTitle>}
-      
+            </Stack>)
+            : <DialogTitle>{checkModalidades?.msg}</DialogTitle>}
 
-      <DialogActions>
-        <Button variant="contained" color="error" onClick={onClose}>
-          Cerrar
-        </Button>
-        { checkModalidades?.result ? 
-        <Button variant="contained" color="success" onClick={() => {
-          handleEstatus(estatus);
-          confirm.onFalse();
-        }}>
-          Guardar
-        </Button>
-        :'' }
-      </DialogActions>
-</>
+
+          <DialogActions>
+            <Button variant="contained" color="error" onClick={onClose}>
+              Cerrar
+            </Button>
+            {checkModalidades?.result ?
+              <Button variant="contained" color="success" onClick={() => {
+                handleEstatus(estatus);
+                confirm.onFalse();
+              }}>
+                Guardar
+              </Button>
+              : ''}
+          </DialogActions>
+        </>
+      ) : (
+
+        <Grid container sx={{ p: 5 }} justifyContent="center" alignItems="center">
+          <CircularProgress />
+        </Grid>
+
+      )}
+    </>
   );
 }
 

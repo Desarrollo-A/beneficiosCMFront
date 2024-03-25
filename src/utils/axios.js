@@ -100,8 +100,6 @@ export const endpoints = {
     areas: 'Usuario/getAreas',
     batch: 'Usuario/insertBatchUsers',
     names: 'Usuario/getNameUser',
-    /* puesto: '/GeneralController/getPuesto', */
-    /* sede: '/GeneralController/getSede', */
     decodePass: '/Usuario/decodePass',
     updatePass: '/Usuario/updatePass',
     menu: 'Usuario/menu',
@@ -177,40 +175,29 @@ export const endpoints = {
     especialistas: '/GeneralController/especialistas',
     observacion: '/ReportesController/observacion',
     pacientes: '/ReportesController/getPacientes',
-    citas: '/GeneralController/getAppointmentHistory',
+    citas: '/ReportesController/getAppointmentHistory',
     getEstatusPaciente: '/GeneralController/getEstatusPaciente',
     updateEstatusPaciente: '/GeneralController/updateEstatusPaciente',
-    /* getResumenTerapias: '/ReportesController/getResumenTerapias', */
-    /* getEspeQua: '/ReportesController/getEspeQua', */
     getCierrePacientes: '/ReportesController/getCierrePacientes',
     getCierreIngresos: '/ReportesController/getCierreIngresos',
     getSelectEspe: '/ReportesController/getSelectEspe',
     getEspeUser: '/ReportesController/getEspeUser',
   },
   dashboard: {
-    /* usersCount: '/GeneralController/usrCount', */
-    /* citasCount: '/GeneralController/citasCount', */
-    /* citasEstatus: '/DashboardController/citasCountStatus', */
-    /* estatusTotal: '/DashboardController/totalStatusCitas', */
-    /* fechaMinima: '/DashboardController/fechaMinima', */
-    /* fechaAsistencia: '/DashboardController/estatusFechaAsistencia',
-    fechaCancelada: '/DashboardController/estatusFechaCancelada', */
-    /* fechaPenalizada: '/DashboardController/estatusFechaPenalizada', */
     citasAnual: '/DashboardController/citasAnual',
     getPregunta: '/DashboardController/getPregunta',
     getRespuestas: '/DashboardController/getRespuestas',
     getCountRespuestas: '/DashboardController/getCountRespuestas',
-    getPacientes: '/GeneralController/getPacientes',
+    getPacientes: '/DashboardController/getPacientes',
     getCtAsistidas: '/DashboardController/getCtAsistidas',
     getCtCanceladas: '/DashboardController/getCtCanceladas',
     getCtPenalizadas: '/DashboardController/getCtPenalizadas',
     getMetas: '/DashboardController/getMetas',
-    /* getMetaAdmin: '/DashboardController/getMetaAdmin', */
     getEsp: '/DashboardController/getEsp',
     getEstatusCitas: '/GeneralController/getEstatusCitas',
-    getCountModalidades: '/GeneralController/getCountModalidades',
-    getCountEstatusCitas: '/GeneralController/getCountEstatusCitas',
-    getCountPacientes: '/GeneralController/getCountPacientes',
+    getCountModalidades: '/DashboardController/getCountModalidades',
+    getCountEstatusCitas: '/DashboardController/getCountEstatusCitas',
+    getCountPacientes: '/DashboardController/getCountPacientes',
     getCtDisponibles: '/DashboardController/getCtDisponibles',
     getCarrusel: '/DashboardController/getCarrusel',
   },
@@ -224,8 +211,6 @@ export const endpoints = {
     getResp2: '/EncuestasController/getResp2',
     getResp3: '/EncuestasController/getResp3',
     getResp4: '/EncuestasController/getResp4',
-    /* getEncNotificacion: '/EncuestasController/getEncNotificacion', */
-    /* getEcuestaValidacion: '/EncuestasController/getEcuestaValidacion', */
     getEncuestasCreadas: '/EncuestasController/getEncuestasCreadas',
     updateEstatus: '/EncuestasController/updateEstatus',
     updateVigencia: '/EncuestasController/updateVigencia',

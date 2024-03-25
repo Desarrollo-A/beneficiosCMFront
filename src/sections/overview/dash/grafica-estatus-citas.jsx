@@ -14,6 +14,7 @@ import CardHeader from '@mui/material/CardHeader';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import CircularProgress from '@mui/material/CircularProgress';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
@@ -28,10 +29,10 @@ import Chart, { useChart } from 'src/components/chart';
 
 // ----------------------------------------------------------------------
 
-export default function GraficaEstatusCitas({ 
-  title, 
-  subheader, 
-  beneficios, 
+export default function GraficaEstatusCitas({
+  title,
+  subheader,
+  beneficios,
   diaUnoMes,
   ultimoDiaMes,
   datePikerI,
@@ -168,146 +169,157 @@ export default function GraficaEstatusCitas({
     <Card {...other}>
       <CardHeader title={title} subheader={subheader} />
 
-      <Grid container spacing={2} sx={{ p: 3 }}>
-
-      {rol !== 3 ?(
+      {countEstCitasData.length > 0 ? (
         <>
-        <Grid md={6} xs={12}>
-          <FormControl sx={{
-            width: "100%",
-            pr: { xs: 1, md: 1 },
-          }}>
-            <InputLabel id="demo-simple-select-label">Beneficio</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={!areas ? '' : areas}
-              label="Beneficio"
-              onChange={(e) => handleChangeArea(e)}
-            >
-              {beneficios.map((i, index) => (
-                <MenuItem key={index} value={i.idPuesto}>
-                  {i.nombre}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
 
-        <Grid md={6} xs={12}>
-          <FormControl sx={{
-            width: "100%",
-            pr: { xs: 1, md: 1 },
-          }}>
-            <InputLabel id="demo-simple-select-label">Especialista</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={_es}
-              label="Especialista"
-              onChange={(e) => handleChangeEsp(e)}
-            >
-              <MenuItem value='0'>
-                Todos
-              </MenuItem>
-              {especialistas.map((i, index) => (
-                <MenuItem key={index} value={i.idUsuario}>
-                  {i.nombre}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
+          <Grid container spacing={2} sx={{ p: 3 }}>
+
+            {rol !== 3 ? (
+              <>
+                <Grid md={6} xs={12}>
+                  <FormControl sx={{
+                    width: "100%",
+                    pr: { xs: 1, md: 1 },
+                  }}>
+                    <InputLabel id="demo-simple-select-label">Beneficio</InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={!areas ? '' : areas}
+                      label="Beneficio"
+                      onChange={(e) => handleChangeArea(e)}
+                    >
+                      {beneficios.map((i, index) => (
+                        <MenuItem key={index} value={i.idPuesto}>
+                          {i.nombre}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+
+                <Grid md={6} xs={12}>
+                  <FormControl sx={{
+                    width: "100%",
+                    pr: { xs: 1, md: 1 },
+                  }}>
+                    <InputLabel id="demo-simple-select-label">Especialista</InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={_es}
+                      label="Especialista"
+                      onChange={(e) => handleChangeEsp(e)}
+                    >
+                      <MenuItem value='0'>
+                        Todos
+                      </MenuItem>
+                      {especialistas.map((i, index) => (
+                        <MenuItem key={index} value={i.idUsuario}>
+                          {i.nombre}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+              </>
+
+            ) : (
+              null
+            )}
+
+            <Grid md={6} xs={12}>
+              <FormControl sx={{
+                width: "100%",
+                pr: { xs: 1, md: 1 },
+              }}>
+                <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
+                  <DatePicker
+                    label="Fecha inicio"
+                    value={datePikerI()}
+                    maxDate={fhF.setDate(fhF.getDate() + 1)}
+                    onChange={handleFilterStartDate}
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                      },
+                    }}
+                  />
+                </LocalizationProvider>
+              </FormControl>
+            </Grid>
+
+            <Grid md={6} xs={12}>
+              <FormControl sx={{
+                width: "100%",
+                pr: { xs: 1, md: 1 },
+              }}>
+                <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
+                  <DatePicker
+                    label="Fecha fin"
+                    minDate={fhI}
+                    value={datePikerF()}
+                    onChange={handleFilterEndDate}
+                    slotProps={{ textField: { fullWidth: true } }}
+                  />
+                </LocalizationProvider>
+              </FormControl>
+            </Grid>
+          </Grid>
+
+          <Box
+            sx={{
+              my: 5,
+              '& .apexcharts-legend': {
+                m: 'auto',
+                height: { sm: 150 },
+                flexWrap: { sm: 'wrap' },
+                width: { xs: 240, sm: '30%' },
+              },
+              '& .apexcharts-datalabels-group': {
+                display: 'none',
+              },
+            }}
+          >
+            <Chart
+              dir="ltr"
+              type="polarArea"
+              series={countEstCt}
+              options={chartOptions}
+              width="100%"
+              height={smUp ? 470 : 480}
+            />
+          </Box>
+
+          <Divider sx={{ borderStyle: 'dashed' }} />
+
+          <Box
+            display="grid"
+            gridTemplateColumns="repeat(2, 1fr)"
+            sx={{ textAlign: 'center', typography: 'h4' }}
+          >
+            <Stack sx={{ py: 0, borderRight: `dashed 1px ${theme.palette.divider}` }}>
+              <Box component="span" sx={{ mb: 0, typography: 'body2', color: 'text.secondary' }}>
+                Estatus
+              </Box>
+              {estatusCitasData.length}
+            </Stack>
+
+            <Stack sx={{ py: 1 }}>
+              <Box component="span" sx={{ mb: 0, typography: 'body2', color: 'text.secondary' }}>
+                Total
+              </Box>
+              {citas}
+            </Stack>
+          </Box>
+
         </>
-        
-      ):(
-        null
+
+      ) : (
+        <Grid container spacing={1} sx={{ p: 5 }} justifyContent="center" alignItems="center">
+          <CircularProgress />
+        </Grid>
       )}
-
-        <Grid md={6} xs={12}>
-          <FormControl sx={{
-            width: "100%",
-            pr: { xs: 1, md: 1 },
-          }}>
-            <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
-              <DatePicker
-                label="Fecha inicio"
-                value={datePikerI()}
-                maxDate={fhF.setDate(fhF.getDate() + 1)}
-                onChange={handleFilterStartDate}
-                slotProps={{
-                  textField: {
-                    fullWidth: true,
-                  },
-                }}
-              />
-            </LocalizationProvider>
-          </FormControl>
-        </Grid>
-
-        <Grid md={6} xs={12}>
-          <FormControl sx={{
-            width: "100%",
-            pr: { xs: 1, md: 1 },
-          }}>
-            <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
-              <DatePicker
-                label="Fecha fin"
-                minDate={fhI}
-                value={datePikerF()}
-                onChange={handleFilterEndDate}
-                slotProps={{ textField: { fullWidth: true } }}
-              />
-            </LocalizationProvider>
-          </FormControl>
-        </Grid>
-      </Grid>
-
-      <Box
-        sx={{
-          my: 5,
-          '& .apexcharts-legend': {
-            m: 'auto',
-            height: { sm: 150 },
-            flexWrap: { sm: 'wrap' },
-            width: { xs: 240, sm: '30%' },
-          },
-          '& .apexcharts-datalabels-group': {
-            display: 'none',
-          },
-        }}
-      >
-        <Chart
-          dir="ltr"
-          type="polarArea"
-          series={countEstCt}
-          options={chartOptions}
-          width="100%"
-          height={smUp ? 470 : 480}
-        />
-      </Box>
-
-      <Divider sx={{ borderStyle: 'dashed' }} />
-
-      <Box
-        display="grid"
-        gridTemplateColumns="repeat(2, 1fr)"
-        sx={{ textAlign: 'center', typography: 'h4' }}
-      >
-        <Stack sx={{ py: 0, borderRight: `dashed 1px ${theme.palette.divider}` }}>
-          <Box component="span" sx={{ mb: 0, typography: 'body2', color: 'text.secondary' }}>
-            Estatus
-          </Box>
-          {estatusCitasData.length}
-        </Stack>
-
-        <Stack sx={{ py: 1 }}>
-          <Box component="span" sx={{ mb: 0, typography: 'body2', color: 'text.secondary' }}>
-            Total
-          </Box>
-          {citas}
-        </Stack>
-      </Box>
     </Card>
   );
 }

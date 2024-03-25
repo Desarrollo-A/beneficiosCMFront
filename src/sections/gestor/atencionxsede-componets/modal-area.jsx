@@ -1,14 +1,17 @@
 import { mutate } from 'swr';
 import { useState } from 'react';
+import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 
 import Stack from '@mui/material/Stack';
 import { LoadingButton } from '@mui/lab';
 import Button from '@mui/material/Button';
+import Grid from '@mui/material/Unstable_Grid2';
 import FormControl from '@mui/material/FormControl';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import { TextField, Autocomplete } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
@@ -80,6 +83,8 @@ export default function ModalArea({ id, onClose, idArea }) {
 
   return (
     <>
+      {!isEmpty(areasMsg) ? (
+    <>
       {areasResult ? (
         <Stack spacing={1}>
           <DialogTitle>¿Estás seguro que deseas cambiar el área?</DialogTitle>
@@ -137,6 +142,14 @@ export default function ModalArea({ id, onClose, idArea }) {
           ''
         )}
       </DialogActions>
+    </>
+    ) : (
+
+      <Grid container sx={{ p: 5 }} justifyContent="center" alignItems="center">
+        <CircularProgress />
+      </Grid>
+
+    )}
     </>
   );
 }
