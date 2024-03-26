@@ -1,27 +1,42 @@
 import { useState } from 'react';
+import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
+import { useForm } from 'react-hook-form';
 import { enqueueSnackbar } from 'notistack';
 import Dialog from '@material-ui/core/Dialog';
+import { useSearchParams } from 'react-router-dom';
 
 import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Rating from '@mui/material/Rating';
-import Avatar from '@mui/material/Avatar';
+import { useTheme } from '@mui/material/styles';
+import Grid from '@mui/material/Unstable_Grid2';
+import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-import ListItemText from '@mui/material/ListItemText';
-import { alpha, useTheme } from '@mui/material/styles';
+import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import CircularProgress from '@mui/material/CircularProgress';
 
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hooks';
+
+import { endpoints } from 'src/utils/axios';
+
+import { useInsert } from 'src/api/encuestas';
 import { useAuthContext } from 'src/auth/hooks';
-import { AvatarShape } from 'src/assets/illustrations';
+import { useGetGeneral, usePostGeneral } from 'src/api/general';
 import { updateAppointment } from 'src/api/calendar-colaborador';
 
-import Image from 'src/components/image';
+import FormProvider, {
+  RHFTextField,
+  RHFRadioGroup,
+} from 'src/components/hook-form';
 
 export default function EvaluateDialog({ open, pendiente, mutate, cerrar }) {
   const [valorRating, setValorRating] = useState(0);
-  const { especialista, beneficio, sexoEspecialista, start } = pendiente;
+  const { especialista, beneficio, idEspecialista, idEncuesta, id, estatus, idDetalle, idEventoGoogle } = pendiente;
+
+  console.log(pendiente)
 
   const { user: datosUser } = useAuthContext();
   const theme = useTheme();
@@ -53,12 +68,92 @@ export default function EvaluateDialog({ open, pendiente, mutate, cerrar }) {
     return true;
   };
 
+  const [searchParams] = useSearchParams();
+
+  const router = useRouter();
+
+  const { user } = useAuthContext();
+
+  const { encuestaData } = usePostGeneral(idEncuesta, endpoints.encuestas.getEncuesta, "encuestaData");
+
+  const { Resp1Data } = useGetGeneral(endpoints.encuestas.getResp1, "Resp1Data");
+
+  const { Resp2Data } = useGetGeneral(endpoints.encuestas.getResp2, "Resp2Data");
+
+  const { Resp3Data } = useGetGeneral(endpoints.encuestas.getResp3, "Resp3Data");
+
+  const { Resp4Data } = useGetGeneral(endpoints.encuestas.getResp4, "Resp4Data");
+
+  const insertData = useInsert(endpoints.encuestas.encuestaInsert);
+
+
+  const methods = useForm({
+  });
+
+  const {
+    reset,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = methods;
+
+  const [formKey, setFormKey] = useState(0);
+
+  const resetForm = () => {
+    reset();
+    setFormKey((prevKey) => prevKey + 1);
+  };
+
+  const onSubmit = handleSubmit(async (data) => {
+
+    const update = await updateAppointment(
+      datosUser.idUsuario,
+      id,
+      estatus,
+      idDetalle,
+      idEncuesta,
+      idEventoGoogle
+    );
+
+    const newData = encuestaData.map((item, index) => {
+      const respKey = `resp_${index}`;
+
+      return {
+        ...item,
+        idUsuario: user?.idUsuario,
+        idEnc: idEncuesta,
+        idArea: encuestaData[0]?.idArea,
+        idEsp: idEspecialista,
+        resp: data[respKey]
+      };
+    });
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve));
+
+      const insert = await insertData(newData);
+
+      if (insert.estatus === true && update.result) {
+        enqueueSnackbar(insert.msj, { variant: 'success' });
+        resetForm();
+        mutate(endpoints.encuestas.getEcuestaValidacion);
+        router.replace(paths.dashboard.root);
+
+      } else {
+        enqueueSnackbar(insert.msj, { variant: 'error' });
+      }
+    } catch (error) {
+      console.error("Error en handleSubmit:", error);
+      enqueueSnackbar(`¡No se pudó actualizar los datos!`, { variant: 'danger' });
+    }
+
+  });
+
   return (
     <Dialog
       open={open}
       fullWidth
       disableEnforceFocus
-      maxWidth="xs"
+      maxWidth="sm"
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
       sx={{
@@ -67,77 +162,92 @@ export default function EvaluateDialog({ open, pendiente, mutate, cerrar }) {
       }}
       padding={0}
     >
-      <Card sx={{ textAlign: 'center', borderRadius: '0%' }}>
-        <Box sx={{ position: 'relative' }}>
-          <AvatarShape
-            sx={{
-              left: 0,
-              right: 0,
-              zIndex: 10,
-              mx: 'auto',
-              bottom: -27,
-              position: 'absolute',
-            }}
-          />
 
-          <Avatar
-            alt={especialista}
-            src={
-              sexoEspecialista === 'F'
-                ? 'https://api-dev-minimal-v510.vercel.app/assets/images/avatar/avatar_4.jpg'
-                : 'https://api-dev-minimal-v510.vercel.app/assets/images/avatar/avatar_12.jpg'
-            }
-            sx={{
-              width: 64,
-              height: 64,
-              zIndex: 11,
-              left: 0,
-              right: 0,
-              bottom: -32,
-              mx: 'auto',
-              position: 'absolute',
-            }}
-          />
+      <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+        Encuesta de satisfacción {beneficio}
+        <Typography variant="subtitle2" >
+           Especialista: {especialista}
+        </Typography>
+      </DialogTitle>
 
-          <Image
-            src="https://api-dev-minimal-v510.vercel.app/assets/images/cover/cover_12.jpg"
-            alt="https://api-dev-minimal-v510.vercel.app/assets/images/cover/cover_12.jpg"
-            ratio="16/9"
-            overlay={alpha(theme.palette.grey[900], 0.48)}
-            sx={{ borderRadius: '0%' }}
-          />
-        </Box>
+      {!isEmpty(encuestaData) ? (
 
-        <ListItemText
-          sx={{ mt: 7, mb: 1 }}
-          primary={especialista || 'Especialista'}
-          secondary={beneficio || 'Beneficio saludable'}
-          primaryTypographyProps={{ typography: 'subtitle1' }}
-          tertiary={start || '2024-01-01 10:00:00'}
-          secondaryTypographyProps={{ component: 'span', mt: 0.5 }}
-        />
-        <ListItemText
-          sx={{ mt: 1, mb: 5 }}
-          secondary={start || '2024-01-01 10:00:00'}
-          primaryTypographyProps={{ typography: 'subtitle1' }}
-          secondaryTypographyProps={{ component: 'span', mt: 0.5 }}
-        />
+        <Stack sx={{ mt: 3 }}>
+          <DialogContent dividers>
 
-        <Stack direction="row" alignItems="center" justifyContent="center" sx={{ mb: 2 }}>
-          <Rating
-            name="half-rating"
-            defaultValue={0}
-            precision={0.5}
-            value={valorRating}
-            onChange={(e, value) => handleRatingChange(value)}
-          />
-        </Stack>
-        <DialogActions justifycontent="center" sx={{ justifyContent: 'center' }}>
+            <FormProvider methods={methods} onSubmit={onSubmit} key={formKey}>
+              <Grid container spacing={3}>
+
+                <Grid xs={12} md={12}>
+                  <Box
+                    rowGap={3}
+                    columnGap={1}
+                    display="grid"
+                    gridTemplateColumns={{
+                      xs: 'repeat(1, 1fr)',
+                      sm: 'repeat(1, 1fr)',
+                    }}
+                  >
+
+                    {encuestaData.map((item, index) => (
+
+                      <Stack spacing={1} key={item.pregunta}>
+
+                        <Typography variant="subtitle2" >
+                          {item.pregunta}
+                        </Typography>
+
+                        {item.respuestas === "1" || item.respuestas === 1 && (
+                          <RHFRadioGroup row spacing={4} name={`resp_${index}`} options={Resp1Data} />
+                        )}
+
+                        {item.respuestas === "2" || item.respuestas === 2 && (
+                          <RHFRadioGroup row spacing={4} name={`resp_${index}`} options={Resp2Data} />
+                        )}
+
+                        {item.respuestas === "3" || item.respuestas === 3 && (
+                          <RHFRadioGroup row spacing={4} name={`resp_${index}`} options={Resp3Data} />
+                        )}
+
+                        {item.respuestas === "4" || item.respuestas === 4 && (
+                          <RHFRadioGroup row spacing={4} name={`resp_${index}`} options={Resp4Data} />
+                        )}
+
+                        {item.respuestas === "5" || item.respuestas === 5 && (
+                          <RHFTextField name={`resp_${index}`} multiline rows={4} />
+                        )}
+
+                      </Stack>
+                    ))}
+                  </Box>
+
+                  <DialogActions justifycontent="center" sx={{ justifyContent: 'center' }}>
+                    <LoadingButton type="submit" variant="contained" color="success" loading={isSubmitting}>
+                      Enviar
+                    </LoadingButton>
+                  </DialogActions>
+
+                </Grid>
+              </Grid>
+            </FormProvider>
+
+            {/* <DialogActions justifycontent="center" sx={{ justifyContent: 'center' }}>
           <LoadingButton variant="contained" color="success" onClick={() => handleRate(pendiente)}>
-            Calificar
+            Enviar
           </LoadingButton>
-        </DialogActions>
-      </Card>
+        </DialogActions> */}
+          </DialogContent>
+        </Stack>
+
+      ) : (
+
+        <Stack sx={{ mt: 3 }}>
+          <DialogActions justifycontent="center" sx={{ justifyContent: 'center' }}>
+            <CircularProgress />
+          </DialogActions>
+        </Stack>
+
+      )}
     </Dialog>
   );
 }
