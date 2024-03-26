@@ -14,8 +14,8 @@ import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import TableContainer from '@mui/material/TableContainer';
 
-import { updateUser } from 'src/api/user';
 import { useAuthContext } from 'src/auth/hooks';
+import { updateExternalUser } from 'src/api/user';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -131,7 +131,7 @@ export default function UserList({ userData, usersMutate }) {
 
   const handleDisableUser = async (id, estatus) => {
     try {
-      const update = await updateUser(id, {
+      const update = await updateExternalUser(id, {
         estatus: estatus === 1 ? 0 : 1,
         modificadoPor: datosUser.idUsuario,
       });

@@ -13,8 +13,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
-import { updateUser } from 'src/api/user';
 import { useAuthContext } from 'src/auth/hooks';
+import { updateExternalUser } from 'src/api/user';
 
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFSelect, RHFTextField } from 'src/components/hook-form';
@@ -89,7 +89,7 @@ export default function UserQuickEditForm({
         estatus: data.estatus,
       };
 
-      const update = await updateUser(data.id, updateData); // Id del usuario a actualizar y su data.
+      const update = await updateExternalUser(data.id, updateData); // Id del usuario a actualizar y su data.
 
       if (update.result) {
         enqueueSnackbar(`¡Se ha actualizado los datos del usuario exitosamente!`, {
@@ -136,7 +136,13 @@ export default function UserQuickEditForm({
             }}
             sx={{ mt: 2 }}
           >
-            <RHFTextField name="id" label="ID" defaultValue={currentUser.id} disabled />
+            <RHFTextField
+              name="id"
+              label="ID"
+              value={currentUser.id}
+              defaultValue={currentUser.id}
+              disabled
+            />
             <RHFSelect
               name="estatus"
               label="Estatus"
@@ -153,13 +159,13 @@ export default function UserQuickEditForm({
             <RHFSelect
               name="sexo"
               label="Sexo"
-              defaultValue={currentUser && currentUser.estatus === 1 ? 1 : 0}
+              defaultValue={currentUser && currentUser.sexo === 'M' ? 'M' : 'H'}
             >
               <MenuItem name="estatus" key="M" value="M">
-                Masculino
-              </MenuItem>
-              <MenuItem name="estatus" key="F" value="F">
                 Femenino
+              </MenuItem>
+              <MenuItem name="estatus" key="H" value="H">
+                Masculino
               </MenuItem>
             </RHFSelect>
             <RHFTextField name="telefono" label="Teléfono" defaultValue={currentUser.telefono} />

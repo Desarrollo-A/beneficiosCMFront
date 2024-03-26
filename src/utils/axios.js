@@ -109,9 +109,9 @@ export const endpoints = {
   },
   user: {
     list: 'Usuario/getUsersExternos',
-    session: 'usuario/session',
-    authorized: 'usuario/authorized',
+    authorized: 'Usuario/authorized',
     update: 'Usuario/updateUser',
+    updateExternal: 'Usuario/updateExternalUser',
     areas: 'Usuario/getAreas',
     batch: 'Usuario/insertBatchUsers',
     names: 'Usuario/getNameUser',
