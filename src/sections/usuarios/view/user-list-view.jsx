@@ -42,9 +42,7 @@ export default function UserListView() {
   useEffect(() => {
     if (usersData) {
       const obj = usersData.map((i) => ({
-        id: i.idUsuario,
-        contrato: i.idContrato,
-        empleado: i.numEmpleado,
+        id: i.idUsuarioExt,
         nombre: i.nombre,
         telefono: i.telPersonal,
         correo: i.correo,
@@ -156,11 +154,10 @@ export default function UserListView() {
               );
               showError = true;
             }
-          } else if (label === 'D' && !['F', 'M', 'f', 'm'].includes(cellValue)) {
-            enqueueSnackbar(
-              `El correo electrónico tiene un formato incorrecto en la celda ${cellLabel}`,
-              { variant: 'warning' }
-            );
+          } else if (label === 'D' && !['H', 'M', 'H', 'm'].includes(cellValue)) {
+            enqueueSnackbar(`El sexo tiene un formato incorrecto en la celda ${cellLabel}`, {
+              variant: 'warning',
+            });
             showError = true;
           }
         });
@@ -183,7 +180,7 @@ export default function UserListView() {
       }));
 
       const users = {
-        nombreTabla: 'usuarios',
+        nombreTabla: 'usuariosexternos',
         data: transformedData,
       };
 
