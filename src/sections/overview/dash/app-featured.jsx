@@ -1,11 +1,14 @@
+import { isEmpty } from 'lodash';
 import { m } from 'framer-motion';
 import PropTypes from 'prop-types';
 
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
+import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import { alpha, useTheme } from '@mui/material/styles';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import { endpoints } from 'src/utils/axios';
 
@@ -36,17 +39,25 @@ export default function AppFeatured({ list, ...other }) {
 
   return (
     <Card {...other}>
-      <Carousel ref={carousel.carouselRef} {...carousel.carouselSettings}>
-        {carruselData.map((app, index) => (
-          <CarouselItem key={index} item={app} active={index === carousel.currentIndex} />
-        ))}
-      </Carousel>
+      {!isEmpty(carruselData) ? (
+        <>
+          <Carousel ref={carousel.carouselRef} {...carousel.carouselSettings}>
+            {carruselData.map((app, index) => (
+              <CarouselItem key={index} item={app} active={index === carousel.currentIndex} />
+            ))}
+          </Carousel>
 
-      <CarouselArrows
-        onNext={carousel.onNext}
-        onPrev={carousel.onPrev}
-        sx={{ top: 8, right: 8, position: 'absolute', color: 'common.white' }}
-      />
+          <CarouselArrows
+            onNext={carousel.onNext}
+            onPrev={carousel.onPrev}
+            sx={{ top: 8, right: 8, position: 'absolute', color: 'common.white' }}
+          />
+        </>
+      ) : (
+        <Grid container spacing={1} sx={{ p: 5 }} justifyContent="center" alignItems="center">
+          <CircularProgress />
+        </Grid>
+      )}
     </Card>
   );
 }
@@ -66,9 +77,8 @@ function CarouselItem({ item, active }) {
     <Image
       alt={titulo}
       src={`${import.meta.env.BASE_URL}assets/images/carrusel/${imagen}.jpg`}
-      overlay={`linear-gradient(to bottom, ${alpha(theme.palette.grey[900], 0)} 0%, ${
-        theme.palette.grey[900]
-      } 150%)`}
+      overlay={`linear-gradient(to bottom, ${alpha(theme.palette.grey[900], 0)} 0%, ${theme.palette.grey[900]
+        } 150%)`}
       sx={{
         width: 1,
         height: {
@@ -116,7 +126,7 @@ function CarouselItem({ item, active }) {
 
       {renderImg}
     </MotionContainer>
-  );
+  )
 }
 
 CarouselItem.propTypes = {

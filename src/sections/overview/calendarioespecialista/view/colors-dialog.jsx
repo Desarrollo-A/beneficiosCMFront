@@ -1,8 +1,7 @@
-import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { DialogTitle, DialogContent } from '@material-ui/core';
 
-import { List, Stack, Button, ListItem, Typography, DialogActions, Box } from '@mui/material';
+import { Box, List, Stack, Button, Typography, DialogActions } from '@mui/material';
 
 export default function ColorsDialog({ onClose }) {
   const colors = [

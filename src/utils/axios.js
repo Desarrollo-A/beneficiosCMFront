@@ -23,19 +23,19 @@ export { instance };
 
 export const fetcher = async (args) => {
   const [url, data, config] = Array.isArray(args) ? args : [args];
-  const accessToken = sessionStorage.getItem('accessToken');
-  const fetchConfig = {
+  /* const accessToken = sessionStorage.getItem('accessToken'); */
+  /* const fetchConfig = {
     ...config,
     headers: {
       token: accessToken,
     },
-  };
+  }; */
 
   const res = await axiosInstance.get(url, data, {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
-    ...fetchConfig,
+    ...config,
   });
 
   return res.data;
@@ -43,28 +43,28 @@ export const fetcher = async (args) => {
 
 export const fetcherGet = async (args) => {
   const [url, config] = Array.isArray(args) ? args : [args];
-  const accessToken = sessionStorage.getItem('accessToken');
-  const fetchConfig = {
+ /*  const accessToken = sessionStorage.getItem('accessToken'); */
+  /* const fetchConfig = {
     ...config,
     headers: {
       token: accessToken,
     },
-  };
+  }; */
 
-  const res = await instance.get(url, { ...fetchConfig });
+  const res = await instance.get(url, { ...config });
 
   return res.data;
 };
 
 export const fetcherPost = async (args, dataValue) => {
   const [url, config] = Array.isArray(args) ? args : [args];
-  const accessToken = sessionStorage.getItem('accessToken');
+  /* const accessToken = sessionStorage.getItem('accessToken'); */
 
   const res = await instance.post(
     url,
     { dataValue },
     {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded', token: accessToken },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded'/* , token: accessToken */ },
     },
     { ...config }
   );
