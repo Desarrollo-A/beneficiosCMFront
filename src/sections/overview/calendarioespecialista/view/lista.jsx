@@ -3,17 +3,17 @@ import dayjs from 'dayjs';
 import * as yup from 'yup';
 // import { Base64 } from 'js-base64';
 import PropTypes from 'prop-types';
-import { es } from 'date-fns/locale'
+import { es } from 'date-fns/locale';
 import { useState, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
-import Stack from "@mui/system/Stack";
-import Button from "@mui/material/Button";
+import Stack from '@mui/system/Stack';
+import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import ToggleButton from '@mui/material/ToggleButton';
-import DialogActions from "@mui/material/DialogActions";
+import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import { Checkbox, FormControlLabel } from '@mui/material';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
@@ -26,7 +26,12 @@ import { fDate } from 'src/utils/format-time';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { getModalities } from 'src/api/calendar-colaborador';
-import { reRender, createCustom, createAppointment, UpdateDetallePaciente } from 'src/api/calendar-specialist';
+import {
+  reRender,
+  createCustom,
+  createAppointment,
+  UpdateDetallePaciente,
+} from 'src/api/calendar-specialist';
 
 import { enqueueSnackbar } from 'src/components/snackbar';
 import FormProvider from 'src/components/hook-form/form-provider';
@@ -35,7 +40,7 @@ import { RHFTextField, RHFAutocomplete } from 'src/components/hook-form';
 // const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
 export default function Lista({ currentEvent, onClose, userData, selectedDate, usersMutate }) {
   const { user } = useAuthContext(); // variable del la sesion del usuario
-  dayjs.locale('es') // valor para cambiar el idioma del dayjs
+  dayjs.locale('es'); // valor para cambiar el idioma del dayjs
 
   const [allDay, setAllDay] = useState(false);
   const defaultHour = {
@@ -55,7 +60,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
     idAtencionXSede: '',
     oficina: '',
     sede: '',
-    especialidad: ''
+    especialidad: '',
   });
 
   const formSchema = yup.object().shape({
@@ -74,15 +79,20 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
 
   const hourError = checkHour(values.start, defaultEnd, type, defaultInicio, defaultFecha, allDay);
   const selectedUser = userSelect(type, patient, values.usuario); // validacion si se selecciono paciente, solo al crear cita
-  const selectedModalitie = !!((type === 'date' && modalitie.id) || type === 'cancel' || (type === 'date' && patient?.externo === 1));
+  const selectedModalitie = !!(
+    (type === 'date' && modalitie.id) ||
+    type === 'cancel' ||
+    (type === 'date' && patient?.externo === 1)
+  );
   const dateError = type === 'cancel' && defaultInicio > defaultFecha; // validacion que la fecha final no sea menor a la fecha inicio
   const endValidation = allDay ? !defaultEnd : defaultEnd;
 
-  const esp = { // idioma de los botones
-    okButtonLabel: "Seleccionar",
-    cancelButtonLabel: "Cancelar",
+  const esp = {
+    // idioma de los botones
+    okButtonLabel: 'Seleccionar',
+    cancelButtonLabel: 'Cancelar',
     datePickerToolbarTitle: 'Selecciona una fecha',
-    timePickerToolbarTitle: 'Selecciona un horario'
+    timePickerToolbarTitle: 'Selecciona un horario',
   };
 
   const handleChangeType = useCallback(
@@ -127,7 +137,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
     const eventData = {
       // se da el formato juntando la fecha elegida y la hora que se elige con los minutos
       id: uuidv4().substring(0, 20),
-      title: type === 'cancel' ? data?.title : `Cita con ${patient?.nombre}`,
+      title: type === 'cancel' ? data?.title : `Cita con ${patient?.nombreCompleto}`,
       hora_inicio: !allDay ? dayjs(data?.start).format('HH:mm:ss') : defaultHour.horaInicio,
       hora_final: !allDay ? dayjs(defaultEnd).format('HH:mm:ss') : defaultHour.horaFinal,
       fechaInicio: fDate(defaultInicio),
@@ -144,21 +154,22 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
       const ahora = new Date();
       const fechaActual = dayjs(ahora).format('YYYY-MM-DD');
 
-    if (patient.fechaIngreso > fechaActual) {
-      setBtnDisable(false);
-      return enqueueSnackbar('¡Surgio un problema con la antigüedad del colaborador!', {
-        variant: 'error',
-      });
-    }
+      if (patient.fechaIngreso > fechaActual) {
+        setBtnDisable(false);
+        return enqueueSnackbar('¡Surgio un problema con la antigüedad del colaborador!', {
+          variant: 'error',
+        });
+      }
 
-    const tieneAntiguedad = validarAntiguedad(patient.fechaIngreso, fechaActual); // Validamos la antiguedad: Mandamos fechaIngreso, fechaDeHoy, isPracticante, idBeneficio.
+      const tieneAntiguedad = validarAntiguedad(patient.fechaIngreso, fechaActual); // Validamos la antiguedad: Mandamos fechaIngreso, fechaDeHoy, isPracticante, idBeneficio.
 
-    if (!tieneAntiguedad && user.idArea !== 25) { // 25 es de ventas
-      onClose();
-      return enqueueSnackbar('¡El paciente no cuenta con la antigüedad requerida!', {
-        variant: 'error',
-      });
-    }
+      if (!tieneAntiguedad && user.idArea !== 25) {
+        // 25 es de ventas
+        onClose();
+        return enqueueSnackbar('¡El paciente no cuenta con la antigüedad requerida!', {
+          variant: 'error',
+        });
+      }
     }
 
     switch (type) {
@@ -168,7 +179,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
 
       case 'date':
         save = await createAppointment(eventData, modalitie, user);
-        if(save.result){
+        if (save.result) {
           UpdateDetallePaciente(patient.idUsuario, user?.idPuesto);
         }
         break;
@@ -190,7 +201,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
 
   const handlePatient = async (value, reason) => {
     if (!value) {
-      if(reason === 'clear'){
+      if (reason === 'clear') {
         setPatient('');
       }
 
@@ -209,7 +220,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
     setAllModalities([]);
     setModalitie({ id: '', idAtencionXSede: '' });
     setPatient('');
-  }
+  };
 
   const handleModalitie = (value) => {
     if (!value) {
@@ -217,7 +228,15 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
       return;
     }
 
-    setModalitie({ id: value?.label, idAtencionXSede: value?.value, oficina: value?.oficina, sede: value?.sede, especialidad: value?.especialidad, especialista: value?.especialista, modalidad: value.modalidad });
+    setModalitie({
+      id: value?.label,
+      idAtencionXSede: value?.value,
+      oficina: value?.oficina,
+      sede: value?.sede,
+      especialidad: value?.especialidad,
+      especialista: value?.especialista,
+      modalidad: value.modalidad,
+    });
   };
 
   const validarAntiguedad = (fechaIngreso, fechaHoy) => {
@@ -236,8 +255,8 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
     const diferenciaMeses = Math.floor(
       (diferenciaMilisegundos % milisegundosEnUnAnio) / (milisegundosEnUnDia * 30.44)
     );
-   console.log(ingreso);
-   console.log(hoy);
+    console.log(ingreso);
+    console.log(hoy);
     // Compara la diferencia de meses beneficio, y  puesto.
     if (diferenciaMeses >= 3 || diferenciaAnios > 0) {
       console.log('si aqui');
@@ -267,9 +286,11 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
         </Stack>
         <Stack direction="row" justifyContent="space-between " sx={{ p: { xs: 1, md: 2 } }}>
           <Typography variant="subtitle1">{dateTitle}</Typography>
-          {patient?.externo === 1 &&
-            <Typography color="error" variant="subtitle2">Para lamat solo aplican citas presenciales</Typography>
-          }
+          {patient?.externo === 1 && (
+            <Typography color="error" variant="subtitle2">
+              Para lamat solo aplican citas presenciales
+            </Typography>
+          )}
           {type === 'cancel' && (
             <FormControlLabel
               sx={{ mt: -0.85 }}
@@ -296,7 +317,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
                 label: users.nombreCompleto,
                 value: users.idUsuario,
                 idSede: users.idSede,
-                values: users
+                values: users,
               }))}
             />
           </Stack>
@@ -306,8 +327,8 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
             <RHFAutocomplete
               name="tipoCita"
               label="Tipo de cita"
-              disabled={ !allModalities.length > 0 }
-              helperText = {!allModalities.length > 0 ? 'No hay horarios disponibles' : ''}
+              disabled={!allModalities.length > 0}
+              helperText={!allModalities.length > 0 ? 'No hay horarios disponibles' : ''}
               value={modalitie.id}
               onChange={(_event, value) => {
                 handleModalitie(value);
@@ -319,16 +340,14 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
                 sede: mod.lugarAtiende,
                 especialidad: mod.idPuesto,
                 especialista: mod.especialista,
-                modalidad: mod.tipoCita
+                modalidad: mod.tipoCita,
               }))}
             />
           ) : (
             ''
           )}
 
-          { type === 'cancel' &&
-            <RHFTextField name="title" label="Título" />
-          }
+          {type === 'cancel' && <RHFTextField name="title" label="Título" />}
         </Stack>
 
         <Stack
@@ -379,38 +398,38 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
             sx={{ p: { xs: 1, md: 2 } }}
           >
             <LocalizationProvider localeText={esp}>
-            <Controller
-              name="start"
-              render={({ field }) => (
-                <MobileTimePicker
-                  sx={{ width: '100%' }}
-                  label="Hora de inicio"
-                  onChange={(value) => {
-                    field.onChange(value);
-                    handleHourChange(value);
-                  }}
-                />
-              )}
-            />
+              <Controller
+                name="start"
+                render={({ field }) => (
+                  <MobileTimePicker
+                    sx={{ width: '100%' }}
+                    label="Hora de inicio"
+                    onChange={(value) => {
+                      field.onChange(value);
+                      handleHourChange(value);
+                    }}
+                  />
+                )}
+              />
 
-            <Controller
-              name="end"
-              render={({ field }) => (
-                <MobileTimePicker
-                  sx={{ width: '100%' }}
-                  label="Hora de finalización"
-                  value={defaultEnd}
-                  disabled={type === 'date'}
-                  slotProps={{
-                    textField: {
-                      error: hourError.result,
-                      helperText: hourError.result && hourError.msg,
-                    },
-                  }}
-                  onChange={(value) => setDefaultEnd(value)}
-                />
-              )}
-            />
+              <Controller
+                name="end"
+                render={({ field }) => (
+                  <MobileTimePicker
+                    sx={{ width: '100%' }}
+                    label="Hora de finalización"
+                    value={defaultEnd}
+                    disabled={type === 'date'}
+                    slotProps={{
+                      textField: {
+                        error: hourError.result,
+                        helperText: hourError.result && hourError.msg,
+                      },
+                    }}
+                    onChange={(value) => setDefaultEnd(value)}
+                  />
+                )}
+              />
             </LocalizationProvider>
           </Stack>
         )}
@@ -425,7 +444,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
           variant="contained"
           disabled={dateError || hourError.result}
           color="success"
-          loading = { btnDisable }
+          loading={btnDisable}
         >
           Guardar
         </LoadingButton>
@@ -489,9 +508,9 @@ function userSelect(type, patient) {
 }
 
 Lista.propTypes = {
-    currentEvent: PropTypes.object,
-    onClose: PropTypes.func,
-    userData: PropTypes.any,
-    usersMutate: PropTypes.func,
-    selectedDate: PropTypes.instanceOf(Date)
+  currentEvent: PropTypes.object,
+  onClose: PropTypes.func,
+  userData: PropTypes.any,
+  usersMutate: PropTypes.func,
+  selectedDate: PropTypes.instanceOf(Date),
 };
