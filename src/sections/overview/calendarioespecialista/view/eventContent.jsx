@@ -325,44 +325,251 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
               </Stack>
 
               <Stack
-                direction="row"
-                alignItems="center"
-                spacing={2}
-                sx={{ px: { xs: 1, md: 2 }, py: 1 }}
-              >
-                <Iconify icon="mdi:account-circle" width={30}  sx={{ color: 'text.disabled' }}/>
-                <Typography fontSize="90%">{currentEvent?.title}</Typography>
+                      sx={{
+                        flexDirection: 'row',
+                        px: { xs: 1, md: 2 },
+                        py: 1,
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Iconify
+                          icon="mdi:account-circle"
+                          width={30}
+                          sx={{ color: 'text.disabled' }}
+                        />
+                      </Stack>
+
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                          {currentEvent?.title}
+                        </Typography>
+                      </Stack>
+              </Stack>
+              
+              <Stack
+                      sx={{
+                        flexDirection: 'row',
+                        px: { xs: 1, md: 2 },
+                        py: 1,
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Iconify
+                          icon="solar:user-id-broken"
+                          width={30}
+                          sx={{ color: 'text.disabled' }}
+                        />
+                      </Stack>
+
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                          {currentEvent?.nombre}
+                        </Typography>
+                      </Stack>
               </Stack>
 
-              <Stack direction="row" alignItems="center" spacing={2} sx={{ px: { xs: 1, md: 2 }, py: 1 }} >
-                <Iconify icon="solar:user-id-broken"  width={30}  sx={{ color: 'text.disabled' }}/>
-                <Typography fontSize="90%">{currentEvent?.nombre}</Typography>
+              <Stack
+                      sx={{
+                        flexDirection: 'row',
+                        px: { xs: 1, md: 2 },
+                        py: 1,
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Iconify
+                          icon="mdi:phone"
+                          width={30}
+                          sx={{ color: 'text.disabled' }}
+                        />
+                      </Stack>
+
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                          {currentEvent?.telPersonal}
+                        </Typography>
+                      </Stack>
               </Stack>
 
-              <Stack direction="row" alignItems="center" spacing={2} sx={{ px: { xs: 1, md: 2 }, py: 1 }} >
-                <Iconify icon="mdi:phone"  width={30}  sx={{ color: 'text.disabled' }}/>
-                <Typography fontSize="90%">{currentEvent?.telPersonal}</Typography>
+              <Stack
+                      sx={{
+                        flexDirection: 'row',
+                        px: { xs: 1, md: 2 },
+                        py: 1,
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Iconify
+                          icon="mdi:calendar-clock"
+                          width={30}
+                          sx={{ color: 'text.disabled' }}
+                        />
+                      </Stack>
+
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                          {dayjs(currentEvent?.start).format('HH:mm a')} - {dayjs(currentEvent?.end).format('HH:mm a')}
+                        </Typography>
+                      </Stack>
               </Stack>
 
-              <Stack direction="row" alignItems="center" spacing={2} sx={{ px: { xs: 1, md: 2 }, py: 1 }} >
-                <Iconify icon="mdi:calendar-clock"  width={30}  sx={{ color: 'text.disabled' }}/>
-                <Typography fontSize="90%">{dayjs(currentEvent?.start).format('HH:mm a')} - {dayjs(currentEvent?.end).format('HH:mm a')}</Typography>
+              <Stack
+                      sx={{
+                        flexDirection: 'row',
+                        px: { xs: 1, md: 2 },
+                        py: 1,
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Iconify
+                          icon="mdi:world"
+                          width={30}
+                          sx={{ color: 'text.disabled' }}
+                        />
+                      </Stack>
+
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                          {sede}
+                        </Typography>
+                      </Stack>
               </Stack>
 
-              <Stack direction="row" alignItems="center" spacing={2} sx={{ px: { xs: 1, md: 2 }, py: 1 }} >
-                <Iconify icon="mdi:world"  width={30}  sx={{ color: 'text.disabled' }}/>
-                <Typography fontSize="90%">{sede}</Typography>
+              <Stack
+                      sx={{
+                        flexDirection: 'row',
+                        px: { xs: 1, md: 2 },
+                        py: 1,
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Iconify
+                          icon="ic:outline-place"
+                          width={30}
+                          sx={{ color: 'text.disabled' }}
+                        />
+                      </Stack>
+
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                          {oficina}
+                        </Typography>
+                      </Stack>
               </Stack>
 
-              <Stack direction="row" alignItems="center" spacing={2} sx={{ px: { xs: 1, md: 2 }, py: 1 }} >
-                <Iconify icon="ic:outline-place" width={30}  sx={{ color: 'text.disabled' }}/>
-                <Typography fontSize="90%">{oficina}</Typography>
-              </Stack>
+              <Stack
+                      sx={{
+                        flexDirection: 'row',
+                        px: { xs: 1, md: 2 },
+                        py: 1,
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Iconify
+                          icon="ic:outline-email"
+                          width={30}
+                          sx={{ color: 'text.disabled' }}
+                        />
+                      </Stack>
 
-              <Stack direction="row" alignItems="center" spacing={2} sx={{ px: { xs: 1, md: 2 }, py: 1 }} >
-                <Iconify icon="mdi:email-outline" width={30}  sx={{ color: 'text.disabled' }}/>
-                <Typography fontSize="90%">{currentEvent?.correo}</Typography>
-              </Stack>
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                          {currentEvent?.correo
+                            ? currentEvent?.correo.toLowerCase()
+                            : 'correo-demo@ciudadmaderas.com.mx'}
+                        </Typography>
+                      </Stack>
+                    </Stack>
 
               {currentEvent?.fechasFolio &&
               <Stack flexDirection="row" flexWrap="wrap" flex={1} spacing={2}  sx={{ px: { xs: 1, md: 2 }, py: 1 }} >
@@ -378,6 +585,7 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
                 </Stack>
               </Stack>
               }
+              
               <Stack spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1 }}>
                 <Stack spacing={2} direction="row">
                   <Iconify icon="solar:chat-round-line-outline" width={30}  sx={{ color: 'text.disabled' }}/>
