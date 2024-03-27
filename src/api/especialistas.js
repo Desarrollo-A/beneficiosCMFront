@@ -1,7 +1,7 @@
 import useSWR from 'swr';
 import { useMemo } from 'react';
 
-import { endpoints, fetcherGet, fetcherPost } from 'src/utils/axios';
+import axios, { fetcherPost, endpoints, fetcherGet } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -198,8 +198,11 @@ export function useGetDiasPresenciales2(object) {
 export function setHorarioPresencial(data) {
   const URL = [endpoints.especialistas.horario];
 
-  const res = fetcherPost(URL, { data });
-  // const res = await axios.post(URL, data);
+  /**
+   * Work on server
+   */
+  // const data = { conversationData };
+  const res = await fetcherPost(URL, data);
 
   return res;
 }

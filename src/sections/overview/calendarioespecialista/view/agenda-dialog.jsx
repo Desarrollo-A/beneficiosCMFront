@@ -61,12 +61,13 @@ export default function AgendaDialog({ open, onClose, id, start, end, sede, ...p
   const { handleSubmit } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
-    const response = await setHorarioPresencial(data); // Este si dio
-    alert(JSON.stringify(response));
-    if (response.status === 'error') {
-      enqueueSnackbar(response.message, { variant: 'error' });
+
+    const response = await setHorarioPresencial(data);
+
+    if (!response.result) {
+      enqueueSnackbar(response.msg, { variant: 'error' });
     } else {
-      enqueueSnackbar(response.message);
+      enqueueSnackbar(response.msg);
 
       onClose();
     }
