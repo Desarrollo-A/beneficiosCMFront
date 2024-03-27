@@ -4,11 +4,9 @@ import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 import { enqueueSnackbar } from 'notistack';
 import Dialog from '@material-ui/core/Dialog';
-import { useSearchParams } from 'react-router-dom';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-import { useTheme } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -33,42 +31,11 @@ import FormProvider, {
 } from 'src/components/hook-form';
 
 export default function EvaluateDialog({ open, pendiente, mutate, cerrar }) {
-  const [valorRating, setValorRating] = useState(0);
   const { especialista, beneficio, idEspecialista, idEncuesta, id, estatus, idDetalle, idEventoGoogle } = pendiente;
 
   console.log(pendiente)
 
   const { user: datosUser } = useAuthContext();
-  const theme = useTheme();
-
-  const handleRatingChange = (newValue) => {
-    setValorRating(newValue);
-  };
-
-  const handleRate = async (thisEvent) => {
-    const update = await updateAppointment(
-      datosUser.idUsuario,
-      thisEvent.id,
-      thisEvent.estatus,
-      thisEvent.idDetalle,
-      valorRating * 2,
-      thisEvent.idEventoGoogle
-    );
-    if (!update.result) {
-      enqueueSnackbar('¡Se obtuvo un error al intentar registrar la evaluación de la cita!', {
-        variant: 'error',
-      });
-    }
-    enqueueSnackbar('¡Gracias por evaluar la cita!', {
-      variant: 'success',
-    });
-    setValorRating(0);
-    if (mutate) mutate();
-    if (cerrar) cerrar();
-    return true;
-  };
-
-  const [searchParams] = useSearchParams();
 
   const router = useRouter();
 
@@ -145,6 +112,9 @@ export default function EvaluateDialog({ open, pendiente, mutate, cerrar }) {
       console.error("Error en handleSubmit:", error);
       enqueueSnackbar(`¡No se pudó actualizar los datos!`, { variant: 'danger' });
     }
+
+    if (mutate) mutate();
+    if (cerrar) cerrar();
 
   });
 
