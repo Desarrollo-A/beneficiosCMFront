@@ -373,16 +373,16 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       return false;
     }
 
-    // const email = await sendMail(
-    //   scheduledAppointment.data[0],
-    //   1,
-    //   correosNotificar,
-    //   datosUser.idUsuario
-    // );
+    const email = await sendMail(
+      scheduledAppointment.data[0],
+      1,
+      correosNotificar,
+      datosUser.idUsuario
+    );
 
-    // if (!email.result) {
-    //   console.error('No se pudo notificar al usuario');
-    // }
+    if (!email.result) {
+      console.error('No se pudo notificar al usuario');
+    }
 
     setEvent({ ...scheduledAppointment.data[0] });
     setOpen2(true);
