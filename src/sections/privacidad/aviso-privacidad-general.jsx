@@ -1,6 +1,9 @@
+import axios from 'axios';
+import { isEmpty } from 'lodash';
 import { useState, useEffect } from 'react';
 
 import { Stack } from '@mui/system';
+import Box from '@mui/material/Box';
 import Select from '@mui/material/Select';
 import Button from '@mui/material/Button';
 import { Typography } from '@mui/material';
@@ -9,6 +12,7 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
+import LinearProgress from '@mui/material/LinearProgress';
 
 import { endpoints } from 'src/utils/axios';
 
@@ -342,17 +346,20 @@ export default function AvisoPrivacidadGeneral() {
                 sx={{ width: '100%' }}
                 defaultValue=""
               >
-                {especialidadesDisponibles !== undefined &&
-                  especialidadesDisponibles.length > 0 &&
-                  especialidadesDisponibles.map((elemento, index) =>
-                    user?.idPuesto === elemento?.idPuesto ||
-                    user?.idRol === 2 ||
-                    user?.idRol === 4 ? (
-                      <MenuItem value={elemento} key={elemento.idOpcion}>
-                        {elemento.nombre}
-                      </MenuItem>
-                    ) : null
-                  )}
+                {!isEmpty(especialidadesDisponibles) ? (
+                especialidadesDisponibles.map((elemento, index) =>
+                  user?.idPuesto === elemento?.idPuesto || user?.idRol === 2 || user?.idRol === 4 ? (
+                    <MenuItem value={elemento} key={elemento.idOpcion}>
+                      {elemento.nombre}
+                    </MenuItem>
+                  ) : null
+                )
+              ) : (
+                <Grid style={{ paddingTop: '2%' }}>
+                  <LinearProgress />
+                  <Box mb={3} />
+                </Grid>
+              )}
               </Select>
             </FormControl>
           </Grid>
