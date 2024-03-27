@@ -29,7 +29,7 @@ import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
-import Verificacion from './jwt-verificacion-view'
+import Verificacion from './jwt-verificacion-view';
 
 // ----------------------------------------------------------------------
 
@@ -51,15 +51,12 @@ export default function PreRegisterUser({ currentUser }) {
 
   const [registroForm, setRegistroForm] = useState(false);
 
-  const form = useForm({
-  });
+  const form = useForm({});
 
-  const email = location.state.data[0]?.mail_emp;
+  const email = 'programador.analista36@ciudadmaderas.com'; // location.state.data[0]?.mail_emp;
 
   const handleChange = async (data) => {
-
     try {
-
       const insert = await insertData(data);
 
       if (insert.estatus === true) {
@@ -70,7 +67,6 @@ export default function PreRegisterUser({ currentUser }) {
         setBtnLoad(false);
         setValida(true);
         setMail(false);
-
       } else {
         enqueueSnackbar(insert.msj, { variant: 'error' });
 
@@ -78,16 +74,12 @@ export default function PreRegisterUser({ currentUser }) {
         setValida(false);
         setMail(true);
       }
-
     } catch (error) {
-
       setBtnLoad(false);
-      console.error("Error en handleEstatus:", error);
+      console.error('Error en handleEstatus:', error);
       enqueueSnackbar(`¡No se pudo enviar el código!`, { variant: 'danger' });
-
     }
-
-  }
+  };
 
   const NewUserSchema = Yup.object().shape({
     numEmpleado: Yup.string(),
@@ -145,10 +137,11 @@ export default function PreRegisterUser({ currentUser }) {
 
   const formReg = (newFormReg) => {
     setRegistroForm(newFormReg);
-  }
+  };
 
   const styles = {
-    background: 'linear-gradient(135deg, #f5f5f8 22px,#0000000a 22px,#0000000a 24px,transparent 24px,transparent 67px,#0000000a 67px,#0000000a 69px,transparent 69px),linear-gradient(225deg, #f5f5f8 22px,#0000000a 22px,#0000000a 24px,transparent 24px,transparent 67px,#0000000a 67px,#0000000a 69px,transparent 69px) 0 64px',
+    background:
+      'linear-gradient(135deg, #f5f5f8 22px,#0000000a 22px,#0000000a 24px,transparent 24px,transparent 67px,#0000000a 67px,#0000000a 69px,transparent 69px),linear-gradient(225deg, #f5f5f8 22px,#0000000a 22px,#0000000a 24px,transparent 24px,transparent 67px,#0000000a 67px,#0000000a 69px,transparent 69px) 0 64px',
     backgroundColor: 'rgb(245,245,248)',
     backgroundSize: '64px 128px',
     height: '100%',
@@ -160,12 +153,9 @@ export default function PreRegisterUser({ currentUser }) {
   return (
     <Grid container sx={styles}>
       <Grid xs={12} sm={12} md={3}>
-
-
         <div style={{ height: '70%', backgroundColor: 'white', borderRadius: '25px' }}>
-
           {mail !== false && registroForm === false ? (
-            <FormProvider methods={form} >
+            <FormProvider methods={form}>
               <DialogContent>
                 <Box
                   rowGap={3}
@@ -180,38 +170,28 @@ export default function PreRegisterUser({ currentUser }) {
 
                   <RHFTextField name="correo" label="Correo" value={email} disabled />
 
-                <DialogActions>
-                  <LoadingButton
-                    variant="contained"
-                    loading={btnLoad}
-                    onClick={() => {
-                      setBtnLoad(true);
-                      handleChange(email)
-                    }}
-                  >
-                    Enviar código de verificación
-                  </LoadingButton>
-                </DialogActions>
-
+                  <DialogActions>
+                    <LoadingButton
+                      variant="contained"
+                      loading={btnLoad}
+                      onClick={() => {
+                        setBtnLoad(true);
+                        handleChange(email);
+                      }}
+                    >
+                      Enviar código de verificación
+                    </LoadingButton>
+                  </DialogActions>
                 </Box>
-
               </DialogContent>
-
             </FormProvider>
-          ) : (
-            null
-          )}
+          ) : null}
 
           {valida !== false && registroForm === false ? (
-
             <Verificacion email={email} formReg={formReg} />
-
-          ) : (
-            null
-          )}
+          ) : null}
 
           {registroForm !== false ? (
-
             <FormProvider methods={methods} onSubmit={onSubmit}>
               <DialogContent>
                 <Box
@@ -279,12 +259,8 @@ export default function PreRegisterUser({ currentUser }) {
                 </LoadingButton>
               </DialogActions>
             </FormProvider>
-          ) : (
-            null
-          )}
-
+          ) : null}
         </div>
-
       </Grid>
     </Grid>
   );
