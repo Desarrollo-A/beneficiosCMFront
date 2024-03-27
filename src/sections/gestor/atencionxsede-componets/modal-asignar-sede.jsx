@@ -101,12 +101,11 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
       Number.isInteger(selectArea.idArea)
     ) {
       try {
-        
+        await new Promise((resolve) => setTimeout(resolve, 500));
 
         loadingSend.onFalse();
 
         const insert = await insertData(combinedArray);
-        console.log(insert);
 
         if (insert.result) {
           enqueueSnackbar(insert.msg, { variant: 'success' });
