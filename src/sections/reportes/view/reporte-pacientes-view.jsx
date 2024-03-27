@@ -63,7 +63,7 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-function handleDownloadExcel(tableData, area) {
+function handleDownloadExcel(dataFiltered, area) {
 
   let estatus = "";
 
@@ -88,7 +88,7 @@ function handleDownloadExcel(tableData, area) {
         { label: "Puesto", value: "puesto" },
         { label: "Estatus", value: estatus },
       ],
-      content: tableData,
+      content: dataFiltered,
     },
   ];
 
@@ -104,11 +104,11 @@ function handleDownloadExcel(tableData, area) {
 
 const doc = new JsPDF();
 
-function handleDownloadPDF(tableData, headerBase) {
+function handleDownloadPDF(dataFiltered, headerBase) {
 
   let data = [];
 
-  data = tableData.map(item => ([item.idUsuario, item.nombre, item.depto, item.sede, item.puesto, item.estNut || item.estPsi || item.estQB || item.estGE ]))
+  data = dataFiltered.map(item => ([item.idUsuario, item.nombre, item.depto, item.sede, item.puesto, item.estNut || item.estPsi || item.estQB || item.estGE ]))
 
   autoTable(doc, {
     head: [headerBase],
@@ -253,7 +253,7 @@ export default function ReportePacientesView() {
   const handlePdf = async e => {
     e.preventDefault();
     handleDownloadPDF(
-      tableData,
+      dataFiltered,
       headerBase
     );
   }
@@ -261,7 +261,7 @@ export default function ReportePacientesView() {
   const handleExcel = async e => {
     e.preventDefault();
     handleDownloadExcel(
-      tableData,
+      dataFiltered,
       area
     );
   }

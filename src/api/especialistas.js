@@ -6,19 +6,19 @@ import axios, { fetcherPost, endpoints, fetcherGet } from 'src/utils/axios';
 // ----------------------------------------------------------------------
 
 export function useGetCitasArea(object) {
-  const params = new URLSearchParams(object).toString()
-  const URL = `${endpoints.areas.citas}?${params}`
+  const params = new URLSearchParams(object).toString();
+  const URL = `${endpoints.areas.citas}?${params}`;
 
   const accessToken = sessionStorage.getItem('accessToken');
 
   const config = {
-    headers : {
-      token : accessToken
-    }
-  }
+    headers: {
+      token: accessToken,
+    },
+  };
 
   const { data, isLoading, error, isValidating } = useSWR([URL, config], fetcherGet);
-  
+
   const memoizedValue = useMemo(
     () => ({
       citas: data || [],
@@ -36,19 +36,19 @@ export function useGetCitasArea(object) {
 // ----------------------------------------------------------------------
 
 export function useGetMeta(object) {
-  const params = new URLSearchParams(object).toString()
-  const URL = `${endpoints.especialistas.meta}?${params}`
+  const params = new URLSearchParams(object).toString();
+  const URL = `${endpoints.especialistas.meta}?${params}`;
 
   const accessToken = sessionStorage.getItem('accessToken');
 
   const config = {
-    headers : {
-      token : accessToken
-    }
-  }
+    headers: {
+      token: accessToken,
+    },
+  };
 
   const { data, isLoading, error, isValidating } = useSWR([URL, config], fetcherGet);
-  
+
   const memoizedValue = useMemo(
     () => ({
       meta: data || undefined,
@@ -66,19 +66,19 @@ export function useGetMeta(object) {
 // ----------------------------------------------------------------------
 
 export function useGetSedesPresenciales(object) {
-  const params = new URLSearchParams(object).toString()
-  const URL = `${endpoints.especialistas.sedes}?${params}`
+  const params = new URLSearchParams(object).toString();
+  const URL = `${endpoints.especialistas.sedes}?${params}`;
 
   const accessToken = sessionStorage.getItem('accessToken');
 
   const config = {
-    headers : {
-      token : accessToken
-    }
-  }
+    headers: {
+      token: accessToken,
+    },
+  };
 
   const { data, isLoading, error, isValidating } = useSWR([URL, config], fetcherGet);
-  
+
   const memoizedValue = useMemo(
     () => ({
       sedes: data || [],
@@ -96,19 +96,19 @@ export function useGetSedesPresenciales(object) {
 // ----------------------------------------------------------------------
 
 export function useGetHorariosPresenciales(object) {
-  const params = new URLSearchParams(object).toString()
-  const URL = `${endpoints.especialistas.horarios}?${params}`
+  const params = new URLSearchParams(object).toString();
+  const URL = `${endpoints.especialistas.horarios}?${params}`;
 
   const accessToken = sessionStorage.getItem('accessToken');
 
   const config = {
-    headers : {
-      token : accessToken
-    }
-  }
+    headers: {
+      token: accessToken,
+    },
+  };
 
   const { data, isLoading, error, isValidating, mutate } = useSWR([URL, config], fetcherGet);
-  
+
   const memoizedValue = useMemo(
     () => ({
       horarios: data || [],
@@ -116,7 +116,7 @@ export function useGetHorariosPresenciales(object) {
       horariosError: error,
       horariosValidating: isValidating,
       horariosEmpty: !isLoading && !data?.length,
-      horariosGet : mutate,
+      horariosGet: mutate,
     }),
     [data, error, isLoading, isValidating, mutate]
   );
@@ -127,19 +127,19 @@ export function useGetHorariosPresenciales(object) {
 // ----------------------------------------------------------------------
 
 export function useGetDiasPresenciales(object) {
-  const params = new URLSearchParams(object).toString()
-  const URL = `${endpoints.especialistas.disponibles}?${params}`
+  const params = new URLSearchParams(object).toString();
+  const URL = `${endpoints.especialistas.disponibles}?${params}`;
 
   const accessToken = sessionStorage.getItem('accessToken');
 
   const config = {
-    headers : {
-      token : accessToken
-    }
-  }
+    headers: {
+      token: accessToken,
+    },
+  };
 
   const { data, isLoading, error, isValidating, mutate } = useSWR([URL, config], fetcherGet);
-  
+
   const memoizedValue = useMemo(
     () => ({
       diasPresenciales: data || [],
@@ -147,7 +147,7 @@ export function useGetDiasPresenciales(object) {
       diasPresencialesError: error,
       diasPresencialesValidating: isValidating,
       diasPresencialesEmpty: !isLoading && !data?.length,
-      diasPresencialesGet : mutate,
+      diasPresencialesGet: mutate,
     }),
     [data, error, isLoading, isValidating, mutate]
   );
@@ -158,19 +158,19 @@ export function useGetDiasPresenciales(object) {
 // ----------------------------------------------------------------------
 
 export function useGetDiasPresenciales2(object) {
-  const params = new URLSearchParams(object).toString()
-  const URL = `${endpoints.especialistas.disponibles}?${params}`
+  const params = new URLSearchParams(object).toString();
+  const URL = `${endpoints.especialistas.disponibles}?${params}`;
 
   const accessToken = sessionStorage.getItem('accessToken');
 
   const config = {
-    headers : {
-      token : accessToken
-    }
-  }
+    headers: {
+      token: accessToken,
+    },
+  };
 
   const { data, isLoading, error, isValidating, mutate } = useSWR([URL, config], fetcherGet);
-  
+
   const memoizedValue = useMemo(
     () => ({
       diasPresenciales: data || [],
@@ -178,7 +178,7 @@ export function useGetDiasPresenciales2(object) {
       diasPresencialesError: error,
       diasPresencialesValidating: isValidating,
       diasPresencialesEmpty: !isLoading && !data?.length,
-      diasPresencialesGet : mutate,
+      diasPresencialesGet: mutate,
     }),
     [data, error, isLoading, isValidating, mutate]
   );
@@ -188,8 +188,15 @@ export function useGetDiasPresenciales2(object) {
 
 // ----------------------------------------------------------------------
 
-export async function setHorarioPresencial(data) {
-  const URL = endpoints.especialistas.horario;
+// export function getModalities(sede, especialista, area) {
+//   const URL = [endpoints.especialistas.modalities];
+//   const modalities = fetcherPost(URL, { sede, especialista, area });
+
+//   return modalities;
+// }
+
+export function setHorarioPresencial(data) {
+  const URL = [endpoints.especialistas.horario];
 
   /**
    * Work on server
@@ -201,19 +208,19 @@ export async function setHorarioPresencial(data) {
 }
 
 export function useGetEspecialistasPorArea(object) {
-  const params = new URLSearchParams(object).toString()
-  const URL = `${endpoints.dashboard.getEsp}?${params}`
+  const params = new URLSearchParams(object).toString();
+  const URL = `${endpoints.dashboard.getEsp}?${params}`;
 
   const accessToken = sessionStorage.getItem('accessToken');
 
   const config = {
-    headers : {
-      token : accessToken
-    }
-  }
+    headers: {
+      token: accessToken,
+    },
+  };
 
   const { data, isLoading, error, isValidating, mutate } = useSWR([URL, config], fetcherGet);
-  
+
   const memoizedValue = useMemo(
     () => ({
       especialistas: data || [],
@@ -221,11 +228,10 @@ export function useGetEspecialistasPorArea(object) {
       especialistasError: error,
       especialistasValidating: isValidating,
       especialistasEmpty: !isLoading && !data?.length,
-      especialistasGet : mutate,
+      especialistasGet: mutate,
     }),
     [data, error, isLoading, isValidating, mutate]
   );
 
   return memoizedValue;
 }
-

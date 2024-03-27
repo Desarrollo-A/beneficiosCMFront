@@ -1,17 +1,9 @@
-import useSWR, { mutate } from 'swr';
-import { useMemo, useEffect } from 'react';
 import axios from 'axios';
 
-import { endpoints, fetcherPost } from 'src/utils/axios';
-import { HOST } from 'src/config-global';
-// import { accessToken } from 'mapbox-gl';
+import { endpoints } from 'src/utils/axios';
 
-const options = {
-  revalidateIfStale: false,
-  revalidateOnFocus: false,
-  revalidateOnReconnect: false,
-  refreshInterval: 0,
-};
+import { HOST } from 'src/config-global';
+
 
 export async function getDecodedPass() {
     const URL = endpoints.user.decodePass;
