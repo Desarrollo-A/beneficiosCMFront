@@ -195,7 +195,7 @@ export function useGetDiasPresenciales2(object) {
 //   return modalities;
 // }
 
-export function setHorarioPresencial(data) {
+export async function setHorarioPresencial(data) {
   const URL = [endpoints.especialistas.horario];
 
   /**
