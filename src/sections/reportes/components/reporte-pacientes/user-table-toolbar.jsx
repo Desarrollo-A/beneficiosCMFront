@@ -1,14 +1,18 @@
 import { mutate } from 'swr';
+import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import { useState, useEffect, useCallback } from 'react';
 
+import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
+import Grid from '@mui/material/Unstable_Grid2';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import InputAdornment from '@mui/material/InputAdornment';
+import LinearProgress from '@mui/material/LinearProgress';
 
 import { endpoints } from 'src/utils/axios';
 
@@ -83,11 +87,18 @@ export default function ToolbarResumenTerapias({
             label="Área"
             onChange={handleChange}
           >
-            {especialistas.map((i) => (
+            {!isEmpty(especialistas) ? (
+            especialistas.map((i) => (
               <MenuItem key={i.idPuesto} value={i.idPuesto}>
                 {i.nombre}
               </MenuItem>
-            ))}
+            ))
+            ) : (
+              <Grid style={{ paddingTop: '3%' }}>
+                <LinearProgress />
+                <Box mb={3} />
+              </Grid>
+            )}
           </Select>
         </FormControl>
 

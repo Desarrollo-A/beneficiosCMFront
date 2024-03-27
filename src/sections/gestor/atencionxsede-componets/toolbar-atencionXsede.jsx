@@ -1,15 +1,19 @@
+import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import { useCallback } from 'react';
 
+import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
+import Grid from '@mui/material/Unstable_Grid2';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
+import LinearProgress from '@mui/material/LinearProgress';
 
 import Iconify from 'src/components/iconify';
 // import { usePopover } from 'src/components/custom-popover';
@@ -110,12 +114,19 @@ export default function ToolbarAtencionXsede({
               },
             }}
           >
-            {roleOptions.map((option) => (
+            {!isEmpty(roleOptions) ? (
+            roleOptions.map((option) => (
               <MenuItem key={option} value={option}>
                 <Checkbox disableRipple size="small" checked={filters.sede.includes(option)} />
                 {option}
               </MenuItem>
-            ))}
+            ))
+            ) : (
+              <Grid style={{ paddingTop: '3%' }}>
+                <LinearProgress />
+                <Box mb={3} />
+              </Grid>
+            )}
           </Select>
         </FormControl>
 
@@ -140,12 +151,19 @@ export default function ToolbarAtencionXsede({
               },
             }}
           >
-            {OptionsOff.map((option) => (
+            {!isEmpty(OptionsOff) ? (
+            OptionsOff.map((option) => (
               <MenuItem key={option} value={option}>
                 <Checkbox disableRipple size="small" checked={filters.oficina.includes(option)} />
                 {option}
               </MenuItem>
-            ))}
+            ))
+            ) : (
+              <Grid style={{ paddingTop: '3%' }}>
+                <LinearProgress />
+                <Box mb={3} />
+              </Grid>
+            )}
           </Select>
         </FormControl>
 
@@ -171,12 +189,19 @@ export default function ToolbarAtencionXsede({
               },
             }}
           >
-            {OptionsPue.map((option) => (
+            {!isEmpty(OptionsPue) ? (
+            OptionsPue.map((option) => (
               <MenuItem key={option} value={option}>
                 <Checkbox disableRipple size="small" checked={filters.puesto.includes(option)} />
                 {option}
               </MenuItem>
-            ))}
+            ))
+            ) : (
+              <Grid style={{ paddingTop: '3%' }}>
+                <LinearProgress />
+                <Box mb={3} />
+              </Grid>
+            )}
           </Select>
         </FormControl>
 
@@ -240,12 +265,19 @@ export default function ToolbarAtencionXsede({
               },
             }}
           >
-            {OptionsMod.map((option) => (
+            {!isEmpty(OptionsMod) ? (
+            OptionsMod.map((option) => (
               <MenuItem key={option} value={option}>
                 <Checkbox disableRipple size="small" checked={filters.modalidad.includes(option)} />
                 {option}
               </MenuItem>
-            ))}
+            ))
+            ) : (
+              <Grid style={{ paddingTop: '3%' }}>
+                <LinearProgress />
+                <Box mb={3} />
+              </Grid>
+            )}
           </Select>
         </FormControl>
 

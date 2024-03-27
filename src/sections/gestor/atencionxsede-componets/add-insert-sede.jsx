@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useFieldArray, useFormContext } from 'react-hook-form';
@@ -6,6 +7,8 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
+import Grid from '@mui/material/Unstable_Grid2';
+import LinearProgress from '@mui/material/LinearProgress';
 
 import { useGetAreas } from 'src/api/reportes';
 import { useAuthContext } from 'src/auth/hooks';
@@ -86,11 +89,18 @@ export default function AddInsertSede({ idSede, especiaData, oficinaData, modali
             >
               <Divider sx={{ borderStyle: 'dashed' }} />
 
-              {oficinaData.map((i) => (
+              {!isEmpty(oficinaData) ? (
+              oficinaData.map((i) => (
                 <MenuItem key={i.idOficina} value={i.idOficina}>
-                  {i.oficina}
+                  {i.lugar}
                 </MenuItem>
-              ))}
+              ))
+              ) : (
+                <Grid style={{ paddingTop: '3%' }}>
+                  <LinearProgress />
+                  <Box mb={3} />
+                </Grid>
+              )}
             </RHFSelect>
 
             <RHFSelect
@@ -102,11 +112,18 @@ export default function AddInsertSede({ idSede, especiaData, oficinaData, modali
             >
               <Divider sx={{ borderStyle: 'dashed' }} />
 
-              {especiaData.map((i) => (
+              {!isEmpty(especiaData) ? (
+              especiaData.map((i) => (
                 <MenuItem key={i.idUsuario} value={i.idUsuario}>
                   {i.nombre}
                 </MenuItem>
-              ))}
+              ))
+              ) : (
+                <Grid style={{ paddingTop: '3%' }}>
+                  <LinearProgress />
+                  <Box mb={3} />
+                </Grid>
+              )}
             </RHFSelect>
 
             <Stack spacing={3} sx={{ width: 900 }}>
@@ -138,11 +155,18 @@ export default function AddInsertSede({ idSede, especiaData, oficinaData, modali
               >
                 <Divider sx={{ borderStyle: 'dashed' }} />
 
-                {modalidadesData.map((i) => (
+                {!isEmpty(modalidadesData) ? (
+                modalidadesData.map((i) => (
                   <MenuItem key={i.idOpcion} value={i.idOpcion}>
                     {i.modalidad}
                   </MenuItem>
-                ))}
+                ))
+                ) : (
+                  <Grid style={{ paddingTop: '3%' }}>
+                    <LinearProgress />
+                    <Box mb={3} />
+                  </Grid>
+                )}
               </RHFSelect>
             ) : null}
           </Stack>

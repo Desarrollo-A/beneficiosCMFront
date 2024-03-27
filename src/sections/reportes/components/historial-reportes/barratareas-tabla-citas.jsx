@@ -1,7 +1,9 @@
+import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import { es } from 'date-fns/locale';
 import { useState, useEffect, useCallback } from 'react';
 
+import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
@@ -12,6 +14,7 @@ import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
+import LinearProgress from '@mui/material/LinearProgress';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -315,12 +318,19 @@ export default function BarraTareasTabla({
                   },
                 }}
               >
-                {roleOptions.map((option, index) => (
+                {!isEmpty(roleOptions) ? (
+                roleOptions.map((option, index) => (
                   <MenuItem key={index} value={option}>
                     <Checkbox disableRipple size="small" checked={filters.area.includes(option)} />
                     {option}
                   </MenuItem>
-                ))}
+                ))
+                ) : (
+                  <Grid style={{ paddingTop: '3%' }}>
+                    <LinearProgress />
+                    <Box mb={3} />
+                  </Grid>
+                )}
               </Select>
             </FormControl>
 
@@ -345,12 +355,19 @@ export default function BarraTareasTabla({
                   },
                 }}
               >
-                {espData.map((option) => (
+                {!isEmpty(espData) ? (
+                espData.map((option) => (
                   <MenuItem key={option} value={option.nombre}>
                     <Checkbox disableRipple size="small" checked={filters.especialista.includes(option.nombre)} />
                     {option.nombre}
                   </MenuItem>
-                ))}
+                ))
+                ) : (
+                  <Grid style={{ paddingTop: '3%' }}>
+                    <LinearProgress />
+                    <Box mb={3} />
+                  </Grid>
+                )}
               </Select>
             </FormControl>
 
@@ -380,12 +397,19 @@ export default function BarraTareasTabla({
               },
             }}
           >
-            {modOptions.map((option, index) => (
+            {!isEmpty(modOptions) ? (
+            modOptions.map((option, index) => (
               <MenuItem key={index} value={option}>
                 <Checkbox disableRipple size="small" checked={filters.modalidad.includes(option)} />
                 {option}
               </MenuItem>
-            ))}
+            ))
+            ) : (
+              <Grid style={{ paddingTop: '3%' }}>
+                <LinearProgress />
+                <Box mb={3} />
+              </Grid>
+            )}
           </Select>
         </FormControl>
 
