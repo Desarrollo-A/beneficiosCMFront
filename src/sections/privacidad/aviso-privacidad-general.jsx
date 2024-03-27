@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { useState, useEffect } from 'react';
 
 import { Stack } from '@mui/system';
@@ -17,6 +16,7 @@ import { endpoints } from 'src/utils/axios';
 import { HOST } from 'src/config-global';
 import { useGetGeneral } from 'src/api/general';
 import { useAuthContext } from 'src/auth/hooks';
+import { getAvisoPrivacidad } from 'src/api/avisos-privacidad';
 
 import Iconify from 'src/components/iconify';
 import { Upload } from 'src/components/upload';
@@ -84,23 +84,20 @@ export default function AvisoPrivacidadGeneral() {
     setEspecialidadSelector(event);
     setDetalleEspecialidad({ id: event.idOpcion, nombre: event.nombre });
     try {
-      // Realizar la llamada al servicio
-      const respuesta = await axios.get(
-        `${HOST}${endpoints.avisosPrivacidad.getAvisoDePrivacidad}/${event.idOpcion}`
-      );
-      if (respuesta.data.length >= 1) {
+      const respuesta = await getAvisoPrivacidad(event.idOpcion);
+      if (respuesta.length >= 1) {
         // Actualizar el estado con los datos obtenidos
         setExisteRama(false);
         setArchivoPrivacidad({
-          archivo: respuesta.data[0].expediente,
-          idDocumento: respuesta.data[0].idDocumento,
-          nombreDocumento: `${respuesta.data[0].nombreDocumento} de ${respuesta.data[0].nombreEspecialidad}`,
+          archivo: respuesta[0].expediente,
+          idDocumento: respuesta[0].idDocumento,
+          nombreDocumento: `${respuesta[0].nombreDocumento} de ${respuesta[0].nombreEspecialidad}`,
         });
         setPropiedadesIFrame({
           visualize: 'block',
-          rutaArchivo: `${HOST}/dist/documentos/avisos-privacidad/${respuesta.data[0].expediente}`,
-          tituloEspecialidad: respuesta.data[0].nombreEspecialidad,
-          idDocumento: respuesta.data[0].idDocumento,
+          rutaArchivo: `${HOST}/dist/documentos/avisos-privacidad/${respuesta[0].expediente}`,
+          tituloEspecialidad: respuesta[0].nombreEspecialidad,
+          idDocumento: respuesta[0].idDocumento,
           setFuncion: manejarBanderaDesdeHijo,
         });
       } else {
@@ -124,22 +121,20 @@ export default function AvisoPrivacidadGeneral() {
       setDetalleEspecialidad({ id: event.idOpcion, nombre: event.nombre });
       try {
         // Realizar la llamada al servicio
-        const respuesta = await axios.get(
-          `${HOST}${endpoints.avisosPrivacidad.getAvisoDePrivacidad}/${event.idOpcion}`
-        );
-        if (respuesta.data.length >= 1) {
+        const respuesta = await getAvisoPrivacidad(event.idOpcion);
+        if (respuesta.length >= 1) {
           // Actualizar el estado con los datos obtenidos
           setExisteRama(false);
           setArchivoPrivacidad({
-            archivo: respuesta.data[0].expediente,
-            idDocumento: respuesta.data[0].idDocumento,
-            nombreDocumento: `${respuesta.data[0].nombreDocumento} de ${respuesta.data[0].nombreEspecialidad}`,
+            archivo: respuesta[0].expediente,
+            idDocumento: respuesta[0].idDocumento,
+            nombreDocumento: `${respuesta[0].nombreDocumento} de ${respuesta[0].nombreEspecialidad}`,
           });
           setPropiedadesIFrame({
             visualize: 'block',
-            rutaArchivo: `${HOST}/dist/documentos/avisos-privacidad/${respuesta.data[0].expediente}`,
-            tituloEspecialidad: respuesta.data[0].nombreEspecialidad,
-            idDocumento: respuesta.data[0].idDocumento,
+            rutaArchivo: `${HOST}/dist/documentos/avisos-privacidad/${respuesta[0].expediente}`,
+            tituloEspecialidad: respuesta[0].nombreEspecialidad,
+            idDocumento: respuesta[0].idDocumento,
             setFuncion: manejarBanderaDesdeHijo,
           });
         } else {
@@ -155,7 +150,7 @@ export default function AvisoPrivacidadGeneral() {
         console.error('Error al obtener datos del servicio SQL', error);
       }
     };
-    
+
     if (typeof especialidadesDisponibles === 'object' && especialidadesDisponibles.length > 0) {
       if (especialidadesDisponibles.length > 0) {
         especialidadesDisponibles.forEach((especialidad) => {
@@ -172,22 +167,20 @@ export default function AvisoPrivacidadGeneral() {
     if (actualizarView) {
       // para que haga efecto solo cuando el estado este en true
       const response = async function refrescarData() {
-        const respuesta = await axios.get(
-          `${HOST}${endpoints.avisosPrivacidad.getAvisoDePrivacidad}/${detalleEspecialidad.id}`
-        );
-        if (respuesta.data.length >= 1) {
+        const respuesta = await getAvisoPrivacidad(detalleEspecialidad.id);
+        if (respuesta.length >= 1) {
           // Actualizar el estado con los datos obtenidos
           setExisteRama(false);
           setArchivoPrivacidad({
-            archivo: respuesta.data[0].expediente,
-            idDocumento: respuesta.data[0].idDocumento,
-            nombreDocumento: `${respuesta.data[0].nombreDocumento} de ${respuesta.data[0].nombreEspecialidad}`,
+            archivo: respuesta[0].expediente,
+            idDocumento: respuesta[0].idDocumento,
+            nombreDocumento: `${respuesta[0].nombreDocumento} de ${respuesta[0].nombreEspecialidad}`,
           });
           setPropiedadesIFrame({
             visualize: 'block',
-            rutaArchivo: `${HOST}/dist/documentos/avisos-privacidad/${respuesta.data[0].expediente}`,
-            tituloEspecialidad: respuesta.data[0].nombreEspecialidad,
-            idDocumento: respuesta.data[0].idDocumento,
+            rutaArchivo: `${HOST}/dist/documentos/avisos-privacidad/${respuesta[0].expediente}`,
+            tituloEspecialidad: respuesta[0].nombreEspecialidad,
+            idDocumento: respuesta[0].idDocumento,
           });
         } else {
           setExisteRama(true);
@@ -352,13 +345,13 @@ export default function AvisoPrivacidadGeneral() {
                 {especialidadesDisponibles !== undefined &&
                   especialidadesDisponibles.length > 0 &&
                   especialidadesDisponibles.map((elemento, index) =>
-                    user?.idPuesto === elemento?.idPuesto || user?.idRol === 2 || user?.idRol === 4 ? (
+                    user?.idPuesto === elemento?.idPuesto ||
+                    user?.idRol === 2 ||
+                    user?.idRol === 4 ? (
                       <MenuItem value={elemento} key={elemento.idOpcion}>
                         {elemento.nombre}
                       </MenuItem>
-                    ) : (
-                      null
-                    )
+                    ) : null
                   )}
               </Select>
             </FormControl>

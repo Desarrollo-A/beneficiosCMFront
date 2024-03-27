@@ -38,13 +38,17 @@ export default function AgendaDialog({ open, onClose, id, start, end, sede, ...p
     const endd = dayjs(new Date(value)).format('YYYY-MM-DD');
     const startt = dayjs(context.from[0].value.start).format('YYYY-MM-DD');
 
-    return endd >= startt
-  }
+    return endd >= startt;
+  };
 
   const formSchema = yup.object({
     id: yup.number().nullable(true),
     start: yup.string().transform(parseStartDate).required(),
-    end: yup.string().test('check-min', "Fecha final debe ser mayor a la fecha inicial", checkMin ).transform(parseEndDate).required(),
+    end: yup
+      .string()
+      .test('check-min', 'Fecha final debe ser mayor a la fecha inicial', checkMin)
+      .transform(parseEndDate)
+      .required(),
     sede: yup.number().required().typeError('Debes elegir una opción.'),
     especialista: yup.number(),
   });
@@ -57,9 +61,8 @@ export default function AgendaDialog({ open, onClose, id, start, end, sede, ...p
   const { handleSubmit } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
-
-    const response = await setHorarioPresencial(data);
-
+    const response = await setHorarioPresencial(data); // Este si dio
+    alert(JSON.stringify(response));
     if (response.status === 'error') {
       enqueueSnackbar(response.message, { variant: 'error' });
     } else {
