@@ -20,6 +20,7 @@ import { endpoints } from 'src/utils/axios';
 import { HOST } from 'src/config-global';
 import { useGetGeneral } from 'src/api/general';
 import { useAuthContext } from 'src/auth/hooks';
+import { getAvisoPrivacidad } from 'src/api/avisos-privacidad';
 
 import Iconify from 'src/components/iconify';
 import { Upload } from 'src/components/upload';
@@ -87,23 +88,20 @@ export default function AvisoPrivacidadGeneral() {
     setEspecialidadSelector(event);
     setDetalleEspecialidad({ id: event.idOpcion, nombre: event.nombre });
     try {
-      // Realizar la llamada al servicio
-      const respuesta = await axios.get(
-        `${HOST}${endpoints.avisosPrivacidad.getAvisoDePrivacidad}/${event.idOpcion}`
-      );
-      if (respuesta.data.length >= 1) {
+      const respuesta = await getAvisoPrivacidad(event.idOpcion);
+      if (respuesta.length >= 1) {
         // Actualizar el estado con los datos obtenidos
         setExisteRama(false);
         setArchivoPrivacidad({
-          archivo: respuesta.data[0].expediente,
-          idDocumento: respuesta.data[0].idDocumento,
-          nombreDocumento: `${respuesta.data[0].nombreDocumento} de ${respuesta.data[0].nombreEspecialidad}`,
+          archivo: respuesta[0].expediente,
+          idDocumento: respuesta[0].idDocumento,
+          nombreDocumento: `${respuesta[0].nombreDocumento} de ${respuesta[0].nombreEspecialidad}`,
         });
         setPropiedadesIFrame({
           visualize: 'block',
-          rutaArchivo: `${HOST}/dist/documentos/avisos-privacidad/${respuesta.data[0].expediente}`,
-          tituloEspecialidad: respuesta.data[0].nombreEspecialidad,
-          idDocumento: respuesta.data[0].idDocumento,
+          rutaArchivo: `${HOST}/dist/documentos/avisos-privacidad/${respuesta[0].expediente}`,
+          tituloEspecialidad: respuesta[0].nombreEspecialidad,
+          idDocumento: respuesta[0].idDocumento,
           setFuncion: manejarBanderaDesdeHijo,
         });
       } else {
@@ -127,22 +125,20 @@ export default function AvisoPrivacidadGeneral() {
       setDetalleEspecialidad({ id: event.idOpcion, nombre: event.nombre });
       try {
         // Realizar la llamada al servicio
-        const respuesta = await axios.get(
-          `${HOST}${endpoints.avisosPrivacidad.getAvisoDePrivacidad}/${event.idOpcion}`
-        );
-        if (respuesta.data.length >= 1) {
+        const respuesta = await getAvisoPrivacidad(event.idOpcion);
+        if (respuesta.length >= 1) {
           // Actualizar el estado con los datos obtenidos
           setExisteRama(false);
           setArchivoPrivacidad({
-            archivo: respuesta.data[0].expediente,
-            idDocumento: respuesta.data[0].idDocumento,
-            nombreDocumento: `${respuesta.data[0].nombreDocumento} de ${respuesta.data[0].nombreEspecialidad}`,
+            archivo: respuesta[0].expediente,
+            idDocumento: respuesta[0].idDocumento,
+            nombreDocumento: `${respuesta[0].nombreDocumento} de ${respuesta[0].nombreEspecialidad}`,
           });
           setPropiedadesIFrame({
             visualize: 'block',
-            rutaArchivo: `${HOST}/dist/documentos/avisos-privacidad/${respuesta.data[0].expediente}`,
-            tituloEspecialidad: respuesta.data[0].nombreEspecialidad,
-            idDocumento: respuesta.data[0].idDocumento,
+            rutaArchivo: `${HOST}/dist/documentos/avisos-privacidad/${respuesta[0].expediente}`,
+            tituloEspecialidad: respuesta[0].nombreEspecialidad,
+            idDocumento: respuesta[0].idDocumento,
             setFuncion: manejarBanderaDesdeHijo,
           });
         } else {
@@ -175,22 +171,20 @@ export default function AvisoPrivacidadGeneral() {
     if (actualizarView) {
       // para que haga efecto solo cuando el estado este en true
       const response = async function refrescarData() {
-        const respuesta = await axios.get(
-          `${HOST}${endpoints.avisosPrivacidad.getAvisoDePrivacidad}/${detalleEspecialidad.id}`
-        );
-        if (respuesta.data.length >= 1) {
+        const respuesta = await getAvisoPrivacidad(detalleEspecialidad.id);
+        if (respuesta.length >= 1) {
           // Actualizar el estado con los datos obtenidos
           setExisteRama(false);
           setArchivoPrivacidad({
-            archivo: respuesta.data[0].expediente,
-            idDocumento: respuesta.data[0].idDocumento,
-            nombreDocumento: `${respuesta.data[0].nombreDocumento} de ${respuesta.data[0].nombreEspecialidad}`,
+            archivo: respuesta[0].expediente,
+            idDocumento: respuesta[0].idDocumento,
+            nombreDocumento: `${respuesta[0].nombreDocumento} de ${respuesta[0].nombreEspecialidad}`,
           });
           setPropiedadesIFrame({
             visualize: 'block',
-            rutaArchivo: `${HOST}/dist/documentos/avisos-privacidad/${respuesta.data[0].expediente}`,
-            tituloEspecialidad: respuesta.data[0].nombreEspecialidad,
-            idDocumento: respuesta.data[0].idDocumento,
+            rutaArchivo: `${HOST}/dist/documentos/avisos-privacidad/${respuesta[0].expediente}`,
+            tituloEspecialidad: respuesta[0].nombreEspecialidad,
+            idDocumento: respuesta[0].idDocumento,
           });
         } else {
           setExisteRama(true);
@@ -366,7 +360,6 @@ export default function AvisoPrivacidadGeneral() {
                   <Box mb={3} />
                 </Grid>
               )}
-
               </Select>
             </FormControl>
           </Grid>
