@@ -60,10 +60,10 @@ export default function AgendaDialog({ open, onClose, id, start, end, sede, ...p
 
     const response = await setHorarioPresencial(data);
 
-    if (response.status === 'error') {
-      enqueueSnackbar(response.message, { variant: 'error' });
+    if (!response.result) {
+      enqueueSnackbar(response.msg, { variant: 'error' });
     } else {
-      enqueueSnackbar(response.message);
+      enqueueSnackbar(response.msg);
 
       onClose();
     }
