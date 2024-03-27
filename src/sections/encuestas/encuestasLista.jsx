@@ -61,10 +61,6 @@ export default function EncuestasLista({ encuestas, estatusCt }) {
 
   const [area, setArea] = useState(puestos);
 
-  useEffect(() => {
-    setArea(area);
-  }, [area ]);
-
   const { getData } = usePostGeneral(area, endpoints.encuestas.getEncuestasCreadas, "getData");
 
   const { EstatusData } = usePostGeneral(area, endpoints.encuestas.getEstatusUno, "EstatusData");
@@ -189,7 +185,7 @@ export default function EncuestasLista({ encuestas, estatusCt }) {
                       onSelectRow={() => table.onSelectRow(usuario.id)}
                       onDeleteRow={() => handleDisableUser(usuario.id)}
                       est={EstatusData}
-                      puestos={puestos}
+                      puestos={area}
                     />
                   ))}
 

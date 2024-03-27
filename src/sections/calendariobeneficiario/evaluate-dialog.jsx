@@ -33,8 +33,6 @@ import FormProvider, {
 export default function EvaluateDialog({ open, pendiente, mutate, cerrar }) {
   const { especialista, beneficio, idEspecialista, idEncuesta, id, estatus, idDetalle, idEventoGoogle } = pendiente;
 
-  console.log(pendiente)
-
   const { user: datosUser } = useAuthContext();
 
   const router = useRouter();
@@ -105,6 +103,9 @@ export default function EvaluateDialog({ open, pendiente, mutate, cerrar }) {
         mutate(endpoints.encuestas.getEcuestaValidacion);
         router.replace(paths.dashboard.root);
 
+        if (mutate) mutate();
+        if (cerrar) cerrar();
+
       } else {
         enqueueSnackbar(insert.msj, { variant: 'error' });
       }
@@ -112,9 +113,6 @@ export default function EvaluateDialog({ open, pendiente, mutate, cerrar }) {
       console.error("Error en handleSubmit:", error);
       enqueueSnackbar(`¡No se pudó actualizar los datos!`, { variant: 'danger' });
     }
-
-    if (mutate) mutate();
-    if (cerrar) cerrar();
 
   });
 
