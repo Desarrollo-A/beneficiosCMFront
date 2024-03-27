@@ -9,6 +9,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { LoadingButton } from '@mui/lab';
 import Button from '@mui/material/Button';
 import DialogTitle from '@mui/material/DialogTitle';
+import { CircularProgress, Grid } from '@mui/material';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
@@ -32,20 +33,21 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
 
   const loadingSend = useBoolean();
 
-  const [es] = useState({ // setEs
+  const [es] = useState({
+    // setEs
     idSd: idSede,
-    idPs: idPuesto
+    idPs: idPuesto,
   });
 
   const [esp, setEsp] = useState([]);
 
   const [mod, setMod] = useState([]);
 
-  const [selectArea, setSelectArea] = useState({idArea: null});
+  const [selectArea, setSelectArea] = useState({ idArea: null });
 
-  const { oficinaData } = usePostGeneral(idSede, endpoints.gestor.getOficinasVal, "oficinaData");
+  const { oficinaData } = usePostGeneral(idSede, endpoints.gestor.getOficinasVal, 'oficinaData');
 
-  const { especiaData } = usePostGeneral(es, endpoints.gestor.getEspecialistasVal, "especiaData");
+  const { especiaData } = usePostGeneral(es, endpoints.gestor.getEspecialistasVal, 'especiaData');
 
   const insertData = useInsert(endpoints.gestor.insertAtxSede);
 
@@ -53,15 +55,15 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
 
   const handleEsp = (newPg) => {
     setEsp(newPg);
-  }
+  };
 
   const handleMod = (newPg) => {
     setMod(newPg);
-  }
+  };
 
   const handleArea = (newPg) => {
     setSelectArea(newPg);
-  }
+  };
 
   const NewInvoiceSchema = Yup.object().shape({
     items: Yup.mixed().nullable().required('Is required'),
@@ -86,22 +88,27 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
   };
 
   const handleCreateAndSend = handleSubmit(async (data) => {
-
     const combinedArray = {
       ...mod,
       ...esp,
-      ...selectArea
+      ...selectArea,
     };
 
-    if (!isEmpty(combinedArray) && !isEmpty(mod) && !isEmpty(esp) && Number.isInteger(selectArea.idArea) ) {
+    if (
+      !isEmpty(combinedArray) &&
+      !isEmpty(mod) &&
+      !isEmpty(esp) &&
+      Number.isInteger(selectArea.idArea)
+    ) {
       try {
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        
 
         loadingSend.onFalse();
 
         const insert = await insertData(combinedArray);
+        console.log(insert);
 
-        if (insert.result === true) {
+        if (insert.result) {
           enqueueSnackbar(insert.msg, { variant: 'success' });
           resetForm();
 
@@ -109,110 +116,116 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
           mutate(endpoints.gestor.getAtencionXsedeEsp);
 
           setBtnLoad(false);
-
         } else {
           enqueueSnackbar(insert.msg, { variant: 'error' });
           setBtnLoad(false);
         }
-
       } catch (error) {
         console.error(error);
         loadingSend.onFalse();
         setBtnLoad(false);
       }
-
     } else {
-      enqueueSnackbar("Faltan Datos", { variant: 'error' });
+      enqueueSnackbar('Faltan Datos', { variant: 'error' });
       setBtnLoad(false);
     }
-
   });
 
   const confirm = useBoolean();
 
   return (
-    
-      <FormProvider methods={methods} key={formKey}>
-        <DialogTitle>Asignación de sede</DialogTitle>
+    <FormProvider methods={methods} key={formKey}>
+      <DialogTitle>Asignación de sede</DialogTitle>
+      {!isEmpty(oficinaData) && !isEmpty(especiaData) ? (
+        <>
+          {oficinaData.length !== 0 && especiaData.length !== 0 ? (
+            <>
+              <DialogContent>
+                <AddInsertSede
+                  idSede={idSede}
+                  oficinaData={oficinaData}
+                  especiaData={especiaData}
+                  modalidadesData={modalidadesData}
+                  handleMod={handleMod}
+                  handleEsp={handleEsp}
+                  handleArea={handleArea}
+                />
+              </DialogContent>
 
-        {oficinaData.length !== 0 && especiaData.length !== 0 ? (
+              <DialogActions>
+                <Button variant="contained" color="error" onClick={onClose}>
+                  Cerrar
+                </Button>
+                <LoadingButton
+                  variant="contained"
+                  color="success"
+                  loading={btnLoad}
+                  onClick={() => {
+                    confirm.onTrue();
+                  }}
+                >
+                  Guardar
+                </LoadingButton>
+              </DialogActions>
 
-          <>
-            <DialogContent>
-
-              <AddInsertSede 
-              idSede={idSede} 
-              oficinaData={oficinaData} 
-              especiaData={especiaData} 
-              modalidadesData={modalidadesData}
-              handleMod={handleMod}
-              handleEsp={handleEsp} 
-              handleArea={handleArea}
+              <ConfirmDialog
+                open={confirm.value}
+                onClose={confirm.onFalse}
+                title="¿Deseas guardar el registro?"
+                action={
+                  <>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={() => {
+                        confirm.onFalse();
+                      }}
+                    >
+                      No
+                    </Button>
+                    <LoadingButton
+                      variant="contained"
+                      color="success"
+                      loading={btnLoad}
+                      onClick={() => {
+                        setBtnLoad(true);
+                        handleCreateAndSend(1);
+                        confirm.onFalse();
+                      }}
+                    >
+                      Si
+                    </LoadingButton>
+                  </>
+                }
               />
+            </>
+          ) : (
+            <>
+              <DialogContent>
+                No hay
+                {oficinaData.length === 0 && especiaData.length === 0
+                  ? ' oficinas y especialistas asignados'
+                  : ''}
+                {oficinaData.length === 0 && especiaData.length !== 0 ? ' oficinas asignadas' : ''}
+                {oficinaData.length !== 0 && especiaData.length === 0
+                  ? ' especialistas asignados'
+                  : ''}
+              </DialogContent>
 
-            </DialogContent>
-
-            <DialogActions>
-
-            <Button variant="contained" color="error" onClick={onClose}>
-                Cerrar
-              </Button>
-              <LoadingButton
-                variant="contained"
-                color="success"
-                loading={loadingSend.value && isSubmitting}
-                onClick={() => {
-                  confirm.onTrue();
-                }}>
-                Guardar
-              </LoadingButton> 
-            </DialogActions>
-
-
-            <ConfirmDialog
-              open={confirm.value}
-              onClose={confirm.onFalse}
-              title="¿Deseas guardar los registros?"
-              action={
-                <>  
-                  <Button variant="contained" color="error" onClick={() => {
-                    confirm.onFalse();
-                  }}>
-                    No
-                  </Button>
-                  <LoadingButton variant="contained" color="success" loading={btnLoad} onClick={() => {
-                    setBtnLoad(true);
-                    handleCreateAndSend(1);
-                    confirm.onFalse();
-                    onClose();
-                  }}>
-                    Si
-                  </LoadingButton>
-                </>
-              }
-            />
-          </>
-        ) : (
-          <>
-            <DialogContent >No hay
-              {oficinaData.length === 0 && especiaData.length === 0 ? " oficinas y especialistas asignados" : ""}
-              {oficinaData.length === 0 && especiaData.length !== 0 ? " oficinas asignadas" : ""}
-              {oficinaData.length !== 0 && especiaData.length === 0 ? " especialistas asignados" : ""}
-            </DialogContent>
-
-            <DialogActions>
-
-              <Button variant="contained" color="error" onClick={onClose}>
-                Cerrar
-              </Button>
-
-            </DialogActions>
-
-          </>
-        )}
-
-      </FormProvider>
-    
+              <DialogActions>
+                <Button variant="contained" color="error" onClick={onClose}>
+                  Cerrar
+                </Button>
+              </DialogActions>
+            </>
+          )}
+        </>
+      ) : (
+        <Grid container sx={{ p: 5 }} justifyContent="center" alignItems="center">
+          <CircularProgress />
+        </Grid>
+      )}
+    </FormProvider>
   );
 }
 
