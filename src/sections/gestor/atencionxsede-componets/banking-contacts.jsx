@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
-import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
@@ -21,7 +20,6 @@ export default function BankingContacts({ title, subheader, list, modalidadesDat
   const [ps, setPs] = useState(0);
 
   return (
-    <Card {...other}>
 
       <Stack spacing={3} sx={{ p: 3 }}>
         {list.map((e, index) => (
@@ -42,7 +40,6 @@ export default function BankingContacts({ title, subheader, list, modalidadesDat
           </Stack>
         ))}
     </Stack>
-    </Card >
   );
 }
 

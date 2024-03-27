@@ -18,7 +18,6 @@ import FormProvider, { RHFTextField } from 'src/components/hook-form';
 // ----------------------------------------------------------------------
 
 export default function Verificacion({ email, formReg }) {
-
   const { enqueueSnackbar } = useSnackbar();
 
   const [btnLoad, setBtnLoad] = useState(false);
@@ -43,7 +42,7 @@ export default function Verificacion({ email, formReg }) {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (countdown > 0) {
-        setCountdown(prevCountdown => prevCountdown - 1);
+        setCountdown((prevCountdown) => prevCountdown - 1);
       } else {
         setShowAlternativeButton(true);
       }
@@ -53,14 +52,12 @@ export default function Verificacion({ email, formReg }) {
   }, [countdown]);
 
   const onSubmit = async (data) => {
-
     const dataValue = {
       correo: email,
-      token: data
-    }
+      token: data,
+    };
 
     try {
-
       const insert = await insertData(dataValue);
 
       if (insert.estatus === true) {
@@ -68,27 +65,21 @@ export default function Verificacion({ email, formReg }) {
 
         setBtnLoad(false);
         formReg(true);
-
       } else {
         enqueueSnackbar(insert.msj, { variant: 'error' });
 
         setBtnLoad(false);
         formReg(false);
       }
-
     } catch (error) {
-
       setBtnLoad(false);
-      console.error("Error en handleEstatus:", error);
+      console.error('Error en handleEstatus:', error);
       enqueueSnackbar(`¡No se pudo enviar el código!`, { variant: 'danger' });
-
     }
-  }
+  };
 
   const handleChange = async (data) => {
-
     try {
-
       const insert = await insertReenvio(data);
 
       if (insert.estatus === true) {
@@ -99,22 +90,17 @@ export default function Verificacion({ email, formReg }) {
         setBtnLoad(false);
         setCountdown(120);
         setShowAlternativeButton(false);
-
       } else {
         enqueueSnackbar(insert.msj, { variant: 'error' });
 
         setBtnLoad(false);
       }
-
     } catch (error) {
-
       setBtnLoad(false);
-      console.error("Error en handleEstatus:", error);
+      console.error('Error en handleEstatus:', error);
       enqueueSnackbar(`¡No se pudo enviar el código!`, { variant: 'danger' });
-
     }
-
-  }
+  };
 
   return (
     <FormProvider methods={methods}>
@@ -132,43 +118,40 @@ export default function Verificacion({ email, formReg }) {
 
           {countdown !== 0 ? (
             <>
-              <p>El código vence en <b>{formatTime(countdown)}</b></p>
+              <p>
+                El código vence en <b>{formatTime(countdown)}</b>
+              </p>
 
               <RHFTextField name="codigo" label="Código" autoComplete="off" />
             </>
           ) : (
-
             <p>El código de verificación expiró</p>
-
           )}
-        
 
-        <DialogActions>
-          {showAlternativeButton ? (
-            <LoadingButton 
-            variant="contained" 
-            onClick={() => {
-              setBtnLoad(true);
-              handleChange(email)
-            }}
-            >
-              Reenviar código
-            </LoadingButton>
-          ) : (
-            <LoadingButton
-              variant="contained"
-              loading={btnLoad}
-              onClick={methods.handleSubmit(onSubmit)}
-            >
-              Verificar
-            </LoadingButton>
-          )}
-        </DialogActions>
-        
+          <DialogActions>
+            {showAlternativeButton ? (
+              <LoadingButton
+                variant="contained"
+                onClick={() => {
+                  setBtnLoad(true);
+                  handleChange(email);
+                }}
+              >
+                Reenviar código
+              </LoadingButton>
+            ) : (
+              <LoadingButton
+                variant="contained"
+                loading={btnLoad}
+                onClick={methods.handleSubmit(onSubmit)}
+              >
+                Verificar
+              </LoadingButton>
+            )}
+          </DialogActions>
         </Box>
-
       </DialogContent>
-    </FormProvider >
+    </FormProvider>
   );
 }
 

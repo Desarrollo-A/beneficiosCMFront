@@ -64,7 +64,7 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 const doc = new JsPDF('l', 'pt');
 
-function handleDownloadExcel(datosTabla, rol) {
+function handleDownloadExcel(dataFiltered, rol) {
 
   let data = [];
 
@@ -86,7 +86,7 @@ function handleDownloadExcel(datosTabla, rol) {
         { label: "Estatus", value: "estatus" },
         { label: "Horario cita", value: "horario" },
       ],
-      content: datosTabla,
+      content: dataFiltered,
     },
   ];
 
@@ -98,7 +98,7 @@ function handleDownloadExcel(datosTabla, rol) {
       {
         sheet: "Historial Reportes",
         columns: arr,
-        content: datosTabla,
+        content: dataFiltered,
       },
     ];
 
@@ -116,15 +116,15 @@ function handleDownloadExcel(datosTabla, rol) {
   Xlsx(data, settings)
 }
 
-function handleDownloadPDF(datosTabla, header, rol) {
+function handleDownloadPDF(dataFiltered, header, rol) {
 
   let data = [];
 
   if(rol === 3){
-    data = datosTabla.map(item => ([item.idColab, item.paciente,
+    data = dataFiltered.map(item => ([item.idColab, item.paciente,
       item.oficina, item.area, item.sede, item.modalidad, item.sexo, item.motivoCita, item.pagoGenerado, item.metodoPago !== null ? item.metodoPago : 'Pendiente de pago', item.estatus, item.horario,]))
   }else{
-    data = datosTabla.map(item => ([item.idColab, item.especialista, item.paciente,
+    data = dataFiltered.map(item => ([item.idColab, item.especialista, item.paciente,
     item.oficina, item.area, item.sede, item.modalidad, item.sexo, item.motivoCita, item.pagoGenerado, item.metodoPago !== null ? item.metodoPago : 'Pendiente de pago', item.estatus, item.horario,]))
   }
   
@@ -294,7 +294,7 @@ export default function HistorialReportesView() {
   const handleExcel = async e => {
     e.preventDefault();
     handleDownloadExcel(
-      datosTabla,
+      dataFiltered,
       rol
     );
   }
@@ -302,7 +302,7 @@ export default function HistorialReportesView() {
   const handlePdf = async e => {
     e.preventDefault();
     handleDownloadPDF(
-      datosTabla,
+      dataFiltered,
       header,
       rol
     );
@@ -510,7 +510,7 @@ function applyFilter({ inputData, comparator, filters, dateError, rol }) {
     );
   }
 
-  if (area.length) {
+  if (area?.length) {
     inputData = inputData.filter((cita) => area.includes(cita.area));
   }
 
@@ -524,12 +524,12 @@ function applyFilter({ inputData, comparator, filters, dateError, rol }) {
     }
   }
 
-    if (especialista.length) {
-      inputData = inputData.filter((i) => especialista.includes(i.especialista));
+    if (especialista?.length) {
+      inputData = inputData.filter((i) => especialista.includes(i?.especialista));
     }
 
-  if (modalidad.length) {
-    inputData = inputData.filter((i) => modalidad.includes(i.modalidad));
+  if (modalidad?.length) {
+    inputData = inputData.filter((i) => modalidad.includes(i?.modalidad));
   }
 
   return inputData;

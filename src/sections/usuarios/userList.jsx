@@ -9,6 +9,7 @@ import Card from '@mui/material/Card';
 import { Button } from '@mui/material';
 import Table from '@mui/material/Table';
 import Stack from '@mui/material/Stack';
+import Tooltip from '@mui/material/Tooltip';
 import TableBody from '@mui/material/TableBody';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
@@ -197,12 +198,17 @@ export default function UserList({ userData, usersMutate }) {
             pr: { xs: 1, md: 1 },
           }}
         >
-          <Button variant="text" onClick={handleExcel} sx={{ padding: 1 }}>
-            <Iconify icon="teenyicons:xls-outline" />
-          </Button>
-          <Button variant="text" onClick={handlePdf} sx={{ padding: 1 }}>
-            <Iconify icon="teenyicons:pdf-outline" />
-          </Button>
+          <Tooltip title="Exportar a XLS" placement="top" arrow>
+            <Button variant="text" onClick={handleExcel} sx={{ padding: 1 }}>
+              <Iconify icon="teenyicons:xls-outline" />
+            </Button>
+          </Tooltip>
+
+          <Tooltip title="Exportar a PDF" placement="top" arrow>
+            <Button variant="text" onClick={handlePdf} sx={{ padding: 1 }}>
+              <Iconify icon="teenyicons:pdf-outline" />
+            </Button>
+          </Tooltip>
         </Stack>
 
         <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>

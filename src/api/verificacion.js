@@ -10,47 +10,50 @@ instance.interceptors.response.use(
   (res) => res,
   (error) => Promise.reject((error.response && error.response.data) || 'Something went wrong')
 );
-export {instance};
+export { instance };
 
-export function useInsert(dt){
+export function useInsert(dt) {
+  const insertData = async (obj) => {
+    const URL = obj ? dt : '';
+    return fetcherInsert([URL, obj]);
+  };
 
-    const insertData = async (obj) => {
-  
-      const URL = obj ? dt : '';
-      return fetcherInsert([URL, obj]);
-    };
-  
-    return insertData;
-  
+  return insertData;
 }
 
 export const fetcherInsert = async (args) => {
-    const [url, data, config] = Array.isArray(args) ? args : [args];
-   
-    const res = await instance.post(url, {"dataValue": JSON.stringify(data)}, {
+  const [url, data, config] = Array.isArray(args) ? args : [args];
+  const accessToken = sessionStorage.getItem('accessToken');
+
+  const res = await instance.post(
+    url,
+    { dataValue: JSON.stringify(data) },
+    {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
+        token: accessToken,
       },
       ...config,
-    });
-  
-    return res.data;
+    }
+  );
+
+  return res.data;
 };
 
 export function useGetToken(object) {
-  const params = new URLSearchParams(object).toString()
-  const URL = `${endpoints.user.token}?${params}`
+  const params = new URLSearchParams(object).toString();
+  const URL = `${endpoints.user.token}?${params}`;
 
   const accessToken = sessionStorage.getItem('accessToken');
 
   const config = {
-    headers : {
-      token : accessToken
-    }
-  }
+    headers: {
+      token: accessToken,
+    },
+  };
 
   const { data, isLoading, error, isValidating, mutate } = useSWR([URL, config], fetcherGet);
-  
+
   const memoizedValue = useMemo(
     () => ({
       especialistas: data || [],
@@ -58,7 +61,7 @@ export function useGetToken(object) {
       especialistasError: error,
       especialistasValidating: isValidating,
       especialistasEmpty: !isLoading && !data?.length,
-      especialistasGet : mutate,
+      especialistasGet: mutate,
     }),
     [data, error, isLoading, isValidating, mutate]
   );
