@@ -80,9 +80,9 @@ export function getOficinaByAtencion(sede, beneficio, especialista, modalidad) {
 }
 
 // Checa si el usuario tiene primera cita
-export function checaPrimeraCita(usuario, especialista) {
+export function _isPrimeraCita(usuario, beneficio) {
   const URL = [endpoints.calendarioColaborador.isPrimeraCita];
-  const primeraCita = fetcherPost(URL, { usuario, especialista });
+  const primeraCita = fetcherPost(URL, { usuario, beneficio });
 
   return primeraCita;
 }
