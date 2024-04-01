@@ -126,7 +126,7 @@ export default function AddInsertSede({ idSede, especiaData, oficinaData, modali
               )}
             </RHFSelect>
 
-            <Stack spacing={3} sx={{ width: 900 }}>
+            <Stack spacing={3} sx={{ width: 900}}>
               <RHFAutocomplete
                 name="area"
                 label="Área"
