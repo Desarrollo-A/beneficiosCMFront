@@ -120,9 +120,9 @@ export function getCitasFinalizadas(usuario, mes, año) {
 }
 
 // Saber la atencion x sede de la cita.
-export function getAtencionXSede(especialista, sede, modalidad) {
+export function getAtencionXSede(especialista, sede, area, modalidad) {
   const URL = [endpoints.calendarioColaborador.getAtencionPorSede];
-  const axs = fetcherPost(URL, { especialista, sede, modalidad });
+  const axs = fetcherPost(URL, { especialista, sede, area, modalidad });
 
   return axs;
 }

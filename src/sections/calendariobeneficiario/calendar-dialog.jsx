@@ -21,7 +21,6 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
-import uuidv4 from 'src/utils/uuidv4';
 import { generarFechas } from 'src/utils/general';
 
 import { getEncodedHash } from 'src/api/api';
@@ -41,7 +40,6 @@ import {
   getCitasSinPagar,
   getAtencionXSede,
   cancelAppointment,
-  updateAppointment,
   getDiasDisponibles,
   getCitasSinEvaluar,
   getCitasFinalizadas,
@@ -79,7 +77,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     especialista: '',
     modalidad: '',
   });
-  const [open, setOpen] = useState(false);
   const [open2, setOpen2] = useState(false);
   const [confirmCancel, setConfirmCancel] = useState(false);
   const [reschedule, setReschedule] = useState(false);
@@ -334,9 +331,12 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       ID_USUARIO: datosUser.idUsuario,
       ID_DETALLE_PAGO: null,
       ID_BENEFICIO: selectedValues.beneficio,
-      ID_GOOGLE_EVENT: null, // newGoogleEvent.result ? newGoogleEvent.data.id : null,
+      ID_GOOGLE_EVENT: newGoogleEvent.result ? newGoogleEvent.data.id : null,
       MODALIDAD: selectedValues.modalidad,
-      ESTATUS_CITA: ESTATUS_CITA.PENDIENTE_PAGO,
+      ESTATUS_CITA:
+        datosUser.tipoPuesto.toLowerCase() === 'operativa'
+          ? ESTATUS_CITA.POR_ASISTIR
+          : ESTATUS_CITA.PENDIENTE_PAGO,
     });
 
     const agendar = await agendarCita(
@@ -369,7 +369,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     /* PAGO  */
     const DATOS_PAGO = Object.freeze({
       FOLIO: `${DATOS_CITA.ID_USUARIO}${dayjs(ahora).format('HHmmssYYYYMMDD')}`,
-      REFERENCIA: `U${DATOS_CITA.ID_USUARIO}-${abreviatura}-E${DATOS_CITA.ID_ESPECIALISTA}-C${agendar.data}}`,
+      REFERENCIA: `U${DATOS_CITA.ID_USUARIO}-${abreviatura}-E${DATOS_CITA.ID_ESPECIALISTA}-C${agendar.data}`,
       // 'U88-QUAN-E64-C65',
       // `U${DATOS_CITA.ID_USUARIO}-${abreviatura}-E${DATOS_CITA.ID_ESPECIALISTA}-C${agendar.data}}`,
       // Referencia: 'U(idUsuario)-(NUTR, PSIC, GUIA, QUAN)-E(idEspecialista)-C(IDCITA)'
@@ -380,15 +380,13 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     });
 
     if (datosUser.tipoPuesto.toLowerCase() !== 'operativa') {
-      const pago = await bbPago(
+      await bbPago(
         DATOS_PAGO.FOLIO,
         DATOS_PAGO.REFERENCIA,
         DATOS_PAGO.MONTO,
         DATOS_PAGO.CONCEPTO,
         DATOS_PAGO.SERVICIO
       );
-      if (pago === true)
-        console.log('Hacer algo para actualizar estatus a otro de proceso de pago');
     }
     if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
       const METODO_PAGO = Object.freeze({
@@ -445,6 +443,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const bbString = `${folio}|${referencia}|${monto}|${concepto}|${servicio}|`;
     const hash = await getEncodedHash(bbString);
 
+    console.log(referencia);
     const regex = /^U\d+-[A-Z]{4}-E\d+-C\d+$/;
     console.log(!hash.data, Number.isNaN(folio), !regex.test(referencia), servicio === 501);
     // console.log(!hash.data, !folio.isNaN(), regex.test(referencia), servicio === '501');
@@ -593,53 +592,88 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     return onClose();
   };
 
-  const onPay = async () => {
+  const pagarCitaPendiente = async () => {
     setBtnPayDisabled(true);
-    let precio = 50;
-    let metodoPago = 1;
-    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
-      precio = 0;
-      metodoPago = 3;
+    /* VALIDAR SI ES GRATUITA LA CITA */
+    let precio = 0.02;
+    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') precio = 0.01;
+
+    let nombreBeneficio = '';
+    let abreviatura = '';
+    switch (currentEvent.idEspecialista) {
+      case 158:
+        nombreBeneficio = 'quantum balance';
+        abreviatura = 'QUAN';
+        break;
+      case 537:
+        nombreBeneficio = 'nutrición';
+        abreviatura = 'NUTR';
+        break;
+      case 585:
+        nombreBeneficio = 'psicología';
+        abreviatura = 'PSIC';
+        break;
+      case 686:
+        nombreBeneficio = 'guía espiritual';
+        abreviatura = 'GUIA';
+        break;
+      default:
+        break;
     }
-    const registrarPago = await registrarDetalleDePago(
-      datosUser.idUsuario,
-      uuidv4().substring(0, 20),
-      1,
-      precio,
-      metodoPago
-    );
-    if (registrarPago.result) {
-      const update = await updateAppointment(
-        datosUser.idUsuario,
-        currentEvent.id,
-        1,
-        registrarPago.data,
-        null,
-        currentEvent.idEventoGoogle
+
+    const DATOS_CITA = Object.freeze({
+      TITULO: `Cita ${nombreBeneficio} - ${datosUser.nombre}`,
+      ID_ESPECIALISTA: currentEvent.idEspecialista,
+      ID_USUARIO: datosUser.idUsuario,
+    });
+
+    const DATOS_PAGO = Object.freeze({
+      FOLIO: `${DATOS_CITA.ID_USUARIO}${dayjs(new Date()).format('HHmmssYYYYMMDD')}`,
+      REFERENCIA: `U${DATOS_CITA.ID_USUARIO}-${abreviatura}-E${DATOS_CITA.ID_ESPECIALISTA}-C${currentEvent.idCita}`,
+      // 'U88-QUAN-E64-C65',
+      // `U${DATOS_CITA.ID_USUARIO}-${abreviatura}-E${DATOS_CITA.ID_ESPECIALISTA}-C${agendar.data}}`,
+      // Referencia: 'U(idUsuario)-(NUTR, PSIC, GUIA, QUAN)-E(idEspecialista)-C(IDCITA)'
+      // Es importante que la referencia tenga está estructura para que se pueda enlazar el historial de pagos a una cita reagendada.
+      MONTO: precio,
+      CONCEPTO: '1',
+      SERVICIO: '501',
+    });
+
+    if (datosUser.tipoPuesto.toLowerCase() !== 'operativa') {
+      await bbPago(
+        DATOS_PAGO.FOLIO,
+        DATOS_PAGO.REFERENCIA,
+        DATOS_PAGO.MONTO,
+        DATOS_PAGO.CONCEPTO,
+        DATOS_PAGO.SERVICIO
       );
-      setOpen(true);
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      setOpen(false);
-      if (update.result) {
-        enqueueSnackbar('¡Se ha generado el pago con éxito!', {
-          variant: 'success',
-        });
-        return onClose();
-      }
-      if (!update.result) {
-        enqueueSnackbar('¡Se obtuvo un error al intentar generar el pago de cita!', {
-          variant: 'error',
-        });
-        return onClose();
-      }
     }
-    if (!registrarPago.result) {
-      enqueueSnackbar('¡Ha surgido un error al intentar registrar el detalle de pago!', {
-        variant: 'error',
+
+    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
+      const METODO_PAGO = Object.freeze({
+        NO_APLICA: 7,
+      });
+
+      const ESTATUS_PAGO = Object.freeze({
+        COBRADO: 1,
+      });
+
+      await pagoGratuito(
+        DATOS_PAGO.FOLIO,
+        DATOS_PAGO.REFERENCIA,
+        DATOS_PAGO.MONTO,
+        DATOS_PAGO.CONCEPTO,
+        METODO_PAGO.NO_APLICA,
+        ESTATUS_PAGO.COBRADO,
+        selectedValues.idCita
+      );
+
+      enqueueSnackbar('¡El pago de cita se ha realizado con exito!', {
+        variant: 'success',
       });
     }
-    onClose();
-    return !registrarPago.result;
+
+    appointmentMutate();
   };
 
   const onEvaluate = async () => {
@@ -1934,7 +1968,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                     color="success"
                     disabled={currentEvent?.estatus !== 6}
                     loading={btnPayDisabled}
-                    onClick={onPay}
+                    onClick={pagarCitaPendiente}
                   >
                     Pagar
                   </LoadingButton>
@@ -1964,37 +1998,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
           )}
         </FormProvider>
       )}
-
-      <Dialog
-        open={open}
-        maxWidth="sm"
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogContent sx={{ pb: 2 }}>
-          <Stack
-            direction="row"
-            justifyContent="center"
-            useFlexGap
-            flexWrap="wrap"
-            sx={{ pt: { xs: 1, md: 2 }, pb: { xs: 1, md: 2 } }}
-          >
-            <Typography color="black" sx={{ mt: 1, mb: 1 }}>
-              <strong>Confirmando pago...</strong>
-            </Typography>
-          </Stack>
-          <Stack
-            direction="row"
-            justifyContent="center"
-            useFlexGap
-            flexWrap="wrap"
-            sx={{ pt: { xs: 1, md: 2 }, pb: { xs: 1, md: 2 } }}
-          >
-            <Iconify icon="eos-icons:bubble-loading" width={30} sx={{ color: 'text.disabled' }} />
-          </Stack>
-          {/* eos-icons:bubble-loading */}
-        </DialogContent>
-      </Dialog>
 
       {/* REAGENDAR CITA */}
       <Dialog
