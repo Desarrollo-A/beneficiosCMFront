@@ -389,6 +389,87 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     return true;
   });
 
+  const bbPago = async (folio, referencia, monto, concepto, servicio) => {
+    const bbString = `${folio}|${referencia}|${monto}|${concepto}|${servicio}|`;
+    const hash = await getEncodedHash(bbString);
+
+    const regex = /^U\d+-[A-Z]{4}-E\d+-C\d+$/;
+    console.log(!hash.data, Number.isNaN(folio), !regex.test(referencia), servicio === 501);
+    // console.log(!hash.data, !folio.isNaN(), regex.test(referencia), servicio === '501');
+    if (!hash.data || Number.isNaN(folio) || !regex.test(referencia) || servicio === 501) {
+      enqueueSnackbar('Hubó un error al mostrar la ventana de pagos', {
+        variant: 'error',
+      });
+      return false;
+    }
+
+    const params = `width=${window.screen.width}, height=${window.screen.height}, top=0, left=0, fullscreen=yes, scrollbars=yes, directories=no`;
+
+    /* ARMARDO DEL FORM PARA ENVIO DE PARAMETROS Y ABRIR POPUP A LA MISMA VEZ */
+    const windowName = `w_${Date.now()}${Math.floor(Math.random() * 100000).toString()}`;
+    const form = document.createElement('form');
+    form.setAttribute('method', 'POST');
+    form.setAttribute('action', 'https://multipagos.bb.com.mx/Estandar/index2.php');
+    form.setAttribute('target', windowName);
+
+    const fields = [
+      { name: 'cl_folio', value: folio },
+      { name: 'cl_referencia', value: referencia },
+      { name: 'dl_monto', value: monto },
+      { name: 'cl_concepto', value: concepto },
+      { name: 'servicio', value: servicio },
+      { name: 'hash', value: hash.data.trim() },
+    ];
+
+    console.log('Fields', fields);
+
+    fields.forEach((field) => {
+      const hiddenField = document.createElement('input');
+      hiddenField.setAttribute('type', 'hidden');
+      hiddenField.setAttribute('name', field.name);
+      hiddenField.setAttribute('value', field.value);
+      form.appendChild(hiddenField);
+    });
+
+    document.body.appendChild(form);
+    console.log('Form', form);
+
+    window.open('', windowName, params);
+    form.target = windowName;
+    form.submit();
+    document.body.removeChild(form);
+    return true;
+  };
+
+  const pagoGratuito = async (
+    folio,
+    referencia,
+    cantidad,
+    concepto,
+    metodoPago,
+    estatusPago,
+    idCita
+  ) => {
+    const registrarPago = await registrarDetalleDePago(
+      datosUser.idUsuario,
+      folio,
+      referencia,
+      cantidad,
+      concepto,
+      metodoPago,
+      estatusPago,
+      idCita
+    );
+
+    if (!registrarPago.result) {
+      enqueueSnackbar('¡Ha surgido un error al generar el detalle de pago!', {
+        variant: 'error',
+      });
+      return onClose();
+    }
+    return false;
+  };
+
   const onCancel = async () => {
     setBtnConfirmAction(true);
     const cancel = await cancelAppointment(currentEvent, currentEvent.id, 0, datosUser.idUsuario);
