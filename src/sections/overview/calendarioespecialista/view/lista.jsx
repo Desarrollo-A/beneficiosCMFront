@@ -82,7 +82,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
   const selectedModalitie = !!(
     (type === 'date' && modalitie.id) ||
     type === 'cancel' ||
-    (type === 'date' && patient?.externo === 1)
+    (type === 'date' && parseInt(patient?.externo, 10) === 1)
   );
   const dateError = type === 'cancel' && defaultInicio > defaultFecha; // validacion que la fecha final no sea menor a la fecha inicio
   const endValidation = allDay ? !defaultEnd : defaultEnd;
@@ -286,7 +286,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
         </Stack>
         <Stack direction="row" justifyContent="space-between " sx={{ p: { xs: 1, md: 2 } }}>
           <Typography variant="subtitle1">{dateTitle}</Typography>
-          {patient?.externo === 1 && (
+          {parseInt(patient?.externo, 10) === 1 && (
             <Typography color="error" variant="subtitle2">
               Para lamat solo aplican citas presenciales
             </Typography>
@@ -323,7 +323,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
           </Stack>
         )}
         <Stack spacing={3} sx={{ p: { xs: 1, md: 2 } }}>
-          {type === 'date' && patient?.externo !== 1 ? (
+          {type === 'date' && parseInt(patient?.externo, 10) !== 1 ? (
             <RHFAutocomplete
               name="tipoCita"
               label="Tipo de cita"
