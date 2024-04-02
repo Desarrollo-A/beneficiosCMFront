@@ -227,6 +227,7 @@ export function getDiasDisponibles(idUsuario, idSede) {
 }
 
 // Función para crear cita
+// Función para crear cita
 export function crearCita(
   titulo,
   idEspecialista,
@@ -265,7 +266,6 @@ export function crearCita(
 }
 
 // Trae todas las citas del usuario
-
 export function useGetAppointmentsByUser(current, id) {
   const URL_APPOINTMENTS = [endpoints.calendarioColaborador.getAppointmentsByUser];
   const year = current.getFullYear();

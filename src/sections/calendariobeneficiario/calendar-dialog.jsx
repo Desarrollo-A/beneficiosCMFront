@@ -443,10 +443,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const bbString = `${folio}|${referencia}|${monto}|${concepto}|${servicio}|`;
     const hash = await getEncodedHash(bbString);
 
-    console.log(referencia);
     const regex = /^U\d+-[A-Z]{4}-E\d+-C\d+$/;
-    console.log(!hash.data, Number.isNaN(folio), !regex.test(referencia), servicio === 501);
-    // console.log(!hash.data, !folio.isNaN(), regex.test(referencia), servicio === '501');
     if (!hash.data || Number.isNaN(folio) || !regex.test(referencia) || servicio === 501) {
       enqueueSnackbar('Hubó un error al mostrar la ventana de pagos', {
         variant: 'error',
@@ -472,8 +469,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       { name: 'hash', value: hash.data.trim() },
     ];
 
-    console.log('Fields', fields);
-
     fields.forEach((field) => {
       const hiddenField = document.createElement('input');
       hiddenField.setAttribute('type', 'hidden');
@@ -483,7 +478,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     });
 
     document.body.appendChild(form);
-    console.log('Form', form);
 
     window.open('', windowName, params);
     form.target = windowName;
@@ -600,7 +594,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     let nombreBeneficio = '';
     let abreviatura = '';
-    switch (currentEvent.idEspecialista) {
+    switch (currentEvent.idPuesto) {
       case 158:
         nombreBeneficio = 'quantum balance';
         abreviatura = 'QUAN';
@@ -629,7 +623,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     const DATOS_PAGO = Object.freeze({
       FOLIO: `${DATOS_CITA.ID_USUARIO}${dayjs(new Date()).format('HHmmssYYYYMMDD')}`,
-      REFERENCIA: `U${DATOS_CITA.ID_USUARIO}-${abreviatura}-E${DATOS_CITA.ID_ESPECIALISTA}-C${currentEvent.idCita}`,
+      REFERENCIA: `U${DATOS_CITA.ID_USUARIO}-${abreviatura}-E${DATOS_CITA.ID_ESPECIALISTA}-C${currentEvent.id}`,
       // 'U88-QUAN-E64-C65',
       // `U${DATOS_CITA.ID_USUARIO}-${abreviatura}-E${DATOS_CITA.ID_ESPECIALISTA}-C${agendar.data}}`,
       // Referencia: 'U(idUsuario)-(NUTR, PSIC, GUIA, QUAN)-E(idEspecialista)-C(IDCITA)'
@@ -665,7 +659,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         DATOS_PAGO.CONCEPTO,
         METODO_PAGO.NO_APLICA,
         ESTATUS_PAGO.COBRADO,
-        selectedValues.idCita
+        currentEvent.id
       );
 
       enqueueSnackbar('¡El pago de cita se ha realizado con exito!', {
@@ -673,6 +667,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       });
     }
 
+    setBtnPayDisabled(false);
     appointmentMutate();
   };
 
@@ -1107,7 +1102,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
   const agendarCita = async (
     titulo,
-    especialistah,
+    especialista,
     observaciones,
     horarioCita,
     tipoCita,
@@ -1116,18 +1111,19 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     detallePago,
     beneficio,
     idGoogleEvent,
-    modalidad
+    modalidad,
+    estatusCita
   ) => {
     const registrarCita = await crearCita(
       titulo,
-      especialistah,
+      especialista,
       idUsuario,
       observaciones,
       horarioCita,
       tipoCita,
       atencionPorSede,
       datosUser.idSede,
-      1,
+      estatusCita,
       idUsuario,
       idUsuario,
       detallePago,
