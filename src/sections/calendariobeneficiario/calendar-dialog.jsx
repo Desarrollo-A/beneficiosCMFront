@@ -495,6 +495,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     estatusPago,
     idCita
   ) => {
+    alert(folio, referencia, cantidad, concepto, metodoPago, estatusPago, idCita);
     const registrarPago = await registrarDetalleDePago(
       datosUser.idUsuario,
       folio,
