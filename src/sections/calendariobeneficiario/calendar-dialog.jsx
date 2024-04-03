@@ -1,6 +1,7 @@
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
 import * as yup from 'yup';
+import { mutate } from 'swr';
 import PropTypes from 'prop-types';
 import utc from 'dayjs/plugin/utc';
 import { useForm } from 'react-hook-form';
@@ -21,6 +22,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
+import { endpoints } from 'src/utils/axios';
 import { generarFechas } from 'src/utils/general';
 
 import { getEncodedHash } from 'src/api/api';
@@ -412,6 +414,11 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       variant: 'success',
     });
     appointmentMutate();
+
+    mutate(endpoints.reportes.citas);
+    mutate(endpoints.citas.getCitas);
+    mutate(endpoints.dashboard.getCountModalidades);
+    mutate(endpoints.dashboard.getCountEstatusCitas);
 
     /* *** PROCESO DE MUESTRA DE PREVIEW *** */
     const scheduledAppointment = await consultarCita(agendar.data);

@@ -87,8 +87,6 @@ export default function CitasView() {
 
   const { citasData } = usePostGeneral(user?.idUsuario, endpoints.citas.getCitas, 'citasData');
 
-  console.log(citasData)
-
   const { especialistasData } = useGetGeneral(
     endpoints.reportes.especialistas,
     'especialistasData'
