@@ -14,6 +14,7 @@ import InputLabel from '@mui/material/InputLabel';
 import Typography from '@mui/material/Typography';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
+import LinearProgress from '@mui/material/LinearProgress';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -72,6 +73,8 @@ export default function AppointmentSchedule({
   currentEvent,
   handleHorarioSeleccionado,
 }) {
+
+
   return (
     <Grid sx={{ display: { xs: 'block', sm: 'flex', md: 'flex' } }}>
       <Grid sx={{ width: '100%' }}>
@@ -86,8 +89,8 @@ export default function AppointmentSchedule({
             sx={
               selectedValues.modalidad
                 ? {
-                    color: 'white',
-                  }
+                  color: 'white',
+                }
                 : {}
             }
           >
@@ -100,6 +103,7 @@ export default function AppointmentSchedule({
                 {dayjs().locale('es').format('dddd, DD MMMM YYYY')}
               </Typography>
             )}
+            
             {!currentEvent?.id && selectedValues?.modalidad ? (
               <ThemeProvider theme={darkTheme}>
                 <Stack direction="column" spacing={3} justifyContent="space-between">
@@ -114,13 +118,20 @@ export default function AppointmentSchedule({
                       value={selectedValues.beneficio || ''}
                       defaultValue=""
                       onChange={(e) => handleChange('beneficio', e.target.value)}
-                      disabled={!!(beneficios?.length === 0 || currentEvent?.id)}
+                    /* disabled={!!(beneficios?.length === 0 || currentEvent?.id)} */
                     >
-                      {beneficios?.map((e) => (
-                        <MenuItem key={e.idPuesto} value={e.idPuesto}>
-                          {e.puesto.toUpperCase()}
-                        </MenuItem>
-                      ))}
+                      {!(beneficios?.length === 0 || currentEvent?.id) ? (
+                        beneficios?.map((e) => (
+                          <MenuItem key={e.idPuesto} value={e.idPuesto}>
+                            {e.puesto.toUpperCase()}
+                          </MenuItem>
+                        ))
+                      ) : (
+                        <Grid style={{ paddingTop: '3%' }}>
+                          <LinearProgress />
+                          <Box mb={3} />
+                        </Grid>
+                      )}
                     </Select>
                     {errorBeneficio && selectedValues.beneficio === '' && (
                       <FormHelperText error={errorBeneficio}>
@@ -138,13 +149,20 @@ export default function AppointmentSchedule({
                       value={selectedValues.especialista}
                       defaultValue=""
                       onChange={(e) => handleChange('especialista', e.target.value)}
-                      disabled={!!(especialistas?.length === 0 || currentEvent?.id)}
+                      /* disabled={!!(especialistas?.length === 0 || currentEvent?.id)} */
                     >
-                      {especialistas?.map((e, index) => (
+                      {!(especialistas?.length === 0 || currentEvent?.id) ? (
+                      especialistas?.map((e, index) => (
                         <MenuItem key={e.id} value={e.id}>
                           {e.especialista.toUpperCase()}
                         </MenuItem>
-                      ))}
+                      ))
+                      ) : (
+                        <Grid style={{ paddingTop: '3%' }}>
+                          <LinearProgress />
+                          <Box mb={3} />
+                        </Grid>
+                      )}
                     </Select>
                     {errorEspecialista && selectedValues.especialista === '' && (
                       <FormHelperText error={errorEspecialista}>
@@ -162,13 +180,20 @@ export default function AppointmentSchedule({
                       defaultValue=""
                       value={selectedValues.modalidad}
                       onChange={(e) => handleChange('modalidad', e.target.value)}
-                      disabled={!!(modalidades?.length === 0 || currentEvent?.id)}
+                      /* disabled={!!(modalidades?.length === 0 || currentEvent?.id)} */
                     >
-                      {modalidades?.map((e, index) => (
+                      {!(modalidades?.length === 0 || currentEvent?.id) ? (
+                      modalidades?.map((e, index) => (
                         <MenuItem key={e.tipoCita} value={e.tipoCita}>
                           {e.modalidad.toUpperCase()}
                         </MenuItem>
-                      ))}
+                      ))
+                      ) : (
+                        <Grid style={{ paddingTop: '3%' }}>
+                          <LinearProgress />
+                          <Box mb={3} />
+                        </Grid>
+                      )}
                     </Select>
                     {errorModalidad && selectedValues.modalidad === '' && (
                       <FormHelperText error={errorModalidad}>
@@ -194,61 +219,65 @@ export default function AppointmentSchedule({
                     disabled={!!(beneficios?.length === 0 || currentEvent?.id)}
                   >
                     {beneficios?.map((e) => (
-                      <MenuItem key={e.idPuesto} value={e.idPuesto}>
-                        {e.puesto.toUpperCase()}
-                      </MenuItem>
-                    ))}
+                        <MenuItem key={e.idPuesto} value={e.idPuesto}>
+                          {e.puesto.toUpperCase()}
+                        </MenuItem>
+                      ))}
                   </Select>
                   {errorBeneficio && selectedValues.beneficio === '' && (
                     <FormHelperText error={errorBeneficio}>Seleccione un beneficio</FormHelperText>
                   )}
                 </FormControl>
-                <FormControl error={!!errorEspecialista} fullWidth>
-                  <InputLabel id="especialista-input">Especialista</InputLabel>
-                  <Select
-                    labelId="especialista-input"
-                    id="select-especialista"
-                    label="Especialista"
-                    name="especialista"
-                    value={selectedValues.especialista}
-                    defaultValue=""
-                    onChange={(e) => handleChange('especialista', e.target.value)}
-                    disabled={!!(especialistas?.length === 0 || currentEvent?.id)}
-                  >
-                    {especialistas?.map((e, index) => (
-                      <MenuItem key={e.id} value={e.id}>
-                        {e.especialista.toUpperCase()}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  {errorEspecialista && selectedValues.especialista === '' && (
-                    <FormHelperText error={errorEspecialista}>
-                      Seleccione un especialista
-                    </FormHelperText>
-                  )}
-                </FormControl>
-                <FormControl error={!!errorModalidad} fullWidth>
-                  <InputLabel id="modalidad-input">Modalidad</InputLabel>
-                  <Select
-                    labelId="Modalidad"
-                    id="select-modalidad"
-                    label="Modalidad"
-                    name="Modalidad"
-                    defaultValue=""
-                    value={selectedValues.modalidad}
-                    onChange={(e) => handleChange('modalidad', e.target.value)}
-                    disabled={!!(modalidades?.length === 0 || currentEvent?.id)}
-                  >
-                    {modalidades?.map((e, index) => (
-                      <MenuItem key={e.tipoCita} value={e.tipoCita}>
-                        {e.modalidad.toUpperCase()}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  {errorModalidad && selectedValues.modalidad === '' && (
-                    <FormHelperText error={errorModalidad}>Seleccione una modalidad</FormHelperText>
-                  )}
-                </FormControl>
+
+                  <>
+                    <FormControl error={!!errorEspecialista} fullWidth>
+                      <InputLabel id="especialista-input">Especialista</InputLabel>
+                      <Select
+                        labelId="especialista-input"
+                        id="select-especialista"
+                        label="Especialista"
+                        name="especialista"
+                        value={selectedValues.especialista}
+                        defaultValue=""
+                        onChange={(e) => handleChange('especialista', e.target.value)}
+                        disabled={!!(especialistas?.length === 0 || currentEvent?.id)}
+                      >
+                        {especialistas?.map((e, index) => (
+                          <MenuItem key={e.id} value={e.id}>
+                            {e.especialista.toUpperCase()}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      {errorEspecialista && selectedValues.especialista === '' && (
+                        <FormHelperText error={errorEspecialista}>
+                          Seleccione un especialista
+                        </FormHelperText>
+                      )}
+                    </FormControl>
+
+                    <FormControl error={!!errorModalidad} fullWidth>
+                      <InputLabel id="modalidad-input">Modalidad</InputLabel>
+                      <Select
+                        labelId="Modalidad"
+                        id="select-modalidad"
+                        label="Modalidad"
+                        name="Modalidad"
+                        defaultValue=""
+                        value={selectedValues.modalidad}
+                        onChange={(e) => handleChange('modalidad', e.target.value)}
+                        disabled={!!(modalidades?.length === 0 || currentEvent?.id)}
+                      >
+                        {modalidades?.map((e, index) => (
+                          <MenuItem key={e.tipoCita} value={e.tipoCita}>
+                            {e.modalidad.toUpperCase()}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      {errorModalidad && selectedValues.modalidad === '' && (
+                        <FormHelperText error={errorModalidad}>Seleccione una modalidad</FormHelperText>
+                      )}
+                    </FormControl>
+                  </>
               </Stack>
             )}
             {selectedValues.modalidad === 1 && selectedValues.beneficio && (
@@ -275,7 +304,7 @@ export default function AppointmentSchedule({
                       </Stack>
                     </Stack>
                   ) : (
-                    ' Cargando...'
+                    <LinearProgress />
                   )}
                 </Stack>
                 <Stack

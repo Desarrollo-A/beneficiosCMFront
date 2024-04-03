@@ -44,7 +44,7 @@ export default function AvisoPrivacidadGeneral({datos, enviarDatosAlPadre, idPue
     };
 
     // subir el archivo
-    const [archivo, setArchivo] = React.useState(null);  
+    const [archivo, setArchivo] = useState(null);  
     const manejarCambioArchivo = (event) => {
         setArchivo(event[0]);
         setNombreArchivo({nombre: event[0].path, activo: true});
@@ -55,7 +55,6 @@ export default function AvisoPrivacidadGeneral({datos, enviarDatosAlPadre, idPue
         setNombreArchivo({nombre: '', activo: false});
     };
     
-
     return (
       <>
         <Container
