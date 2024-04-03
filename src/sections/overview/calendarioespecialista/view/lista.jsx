@@ -1,6 +1,7 @@
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
 import * as yup from 'yup';
+import { mutate } from 'swr';
 // import { Base64 } from 'js-base64';
 import PropTypes from 'prop-types';
 import { es } from 'date-fns/locale';
@@ -22,6 +23,7 @@ import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 import uuidv4 from 'src/utils/uuidv4';
+import { endpoints } from 'src/utils/axios';
 import { fDate } from 'src/utils/format-time';
 
 import { useAuthContext } from 'src/auth/hooks';
@@ -193,6 +195,12 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
       reRender(); // ayuda a que se haga un mutate en caso que sea true el resultado
       reset();
       onClose();
+
+      mutate(endpoints.reportes.citas);
+      mutate(endpoints.citas.getCitas);
+      mutate(endpoints.dashboard.getCountModalidades);
+      mutate(endpoints.dashboard.getCountEstatusCitas);
+
       return enqueueSnackbar(save.msg);
     }
     setBtnDisable(false);
