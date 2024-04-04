@@ -31,7 +31,7 @@ export const fetcherInsert = async (args) => {
     {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        token: accessToken,
+        Token: accessToken,
       },
       ...config,
     }
@@ -48,7 +48,7 @@ export function useGetToken(object) {
 
   const config = {
     headers: {
-      token: accessToken,
+      Token: accessToken,
     },
   };
 

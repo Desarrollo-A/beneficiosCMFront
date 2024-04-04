@@ -13,7 +13,7 @@ export function useGetCitasArea(object) {
 
   const config = {
     headers: {
-      token: accessToken,
+      Token: accessToken,
     },
   };
 
@@ -43,7 +43,7 @@ export function useGetMeta(object) {
 
   const config = {
     headers: {
-      token: accessToken,
+      Token: accessToken,
     },
   };
 
@@ -73,7 +73,7 @@ export function useGetSedesPresenciales(object) {
 
   const config = {
     headers: {
-      token: accessToken,
+      Token: accessToken,
     },
   };
 
@@ -103,7 +103,7 @@ export function useGetHorariosPresenciales(object) {
 
   const config = {
     headers: {
-      token: accessToken,
+      Token: accessToken,
     },
   };
 
@@ -134,7 +134,7 @@ export function useGetDiasPresenciales(object) {
 
   const config = {
     headers: {
-      token: accessToken,
+      Token: accessToken,
     },
   };
 
@@ -165,7 +165,7 @@ export function useGetDiasPresenciales2(object) {
 
   const config = {
     headers: {
-      token: accessToken,
+      Token: accessToken,
     },
   };
 
@@ -215,7 +215,7 @@ export function useGetEspecialistasPorArea(object) {
 
   const config = {
     headers: {
-      token: accessToken,
+      Token: accessToken,
     },
   };
 

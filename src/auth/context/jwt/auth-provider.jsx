@@ -65,7 +65,7 @@ export function AuthProvider({ children }) {
 
         const config = {
           headers: {
-            token: accessToken,
+            Token: accessToken,
           },
         };
 
