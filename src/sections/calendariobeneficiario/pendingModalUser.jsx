@@ -252,8 +252,8 @@ export default function PendingModalUser() {
       await pagoGratuito(
         DATOS_PAGO.FOLIO,
         DATOS_PAGO.REFERENCIA,
-        DATOS_PAGO.MONTO,
         DATOS_PAGO.CONCEPTO,
+        DATOS_PAGO.MONTO,
         METODO_PAGO.NO_APLICA,
         ESTATUS_PAGO.COBRADO,
         currentEvent.id
@@ -317,8 +317,8 @@ export default function PendingModalUser() {
   const pagoGratuito = async (
     folio,
     referencia,
-    cantidad,
     concepto,
+    cantidad,
     metodoPago,
     estatusPago,
     idCita
@@ -327,8 +327,8 @@ export default function PendingModalUser() {
       datosUser.idUsuario,
       folio,
       referencia,
-      cantidad,
       concepto,
+      cantidad,
       metodoPago,
       estatusPago,
       idCita

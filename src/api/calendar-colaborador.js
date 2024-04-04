@@ -128,9 +128,27 @@ export function getAtencionXSede(especialista, sede, area, modalidad) {
 }
 
 // Registrar el detalle de pago
-export function registrarDetalleDePago(usuario, folio, concepto, cantidad, metodoPago) {
+export function registrarDetalleDePago(
+  usuario,
+  folio,
+  referencia,
+  concepto,
+  cantidad,
+  metodoPago,
+  estatusPago,
+  idCita
+) {
   const URL = [endpoints.calendarioColaborador.registrarDetallePago];
-  const detalle = fetcherPost(URL, { usuario, folio, concepto, cantidad, metodoPago });
+  const detalle = fetcherPost(URL, {
+    usuario,
+    folio,
+    referencia,
+    concepto,
+    cantidad,
+    metodoPago,
+    estatusPago,
+    idCita,
+  });
 
   return detalle;
 }

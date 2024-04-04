@@ -214,6 +214,13 @@ export default function CalendarPreview({ event, open, handleClose }) {
             ) : (
               ''
             )}
+            {event?.estatus === 10 ? (
+              <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                Cita en {`${event?.beneficio} (cita expirada)`}
+              </Typography>
+            ) : (
+              ''
+            )}
           </Stack>
         </Stack>
         <Stack

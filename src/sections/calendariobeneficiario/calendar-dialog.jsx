@@ -336,7 +336,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       ESTATUS_CITA:
         datosUser.tipoPuesto.toLowerCase() === 'operativa'
           ? ESTATUS_CITA.POR_ASISTIR
-          : ESTATUS_CITA.PENDIENTE_PAGO,
+          : ESTATUS_CITA.PROCESO_PAGO,
     });
 
     const agendar = await agendarCita(
@@ -400,8 +400,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       await pagoGratuito(
         DATOS_PAGO.FOLIO,
         DATOS_PAGO.REFERENCIA,
-        DATOS_PAGO.MONTO,
         DATOS_PAGO.CONCEPTO,
+        DATOS_PAGO.MONTO,
         METODO_PAGO.NO_APLICA,
         ESTATUS_PAGO.COBRADO,
         agendar.data
@@ -479,29 +479,38 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     document.body.appendChild(form);
 
-    window.open('', windowName, params);
+    const popupWindow = window.open('', windowName, params);
     form.target = windowName;
     form.submit();
     document.body.removeChild(form);
+
+    const checkWindow = setInterval(() => {
+      if (popupWindow.closed) {
+        console.log('CLOSED: La ventana se ha cerrado');
+        clearInterval(checkWindow);
+      } else {
+        console.log('OPEN: La ventana sigue abierta');
+      }
+    }, 10000); // se ejecuta cada 10 segundos
+
     return true;
   };
 
   const pagoGratuito = async (
     folio,
     referencia,
-    cantidad,
     concepto,
+    cantidad,
     metodoPago,
     estatusPago,
     idCita
   ) => {
-    alert(folio, referencia, cantidad, concepto, metodoPago, estatusPago, idCita);
     const registrarPago = await registrarDetalleDePago(
       datosUser.idUsuario,
       folio,
       referencia,
-      cantidad,
       concepto,
+      cantidad,
       metodoPago,
       estatusPago,
       idCita
@@ -656,8 +665,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       await pagoGratuito(
         DATOS_PAGO.FOLIO,
         DATOS_PAGO.REFERENCIA,
-        DATOS_PAGO.MONTO,
         DATOS_PAGO.CONCEPTO,
+        DATOS_PAGO.MONTO,
         METODO_PAGO.NO_APLICA,
         ESTATUS_PAGO.COBRADO,
         currentEvent.id
@@ -1540,6 +1549,13 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                         {currentEvent?.estatus === 9 ? (
                           <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
                             Cita en {`${currentEvent?.beneficio} (cita expirada)`}
+                          </Typography>
+                        ) : (
+                          ''
+                        )}
+                        {currentEvent?.estatus === 10 ? (
+                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                            Cita en {`${currentEvent?.beneficio} (proceso de pago)`}
                           </Typography>
                         ) : (
                           ''
