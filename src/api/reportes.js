@@ -97,15 +97,17 @@ export function usePostIngresos(dataValue, URL, nameData) {
 
 export function usePostSelect(dataValue, URL, nameData) {
 
-  const { data, isLoading, error, isValidating } = useSWR(
+  const { data, isLoading, error, isValidating, mutate : mutateSelect } = useSWR(
     URL,
     (url) => fetcherPost(url, dataValue),
     options
   );
 
+  
     useEffect(() => {
       mutate(URL);
     }, [URL, dataValue]);
+   
     
     const memoizedVal = useMemo(
       () => ({
@@ -114,8 +116,9 @@ export function usePostSelect(dataValue, URL, nameData) {
         dataError: error,
         dataValidating: isValidating,
         dataEmpty: !isLoading,
+        mutateSelect,
       }),
-      [data?.data, error, isLoading, isValidating, nameData]
+      [data?.data, error, isLoading, isValidating, nameData, mutateSelect]
     );
     return { ...memoizedVal };
 }

@@ -221,9 +221,12 @@ export default function PendingModal() {
                   name="motivos"
                   noOptionsText='Sin opciones'
                   multiple
+                  ListboxProps={{ style: { maxHeight: 200 } }}
                   limitTags={2}
+                  openText='Abrir'
+                  clearText='Borrar'
                   getOptionDisabled={(option) => // deshabilita las opciones que ya hayan sido seleccionadas
-                  reason.some((selectedOption) => selectedOption.value === option.value)
+                  reason.some((selectedOption) => (selectedOption.value === option.value ))
                 }
                   onChange={(event, value) => {
                     setReason(value);
@@ -268,6 +271,7 @@ export default function PendingModal() {
                       {...params}
                       label="Selecciona los motivos de la cita"
                       placeholder="motivos"
+                      style={{ maxHeight: '150px' }}
                     />
                   )}
                 />

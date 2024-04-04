@@ -35,7 +35,6 @@ const TABLE_HEAD = [
   { id: '', label: 'ID' },
   { id: '', label: 'FECHA CREACIÓN' },
   { id: '', label: 'ESTATUS' },
-  { id: '', label: 'DÍAS HÁBILES' },
   { id: '', label: '' },
 ];
 
@@ -61,10 +60,6 @@ export default function EncuestasLista({ encuestas, estatusCt }) {
   }
 
   const [area, setArea] = useState(puestos);
-
-  useEffect(() => {
-    setArea(area);
-  }, [area ]);
 
   const { getData } = usePostGeneral(area, endpoints.encuestas.getEncuestasCreadas, "getData");
 
@@ -190,7 +185,7 @@ export default function EncuestasLista({ encuestas, estatusCt }) {
                       onSelectRow={() => table.onSelectRow(usuario.id)}
                       onDeleteRow={() => handleDisableUser(usuario.id)}
                       est={EstatusData}
-                      puestos={puestos}
+                      puestos={area}
                     />
                   ))}
 

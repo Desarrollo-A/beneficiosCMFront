@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useRef, useState, useEffect } from 'react';
 
 import Dialog from '@mui/material/Dialog';
 import MenuItem from '@mui/material/MenuItem';
@@ -7,6 +7,7 @@ import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 import ListItemText from '@mui/material/ListItemText';
+import DialogContentText from '@mui/material/DialogContentText';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
@@ -42,6 +43,23 @@ export default function RowResumenTerapias({ row, area, idUs, rol }) {
   const [open, setOpen] = useState(false);
 
   const [close] = useState(false);
+
+  const [scroll, setScroll] = useState('paper');
+
+  const descriptionElementRef = useRef(null);
+  useEffect(() => {
+    if (open) {
+      const { current: descriptionElement } = descriptionElementRef;
+      if (descriptionElement !== null) {
+        descriptionElement.focus();
+      }
+    }
+  }, [open]);
+
+  const handleClickOpen = (scrollType) => () => {
+    setOpen(true);
+    setScroll(scrollType);
+  };
 
   const handleOpen = (idUsuario) => {
     setUs(idUsuario);
@@ -100,6 +118,7 @@ export default function RowResumenTerapias({ row, area, idUs, rol }) {
         <MenuItem
           onClick={() => {
             handleOpen(row.idUsuario);
+            handleClickOpen('paper');
           }}
         >
           <Iconify icon="icon-park-twotone:time" />
@@ -123,14 +142,23 @@ export default function RowResumenTerapias({ row, area, idUs, rol }) {
 
 
       <Dialog
+        fullWidth
         maxWidth={false}
         open={open}
         onClose={close}
         PaperProps={{
-          sx: { maxWidth: 720 },
+          sx: { maxWidth: 420 },
         }}
+        scroll={scroll}
+        aria-labelledby="scroll-dialog-title"
+        aria-describedby="scroll-dialog-description"
       >
+         <DialogContentText
+         id="scroll-dialog-description"
+         ref={descriptionElementRef}
+         tabIndex={-1}>
         <HistorialCitas idUsuario={us} area={area} rol={rol} idUs={idUs} open={quickHisCit.value} onClose={handleClose} />
+        </DialogContentText>
       </Dialog>
     </>
   );

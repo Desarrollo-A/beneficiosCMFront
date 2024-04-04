@@ -15,13 +15,14 @@ import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 import ModalArea from './modal-area';
+import ModalEstatus from './estatusDialog';
 import ModalModalidad from './modal-modalidad';
 import ModalEspecialista from './modal-especialista';
 
 // ----------------------------------------------------------------------
 
 export default function RowsAtencionXsede({ row, selected, onEditRow, onDeleteRow, modalidadesData, rol, close, idOficina, tipoCita, idEspecialista, idArea }) {
-  const { id, sede, oficina, ubicación, nombre, puesto, idPuesto, modalidad, estatus } = row;
+  const { id, sede, oficina, ubicación, nombre, puesto, idPuesto, modalidad, estatus, nombreArea } = row;
 
   const popover = usePopover();
 
@@ -30,7 +31,7 @@ export default function RowsAtencionXsede({ row, selected, onEditRow, onDeleteRo
   const [open, setOpen] = useState(false);
   const [open2, setOpen2] = useState(false);
   const [open3, setOpen3] = useState(false);
-  const [open4, setOpen4] = useState(false);
+  const [open4, setOpen4] = useState(false); // ver si se puede solo en una
 
   // const [close] = useState(false);
 
@@ -75,7 +76,7 @@ export default function RowsAtencionXsede({ row, selected, onEditRow, onDeleteRo
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{sede}</TableCell>
 
-        <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
+        <TableCell sx={{ whiteSpace: 'nowrap', alignItems: 'center' }}>
 
           <ListItemText
             primary={oficina}
@@ -86,9 +87,12 @@ export default function RowsAtencionXsede({ row, selected, onEditRow, onDeleteRo
               color: 'text.disabled',
             }}
           />
+
         </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{puesto}</TableCell>
+        
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{nombreArea}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{nombre}</TableCell>
 
@@ -164,8 +168,15 @@ export default function RowsAtencionXsede({ row, selected, onEditRow, onDeleteRo
             handleOpen4();
           }}
         >
-          <Iconify icon="material-symbols:auto-delete" />
-          Deshabilitar
+          {estatus === 1 ?
+            <Iconify icon="material-symbols:disabled-by-default" /> :
+            <Iconify icon="material-symbols:check-box" />
+          }
+          {estatus === 1 ?
+            'Deshabilitar' :
+            'Habilitar'
+          }
+          
         </MenuItem>
       </CustomPopover>
 
@@ -211,6 +222,21 @@ export default function RowsAtencionXsede({ row, selected, onEditRow, onDeleteRo
           id={id} 
           onClose={handleClose3}
           idArea={idArea} 
+        />
+      </Dialog>
+
+      <Dialog
+        maxWidth={false}
+        open={open4}
+        onClose={close}
+        PaperProps={{
+          sx: { maxWidth: 720 },
+        }}
+      >
+        <ModalEstatus
+          id={id} 
+          onClose={handleClose4}
+          estatus={estatus} 
         />
       </Dialog>
 

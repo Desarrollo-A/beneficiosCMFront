@@ -1,38 +1,68 @@
-import Clock from 'react-clock';
 import 'react-clock/dist/Clock.css';
 import { useState, useEffect } from 'react';
 
-import Card from '@mui/material/Card';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
+import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Unstable_Grid2';
 import Container from '@mui/material/Container';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import { alpha, useTheme } from '@mui/material/styles';
+import LinearProgress from '@mui/material/LinearProgress';
 
 import { endpoints } from 'src/utils/axios';
 
-import { bgGradient } from 'src/theme/css';
-import { useModalidad } from 'src/api/dash';
+import { useGetCounts } from 'src/api/dash';
 import { useAuthContext } from 'src/auth/hooks';
-import { usePostSelect } from 'src/api/reportes';
-import { useGetMeta } from 'src/api/especialistas';
+import { useGetGeneral } from 'src/api/general';
 import { SeoIllustration } from 'src/assets/illustrations';
-import { useGetGeneral, usePostGeneral } from 'src/api/general';
+import { useGetEspecialistasPorArea } from 'src/api/especialistas';
 
 import { useSettingsContext } from 'src/components/settings';
 
 import AppWelcome from '../app-welcome';
+import AppFeatured from '../app-featured';
 import WidgetConteo from '../widget-conteo';
 import GraficaMetas from '../grafica-metas';
-import EncuestaBarra from '../barra-encuesta';
+import GraficaPacientes from '../grafica-pacientes';
+import GraficaEncuestas from '../grafica-encuestas';
+import GraficaModalidad from '../grafica-modalidad';
 import GraficaMetasArea from '../grafica-metas-area';
-import EncuestaPorcentaje from '../porcentaje-encuesta';
+import GraficaEstatusCitas from '../grafica-estatus-citas'
 
 // ----------------------------------------------------------------------
 
 export default function DashView() {
+
+  const diaUnoMes = () => {
+    const fechaInicio = new Date();
+    const fecha = new Date(fechaInicio.getFullYear(), fechaInicio.getMonth(), 1);
+
+    const year = fecha.getFullYear();
+    const month = (fecha.getMonth() + 1).toString().padStart(2, '0');
+    const day = fecha.getDate().toString().padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  };
+
+  const ultimoDiaMes = () => {
+    const fechaInicio = new Date();
+    const MesSiguiente = new Date(fechaInicio.getFullYear(), fechaInicio.getMonth() + 1, 1);
+    const ultimoDia = new Date(MesSiguiente.getFullYear(), MesSiguiente.getMonth(), 0);
+
+    const year = ultimoDia.getFullYear();
+    const month = (ultimoDia.getMonth() + 1).toString().padStart(2, '0');
+    const day = ultimoDia.getDate().toString().padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  };
+
+  const datePikerI = () => {
+    const fechaInicio = new Date();
+    return new Date(fechaInicio.getFullYear(), fechaInicio.getMonth(), 1);
+  };
+
+  const datePikerF = () => {
+    const fechaInicio = new Date();
+    const MesSiguiente = new Date(fechaInicio.getFullYear(), fechaInicio.getMonth() + 1, 1);
+    return new Date(MesSiguiente.getFullYear(), MesSiguiente.getMonth(), 0);
+  };
 
   const { user } = useAuthContext();
 
@@ -40,417 +70,223 @@ export default function DashView() {
 
   const [_es, set_es] = useState('0');
 
-  const rol = user?.idRol
-  let puestos = 0;
+  const rol = user?.idRol;
 
-  if (rol === 4) {
-    puestos = 158;
-  } else if (rol === 2 || rol === 3) {
-    puestos = user?.idPuesto;
-  }
+  const puesto = user?.idPuesto;
 
-  const [areas, setAreas] = useState(puestos);
+  const id = user?.idUsuario;
 
-  const [ps, setPs] = useState(158);
-
-  const [valEsp, setValEsp] = useState({idData: ps, idRol: user?.idRol, slEs: _es, idUser: user?.idUsuario});
+  const [areas, setAreas] = useState(0);
 
   useEffect(() => {
-    setValEsp({idData: ps, idRol: user?.idRol, slEs: _es, idUser: user?.idUsuario});
-  }, [ps, user, _es]);
 
-  const { preguntaData } = usePostGeneral(areas, endpoints.dashboard.getPregunta, "preguntaData");
+    if (user?.idRol === 4) {
+      setAreas(158);
+    } else if (user?.idRol === 2 || user?.idRol === 3) {
+      setAreas(user?.idPuesto);
+    }
+
+  }, [user]);
 
   const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
 
-  const { pacientesData } = usePostGeneral(valEsp, endpoints.dashboard.getPacientes, "pacientesData");
+  const { asistenciaData } = useGetCounts(id, endpoints.dashboard.getCtAsistidas, "asistenciaData");
 
-  const { asistenciaData } = usePostGeneral(valEsp, endpoints.dashboard.getCtAsistidas, "asistenciaData");
+  const { canceladaData } = useGetCounts(id, endpoints.dashboard.getCtCanceladas, "canceladaData");
 
-  const { canceladaData } = usePostGeneral(valEsp, endpoints.dashboard.getCtCanceladas, "canceladaData");
+  const { penalizadaData } = useGetCounts(id, endpoints.dashboard.getCtPenalizadas, "penalizadaData");
 
-  const { penalizadaData } = usePostGeneral(valEsp, endpoints.dashboard.getCtPenalizadas, "penalizadaData");
+  const { ctDisponiblesData } = useGetCounts(id, endpoints.dashboard.getCtDisponibles, "ctDisponiblesData");
 
-  const { virtualData } = useModalidad(valEsp, endpoints.dashboard.getCtVirtuales, "virtualData");
-
-  const { presencialData } = useModalidad(valEsp, endpoints.dashboard.getCtPresenciales, "presencialData");
-
-  const { espData } = usePostSelect(ps, endpoints.gestor.getEsp, "espData");
-
-  const { meta: metaData } = useGetMeta({ especialista: rol === 4 && _es !== '0' ? _es : user?.idUsuario });
-
-  const [pgDt, setPgDt] = useState('');
-
-  const [dflt, setDflt] = useState('');
-
-  const [pg, setPg] = useState('1');
-
-  const [sn, setSn] = useState('');
-
-  const [idEncuesta, setIdEncuesta] = useState('');
-
-  const [pregunta, setPregunta] = useState([]);
-
-  const [paramRes, setParamRes] = useState([]);
-
-  const handleChangePg = (newPg) => {
-    setPregunta(newPg);
-  }
-
-  const handleChangeIdPg = (newIdPg) => {
-    setPg(newIdPg);
-  }
-
-  const [selectPg, setSelectPg] = useState('');
-
-  const { respCountData } = usePostGeneral(dflt, endpoints.dashboard.getCountRespuestas, "respCountData");
-
-  const { respData } = usePostGeneral(paramRes, endpoints.dashboard.getRespuestas, "respData");
-
-  const respArray = respData.flatMap((i) => (
-    JSON.parse(`[${i.respuestas.split(', ').flatMap(value => `"${value}"`).join(', ')}]`
-    )));
-
-  const resultArray = respArray.map((respuesta) => {
-    const matchingObj = respCountData.find((obj) => obj.respuesta === respuesta);
-    return matchingObj ? matchingObj.cantidad : 0;
-  });
-
-  const percent = respArray.map((respuesta) => {
-    const matchingObj = respCountData.find((obj) => obj.respuesta === respuesta);
-    return matchingObj ? matchingObj.porcentaje : 0;
-  });
+  const { especialistas } = useGetEspecialistasPorArea({ areas });
 
   useEffect(() => {
-    if (preguntaData.length > 0) {
-      setIdEncuesta(preguntaData[0]?.idEncuesta)
+    if (especialistas.length !== 0) {
+      set_es(especialistas[0]?.idUsuario)
     }
-  }, [preguntaData]);
-
-  useEffect(() => {
-
-      if (preguntaData && Array.isArray(pregunta) && pregunta.length === 0) {
-
-        setDflt([{ idPregunta: preguntaData[0]?.idPregunta },
-        { idEncuesta: preguntaData[0]?.idEncuesta },
-        { respuestas: preguntaData[0]?.respuestas },
-        { pregunta: preguntaData[0]?.pregunta }]);
-
-        setParamRes([{ idPregunta: preguntaData[0]?.idPregunta },
-        { idEncuesta: preguntaData[0]?.idEncuesta },
-        { idArea: preguntaData[0]?.idArea }]);
-
-        setSelectPg(preguntaData[0]?.pregunta);
-
-        setPgDt(preguntaData[0]?.respuestas);
-
-      } else if (preguntaData && Array.isArray(pregunta) && pregunta.length > 0) {
-
-        setDflt(pregunta);
-
-        setParamRes(pregunta)
-
-        setSelectPg(pregunta[3]?.pregunta);
-
-        setPgDt(respData[0]?.grupo);
-
-      } else {
-        alert("Error")
-      }
-  }, [preguntaData, pregunta, respData]);
-
-  useEffect(() => {
-    if (preguntaData && Array.isArray(pregunta) && pregunta.length === 0) {
-      setPg(preguntaData[0]?.idPregunta);
-    } else if (preguntaData && Array.isArray(pregunta) && pregunta.length > 0) {
-      setPg(pregunta[0]?.idPregunta);
-    } else {
-      alert("Error")
-    }
-  }, [preguntaData, pregunta]);
-
-  useEffect(() => {
-    if (preguntaData && Array.isArray(pregunta) && pregunta.length === 0 && pgDt !== "3") {
-      setSn(0);
-    } else if (preguntaData && Array.isArray(pregunta) && pregunta.length === 0 && pgDt === "3") {
-      setSn(1);
-    } else if (pregunta.length > 0 && pgDt === 3) {
-      setSn(1);
-    } else if (pregunta.length > 0 && pgDt !== 3) {
-      setSn(0);
-    } else {
-      alert("Error")
-    }
-  }, [preguntaData, pregunta, pgDt, resultArray]);
-
-  const _dt = {
-    percent: (index) => percent[index],
-  }
-
-  const _ecommerceSalesOverview = ['No', 'Si'].map(
-    (label, index) => ({
-      label,
-      value: _dt.percent(index) ?? 0,
-    })
-  );
-
-  const handleChangeArea = (event) => {
-
-    setPs(event.target.value);
-
-    setAreas(event.target.value);
-
-    set_es('0')
-
-  };
-
-  const handleChangeEsp = (event) => {
-
-    set_es(event.target.value);
-
-  };
-
-  const [value, setValue] = useState(new Date());
-
-  useEffect(() => {
-    const interval = setInterval(() => setValue(new Date()), 1000);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
-
-  const theme = useTheme();
+  }, [especialistas]);
 
   return (
 
-      <Container maxWidth={settings.themeStretch ? false : 'xl'}>
+    <Container maxWidth={settings.themeStretch ? false : 'xl'}>
 
-        <Grid container spacing={3}>
+      <Grid container spacing={3}>
 
-          <Grid xs={12} md={9}>
-            <AppWelcome
-              title={`Bienvenido 👋 \n ${user?.nombre}`}
-              /* description="If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything." */
-              img={<SeoIllustration />}
+        <Grid xs={12} md={8}>
+          <AppWelcome
+            title={user?.sexo === 'M' ? `Bienvenida 👋 \n ${user?.nombre}` : `Bienvenido  👋 \n ${user?.nombre}`}
+            img={<SeoIllustration />}
 
-            />
-          </Grid>
-
-          <Grid container justifyContent="center" alignItems="center" xs={12} md={3}>
-            <Card
-              sx={{
-                ...bgGradient({
-                  direction: '135deg',
-                  startColor: alpha(theme.palette.primary.light, 0.2),
-                  endColor: alpha(theme.palette.primary.main, 0.2),
-                }),
-                height: '275px',
-                position: 'relative',
-                color: 'primary.darker',
-                backgroundColor: 'common.white',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '90%'
-              }}
-            >
-              <Clock value={value} />
-            </Card>
-          </Grid>
-
-          {rol === "4" || rol === 4 ? (
-            <>
-              <Grid md={6}>
-                <FormControl sx={{
-                  width: "100%",
-                }}>
-                  <InputLabel id="demo-simple-select-label">Área</InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={!areas ? '' : areas}
-                    label="Área"
-                    onChange={(e) => handleChangeArea(e)}
-                  >
-                    {especialistasData.map((i, index) => (
-                      <MenuItem key={index} value={i.idPuesto}>
-                        {i.nombre}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-
-              <Grid md={6}>
-                <FormControl sx={{
-                  width: "100%",
-                }}>
-                  <InputLabel id="demo-simple-select-label">Especialista</InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={_es}
-                    label="Especialista"
-                    onChange={(e) => handleChangeEsp(e)}
-                  >
-                    <MenuItem value='0'>
-                        Todos
-                    </MenuItem>
-                    {espData.map((i, index) => (
-                      <MenuItem key={index} value={i.idUsuario}>
-                        {i.nombre}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-            </>
-          ) : (
-
-            <>
-            </>
-
-          )}
-
-          {pacientesData.map((i, index) => (
-            <Grid xs={12} sm={6} md={2} key={index}>
-              <WidgetConteo
-                title={rol === '2' || rol === 2 ? 'Total citas' : 'Total pacientes'}
-                total={i.pacientes}
-                color="info"
-                icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/usuario.png`} />}
-              />
-            </Grid>
-          ))}
-
-          {asistenciaData.map((i, index) => (
-            <Grid xs={12} sm={6} md={2} key={index}>
-              <WidgetConteo
-                title="Total citas asistidas"
-                total={i.asistencia}
-                sx={{ backgroundColor: "#DDFAD7" }}
-                icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/check.png`} />}
-              />
-            </Grid>
-          ))}
-
-          {canceladaData.map((i, index) => (
-            <Grid xs={12} sm={6} md={2} key={index}>
-              <WidgetConteo
-                title="Total citas canceladas"
-                total={i.cancelada}
-                color="warning"
-                icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/cancelar.png`} />}
-              />
-            </Grid>
-          ))}
-
-          {penalizadaData.map((i, index) => (
-            <Grid xs={12} sm={6} md={2} key={index}>
-              <WidgetConteo
-                title="Total citas penalizadas"
-                total={i.penalizada}
-                color="error"
-                icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/dolar.png`} />}
-              />
-            </Grid>
-          ))}
-
-          {virtualData.map((i, index) => (
-            <Grid xs={12} sm={6} md={2} key={index}>
-              <WidgetConteo
-                title="Total citas virtuales"
-                total={i.virtual}
-                sx={{ backgroundColor: "#E5D7FA" }}
-                icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/virtual.png`} />}
-              />
-            </Grid>
-          ))}
-
-          {presencialData.map((i, index) => (
-            <Grid xs={12} sm={6} md={2} key={index}>
-              <WidgetConteo
-                title="Total citas presenciales"
-                total={i.presencial}
-                sx={{ backgroundColor: "#D7E4FA" }}
-                icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/ubicacion.png`} />}
-              />
-            </Grid>
-          ))}
-
-          {rol === 1 || rol === 3 || rol === 4 ? (
-            <>
-              {user?.idRol === 1 && user?.idAreaBeneficio || (user?.idRol === 4 && _es === '0') ?
-                <Grid xs={12}>
-                  <GraficaMetasArea
-                    puesto={ps}
-                    area={user?.idAreaBeneficio ? user?.idAreaBeneficio : ''} />
-                </Grid>
-                : null
-              }
-              {(user?.idRol === 3 && metaData) || (user?.idRol === 4 && _es !== '0' && metaData)?
-                <Grid xs={12} sm={6} md={4}>
-                  <GraficaMetas data={metaData} />
-                </Grid>
-                : null}
-
-              {sn === 0 ? (
-                <Grid xs={12} sm={6} md={(rol === 4 && _es !== '0' ? 8 : 12) || (rol === 4 && _es === '0' ? 12 : 8)}>
-                  <EncuestaBarra
-                    idPregunta={pg}
-                    chart={{
-                      categories: respArray,
-                      series: [
-                        {
-                          type: 'data',
-                          data: [
-                            {
-                              name: 'Total',
-                              data: resultArray,
-                            }
-                          ],
-                        },
-                      ],
-                    }}
-                    user={user}
-                    handleChangePg={handleChangePg}
-                    idEncuesta={idEncuesta}
-                    idArea={areas}
-                    handleChangeIdPg={handleChangeIdPg}
-                  />
-                </Grid>
-
-              ) : (
-
-                <Grid xs={12} sm={6} md={(rol === 4 && _es !== '0' ? 8 : 12) || (user?.idRol === 4 && _es !== '0' ? 12 : 8)}>
-                  <EncuestaPorcentaje
-                    idPregunta={pg}
-                    data={_ecommerceSalesOverview}
-                    user={user}
-                    handleChangePg={handleChangePg}
-                    selectPg={selectPg}
-                    idEncuesta={idEncuesta}
-                    idArea={areas}
-                    handleChangeIdPg={handleChangeIdPg}
-                  />
-                </Grid>
-
-              )}
-
-            </>
-
-          ) : (
-
-            <>
-            </>
-
-          )}
-
+          />
         </Grid>
 
+        <Grid xs={12} md={4}>
+          <AppFeatured />
+        </Grid>
+
+        {rol === 4 || rol === 3 ? (
+          <>
+
+            <Grid xs={12} md={6} lg={4}>
+
+              <GraficaPacientes
+                title="Total pacientes"
+                rol={rol}
+                id={id}
+              />
+
+              <Stack
+                spacing={1}
+                alignItems={{ xs: 'flex-start', md: 'flex-start' }}
+                direction={{
+                  xs: 'column',
+                  md: 'row',
+                }}
+                sx={{
+                  p: 0,
+                  pr: { xs: 1, md: 1 },
+                }}
+              >ㅤ</Stack>
+
+              <GraficaModalidad
+                title="Modalidad de citas"
+                beneficios={especialistasData}
+                especialistas={especialistas}
+                diaUnoMes={diaUnoMes}
+                ultimoDiaMes={ultimoDiaMes}
+                datePikerI={datePikerI}
+                datePikerF={datePikerF}
+                rol={rol}
+                puesto={puesto}
+                id={id}
+                chart={{
+                  series: [
+                    { label: 'Presencial', value: 35 },
+                    { label: 'Virtual', value: 75 },
+                  ],
+                }}
+              />
+            </Grid>
+
+            <Grid xs={12} sm={12} md={8}>
+
+              <GraficaEstatusCitas
+                title="Estatus de citas"
+                beneficios={especialistasData}
+                especialistas={especialistas}
+                diaUnoMes={diaUnoMes}
+                ultimoDiaMes={ultimoDiaMes}
+                datePikerI={datePikerI}
+                datePikerF={datePikerF}
+                rol={rol}
+                puesto={puesto}
+                id={id}
+              />
+            </Grid>
+
+          </>
+        ) : (
+          null
+        )}
+
+        {rol === 4 ? (
+          <Grid xs={12} sm={6} md={6}>
+            <GraficaMetasArea id={id} />
+          </Grid>
+        ) : (
+          null
+        )}
+
+        {rol === 3 ? (
+          <Grid xs={12} sm={6} md={6}>
+            <GraficaMetas id={id} />
+          </Grid>
+        ) : (
+          null
+        )}
+
+        {rol === 4 || rol === 3 ? (
+          <Grid xs={12} sm={6} md={6}>
+            <GraficaEncuestas
+              user={user}
+              _es={_es}
+              rol={rol}
+              title="Evaluación de encuestas"
+              beneficios={especialistasData}
+              especialistas={especialistas}
+              diaUnoMes={diaUnoMes}
+              ultimoDiaMes={ultimoDiaMes}
+              datePikerI={datePikerI}
+              datePikerF={datePikerF}
+              puesto={puesto}
+              id={id}
+            />
+          </Grid>
+        ) : (
+          null
+        )}
 
 
-      </Container>
+        {rol === 2 ? (
+          <>
+            {asistenciaData.length > 0 && canceladaData.length > 0 && penalizadaData.length > 0 && ctDisponiblesData.length > 0 ? (
+              <>
+                {asistenciaData.map((i, index) => (
+                  <Grid xs={12} sm={6} md={3} key={index}>
+                    <WidgetConteo
+                      title="Total citas asistidas"
+                      total={i.asistencia}
+                      sx={{ backgroundColor: "#DDFAD7" }}
+                      icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/check.png`} />}
+                    />
+                  </Grid>
+                ))
+                }
+
+                {canceladaData.map((i, index) => (
+                  <Grid xs={12} sm={6} md={3} key={index}>
+                    <WidgetConteo
+                      title="Total citas canceladas"
+                      total={i.cancelada}
+                      color="warning"
+                      icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/cancelar.png`} />}
+                    />
+                  </Grid>
+                ))}
+
+                {penalizadaData.map((i, index) => (
+                  <Grid xs={12} sm={6} md={3} key={index}>
+                    <WidgetConteo
+                      title="Total citas penalizadas"
+                      total={i.penalizada}
+                      color="error"
+                      icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/dolar.png`} />}
+                    />
+                  </Grid>
+                ))}
+
+                {ctDisponiblesData.map((i, index) => (
+                  <Grid xs={12} sm={6} md={3} key={index}>
+                    <WidgetConteo
+                      title="Citas diponibles del mes presente"
+                      total={2 - i.total}
+                      sx={{ backgroundColor: "#E5D7FA" }}
+                      icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/calendario.png`} />}
+                    />
+                  </Grid>
+                ))}
+              </>
+            ) : (
+              <Grid xs={12} sm={12} md={12} spacing={2} sx={{ p: 3 }}>
+                <LinearProgress />
+              </Grid>
+            )}
+          </>
+        ) : (
+          null
+        )}
+      </Grid>
+
+    </Container>
   );
 }

@@ -57,8 +57,7 @@ export default function EditarEstatus({ open, onClose, id, est, estatusVal }) {
 
         if (update.estatus === true) {
           enqueueSnackbar(update.msj, { variant: 'success' });
-
-          mutate(endpoints.encuestas.getEncNotificacion);
+          
           mutate(endpoints.reportes.pacientes);
 
         } else {

@@ -19,7 +19,8 @@ export function useGetUsers() {
   return memoizedValue;
 }
 
-export function useGetNameUser(idUsuario) { // funcion para traer los usuarios disponibles en select de cita.
+export function useGetNameUser(idUsuario) {
+  // funcion para traer los usuarios disponibles en select de cita.
   const URL = endpoints.user.names;
 
   const { data, mutate } = useSWR(URL, (url) => fetcherPost(url, idUsuario));
@@ -47,6 +48,13 @@ export function useUpdateUser() {
 export function updateUser(idUsuario, data) {
   const URL = [endpoints.user.update];
   const update = fetcherPost(URL, { idUsuario, ...data });
+
+  return update;
+}
+
+export function updateExternalUser(idUsuarioExt, data) {
+  const URL = [endpoints.user.updateExternal];
+  const update = fetcherPost(URL, { idUsuarioExt, ...data });
 
   return update;
 }
@@ -85,4 +93,12 @@ export function useGetAuthorized() {
   );
 
   return memoizedValue;
+}
+
+// Consulta si existe un colaborador en la vista de ch y trae su info para registrarlo.
+export function getColaborador(num_empleado) {
+  const URL = [endpoints.auth.getUser];
+  const user = fetcherPost(URL, { num_empleado });
+
+  return user;
 }

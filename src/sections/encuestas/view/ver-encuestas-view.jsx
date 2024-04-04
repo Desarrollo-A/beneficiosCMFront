@@ -1,7 +1,5 @@
 import Container from '@mui/material/Container';
 
-import { paths } from 'src/routes/paths';
-
 import { endpoints } from 'src/utils/axios';
 
 import { useAuthContext } from 'src/auth/hooks';
@@ -31,12 +29,7 @@ export default function VerEncuestasView() {
           links={[
             {
               name: 'Encuestas',
-              href: paths.dashboard.root,
-            },/* 
-            {
-              name: 'User',
-              href: paths.dashboard.usuarios.root,
-            }, */
+            },
             { name: 'Listado de encuestas' },
           ]}
           sx={{

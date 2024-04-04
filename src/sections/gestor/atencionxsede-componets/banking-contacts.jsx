@@ -1,13 +1,9 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
-import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-// import Button from '@mui/material/Button';
-// import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
-// import CardHeader from '@mui/material/CardHeader';
 import ListItemText from '@mui/material/ListItemText';
 
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -24,7 +20,6 @@ export default function BankingContacts({ title, subheader, list, modalidadesDat
   const [ps, setPs] = useState(0);
 
   return (
-    <Card {...other}>
 
       <Stack spacing={3} sx={{ p: 3 }}>
         {list.map((e, index) => (
@@ -45,7 +40,6 @@ export default function BankingContacts({ title, subheader, list, modalidadesDat
           </Stack>
         ))}
     </Stack>
-    </Card >
   );
 }
 

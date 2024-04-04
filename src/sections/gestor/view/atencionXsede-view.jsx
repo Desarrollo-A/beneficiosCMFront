@@ -1,4 +1,7 @@
+import JsPDF from 'jspdf';
+import Xlsx from 'json-as-xlsx';
 import isEqual from 'lodash/isEqual';
+import autoTable from 'jspdf-autotable';
 import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
@@ -8,8 +11,10 @@ import TabList from '@mui/lab/TabList';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import TabPanel from '@mui/lab/TabPanel';
+import Tooltip from '@mui/material/Tooltip';
 import { alpha } from '@mui/material/styles';
 import TabContext from '@mui/lab/TabContext';
+import MenuItem from '@mui/material/MenuItem';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
@@ -47,14 +52,15 @@ import FiltersAtencionXsede from '../atencionxsede-componets/filters-atencionXse
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'id', label: 'ID', width: 48 },
-  { id: 'sede', label: 'Sede', width: 180 },
-  { id: 'oficina', label: 'Oficina', width: 260 },
-  { id: 'area', label: 'Área', width: 180 },
-  { id: 'especialista', label: 'Especialista', width: 220 },
-  { id: 'modalidad', label: 'Modalidad', width: 180 },
-  { id: 'estatus', label: 'Estatus', width: 100 },
-  { id: '', width: 88 },
+  { id: 'id', label: 'ID' },
+  { id: 'sede', label: 'Sede' },
+  { id: 'oficina', label: 'Oficina' },
+  { id: 'beneficio', label: 'Beneficio' },
+  { id: 'area', label: 'Área' },
+  { id: 'especialista', label: 'Especialista' },
+  { id: 'modalidad', label: 'Modalidad' },
+  { id: 'estatus', label: 'Estatus' },
+  { id: '' },
 ];
 
 const defaultFilters = {
@@ -65,6 +71,52 @@ const defaultFilters = {
   modalidad: [],
   estatus: 'all',
 };
+
+// ----------------------------------------------------------------------
+
+function handleDownloadExcel(dataFiltered) {
+
+  const data = [
+    {
+      sheet: "Historial Reportes",
+      columns: [
+        { label: "ID", value: "id" },
+        { label: "Sede", value: "sede" },
+        { label: "Oficina", value: "oficina" },
+        { label: "Beneficio", value: "puesto" },
+        { label: "Área", value: "nombreArea" },
+        { label: "Especialista", value: "nombre" },
+        { label: "Modalidad", value: "modalidad" },
+        { label: "Estatus", value: "estatus" },
+      ],
+      content: dataFiltered,
+    },
+  ];
+
+  const settings = {
+    fileName: "Historial Reportes",
+    extraLength: 3,
+    writeMode: "writeFile",
+    writeOptions: {},
+    RTL: false,
+  }
+  Xlsx(data, settings)
+}
+
+const doc = new JsPDF();
+
+function handleDownloadPDF(dataFiltered, headerBase) {
+
+  let data = [];
+
+  data = dataFiltered.map(item => ([item.id, item.sede, item.oficina, item.puesto, item.nombreArea, item.nombre, item.modalidad, item.estatus]))
+
+  autoTable(doc, {
+    head: [headerBase],
+    body: data,
+  })
+  doc.save('Reporte de pacientes.pdf')
+}
 
 // ----------------------------------------------------------------------
 
@@ -185,9 +237,9 @@ export default function AtencionXsedeView() {
   }, []);
 
   useEffect(() => {
-    if(rol === "4" || rol === 4){
+    if (rol === "4" || rol === 4) {
       setTableData(atXsedeData);
-    }else if(rol === "1" || rol === 1 || rol === "3" || rol === 3){
+    } else if (rol === 3) {
       setTableData(atXsdEspData);
     }
   }, [atXsedeData, atXsdEspData, rol]);
@@ -210,12 +262,28 @@ export default function AtencionXsedeView() {
     setValue(newValue);
   };
 
+  const headerBase = ["ID", "Sede", "oficina", "Beneficio", "Área", "Especialista", "Modalidad", "Estatus"];
+
+  const handlePdf = async e => {
+    e.preventDefault();
+    handleDownloadPDF(
+      dataFiltered,
+      headerBase
+    );
+  }
+
+  const handleExcel = async e => {
+    e.preventDefault();
+    handleDownloadExcel(
+      dataFiltered
+    );
+  }
+
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
         heading="Atención por sede"
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
           { name: 'Gestor' },
           { name: 'Atención por sede' },
         ]}
@@ -234,19 +302,19 @@ export default function AtencionXsedeView() {
             <TabList onChange={handleChange} >
               <Tab label="Registros" value="1" />
 
-              {sedesEmptyData !== false && 
-               user?.idRol === "4" || user?.idRol === 4 || user?.idRol === "1" || user?.idRol === 1 
+              {sedesEmptyData !== false &&
+                user?.idRol === "4" || user?.idRol === 4 || user?.idRol === "1" || user?.idRol === 1
                 ? (
 
-                <Tab value="2" iconPosition="end" icon={
-                  <Label
-                    variant='soft'
-                    color='warning'
-                  ><Iconify icon="line-md:alert-twotone" /></Label>
-                }
-                  label="Asignación de sedes" />
+                  <Tab value="2" iconPosition="end" icon={
+                    <Label
+                      variant='soft'
+                      color='warning'
+                    ><Iconify icon="line-md:alert-twotone" /></Label>
+                  }
+                    label="Asignación de sedes" />
 
-              ) : null}
+                ) : null}
 
             </TabList>
           </Box>
@@ -275,6 +343,38 @@ export default function AtencionXsedeView() {
                 sx={{ p: 2.5, pt: 0 }}
               />
             )}
+
+            <Stack
+              spacing={1}
+              alignItems={{ xs: 'flex-start', md: 'flex-start' }}
+              direction={{
+                xs: 'column',
+                md: 'row',
+              }}
+              sx={{
+                p: 1,
+                pr: { xs: 1, md: 1 },
+              }}
+            >
+              <Tooltip title="Exportar a XLS" placement="top" arrow>
+                <MenuItem
+                  sx={{ width: 50, p: 1 }}
+                  onClick={handleExcel}
+                >
+                  <Iconify icon="teenyicons:xls-outline" />
+                </MenuItem>
+              </Tooltip>
+
+              <Tooltip title="Exportar a PDF" placement="top" arrow>
+                <MenuItem
+                  sx={{ width: 50, p: 1 }}
+                  onClick={handlePdf}
+                >
+                  <Iconify icon="teenyicons:pdf-outline" />
+                </MenuItem>
+              </Tooltip>
+
+            </Stack>
 
             <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
 
@@ -329,17 +429,17 @@ export default function AtencionXsedeView() {
           </TabPanel>
 
           {user?.idRol === "4" || user?.idRol === 4 || user?.idRol === "1" || user?.idRol === 1 ? (
-          <TabPanel value="2">
+            <TabPanel value="2">
 
-            <Stack spacing={2}>
+              <Stack spacing={2}>
                 <SedesSnAsignar
                   modalidadesData={modalidadesData}
                   puestosData={puestos}
                   sedesData={sedes}
                 />
-            </Stack>
+              </Stack>
 
-          </TabPanel>
+            </TabPanel>
           ) : (
             null
           )}

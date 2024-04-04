@@ -1,11 +1,14 @@
+import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
+import Divider from '@mui/material/Divider';
 import DialogTitle from '@mui/material/DialogTitle';
 import ListItemText from '@mui/material/ListItemText';
+import { Grid, CircularProgress } from '@mui/material';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
@@ -57,7 +60,8 @@ export default function ModalListaSedes({ idPuesto, open, onClose, modalidadesDa
 
         <>
           <DialogContent>
-
+          {!isEmpty(sedesData) ? (
+            <>
             {sedesData.map((e) => (
               <React.Fragment key={e.idSede}>
                 <ListItemText
@@ -71,10 +75,8 @@ export default function ModalListaSedes({ idPuesto, open, onClose, modalidadesDa
                           width: 2,
                           height: 2,
                           borderRadius: '50%',
-                          bgcolor: 'currentColor',
                         }}
                       />
-                      {"Fecha de creación: "}{e.fechaCreacion}
                     </>
                   }
                   primaryTypographyProps={{
@@ -98,15 +100,25 @@ export default function ModalListaSedes({ idPuesto, open, onClose, modalidadesDa
                     handleOpen(e.idSede);
                   }}
                   sx={{
-                    top: -40,
-                    left: 200,
+                    top: -20,
+                    left: 250,
                   }}
                 >
                   Asignar <Iconify icon="lets-icons:add-duotone" />
                 </Button>
-              </React.Fragment>
-            ))}
 
+                <Divider sx={{ my: 1, borderStyle: 'dashed' }} />
+              </React.Fragment>
+
+            ))}
+            </>
+          ) : (
+
+            <Grid container sx={{ p: 5 }} justifyContent="center" alignItems="center">
+              <CircularProgress />
+            </Grid>
+    
+          )}
           </DialogContent>
 
           <DialogActions>

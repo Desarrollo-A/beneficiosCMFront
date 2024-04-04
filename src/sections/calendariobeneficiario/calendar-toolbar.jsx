@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 
+import { Dialog } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
@@ -11,6 +13,8 @@ import { useResponsive } from 'src/hooks/use-responsive';
 
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+
+import ColorsDialog from '../overview/calendarioespecialista/view/colors-dialog';
 
 // ----------------------------------------------------------------------
 
@@ -45,6 +49,16 @@ export default function CalendarToolbar({
   const fechaTitulo = new Intl.DateTimeFormat('es-MX', { year: 'numeric', month: 'long' }).format(
     date
   );
+
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   return (
     <>
@@ -82,7 +96,24 @@ export default function CalendarToolbar({
           <Button size="small" color="error" variant="contained" onClick={onToday}>
             Hoy
           </Button>
+          <Button size="small" color="primary" variant="contained" onClick={() => handleOpen()}>
+            Leyenda
+          </Button>
         </Stack>
+
+        <Dialog // dialog de confirmación de finalización
+          open={open}
+          fullWidth
+          maxWidth="xs"
+          
+          onClose={() => handleClose()}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <ColorsDialog 
+            onClose={() => handleClose()}
+          />
+        </Dialog>
 
         {loading && (
           <LinearProgress

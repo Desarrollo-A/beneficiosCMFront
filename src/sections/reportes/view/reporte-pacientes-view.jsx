@@ -47,11 +47,11 @@ import UserTableFiltersResult from '../components/reporte-pacientes/user-table-f
 
 const TABLE_HEAD = [
   { id: 'id', label: 'ID' },
-  { id: 'nombre', label: 'Nombre', width: 220 },
-  { id: 'depto', label: 'Departamento', width: 100 },
-  { id: 'sede', label: 'Sede', width: 100 },
-  { id: 'puesto', label: 'Puesto', width: 100 },
-  { id: 'estatus', label: 'Estatus', width: 100 },
+  { id: 'nombre', label: 'Nombre', width: 300 },
+  { id: 'depto', label: 'Departamento', width: 200 },
+  { id: 'sede', label: 'Sede', width: 200 },
+  { id: 'puesto', label: 'Puesto', width: 200 },
+  { id: 'estatus', label: 'Estatus', width: 200 },
   { id: '', width: 88 },
 ];
 
@@ -63,7 +63,7 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-function handleDownloadExcel(tableData, area) {
+function handleDownloadExcel(dataFiltered, area) {
 
   let estatus = "";
 
@@ -88,7 +88,7 @@ function handleDownloadExcel(tableData, area) {
         { label: "Puesto", value: "puesto" },
         { label: "Estatus", value: estatus },
       ],
-      content: tableData,
+      content: dataFiltered,
     },
   ];
 
@@ -104,11 +104,11 @@ function handleDownloadExcel(tableData, area) {
 
 const doc = new JsPDF();
 
-function handleDownloadPDF(tableData, headerBase) {
+function handleDownloadPDF(dataFiltered, headerBase) {
 
   let data = [];
 
-  data = tableData.map(item => ([item.idUsuario, item.nombre, item.depto, item.sede, item.puesto, item.estNut || item.estPsi || item.estQB || item.estGE ]))
+  data = dataFiltered.map(item => ([item.idUsuario, item.nombre, item.depto, item.sede, item.puesto, item.estNut || item.estPsi || item.estQB || item.estGE ]))
 
   autoTable(doc, {
     head: [headerBase],
@@ -253,7 +253,7 @@ export default function ReportePacientesView() {
   const handlePdf = async e => {
     e.preventDefault();
     handleDownloadPDF(
-      tableData,
+      dataFiltered,
       headerBase
     );
   }
@@ -261,7 +261,7 @@ export default function ReportePacientesView() {
   const handleExcel = async e => {
     e.preventDefault();
     handleDownloadExcel(
-      tableData,
+      dataFiltered,
       area
     );
   }
@@ -272,8 +272,7 @@ export default function ReportePacientesView() {
         <CustomBreadcrumbs
           heading="Pacientes"
           links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Reportes', /* href: paths.dashboard.user.root */ },
+            { name: 'Reportes' },
             { name: 'Pacientes' },
           ]}
           sx={{
@@ -356,9 +355,9 @@ export default function ReportePacientesView() {
                       table.page * table.rowsPerPage,
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
-                    .map((row) => (
+                    .map((row, index) => (
                       <UserTableRow
-                        key={row.id}
+                        key={index}
                         row={row}
                         area={area}
                         idUs={idUs}

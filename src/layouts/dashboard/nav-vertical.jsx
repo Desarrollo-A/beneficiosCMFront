@@ -4,6 +4,8 @@ import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Drawer from '@mui/material/Drawer';
+import Grid from '@mui/material/Unstable_Grid2';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import { usePathname } from 'src/routes/hooks';
 
@@ -49,19 +51,26 @@ export default function NavVertical({ openNav, onCloseNav }) {
           flexDirection: 'column',
         },
         ...bgBlur({
-          color:'#161c24',
+          color: '#161c24',
         }),
       }}
     >
       <Logo sx={{ mt: 3, ml: 4, mb: 2 }} />
 
-      <NavSectionVertical
-        data={navData}
-        slotProps={{
-          currentRole: user?.role,
-        }}
-      />
+      {navData.length > 0 ? (
+        <NavSectionVertical
+          data={navData}
+          slotProps={{
+            currentRole: user?.role,
+          }}
+        />
 
+      ) : (
+
+        <Grid container spacing={1} sx={{ p: 5 }} justifyContent="center" alignItems="center">
+          <CircularProgress sx={{color:'white'}}/>
+        </Grid>
+      )}
       <Box sx={{ flexGrow: 1 }} />
 
       <NavUpgrade />

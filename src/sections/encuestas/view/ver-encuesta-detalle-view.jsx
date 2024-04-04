@@ -2,8 +2,6 @@ import { useLocation } from 'react-router-dom';
 
 import Container from '@mui/material/Container';
 
-import { paths } from 'src/routes/paths';
-
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
@@ -26,11 +24,9 @@ export default function VerEncuestaDetalleView() {
         links={[
           {
              name: 'Encuesta',
-            /* href: paths.dashboard.root, */
           },
           {
             name: 'Listado de encuestas',
-            href: paths.dashboard.encuestas.ver,
           },
           { name: 'Detalle' },
         ]}

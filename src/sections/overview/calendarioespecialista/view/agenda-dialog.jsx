@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import * as yup from 'yup';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
@@ -34,16 +35,20 @@ export default function AgendaDialog({ open, onClose, id, start, end, sede, ...p
   const { sedes } = useGetSedesPresenciales({ idEspecialista: user?.idUsuario });
 
   const checkMin = (value, context) => {
-    const endd = new Date(value)
-    const startt = context.from[0].value.start
+    const endd = dayjs(new Date(value)).format('YYYY-MM-DD');
+    const startt = dayjs(context.from[0].value.start).format('YYYY-MM-DD');
 
-    return endd > startt
-  }
+    return endd >= startt;
+  };
 
   const formSchema = yup.object({
     id: yup.number().nullable(true),
     start: yup.string().transform(parseStartDate).required(),
-    end: yup.string().test('check-min', "Fecha final debe ser mayor a la fecha inicial", checkMin ).transform(parseEndDate).required(),
+    end: yup
+      .string()
+      .test('check-min', 'Fecha final debe ser mayor a la fecha inicial', checkMin)
+      .transform(parseEndDate)
+      .required(),
     sede: yup.number().required().typeError('Debes elegir una opción.'),
     especialista: yup.number(),
   });
@@ -56,14 +61,13 @@ export default function AgendaDialog({ open, onClose, id, start, end, sede, ...p
   const { handleSubmit } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
-    console.log(data);
 
     const response = await setHorarioPresencial(data);
 
-    if (response.status === 'error') {
-      enqueueSnackbar(response.message, { variant: 'error' });
+    if (!response.result) {
+      enqueueSnackbar(response.msg, { variant: 'error' });
     } else {
-      enqueueSnackbar(response.message);
+      enqueueSnackbar(response.msg);
 
       onClose();
     }

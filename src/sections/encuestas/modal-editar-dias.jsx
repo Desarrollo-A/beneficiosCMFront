@@ -58,7 +58,6 @@ export default function EditarDias({ open, onClose, idEncuesta }) {
           enqueueSnackbar(update.msj, { variant: 'success' });
 
           mutate(endpoints.encuestas.getEncuestasCreadas);
-          mutate(endpoints.encuestas.getEncNotificacion);
           mutate(endpoints.encuestas.getEstatusUno);
 
           setBtnLoad(false);

@@ -46,7 +46,7 @@ import BarraTareasTabla from '../components/historial-reportes/barratareas-tabla
 
 // ----------------------------------------------------------------------
 
-const diaActual = new Date();
+const ultimoDiaMes = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
 
 const currentDate = new Date();
 const diaMesUno = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
@@ -56,7 +56,7 @@ const defaultFilters = {
   area: [],
   estatus: 'all',
   startDate: diaMesUno,
-  endDate: diaActual,
+  endDate: ultimoDiaMes,
   especialista: [],
   modalidad: [],
 };
@@ -64,7 +64,7 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 const doc = new JsPDF('l', 'pt');
 
-function handleDownloadExcel(datosTabla, rol) {
+function handleDownloadExcel(dataFiltered, rol) {
 
   let data = [];
 
@@ -73,11 +73,10 @@ function handleDownloadExcel(datosTabla, rol) {
       sheet: "Historial Reportes",
       columns: [
         { label: "ID Colaborador", value: "idColab" },
-        { label: "Paciente", value: "paciente" },
         { label: "Especialista", value: "especialista" },
-        { label: "Horario cita", value: "horario" },
+        { label: "Paciente", value: "paciente" },
         { label: "Oficina", value: "oficina" },
-        { label: "Departamento", value: "area" },
+        { label: "Departamento", value: "depto" },
         { label: "Sede", value: "sede" },
         { label: "Modalidad", value: "modalidad" },
         { label: "Sexo", value: "sexo" },
@@ -85,12 +84,13 @@ function handleDownloadExcel(datosTabla, rol) {
         { label: "Pago generado", value: "pagoGenerado" },
         { label: "Método de pago", value: "metodoPago" },
         { label: "Estatus", value: "estatus" },
+        { label: "Horario cita", value: "horario" },
       ],
-      content: datosTabla,
+      content: dataFiltered,
     },
   ];
 
-  if (rol === "1" || rol === 1) {
+  if (rol === 3) {
     const arr = baseArray[0].columns;
     arr.splice(1, 1);
 
@@ -98,19 +98,7 @@ function handleDownloadExcel(datosTabla, rol) {
       {
         sheet: "Historial Reportes",
         columns: arr,
-        content: datosTabla,
-      },
-    ];
-
-  } else if (rol === "2" || rol === 2) {
-    const arr = baseArray[0].columns;
-    arr.splice(2, 1);
-
-    data = [
-      {
-        sheet: "Historial Reportes",
-        columns: arr,
-        content: datosTabla,
+        content: dataFiltered,
       },
     ];
 
@@ -128,18 +116,18 @@ function handleDownloadExcel(datosTabla, rol) {
   Xlsx(data, settings)
 }
 
-function handleDownloadPDF(datosTabla, header, rol) {
+function handleDownloadPDF(dataFiltered, header, rol) {
 
   let data = [];
 
-  if (rol === "2" || rol === 2) {
-    data = datosTabla.map(item => ([item.idColab, item.especialista,
-    item.oficina, item.area, item.sede, item.sexo, item.estatus, item.horario]))
-  } else {
-    data = datosTabla.map(item => ([item.idColab, item.especialista, item.paciente,
-    item.oficina, item.area, item.sede, item.modalidad, item.sexo, item.horario, item.motivoCita, item.pagoGenerado, item.metodoPago, item.estatus,]))
+  if(rol === 3){
+    data = dataFiltered.map(item => ([item.idColab, item.paciente,
+      item.oficina, item.area, item.sede, item.modalidad, item.sexo, item.motivoCita, item.pagoGenerado, item.metodoPago !== null ? item.metodoPago : 'Pendiente de pago', item.estatus, item.horario,]))
+  }else{
+    data = dataFiltered.map(item => ([item.idColab, item.especialista, item.paciente,
+    item.oficina, item.area, item.sede, item.modalidad, item.sexo, item.motivoCita, item.pagoGenerado, item.metodoPago !== null ? item.metodoPago : 'Pendiente de pago', item.estatus, item.horario,]))
   }
-
+  
   autoTable(doc, {
     head: [header],
     body: data,
@@ -161,8 +149,8 @@ export default function HistorialReportesView() {
 
   let header = [];
 
-  const headerBase = ["ID Colaborador", "Especialista", "Paciente", "Oficina", "Departamento", "Sede", "Modalidad", "Sexo", "Motivo consulta", "Pago Generado", "Método de pago", "Estatus",
-    "Horario cita"];
+  const headerBase = ["ID Colaborador", "Especialista", "Paciente", "Oficina", "Departamento", "Sede",
+    "Modalidad", "Sexo", "Motivo consulta", "Pago Generado", "Método de pago", "Estatus", "Horario cita"];
 
   const [dataValue, setReportData] = useState(0);
 
@@ -172,7 +160,7 @@ export default function HistorialReportesView() {
 
   useEffect(() => {
     setEsp(espeUserData);
-  }, [espeUserData])
+  }, [espeUserData]);
 
   const { reportesData } = usePostGeneral(dataValue, endpoints.reportes.lista, "reportesData");
 
@@ -192,7 +180,7 @@ export default function HistorialReportesView() {
 
   defaultFilters.area = user?.idRol !== 4 ? _eu : [];
 
-  defaultFilters.especialista = user?.idRol === 3 ? nombreUser : [];
+  defaultFilters.especialista = user?.idRol !== 4 ? nombreUser : [];
 
   const table = useTable();
 
@@ -218,7 +206,7 @@ export default function HistorialReportesView() {
     { id: '', label: 'Sede' },
     { id: '', label: 'Modalidad' },
     { id: '', label: 'Sexo' },
-    { id: '', label: 'Motivo Consulta', width: 1 },
+    { id: '', label: 'Motivo Consulta' },
     { id: '', label: 'Pago generado' },
     { id: '', label: 'Método de pago' },
     { id: '', label: 'Estatus' },
@@ -227,7 +215,7 @@ export default function HistorialReportesView() {
     /* { id: '', width: 88 }, */
   ];
 
-  if (rol === "3" || rol === 3) {
+  if (rol === 3) {
 
     TABLE_BASE.splice(1, 1);
     headerBase.splice(1, 1);
@@ -236,8 +224,8 @@ export default function HistorialReportesView() {
     header = headerBase;
 
   } else {
-    TABLE_HEAD = TABLE_BASE;
-    header = headerBase;
+  TABLE_HEAD = TABLE_BASE;
+  header = headerBase;
   }
 
   const dataFiltered = applyFilter({
@@ -306,7 +294,7 @@ export default function HistorialReportesView() {
   const handleExcel = async e => {
     e.preventDefault();
     handleDownloadExcel(
-      datosTabla,
+      dataFiltered,
       rol
     );
   }
@@ -314,7 +302,7 @@ export default function HistorialReportesView() {
   const handlePdf = async e => {
     e.preventDefault();
     handleDownloadPDF(
-      datosTabla,
+      dataFiltered,
       header,
       rol
     );
@@ -338,11 +326,10 @@ export default function HistorialReportesView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Reporte de ingresos"
+          heading="Reporte historial"
           links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Reportes' },
-            { name: 'Ingresos' },
+            { name: 'Historial' },
           ]}
           sx={{
             mb: { xs: 3, md: 5 },
@@ -492,7 +479,7 @@ export default function HistorialReportesView() {
 
 // ----------------------------------------------------------------------
 
-function applyFilter({ inputData, comparator, filters, dateError }) {
+function applyFilter({ inputData, comparator, filters, dateError, rol }) {
   const { name, area, startDate, endDate, especialista, modalidad } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
@@ -519,11 +506,11 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
         (cita.sexo && cita.sexo.toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
         (cita.motivoCita && cita.motivoCita.toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
         (cita.metodoPago && cita.metodoPago.toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
-        (cita.oficina && cita.oficina.toLowerCase().indexOf(name.toLowerCase()) !== -1) 
+        (cita.oficina && cita.oficina.toLowerCase().indexOf(name.toLowerCase()) !== -1)
     );
   }
 
-  if (area.length) {
+  if (area?.length) {
     inputData = inputData.filter((cita) => area.includes(cita.area));
   }
 
@@ -531,18 +518,18 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
     if (startDate && endDate) {
       inputData = inputData.filter(
         (order) =>
-          fTimestamp(order.fechaModificacion) >= fTimestamp(startDate) &&
-          fTimestamp(order.fechaModificacion) <= fTimestamp(endDate)
+          fTimestamp(order.fechaInicio) >= fTimestamp(startDate) &&
+          fTimestamp(order.fechaInicio) <= fTimestamp(endDate)
       );
     }
   }
 
-  if (especialista.length) {
-    inputData = inputData.filter((i) => especialista.includes(i.especialista));
-  }
+    if (especialista?.length) {
+      inputData = inputData.filter((i) => especialista.includes(i?.especialista));
+    }
 
-  if (modalidad.length) {
-    inputData = inputData.filter((i) => modalidad.includes(i.modalidad));
+  if (modalidad?.length) {
+    inputData = inputData.filter((i) => modalidad.includes(i?.modalidad));
   }
 
   return inputData;

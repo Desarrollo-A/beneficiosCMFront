@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
-// import { mutate } from 'swr';
 import { Base64 } from 'js-base64';
 import { useForm } from 'react-hook-form';
+import { useState, useEffect } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import Card from '@mui/material/Card';
@@ -9,18 +9,18 @@ import Stack from '@mui/material/Stack';
 import IconButton from '@mui/material/IconButton';
 import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
+import LinearProgress from '@mui/material/LinearProgress';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import { endpoints } from 'src/utils/axios';
 
 import { useUpdate } from 'src/api/reportes';
-import { usePostGeneral } from 'src/api/general';
+import { getDecodedPass } from 'src/api/perfil';
 
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
-
 
 // ----------------------------------------------------------------------
 
@@ -29,9 +29,13 @@ export default function AccountChangePassword() {
 
   const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
 
-  const { idData } = usePostGeneral(datosUser.idUsuario, endpoints.user.decodePass, "idData");
-
   const updatePass = useUpdate(endpoints.user.updatePass);
+
+  // console.log(datosUser)
+
+  // const { idData } = useDecodePass(datosUser.idUsuario, endpoints.user.decodePass, "idData");
+
+  const [ password, setPassword ] = useState('');
 
   const passwordOld = useBoolean();
 
@@ -90,6 +94,14 @@ export default function AccountChangePassword() {
     }
   });
 
+  useEffect(() => {
+    const getPassword = async() => {
+      const pass = await getDecodedPass();
+      setPassword(pass.data);
+    }
+    getPassword();
+  }, []);
+
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Stack component={Card} spacing={3} sx={{ p: 3 }}>
@@ -98,13 +110,14 @@ export default function AccountChangePassword() {
 
       <RHFTextField name="password" value={datosUser.password} style={{ display: 'none' }} />
 
+      {password ? (
         <RHFTextField
           name="oldPassword"
           type={passwordOld.value ? 'text' : 'password'}
           label="Actual contraseña"
-          value={idData}
+          value={password}
+          disabled
           InputProps={{
-            readOnly: true,
             endAdornment: (
               <InputAdornment position="end">
                 <IconButton onClick={passwordOld.onToggle} edge="end">
@@ -114,6 +127,9 @@ export default function AccountChangePassword() {
             ),
           }}
         />
+      ):(
+        <LinearProgress />
+      )}
 
         <RHFTextField
           name="newPassword"
@@ -150,7 +166,7 @@ export default function AccountChangePassword() {
           }}
         />
 
-        <LoadingButton type="submit" variant="contained" loading={isSubmitting} sx={{ ml: 'auto' }}>
+        <LoadingButton type="submit" variant="contained" color="success" loading={isSubmitting} sx={{ ml: 'auto' }}>
           Guardar
         </LoadingButton>
       </Stack>

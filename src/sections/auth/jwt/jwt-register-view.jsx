@@ -1,6 +1,5 @@
 import * as Yup from 'yup';
 import { useState } from 'react';
-import { Base64 } from 'js-base64';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useNavigate, useLocation } from 'react-router';
@@ -9,24 +8,36 @@ import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 import { RouterLink } from 'src/routes/components';
 import { useRouter, useSearchParams } from 'src/routes/hooks';
 
-import instance from 'src/utils/axiosCH';
+import { useBoolean } from 'src/hooks/use-boolean';
 
+import { getColaborador } from 'src/api/user';
 import { useAuthContext } from 'src/auth/hooks';
 import { PATH_AFTER_LOGIN, PATH_AFTER_REGISTRO } from 'src/config-global';
 
+import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
+
+import ModalPoliticas from './modal-politicas';
 // ----------------------------------------------------------------------
 
 export default function JwtRegisterView() {
   const [numEmpleado, setnumEmpleado] = useState('');
 
+  const { enqueueSnackbar } = useSnackbar();
+
   const { register } = useAuthContext();
+
+  const quickEdit = useBoolean();
+
+  const isMobile = useMediaQuery('(max-width: 960px)');
 
   const router = useRouter();
   const navigate = useNavigate();
@@ -73,44 +84,22 @@ export default function JwtRegisterView() {
     }
   });
 
-  const validarNumEmpleado = () => {
-    if (numEmpleado.trim() === '') {
-      //  console.log('Ingresar número de empleado válido');
-    } else {
-      // Conectar axios con CH
-      const datos = Base64.encode(JSON.stringify({ num_empleado: numEmpleado }));
-      // console.log(datos);
-
-      const config = {
-        headers: {
-          Authorization: '41EgSP8+YSqsyT1ZRuxTK3CYR11LOcyqopI2TTNJd3EL+aU3MUdJNsKGx8xOK+HH',
-          Accept: '*/*',
-          Origin: 'https://prueba.gphsis.com/auth/jwt/register',
-        },
-      };
-
-      instance
-        .post('https://rh.gphsis.com/index.php/WS/data_colaborador_consultas', datos, config)
-        .then((response) => {
-          let datosResponse = Base64.decode(JSON.stringify(response.data));
-          datosResponse = JSON.parse(datosResponse);
-          // if(datosResponse.resultado === 0){ // se cambio ya que este no daba el resultado
-          if (datosResponse.data.length === 0) {
-            setErrorMsg('Número de empleado no encontrado');
-          } else {
-            navigate(PATH_AFTER_REGISTRO, { state: datosResponse });
-            location(PATH_AFTER_REGISTRO, { state: datosResponse });
-            router.push(returnTo || PATH_AFTER_REGISTRO);
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+  const validarNumEmpleado = async () => {
+    const response = await getColaborador(numEmpleado);
+    if (!response.result) {
+      enqueueSnackbar('Número de empleado no encontrado', { variant: 'error' });
+      return false;
     }
+    navigate(PATH_AFTER_REGISTRO, { state: response });
+    location(PATH_AFTER_REGISTRO, { state: response });
+    router.push(returnTo || PATH_AFTER_REGISTRO);
+
+    return true;
   };
 
   const renderHead = (
-    <Stack spacing={1} sx={{ mb: 0 }}>´
+    <Stack spacing={1} sx={{ mb: 0 }}>
+      ´
       <Box
         component="img"
         alt="auth"
@@ -120,23 +109,22 @@ export default function JwtRegisterView() {
           position: 'absolute',
           width: { xs: '25%', md: '16%' },
           left: '64%',
-          top: { xs: '10%', md: '-9%' }
+          top: { xs: '10%', md: '-9%' },
         }}
       />
       <Box
-          component="img"
-          alt="auth"
-          src={`${import.meta.env.BASE_URL}assets/img/beneficiosBrand.svg`}
-          sx={{
-            maxWidth: {
-              xs: 480,
-              lg: 560,
-              xl: 720,
-            }
-          }}
-        />
+        component="img"
+        alt="auth"
+        src={`${import.meta.env.BASE_URL}assets/img/beneficiosBrand.svg`}
+        sx={{
+          maxWidth: {
+            xs: 480,
+            lg: 560,
+            xl: 720,
+          },
+        }}
+      />
       <Typography variant="h4">Registro de usuarios</Typography>
-
       <Stack direction="row" spacing={0.5}>
         <Typography variant="body2"> ¿Ya tienes una cuenta? </Typography>
 
@@ -158,12 +146,13 @@ export default function JwtRegisterView() {
         textAlign: 'center',
       }}
     >
+      <ModalPoliticas open={quickEdit.value} onClose={quickEdit.onFalse} />
+
       {'Al registrarme, acepto '}
       {' las '}
-      <Link underline="always" color="text.primary" onclick="">
+      <Button variant="outlined" color="primary" sx={{ height: '20px' }} onClick={quickEdit.onTrue}>
         Políticas de privacidad
-      </Link>
-      .
+      </Button>
     </Typography>
   );
 
@@ -193,6 +182,38 @@ export default function JwtRegisterView() {
     </FormProvider>
   );
 
+  const logoMd = (
+    <Stack>
+      {isMobile && (
+        <Box
+          component="img"
+          alt="auth"
+          src={`${import.meta.env.BASE_URL}assets/img/logoMaderas.svg`}
+          sx={{
+            maxWidth: { xs: 480, lg: 560, xl: 720 },
+            position: 'absolute',
+            width: { xs: '50%', md: '21%' },
+            left: '25%',
+            top: { xs: '83%' },
+          }}
+        />
+      )}
+      {!isMobile && (
+        <Box
+          component="img"
+          alt="auth"
+          src={`${import.meta.env.BASE_URL}assets/img/logoMaderas.svg`}
+          sx={{
+            position: 'absolute',
+            left: '37%',
+            width: { xs: '55%', md: '26%' },
+            top: { md: '103%' },
+          }}
+        />
+      )}
+    </Stack>
+  );
+
   return (
     <>
       {renderHead}
@@ -200,6 +221,8 @@ export default function JwtRegisterView() {
       {renderForm}
 
       {renderTerms}
+
+      {logoMd}
 
       {/* <Dialog
         open={open}

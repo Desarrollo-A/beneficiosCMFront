@@ -17,7 +17,22 @@ import { usePostGeneral } from 'src/api/general';
 
 // ----------------------------------------------------------------------
 
-export default function EncuestaPorcentaje({ title, subheader, data, user, handleChangePg, selectPg, idEncuesta, idArea, idPregunta, handleChangeIdPg, ...other }) {
+export default function EncuestaPorcentaje({
+  title, 
+  subheader, 
+  data, 
+  user,
+  handleChangePg, 
+  selectPg, 
+  idEncuesta, 
+  idArea, 
+  idPregunta, 
+  _es, 
+  handleChangeIdPg, 
+  fechaI,
+  fechaF,
+  ...other 
+}) {
 
   const { preguntaData } = usePostGeneral(user?.idPuesto, endpoints.dashboard.getPregunta, "preguntaData");
 
@@ -28,14 +43,27 @@ export default function EncuestaPorcentaje({ title, subheader, data, user, handl
       handleChangePg([
         { idPregunta: e.target.value },
         { idEncuesta },
+        { idEspecialista: user?.idRol === 3 ? user?.idUsuario : _es},
         { idArea },
+        { idRol: user?.idRol },
+        {fhI: fechaI},
+        {fhF: fechaF },
       ]);
 
       handleChangeIdPg(e.target.value);
 
       setPregunta(e.target.value)
     },
-    [handleChangePg, idEncuesta, idArea, handleChangeIdPg]
+    [
+      handleChangePg, 
+      idEncuesta, 
+      idArea, 
+      handleChangeIdPg, 
+      user, 
+      _es,
+      fechaI,
+      fechaF
+    ]
   );
   
   return (
@@ -60,7 +88,7 @@ export default function EncuestaPorcentaje({ title, subheader, data, user, handl
             labelId="demo-simple-select-label"
             id="demo-simple-select"
             label="Pregunta"
-            value={!pregunta ? '' : pregunta}
+            value={pregunta}
             onChange={(e) => handleChangeSeries(e)}
           >
             {preguntaData.map((i) => (
@@ -97,6 +125,9 @@ EncuestaPorcentaje.propTypes = {
   idEncuesta: PropTypes.any,
   idArea: PropTypes.any,
   idPregunta: PropTypes.any,
+  _es: PropTypes.any,
+  fechaI: PropTypes.any,
+  fechaF: PropTypes.any,
 };
 
 // ----------------------------------------------------------------------

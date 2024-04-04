@@ -16,7 +16,7 @@ import { useRouter } from 'src/routes/hooks';
 import { endpoints } from 'src/utils/axios';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { usePost, useInsert  } from 'src/api/encuestas';
+import { /* usePost, */ useInsert  } from 'src/api/encuestas';
 import { useGetGeneral, usePostGeneral } from 'src/api/general';
 
 import { useSnackbar } from 'src/components/snackbar';
@@ -37,11 +37,9 @@ export default function FormularioEncuesta() {
 
   const { user } = useAuthContext();
 
-  const array = [idEncuesta, user?.idUsuario];
+  /* const array = [idEncuesta, user?.idUsuario]; */
 
-  const { getData } = usePostGeneral(user?.idUsuario, endpoints.encuestas.getEncNotificacion, "getData");
-
-  const validarData = usePost(array, endpoints.encuestas.getEcuestaValidacion, "validarData");
+  /* const validarData = usePost(array, endpoints.encuestas.getEcuestaValidacion, "validarData"); */
 
   const { encuestaData } = usePostGeneral(idEncuesta, endpoints.encuestas.getEncuesta, "encuestaData");
 
@@ -57,13 +55,7 @@ export default function FormularioEncuesta() {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  let validacion;
-
-  if(getData.length === 0){
-    validacion = false;
-  } else {
-    validacion = true;
-  }
+  /* let validacion; */
 
   const methods = useForm({
   });
@@ -105,7 +97,6 @@ export default function FormularioEncuesta() {
       if (insert.estatus === true) {
         enqueueSnackbar(insert.msj, { variant: 'success' });
         resetForm();
-        mutate(endpoints.encuestas.getEncNotificacion);
         mutate(endpoints.encuestas.getEcuestaValidacion);
         router.replace(paths.dashboard.root);
 
@@ -121,7 +112,7 @@ export default function FormularioEncuesta() {
 
   return (
 
-    validarData.validarData === true && validacion === true ? (
+   /*  validarData.validarData === true && validacion === true ? ( */
 
       <FormProvider methods={methods} onSubmit={onSubmit} key={formKey}>
         <Grid container spacing={3}>
@@ -194,11 +185,11 @@ export default function FormularioEncuesta() {
           </Grid>
         </Grid>
       </FormProvider>
-    ) : (
+    /* ) : (
       <Typography variant="subtitle2">
         No disponible
       </Typography>
-    )
+    ) */
   );
 }
 

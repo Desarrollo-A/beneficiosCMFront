@@ -1,7 +1,9 @@
+import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import { es } from 'date-fns/locale';
 import { useState, useEffect, useCallback } from 'react';
 
+import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
@@ -12,12 +14,14 @@ import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
+import LinearProgress from '@mui/material/LinearProgress';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 import { endpoints } from 'src/utils/axios';
 
+import { useAuthContext } from 'src/auth/hooks';
 import { usePostSelect, usePostIngresos, usePostPacientes } from 'src/api/reportes';
 import {
   BookingIllustration,
@@ -47,7 +51,9 @@ export default function BarraTareasTabla({
 }) {
   const popover = usePopover();
 
-  const diaActual = new Date().toISOString().split('T')[0];
+  const { user } = useAuthContext();
+
+  const ultimoDiaMes = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).toISOString().split('T')[0];
 
   function formatFirstDayOfMonth() {
     const currentDate = new Date(); // Obtener la fecha actual
@@ -62,13 +68,13 @@ export default function BarraTareasTabla({
 
   const diaUnoMes = formatFirstDayOfMonth();
 
-  const [area, setArea] = useState([filters.area]);
+  const [area, setArea] = useState([rol === 4 ? filters.area : _eu]);
 
   const [fechaI, setFechaI] = useState(diaUnoMes);
 
-  const [fechaF, setFechaF] = useState(diaActual);
+  const [fechaF, setFechaF] = useState(ultimoDiaMes);
 
-  const [selectEsp, setSelectEsp] = useState([]);
+  const [selectEsp, setSelectEsp] = useState(rol === 3 ? [user?.nombre] : []);
 
   const [mod, setMod] = useState([filters.modalidad]);
 
@@ -79,7 +85,6 @@ export default function BarraTareasTabla({
     { value: 3, label: 'Reporte penalizaciones' },
     { value: 4, label: 'Reporte finalizados' },
     { value: 5, label: 'Reporte justificiones' },
-    
   ];
 
   const [currentStatus, setCurrentStatus] = useState(report[0].value);
@@ -119,7 +124,6 @@ export default function BarraTareasTabla({
     mod,
     currentStatus
   ]);
-
 
   const [condi, setCondi] = useState(true);
 
@@ -218,8 +222,6 @@ export default function BarraTareasTabla({
 
   const _in = cIngreData.flatMap((i) => (i.TotalIngreso));
 
-  const _esp = espData.flatMap((i) => (i.nombre));
-
   const SPACING = 3;
 
   return (
@@ -237,7 +239,8 @@ export default function BarraTareasTabla({
           <Grid xs={12} md={6}>
             <WidgetPacientes
               title="Total de pacientes"
-              total={dataValue === 0 || dataValue === 4 ? _pa : 0}
+              total={_pa}
+              length={_pa.length}
               icon={<BookingIllustration />}
             />
           </Grid>
@@ -246,6 +249,7 @@ export default function BarraTareasTabla({
             <WidgetIngresos
               title="Total de ingresos"
               total={_in}
+              length={_in.length}
               icon={<CheckInIllustration />}
             />
           </Grid>
@@ -291,72 +295,83 @@ export default function BarraTareasTabla({
           </TextField>
         </FormControl>
 
-        {rol === "4" || rol === 4 ? (
+        {rol === 4 ? (
 
-          <FormControl
-            sx={{
-              flexShrink: 0,
-              width: { xs: 1, md: 200 },
-            }}
-          >
-            <InputLabel>Área</InputLabel>
-
-            <Select
-              multiple
-              value={filters.area}
-              onChange={handleFilterRole}
-              input={<OutlinedInput label="Área" />}
-              renderValue={(selected) => selected.map((value) => value).join(', ')}
-              MenuProps={{
-                PaperProps: {
-                  sx: { maxHeight: 240 },
-                },
+          <>
+            <FormControl
+              sx={{
+                flexShrink: 0,
+                width: { xs: 1, md: 200 },
               }}
             >
-              {roleOptions.map((option, index) => (
-                <MenuItem key={index} value={option}>
-                  <Checkbox disableRipple size="small" checked={filters.area.includes(option)} />
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+              <InputLabel>Beneficio</InputLabel>
 
-        ) : (
-          null
-        )}
+              <Select
+                multiple
+                value={filters.area}
+                onChange={handleFilterRole}
+                input={<OutlinedInput label="Beneficio" />}
+                renderValue={(selected) => selected.map((value) => value).join(', ')}
+                MenuProps={{
+                  PaperProps: {
+                    sx: { maxHeight: 240 },
+                  },
+                }}
+              >
+                {!isEmpty(roleOptions) ? (
+                roleOptions.map((option, index) => (
+                  <MenuItem key={index} value={option}>
+                    <Checkbox disableRipple size="small" checked={filters.area.includes(option)} />
+                    {option}
+                  </MenuItem>
+                ))
+                ) : (
+                  <Grid style={{ paddingTop: '3%' }}>
+                    <LinearProgress />
+                    <Box mb={3} />
+                  </Grid>
+                )}
+              </Select>
+            </FormControl>
 
-        {rol !== 3 ? (
-
-          <FormControl
-            sx={{
-              flexShrink: 0,
-              width: { xs: 1, md: 400 },
-            }}
-          >
-            <InputLabel>Especialistas</InputLabel>
-
-            <Select
-              multiple
-              disabled={condi}
-              value={filters.especialista}
-              onChange={handleFilterEspe}
-              input={<OutlinedInput label="Especialistas" />}
-              renderValue={(selected) => selected.map((value) => value).join(', ')}
-              MenuProps={{
-                PaperProps: {
-                  sx: { maxHeight: 240 },
-                },
+            <FormControl
+              sx={{
+                flexShrink: 0,
+                width: { xs: 1, md: 400 },
               }}
             >
-              {_esp.map((option) => (
-                <MenuItem key={option} value={option}>
-                  <Checkbox disableRipple size="small" checked={filters.especialista.includes(option)} />
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+              <InputLabel>Especialistas</InputLabel>
+
+              <Select
+                multiple
+                disabled={condi}
+                value={filters.especialista}
+                onChange={handleFilterEspe}
+                input={<OutlinedInput label="Especialistas" />}
+                renderValue={(selected) => selected.map((value) => value).join(', ')}
+                MenuProps={{
+                  PaperProps: {
+                    sx: { maxHeight: 240 },
+                  },
+                }}
+              >
+                {!isEmpty(espData) ? (
+                espData.map((option) => (
+                  <MenuItem key={option} value={option.nombre}>
+                    <Checkbox disableRipple size="small" checked={filters.especialista.includes(option.nombre)} />
+                    {option.nombre}
+                  </MenuItem>
+                ))
+                ) : (
+                  <Grid style={{ paddingTop: '3%' }}>
+                    <LinearProgress />
+                    <Box mb={3} />
+                  </Grid>
+                )}
+              </Select>
+            </FormControl>
+
+          </>
 
         ) : (
           null
@@ -382,12 +397,19 @@ export default function BarraTareasTabla({
               },
             }}
           >
-            {modOptions.map((option, index) => (
+            {!isEmpty(modOptions) ? (
+            modOptions.map((option, index) => (
               <MenuItem key={index} value={option}>
                 <Checkbox disableRipple size="small" checked={filters.modalidad.includes(option)} />
                 {option}
               </MenuItem>
-            ))}
+            ))
+            ) : (
+              <Grid style={{ paddingTop: '3%' }}>
+                <LinearProgress />
+                <Box mb={3} />
+              </Grid>
+            )}
           </Select>
         </FormControl>
 

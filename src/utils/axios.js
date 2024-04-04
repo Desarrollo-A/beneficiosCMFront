@@ -23,12 +23,19 @@ export { instance };
 
 export const fetcher = async (args) => {
   const [url, data, config] = Array.isArray(args) ? args : [args];
+  const accessToken = sessionStorage.getItem('accessToken');
+  const fetchConfig = {
+    ...config,
+    headers: {
+      token: accessToken,
+    },
+  };
 
   const res = await axiosInstance.get(url, data, {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
-    ...config,
+    ...fetchConfig,
   });
 
   return res.data;
@@ -36,20 +43,28 @@ export const fetcher = async (args) => {
 
 export const fetcherGet = async (args) => {
   const [url, config] = Array.isArray(args) ? args : [args];
+  const accessToken = sessionStorage.getItem('accessToken');
+  const fetchConfig = {
+    ...config,
+    headers: {
+      token: accessToken,
+    },
+  };
 
-  const res = await instance.get(url, { ...config });
+  const res = await instance.get(url, { ...fetchConfig });
 
   return res.data;
 };
 
 export const fetcherPost = async (args, dataValue) => {
   const [url, config] = Array.isArray(args) ? args : [args];
+  const accessToken = sessionStorage.getItem('accessToken');
 
   const res = await instance.post(
     url,
     { dataValue },
     {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', token: accessToken },
     },
     { ...config }
   );
@@ -63,9 +78,13 @@ export const endpoints = {
   chat: '/api/chat',
   kanban: '/api/kanban',
   calendar: '/api/calendar',
+  api: {
+    encodedHash: '/Api/encodedHash',
+  },
   auth: {
     me: '/LoginController/check',
     me2: '/LoginController/me',
+    getUser: '/Usuario/getUserByNumEmp',
     login: '/LoginController/login',
     login2: '/api/auth/login',
     register: '/api/auth/register',
@@ -90,17 +109,17 @@ export const endpoints = {
   },
   user: {
     list: 'Usuario/getUsersExternos',
-    session: 'usuario/session',
-    authorized: 'usuario/authorized',
+    authorized: 'Usuario/authorized',
     update: 'Usuario/updateUser',
+    updateExternal: 'Usuario/updateExternalUser',
     areas: 'Usuario/getAreas',
     batch: 'Usuario/insertBatchUsers',
     names: 'Usuario/getNameUser',
-    puesto: '/GeneralController/getPuesto',
-    sede: '/GeneralController/getSede',
     decodePass: '/Usuario/decodePass',
     updatePass: '/Usuario/updatePass',
     menu: 'Usuario/menu',
+    verificacion: 'Usuario/sendMail',
+    token: 'Usuario/GetToken',
   },
   benefits: {
     list: 'CalendarioController/getBeneficiosPorSede',
@@ -108,14 +127,14 @@ export const endpoints = {
   especialistas: {
     list: 'CalendarioController/getEspecialistaPorBeneficioYSede',
     modalities: 'CalendarioController/getModalidadesEspecialista',
-    sedes: 'especialistas/sedes',
-    horario: 'especialistas/horario',
-    horarios: 'especialistas/horarios',
-    disponibles: 'especialistas/disponibles',
-    meta: 'especialistas/meta',
+    sedes: 'Especialistas/sedes',
+    horario: 'Especialistas/horario',
+    horarios: 'Especialistas/horarios',
+    disponibles: 'Especialistas/disponibles',
+    meta: 'Especialistas/meta',
   },
   areas: {
-    citas: 'areas/citas',
+    citas: 'Areas/citas',
   },
   calendario: {
     getAllEvents: 'CalendarioController/getAllEvents',
@@ -171,37 +190,31 @@ export const endpoints = {
     especialistas: '/GeneralController/especialistas',
     observacion: '/ReportesController/observacion',
     pacientes: '/ReportesController/getPacientes',
-    citas: '/GeneralController/getAppointmentHistory',
+    citas: '/ReportesController/getAppointmentHistory',
     getEstatusPaciente: '/GeneralController/getEstatusPaciente',
     updateEstatusPaciente: '/GeneralController/updateEstatusPaciente',
-    getResumenTerapias: '/ReportesController/getResumenTerapias',
-    getEspeQua: '/ReportesController/getEspeQua',
     getCierrePacientes: '/ReportesController/getCierrePacientes',
     getCierreIngresos: '/ReportesController/getCierreIngresos',
     getSelectEspe: '/ReportesController/getSelectEspe',
     getEspeUser: '/ReportesController/getEspeUser',
   },
   dashboard: {
-    usersCount: '/GeneralController/usrCount',
-    citasCount: '/GeneralController/citasCount',
-    citasEstatus: '/DashboardController/citasCountStatus',
-    estatusTotal: '/DashboardController/totalStatusCitas',
-    fechaMinima: '/DashboardController/fechaMinima',
-    fechaAsistencia: '/DashboardController/estatusFechaAsistencia',
-    fechaCancelada: '/DashboardController/estatusFechaCancelada',
-    fechaPenalizada: '/DashboardController/estatusFechaPenalizada',
     citasAnual: '/DashboardController/citasAnual',
     getPregunta: '/DashboardController/getPregunta',
     getRespuestas: '/DashboardController/getRespuestas',
     getCountRespuestas: '/DashboardController/getCountRespuestas',
-    getPacientes: '/GeneralController/getPacientes',
-    getCtAsistidas: '/GeneralController/getCtAsistidas',
-    getCtCanceladas: '/GeneralController/getCtCanceladas',
-    getCtPenalizadas: '/GeneralController/getCtPenalizadas',
-    getCtPresenciales: '/GeneralController/getCtPresenciales',
-    getCtVirtuales: '/GeneralController/getCtVirtuales',
+    getPacientes: '/DashboardController/getPacientes',
+    getCtAsistidas: '/DashboardController/getCtAsistidas',
+    getCtCanceladas: '/DashboardController/getCtCanceladas',
+    getCtPenalizadas: '/DashboardController/getCtPenalizadas',
     getMetas: '/DashboardController/getMetas',
-    getMetaAdmin: '/DashboardController/getMetaAdmin',
+    getEsp: '/DashboardController/getEsp',
+    getEstatusCitas: '/GeneralController/getEstatusCitas',
+    getCountModalidades: '/DashboardController/getCountModalidades',
+    getCountEstatusCitas: '/DashboardController/getCountEstatusCitas',
+    getCountPacientes: '/DashboardController/getCountPacientes',
+    getCtDisponibles: '/DashboardController/getCtDisponibles',
+    getCarrusel: '/DashboardController/getCarrusel',
   },
   encuestas: {
     encuestaInsert: '/EncuestasController/encuestaInsert',
@@ -213,9 +226,6 @@ export const endpoints = {
     getResp2: '/EncuestasController/getResp2',
     getResp3: '/EncuestasController/getResp3',
     getResp4: '/EncuestasController/getResp4',
-    getEncNotificacion: '/EncuestasController/getEncNotificacion',
-    getPuestos: '/EncuestasController/getPuestos',
-    getEcuestaValidacion: '/EncuestasController/getEcuestaValidacion',
     getEncuestasCreadas: '/EncuestasController/getEncuestasCreadas',
     updateEstatus: '/EncuestasController/updateEstatus',
     updateVigencia: '/EncuestasController/updateVigencia',
@@ -237,6 +247,7 @@ export const endpoints = {
     updateModalidad: '/GestorController/updateModalidad',
     updateEspecialista: '/GestorController/updateEspecialista',
     updateArea: '/GestorController/updateArea',
+    updateEstatus: '/GestorController/updateEstatus',
     getEsp: '/GestorController/getEsp',
     getAtencionXsedeEsp: '/GestorController/getAtencionXsedeEsp',
     getOfi: '/GestorController/getOficinas',
@@ -245,7 +256,7 @@ export const endpoints = {
     updateSede: '/GestorController/updateSede',
     insertSedes: '/GestorController/insertSedes',
     checkModalidades: '/GestorController/checkModalidades',
-    getAreas: '/GestorController/getAreas'
+    getAreas: '/GestorController/getAreas',
   },
   avisosPrivacidad: {
     getEspecialidadToSelect: '/AvisosPrivacidadController/getEspecialidades',

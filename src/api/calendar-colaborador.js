@@ -10,7 +10,7 @@ import { useAuthContext } from 'src/auth/hooks';
 // ----------------------------------------------------------------------
 
 // Trae todos los beneficios que puede gozar la sede.
-export function useGetBenefits(sede) {
+export function useGetBenefits(sede, area) {
   const URL_BENEFITS = [endpoints.benefits.list];
   const {
     data,
@@ -18,7 +18,7 @@ export function useGetBenefits(sede) {
     isLoading,
     error,
     isValidating,
-  } = useSWR(URL_BENEFITS, (url) => fetcherPost(url, { sede }));
+  } = useSWR(URL_BENEFITS, (url) => fetcherPost(url, { sede, area }));
 
   const memoizedValue = useMemo(
     () => ({
@@ -44,9 +44,9 @@ export function getSpecialists(sede, area, beneficio) {
 }
 
 // Trae las modalidades de los datos seleccionados (presencial o en linea)
-export function getModalities(sede, especialista) {
+export function getModalities(sede, especialista, area) {
   const URL = [endpoints.especialistas.modalities];
-  const modalities = fetcherPost(URL, { sede, especialista });
+  const modalities = fetcherPost(URL, { sede, especialista, area });
 
   return modalities;
 }
@@ -80,9 +80,9 @@ export function getOficinaByAtencion(sede, beneficio, especialista, modalidad) {
 }
 
 // Checa si el usuario tiene primera cita
-export function checaPrimeraCita(usuario, especialista) {
+export function _isPrimeraCita(usuario, beneficio) {
   const URL = [endpoints.calendarioColaborador.isPrimeraCita];
-  const primeraCita = fetcherPost(URL, { usuario, especialista });
+  const primeraCita = fetcherPost(URL, { usuario, beneficio });
 
   return primeraCita;
 }
@@ -120,9 +120,9 @@ export function getCitasFinalizadas(usuario, mes, año) {
 }
 
 // Saber la atencion x sede de la cita.
-export function getAtencionXSede(especialista, sede, modalidad) {
+export function getAtencionXSede(especialista, sede, area, modalidad) {
   const URL = [endpoints.calendarioColaborador.getAtencionPorSede];
-  const axs = fetcherPost(URL, { especialista, sede, modalidad });
+  const axs = fetcherPost(URL, { especialista, sede, area, modalidad });
 
   return axs;
 }
@@ -227,6 +227,7 @@ export function getDiasDisponibles(idUsuario, idSede) {
 }
 
 // Función para crear cita
+// Función para crear cita
 export function crearCita(
   titulo,
   idEspecialista,
@@ -265,7 +266,6 @@ export function crearCita(
 }
 
 // Trae todas las citas del usuario
-
 export function useGetAppointmentsByUser(current, id) {
   const URL_APPOINTMENTS = [endpoints.calendarioColaborador.getAppointmentsByUser];
   const year = current.getFullYear();

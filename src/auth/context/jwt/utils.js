@@ -50,7 +50,7 @@ export const tokenExpired = (exp) => {
   clearTimeout(expiredTimer);
 
   expiredTimer = setTimeout(() => {
-    alert('La sesión ha caducado, inicie sesión');
+    // alert('La sesión ha caducado, inicie sesión');
 
     sessionStorage.removeItem('accessToken');
 

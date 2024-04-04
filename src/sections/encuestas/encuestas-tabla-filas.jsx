@@ -11,14 +11,13 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
-import EditarDias  from './modal-editar-dias';
 import UserQuickEditForm from './modal-ver-encuesta';
 import EncuestaHabilitar from './modal-habilitar-encuesta';
 
 // ----------------------------------------------------------------------
 
 export default function EncuestasTablaFilas({ row, selected, puestos }) {
-  const { idEncuesta, fechaCreacion, estatus, diasVigencia } = row;
+  const { idEncuesta, fechaCreacion, estatus } = row;
 
   const popover = usePopover();
 
@@ -29,8 +28,6 @@ export default function EncuestasTablaFilas({ row, selected, puestos }) {
   const quickEdit = useBoolean();
 
   const enctHabilitar = useBoolean();
-
-  const editDias = useBoolean();
 
   return (
     <>
@@ -53,8 +50,6 @@ export default function EncuestasTablaFilas({ row, selected, puestos }) {
           </Label>
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{diasVigencia === 0 ||  diasVigencia === null ? '1' : diasVigencia}</TableCell>
-
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon="eva:more-vertical-fill" />
@@ -71,8 +66,6 @@ export default function EncuestasTablaFilas({ row, selected, puestos }) {
       >
 
       <EncuestaHabilitar idEncuesta={row.idEncuesta} puestos={puestos} open={enctHabilitar.value} onClose={enctHabilitar.onFalse} />
-
-      <EditarDias idEncuesta={row.idEncuesta} open={editDias.value} onClose={editDias.onFalse} />
 
         {estatus === 0 ? (
 
@@ -96,13 +89,6 @@ export default function EncuestasTablaFilas({ row, selected, puestos }) {
           >
             <Iconify icon="mdi:eye" />
             Ver
-          </MenuItem>
-
-        <MenuItem
-          onClick={editDias.onTrue}
-          >
-            <Iconify icon="solar:pen-bold" />
-            Editar días
           </MenuItem>
 
       </CustomPopover>

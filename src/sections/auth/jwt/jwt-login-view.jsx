@@ -5,8 +5,10 @@ import { yupResolver } from '@hookform/resolvers/yup';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
+import { Button } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
+import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -25,11 +27,14 @@ import { PATH_AFTER_LOGIN } from 'src/config-global';
 import Iconify from 'src/components/iconify';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
+import ModalPoliticas from './modal-politicas';
 
 export default function JwtLoginView() {
   const { login } = useAuthContext();
 
   const router = useRouter();
+
+  const quickEdit = useBoolean();
 
   const [errorMsg, setErrorMsg] = useState('');
   const [numEmpleado, setnumEmpleado] = useState('');
@@ -85,9 +90,9 @@ export default function JwtLoginView() {
           sx={{
             maxWidth: { xs: 480, lg: 560, xl: 720 },
             position: 'absolute',
-            width: { xs: '25%', md: '16%' },
+            width: { xs: '20%', md: '16%' },
             left: '64%',
-            top: { xs: '10%', md: '-9%' }
+            top: { xs: '1%', md: '-9%' }
           }}
         />
         <Box
@@ -106,11 +111,12 @@ export default function JwtLoginView() {
       <Typography variant="h4">Iniciar sesión</Typography>
 
       <Stack direction="row" spacing={1}>
-        <Typography variant="body2">¿Aún no tienes una cuenta? Puedas crearla</Typography>
+        <Typography variant="body2">¿Aún no tienes una cuenta? Puedas crearlaㅤ
 
         <Link component={RouterLink} href={paths.auth.jwt.register} variant="subtitle2">
           aquí
         </Link>
+        </Typography>
         <Box mb={7} />
       </Stack>
     </Stack>
@@ -150,9 +156,12 @@ export default function JwtLoginView() {
       >
         Iniciar
       </LoadingButton>
+    </Stack >
+  );
 
-      <>
-        {isMobile && (
+  const logoMd = (
+    <Stack>
+      {isMobile && (
           <Box
             component="img"
             alt="auth"
@@ -161,8 +170,8 @@ export default function JwtLoginView() {
               maxWidth: { xs: 480, lg: 560, xl: 720 },
               position: 'absolute',
               width: { xs: '50%', md: '21%' },
-              left: '25%',
-              top: { xs: '83%'}
+              left: { xs: '25%', md: '40%'},
+              top: { xs: '65%', md: '87%'}
             }}
           />
         )}
@@ -175,13 +184,36 @@ export default function JwtLoginView() {
               position: 'absolute',
               left: '37%',
               width: { xs: '55%', md: '26%' },
-              top: { md: '103%' }
+              top: { md: '87%', lg: '95%', xl:'102%' }
             }}
           />
         )}
-      </>
-    </Stack >
+    </Stack>
   );
+
+  const renderTerms = (
+    <Typography
+      component="div"
+      sx={{
+        color: 'text.secondary',
+        mt: 2.5,
+        typography: 'caption',
+        textAlign: 'center',
+      }}
+    >
+      <ModalPoliticas open={quickEdit.value} onClose={quickEdit.onFalse} />
+      
+      {'Al registrarme, acepto '}
+      {' las '}
+      <Button variant="outlined" color="primary" sx={{height:"20px"}} onClick={quickEdit.onTrue}>
+        Políticas de privacidad
+      </Button>
+    </Typography>
+  );
+
+  const space = (
+    <Divider sx={{ my: {xs: 12, md: 5, lg: 2, xl:0}, borderStyle: 'none' }} />
+  )
 
   return (
 
@@ -189,6 +221,12 @@ export default function JwtLoginView() {
       {renderHead}
 
       {renderForm}
+
+      {logoMd}
+
+      {renderTerms}
+
+      {space}
     </FormProvider>
   );
 }

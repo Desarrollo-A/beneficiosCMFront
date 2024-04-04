@@ -1,6 +1,7 @@
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
 import * as yup from 'yup';
+import { mutate } from 'swr';
 import PropTypes from 'prop-types';
 import utc from 'dayjs/plugin/utc';
 import { useForm } from 'react-hook-form';
@@ -21,8 +22,10 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
-import uuidv4 from 'src/utils/uuidv4';
+import { endpoints } from 'src/utils/axios';
+import { generarFechas } from 'src/utils/general';
 
+import { getEncodedHash } from 'src/api/api';
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetEventReasons } from 'src/api/calendar-specialist';
 import {
@@ -34,12 +37,11 @@ import {
   consultarCita,
   getSpecialists,
   useGetBenefits,
+  _isPrimeraCita,
   lastAppointment,
-  checaPrimeraCita,
   getCitasSinPagar,
   getAtencionXSede,
   cancelAppointment,
-  updateAppointment,
   getDiasDisponibles,
   getCitasSinEvaluar,
   getCitasFinalizadas,
@@ -77,7 +79,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     especialista: '',
     modalidad: '',
   });
-  const [open, setOpen] = useState(false);
   const [open2, setOpen2] = useState(false);
   const [confirmCancel, setConfirmCancel] = useState(false);
   const [reschedule, setReschedule] = useState(false);
@@ -96,7 +97,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const [horarioSeleccionado, setHorarioSeleccionado] = useState('');
   const [event, setEvent] = useState({});
   const [btnDisabled, setBtnDisabled] = useState(false);
-  const [btnNotificationDisabled, setBtnNotificationDisabled] = useState(false);
   const [btnPayDisabled, setBtnPayDisabled] = useState(false);
   const [btnEvaluateDisabled, setBtnEvaluateDisabled] = useState(false);
   const [btnConfirmAction, setBtnConfirmAction] = useState(false);
@@ -107,7 +107,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
   const { user: datosUser } = useAuthContext();
 
-  const { data: benefits } = useGetBenefits(datosUser.idSede);
+  const { data: benefits } = useGetBenefits(datosUser.idSede, datosUser.idArea);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -143,18 +143,19 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const mes = horarioSeleccionado.substring(5, 7);
 
     if (datosUser.fechaIngreso > fechaActual) {
-      enqueueSnackbar('¡Existe un error con la fecha de antigüedad!', {
-        variant: 'error',
-      });
+      enqueueSnackbar('¡Existe un error con la fecha de antigüedad!', { variant: 'error' });
       onClose();
       return false;
     }
 
+    const AREAS = Object.freeze({
+      VENTAS: 25,
+    });
+
     // Validamos la antiguedad: Mandamos fechaIngreso, fechaDeHoy, isPracticante, idBeneficio.
     const tieneAntiguedad = validarAntiguedad(datosUser.fechaIngreso, fechaActual);
-
-    // 25 Es ventas :)
-    if (!tieneAntiguedad && datosUser.idArea !== 25) {
+    // Escluimos a ventas por su tipo de contratación
+    if (!tieneAntiguedad && datosUser.idArea !== AREAS.VENTAS) {
       enqueueSnackbar('¡No cuentas con la antigüedad suficiente para hacer uso del beneficio!', {
         variant: 'error',
       });
@@ -162,144 +163,99 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       return false;
     }
 
-    // Consultamos su atencionXSede
-    const idAtencionPorSede = await getAtencionXSede(
-      selectedValues.especialista,
-      datosUser.idSede,
-      selectedValues.modalidad
-    );
-    if (!idAtencionPorSede.result) {
-      enqueueSnackbar(
-        '¡Surgió un error al intentar conocer los beneficios brindados para su sede!',
-        {
-          variant: 'error',
-        }
-      );
-      onClose();
-      return false;
-    }
-
-    // Revisamos si tiene citas sin estatus de finalizar
+    // *** VALIDAMOS SI TIENE CITAS SIN FINALIZAR ***
     const citasSinFinalizar = await getCitasSinFinalizar(
       datosUser.idUsuario,
       selectedValues.beneficio
     );
-
-    // Si tiene citas en proceso no lo tengo que dejar agendar citas
     if (citasSinFinalizar.result) {
       enqueueSnackbar('Ya tienes una cita en proceso de este beneficio', {
-        variant: 'error',
+        variant: 'danger',
       });
       onClose();
       return false;
     }
 
-    // Si tiene citas sin evaluar no lo deja agendar
+    // *** VALIDAMOS SI TIENE CITAS SIN EVALUAR ***
     const citasSinEvaluar = await getCitasSinEvaluar(datosUser.idUsuario);
     // Si tiene citas en proceso no lo tengo que dejar agendar citas
     if (citasSinEvaluar.result) {
       enqueueSnackbar('Evalúa tus citas previas para poder agendar otra cita', {
-        variant: 'error',
+        variant: 'danger',
       });
       onClose();
       return false;
     }
 
-    // Si tiene citas sin pagar no lo deja agendar
+    // *** VALIDAMOS SI TIENE CITAS SIN PAGAR ***
     const citasSinPagar = await getCitasSinPagar(datosUser.idUsuario);
     // Si tiene citas en proceso no lo tengo que dejar agendar citas
     if (citasSinPagar.result) {
       enqueueSnackbar('Realiza el pago de tus citas por asistir para poder agendar otra cita', {
-        variant: 'error',
+        variant: 'danger',
       });
       onClose();
       return false;
     }
 
+    // *** VALIDAMOS SI YA GOZO SUS BENEFICIOS ***
     const citasFinalizadas = await getCitasFinalizadas(datosUser.idUsuario, mes, año);
-
     if (citasFinalizadas.result === true && citasFinalizadas?.data.length >= 2) {
       enqueueSnackbar(
         'Ya cuentas con la cantidad máxima de beneficios brindados en el mes seleccionado',
-        {
-          variant: 'error',
-        }
+        { variant: 'error' }
       );
       onClose();
       return false;
     }
 
-    // Proceso de agenda
-    const tieneCitas = await checaPrimeraCita(datosUser.idUsuario, selectedValues.especialista);
+    // *** VERIFICAMOS QUE EXISTA LA ATENCIÓN A SU SEDE O AREA ***
+    const idAtencionPorSede = await getAtencionXSede(
+      selectedValues.especialista,
+      datosUser.idSede,
+      datosUser.idArea,
+      selectedValues.modalidad
+    );
+    if (!idAtencionPorSede.result) {
+      enqueueSnackbar('¡Surgió un error al consultar los beneficios brindados a su sede!', {
+        variant: 'error',
+      });
+      onClose();
+      return false;
+    }
 
-    let tipoCita = 2;
-    let precio = 50;
-    let metodoPago = 1;
-    // PROCESO DE AGENDAR: Se le valida que es nuevo usuario y se le agenda su cita.
-    if (tieneCitas.result === true) {
-      tipoCita = 1;
-    }
-    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
-      tipoCita = 1;
-      precio = 0;
-      metodoPago = 3;
-    }
+    // *** INICIA PROCESO DE AGENDAR CITA ***
+    const TIPO_CITA = Object.freeze({
+      PRIMERA_CITA: 1,
+      CITA_NORMAL: 2,
+      CITA_EXTRA: 3,
+    });
+    let tipoCita = TIPO_CITA.CITA_NORMAL;
+
+    const esPrimeraCita = await _isPrimeraCita(datosUser.idUsuario, selectedValues.beneficio);
+    if (esPrimeraCita.result === true) tipoCita = TIPO_CITA.PRIMERA_CITA;
 
     let nombreBeneficio = '';
+    let abreviatura = '';
     switch (selectedValues.beneficio) {
       case 158:
         nombreBeneficio = 'quantum balance';
+        abreviatura = 'QUAN';
         break;
       case 537:
         nombreBeneficio = 'nutrición';
+        abreviatura = 'NUTR';
         break;
       case 585:
         nombreBeneficio = 'psicología';
+        abreviatura = 'PSIC';
         break;
       case 686:
         nombreBeneficio = 'guía espiritual';
+        abreviatura = 'GUIA';
         break;
       default:
         break;
-    }
-
-    const agendar = await agendarCita(
-      `Cita ${nombreBeneficio} - ${datosUser.nombre}`,
-      selectedValues.especialista,
-      '',
-      horarioSeleccionado,
-      1,
-      idAtencionPorSede.data[0].idAtencionXSede,
-      datosUser.idUsuario,
-      null,
-      selectedValues.beneficio,
-      null,
-      selectedValues.modalidad
-    );
-    if (!agendar.result) {
-      enqueueSnackbar(agendar.msg, {
-        variant: 'error',
-      });
-      return onClose();
-    }
-    if (metodoPago === 1) {
-      setOpen(true);
-      // SIMULACIÓN DE PAGO
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      setOpen(false);
-    }
-    const registrarPago = await registrarDetalleDePago(
-      datosUser.idUsuario,
-      uuidv4(),
-      tipoCita,
-      precio,
-      metodoPago
-    );
-    if (!registrarPago.result) {
-      enqueueSnackbar('¡Ha surgido un error al generar el detalle de pago!', {
-        variant: 'error',
-      });
-      return onClose();
     }
 
     // Evento de google
@@ -309,31 +265,40 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     let organizador = 'programador.analista36@ciudadmaderas.com';
     let correosNotificar = [
       organizador, // datosUser.correo Sustituir correo de analista
-      'programador.analista34@ciudadmaderas.com',
-      'programador.analista32@ciudadmaderas.com',
-      'programador.analista12@ciudadmaderas.com',
-      'tester.ti2@ciudadmaderas.com',
-      'tester.ti3@ciudadmaderas.com',
+      // 'programador.analista34@ciudadmaderas.com',
+      // 'programador.analista32@ciudadmaderas.com',
+      // 'programador.analista12@ciudadmaderas.com',
+      // 'tester.ti2@ciudadmaderas.com',
+      // 'tester.ti3@ciudadmaderas.com',
       // algun correo de especialista
     ];
 
     if (datosUser.correo === null) {
-      organizador = 'programador.analista12@ciudadmaderas.com'; // especialista
+      organizador = 'programador.analista34@ciudadmaderas.com'; // especialista
       correosNotificar = [
         organizador, // datosUser.correo Sustituir correo de analista
-        'programador.analista36@ciudadmaderas.com',
-        'programador.analista34@ciudadmaderas.com',
-        'programador.analista32@ciudadmaderas.com',
-        'tester.ti2@ciudadmaderas.com',
-        'tester.ti3@ciudadmaderas.com',
+        // 'programador.analista36@ciudadmaderas.com',
+        // 'programador.analista34@ciudadmaderas.com',
+        // 'programador.analista32@ciudadmaderas.com',
+        // 'tester.ti2@ciudadmaderas.com',
+        // 'tester.ti3@ciudadmaderas.com',
       ];
     }
+
+    const GOOGLE_EVENT = Object.freeze({
+      TITULO: `Cita ${nombreBeneficio} - ${datosUser.nombre}`,
+      INICIO_CITA: startDate.format('YYYY-MM-DDTHH:mm:ss'),
+      FIN_CITA: endDate.format('YYYY-MM-DDTHH:mm:ss'),
+      OFICINA: oficina?.data ? oficina.data[0].ubicación : 'Oficina virtual ',
+      DESCRIPCION: `Cita de ${datosUser.nombre} en ${nombreBeneficio}`,
+    });
+
     const newGoogleEvent = await insertGoogleCalendarEvent(
-      `Cita ${nombreBeneficio} - ${datosUser.nombre}`,
-      startDate.format('YYYY-MM-DDTHH:mm:ss'),
-      endDate.format('YYYY-MM-DDTHH:mm:ss'),
-      oficina?.data ? oficina.data[0].ubicación : 'Oficina virtual ',
-      `Cita de ${datosUser.nombre} en ${nombreBeneficio}`,
+      GOOGLE_EVENT.TITULO,
+      GOOGLE_EVENT.INICIO_CITA,
+      GOOGLE_EVENT.FIN_CITA,
+      GOOGLE_EVENT.OFICINA,
+      GOOGLE_EVENT.DESCRIPCION,
       correosNotificar, // Sustituir valores de correos
       organizador // datosUser.correo
     );
@@ -342,36 +307,130 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       enqueueSnackbar('Error al conectar con la cuenta de google', {
         variant: 'error',
       });
-      return onClose();
     }
-    // Mandar datos de google calendar
-    const update = await updateAppointment(
-      datosUser.idUsuario,
-      agendar.data,
-      1,
-      registrarPago.data,
-      null,
-      newGoogleEvent.data.id
+
+    /* otro proceso */
+    const ESTATUS_CITA = Object.freeze({
+      POR_ASISTIR: 1,
+      CANCELADA: 2,
+      PENALIZADA: 3,
+      FINALIZADA: 4,
+      JUSTIFICADO: 5,
+      PENDIENTE_PAGO: 6,
+      CANCELADO_POR_ESPECIALISTA: 7,
+      REAGENDADA: 8,
+      PAGO_EXPIRADO: 9,
+      PROCESO_PAGO: 10,
+    });
+
+    const DATOS_CITA = Object.freeze({
+      TITULO: GOOGLE_EVENT.TITULO,
+      ID_ESPECIALISTA: selectedValues.especialista,
+      OBSERVACIONES: '',
+      HORA_CITA: horarioSeleccionado,
+      TIPO_CITA: tipoCita, // 1 PRIMERA CITA, 2 NORMAL, 3 CITA EXTRA
+      ID_ATENCION_POR_SEDE: idAtencionPorSede.data[0].idAtencionXSede,
+      ID_USUARIO: datosUser.idUsuario,
+      ID_DETALLE_PAGO: null,
+      ID_BENEFICIO: selectedValues.beneficio,
+      ID_GOOGLE_EVENT: newGoogleEvent.result ? newGoogleEvent.data.id : null,
+      MODALIDAD: selectedValues.modalidad,
+      ESTATUS_CITA:
+        datosUser.tipoPuesto.toLowerCase() === 'operativa'
+          ? ESTATUS_CITA.POR_ASISTIR
+          : ESTATUS_CITA.PENDIENTE_PAGO,
+    });
+
+    const agendar = await agendarCita(
+      GOOGLE_EVENT.TITULO,
+      DATOS_CITA.ID_ESPECIALISTA,
+      DATOS_CITA.OBSERVACIONES,
+      DATOS_CITA.HORA_CITA,
+      DATOS_CITA.TIPO_CITA,
+      DATOS_CITA.ID_ATENCION_POR_SEDE,
+      DATOS_CITA.ID_USUARIO,
+      DATOS_CITA.ID_DETALLE_PAGO,
+      DATOS_CITA.ID_BENEFICIO,
+      DATOS_CITA.ID_GOOGLE_EVENT,
+      DATOS_CITA.MODALIDAD,
+      DATOS_CITA.ESTATUS_CITA
     );
-    if (!update.result) {
-      enqueueSnackbar('¡Ha surgido un error al intentar registrar el detalle de pago!', {
+
+    if (!agendar.result) {
+      await deleteGoogleCalendarEvent(currentEvent.idEventoGoogle, organizador);
+      enqueueSnackbar(agendar.msg, {
         variant: 'error',
       });
       return onClose();
+    }
+
+    /* VALIDAR SI ES GRATUITA LA CITA */
+    let precio = 0.02;
+    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') precio = 0.01;
+
+    /* PAGO  */
+    const DATOS_PAGO = Object.freeze({
+      FOLIO: `${DATOS_CITA.ID_USUARIO}${dayjs(ahora).format('HHmmssYYYYMMDD')}`,
+      REFERENCIA: `U${DATOS_CITA.ID_USUARIO}-${abreviatura}-E${DATOS_CITA.ID_ESPECIALISTA}-C${agendar.data}`,
+      // 'U88-QUAN-E64-C65',
+      // `U${DATOS_CITA.ID_USUARIO}-${abreviatura}-E${DATOS_CITA.ID_ESPECIALISTA}-C${agendar.data}}`,
+      // Referencia: 'U(idUsuario)-(NUTR, PSIC, GUIA, QUAN)-E(idEspecialista)-C(IDCITA)'
+      // Es importante que la referencia tenga está estructura para que se pueda enlazar el historial de pagos a una cita reagendada.
+      MONTO: precio,
+      CONCEPTO: '1',
+      SERVICIO: '501',
+    });
+
+    if (datosUser.tipoPuesto.toLowerCase() !== 'operativa') {
+      await bbPago(
+        DATOS_PAGO.FOLIO,
+        DATOS_PAGO.REFERENCIA,
+        DATOS_PAGO.MONTO,
+        DATOS_PAGO.CONCEPTO,
+        DATOS_PAGO.SERVICIO
+      );
+    }
+    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
+      const METODO_PAGO = Object.freeze({
+        NO_APLICA: 7,
+      });
+
+      const ESTATUS_PAGO = Object.freeze({
+        COBRADO: 1,
+      });
+
+      await pagoGratuito(
+        DATOS_PAGO.FOLIO,
+        DATOS_PAGO.REFERENCIA,
+        DATOS_PAGO.MONTO,
+        DATOS_PAGO.CONCEPTO,
+        METODO_PAGO.NO_APLICA,
+        ESTATUS_PAGO.COBRADO,
+        agendar.data
+      );
     }
 
     enqueueSnackbar('¡Se ha agendado la cita con éxito!', {
       variant: 'success',
     });
     appointmentMutate();
+
+    mutate(endpoints.reportes.citas);
+    mutate(endpoints.citas.getCitas);
+    mutate(endpoints.dashboard.getCountModalidades);
+    mutate(endpoints.dashboard.getCountEstatusCitas);
+
+    /* *** PROCESO DE MUESTRA DE PREVIEW *** */
     const scheduledAppointment = await consultarCita(agendar.data);
     if (!scheduledAppointment.result) {
       enqueueSnackbar('¡Surgió un error al poder mostrar la previsualización de la cita!', {
-        variant: 'error',
+        variant: 'danger',
       });
-      onClose();
       return false;
     }
+
+    setEvent({ ...scheduledAppointment.data[0] });
+    setOpen2(true);
 
     const email = await sendMail(
       scheduledAppointment.data[0],
@@ -384,10 +443,83 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       console.error('No se pudo notificar al usuario');
     }
 
-    setEvent({ ...scheduledAppointment.data[0] });
-    setOpen2(true);
     return true;
   });
+
+  const bbPago = async (folio, referencia, monto, concepto, servicio) => {
+    const bbString = `${folio}|${referencia}|${monto}|${concepto}|${servicio}|`;
+    const hash = await getEncodedHash(bbString);
+
+    const regex = /^U\d+-[A-Z]{4}-E\d+-C\d+$/;
+    if (!hash.data || Number.isNaN(folio) || !regex.test(referencia) || servicio === 501) {
+      enqueueSnackbar('Hubó un error al mostrar la ventana de pagos', {
+        variant: 'error',
+      });
+      return false;
+    }
+
+    const params = `width=${window.screen.width}, height=${window.screen.height}, top=0, left=0, fullscreen=yes, scrollbars=yes, directories=no`;
+
+    /* ARMARDO DEL FORM PARA ENVIO DE PARAMETROS Y ABRIR POPUP A LA MISMA VEZ */
+    const windowName = `w_${Date.now()}${Math.floor(Math.random() * 100000).toString()}`;
+    const form = document.createElement('form');
+    form.setAttribute('method', 'POST');
+    form.setAttribute('action', 'https://multipagos.bb.com.mx/Estandar/index2.php');
+    form.setAttribute('target', windowName);
+
+    const fields = [
+      { name: 'cl_folio', value: folio },
+      { name: 'cl_referencia', value: referencia },
+      { name: 'dl_monto', value: monto },
+      { name: 'cl_concepto', value: concepto },
+      { name: 'servicio', value: servicio },
+      { name: 'hash', value: hash.data.trim() },
+    ];
+
+    fields.forEach((field) => {
+      const hiddenField = document.createElement('input');
+      hiddenField.setAttribute('type', 'hidden');
+      hiddenField.setAttribute('name', field.name);
+      hiddenField.setAttribute('value', field.value);
+      form.appendChild(hiddenField);
+    });
+
+    document.body.appendChild(form);
+
+    window.open('', windowName, params);
+    form.target = windowName;
+    form.submit();
+    document.body.removeChild(form);
+    return true;
+  };
+
+  const pagoGratuito = async (
+    folio,
+    referencia,
+    cantidad,
+    concepto,
+    metodoPago,
+    estatusPago,
+    idCita
+  ) => {
+    const registrarPago = await registrarDetalleDePago(
+      datosUser.idUsuario,
+      folio,
+      referencia,
+      cantidad,
+      concepto,
+      metodoPago,
+      estatusPago,
+      idCita
+    );
+
+    if (!registrarPago.result) {
+      enqueueSnackbar('¡Ha surgido un error al generar el detalle de pago!', {
+        variant: 'error',
+      });
+    }
+    return registrarPago.result;
+  };
 
   const onCancel = async () => {
     setBtnConfirmAction(true);
@@ -461,53 +593,89 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     return onClose();
   };
 
-  const onPay = async () => {
+  const pagarCitaPendiente = async () => {
     setBtnPayDisabled(true);
-    let precio = 50;
-    let metodoPago = 1;
-    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
-      precio = 0;
-      metodoPago = 3;
+    /* VALIDAR SI ES GRATUITA LA CITA */
+    let precio = 0.02;
+    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') precio = 0.01;
+
+    let nombreBeneficio = '';
+    let abreviatura = '';
+    switch (currentEvent.idPuesto) {
+      case 158:
+        nombreBeneficio = 'quantum balance';
+        abreviatura = 'QUAN';
+        break;
+      case 537:
+        nombreBeneficio = 'nutrición';
+        abreviatura = 'NUTR';
+        break;
+      case 585:
+        nombreBeneficio = 'psicología';
+        abreviatura = 'PSIC';
+        break;
+      case 686:
+        nombreBeneficio = 'guía espiritual';
+        abreviatura = 'GUIA';
+        break;
+      default:
+        break;
     }
-    const registrarPago = await registrarDetalleDePago(
-      datosUser.idUsuario,
-      uuidv4(),
-      1,
-      precio,
-      metodoPago
-    );
-    if (registrarPago.result) {
-      const update = await updateAppointment(
-        datosUser.idUsuario,
-        currentEvent.id,
-        1,
-        registrarPago.data,
-        null,
-        currentEvent.idEventoGoogle
+
+    const DATOS_CITA = Object.freeze({
+      TITULO: `Cita ${nombreBeneficio} - ${datosUser.nombre}`,
+      ID_ESPECIALISTA: currentEvent.idEspecialista,
+      ID_USUARIO: datosUser.idUsuario,
+    });
+
+    const DATOS_PAGO = Object.freeze({
+      FOLIO: `${DATOS_CITA.ID_USUARIO}${dayjs(new Date()).format('HHmmssYYYYMMDD')}`,
+      REFERENCIA: `U${DATOS_CITA.ID_USUARIO}-${abreviatura}-E${DATOS_CITA.ID_ESPECIALISTA}-C${currentEvent.id}`,
+      // 'U88-QUAN-E64-C65',
+      // `U${DATOS_CITA.ID_USUARIO}-${abreviatura}-E${DATOS_CITA.ID_ESPECIALISTA}-C${agendar.data}}`,
+      // Referencia: 'U(idUsuario)-(NUTR, PSIC, GUIA, QUAN)-E(idEspecialista)-C(IDCITA)'
+      // Es importante que la referencia tenga está estructura para que se pueda enlazar el historial de pagos a una cita reagendada.
+      MONTO: precio,
+      CONCEPTO: '1',
+      SERVICIO: '501',
+    });
+
+    if (datosUser.tipoPuesto.toLowerCase() !== 'operativa') {
+      await bbPago(
+        DATOS_PAGO.FOLIO,
+        DATOS_PAGO.REFERENCIA,
+        DATOS_PAGO.MONTO,
+        DATOS_PAGO.CONCEPTO,
+        DATOS_PAGO.SERVICIO
       );
-      setOpen(true);
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      setOpen(false);
-      if (update.result) {
-        enqueueSnackbar('¡Se ha generado el pago con éxito!', {
-          variant: 'success',
-        });
-        return onClose();
-      }
-      if (!update.result) {
-        enqueueSnackbar('¡Se obtuvo un error al intentar generar el pago de cita!', {
-          variant: 'error',
-        });
-        return onClose();
-      }
     }
-    if (!registrarPago.result) {
-      enqueueSnackbar('¡Ha surgido un error al intentar registrar el detalle de pago!', {
-        variant: 'error',
+
+    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
+      const METODO_PAGO = Object.freeze({
+        NO_APLICA: 7,
+      });
+
+      const ESTATUS_PAGO = Object.freeze({
+        COBRADO: 1,
+      });
+
+      await pagoGratuito(
+        DATOS_PAGO.FOLIO,
+        DATOS_PAGO.REFERENCIA,
+        DATOS_PAGO.MONTO,
+        DATOS_PAGO.CONCEPTO,
+        METODO_PAGO.NO_APLICA,
+        ESTATUS_PAGO.COBRADO,
+        currentEvent.id
+      );
+
+      enqueueSnackbar('¡El pago de cita se ha realizado con exito!', {
+        variant: 'success',
       });
     }
-    onClose();
-    return !registrarPago.result;
+
+    setBtnPayDisabled(false);
+    appointmentMutate();
   };
 
   const onEvaluate = async () => {
@@ -531,7 +699,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       if (datosUltimaCita.result) {
         const modalitiesData = await getModalities(
           datosUser.idSede,
-          datosUltimaCita.data[0].idEspecialista
+          datosUltimaCita.data[0].idEspecialista,
+          datosUser.idArea
         );
         setModalidades(modalitiesData?.data);
         const data = await getOficinaByAtencion(
@@ -567,7 +736,12 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         });
       }
       const data = await getSpecialists(datosUser.idSede, datosUser.idArea, value);
-      setEspecialistas(data?.data);
+      if (!data?.data) {
+        enqueueSnackbar('¡No hay especialistas atendiendo tu sede/área!', { variant: 'error' });
+        setEspecialistas([]);
+      } else {
+        setEspecialistas(data?.data);
+      }
     } else if (input === 'especialista') {
       /* ************************************* */
       const sedesEspecialista = await getSedesPresenciales(value);
@@ -576,7 +750,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       setDiasPresenciales(diasDisponibles.result ? diasDisponibles.data : []);
       /* ************************************* */
       setErrorEspecialista(false);
-      const modalitiesData = await getModalities(datosUser.idSede, value);
+      const modalitiesData = await getModalities(datosUser.idSede, value, datosUser.idArea);
       setModalidades(modalitiesData?.data);
       if (modalitiesData.data.length > 0 && modalitiesData?.data.length === 1) {
         setSelectedValues({
@@ -627,7 +801,11 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       });
       const data = await getSpecialists(value.idSede, value.idArea, value.idPuesto);
       setEspecialistas(data?.data);
-      const modalitiesData = await getModalities(value.idSede, value.idEspecialista);
+      const modalitiesData = await getModalities(
+        value.idSede,
+        value.idEspecialista,
+        datosUser.idArea
+      );
       setModalidades(modalitiesData?.data);
 
       const oficinaAtencion = await getOficinaByAtencion(
@@ -640,18 +818,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
       getHorariosDisponibles(value.idPuesto, value.idEspecialista);
     }
-  };
-
-  const generarFechas = (fechaInicial, fechaFinal) => {
-    const resultado = [];
-    let fechaActual = dayjs(fechaInicial);
-
-    while (fechaActual.isSameOrBefore(fechaFinal, 'day')) {
-      resultado.push(fechaActual.format('YYYY-MM-DD'));
-      fechaActual = fechaActual.add(1, 'day');
-    }
-
-    return resultado;
   };
 
   const generarArregloMinutos = (horaInicio, horaFin) => {
@@ -943,7 +1109,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
   const agendarCita = async (
     titulo,
-    especialistah,
+    especialista,
     observaciones,
     horarioCita,
     tipoCita,
@@ -952,18 +1118,19 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     detallePago,
     beneficio,
     idGoogleEvent,
-    modalidad
+    modalidad,
+    estatusCita
   ) => {
     const registrarCita = await crearCita(
       titulo,
-      especialistah,
+      especialista,
       idUsuario,
       observaciones,
       horarioCita,
       tipoCita,
       atencionPorSede,
       datosUser.idSede,
-      1,
+      estatusCita,
       idUsuario,
       idUsuario,
       detallePago,
@@ -1307,67 +1474,83 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                         alignItems: 'center',
                       }}
                     >
-                      <Iconify
-                        icon="mdi:account-circle"
-                        width={30}
-                        sx={{ color: 'text.disabled' }}
-                      />
-                      {currentEvent?.estatus === 1 ? (
-                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                          Cita en {`${currentEvent?.beneficio} (por asistir)`}
-                        </Typography>
-                      ) : (
-                        ''
-                      )}
-                      {currentEvent?.estatus === 2 || currentEvent?.estatus === '7' ? (
-                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                          Cita en {`${currentEvent?.beneficio} (cancelado)`}
-                        </Typography>
-                      ) : (
-                        ''
-                      )}
-                      {currentEvent?.estatus === 3 ? (
-                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                          Cita en {`${currentEvent?.beneficio} (penalizado)`}
-                        </Typography>
-                      ) : (
-                        ''
-                      )}
-                      {currentEvent?.estatus === 4 ? (
-                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                          Cita en {`${currentEvent?.beneficio} (finalizada)`}
-                        </Typography>
-                      ) : (
-                        ''
-                      )}
-                      {currentEvent?.estatus === 5 ? (
-                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                          Cita en {`${currentEvent?.beneficio} (justificado)`}
-                        </Typography>
-                      ) : (
-                        ''
-                      )}
-                      {currentEvent?.estatus === 6 ? (
-                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                          Cita en {`${currentEvent?.beneficio} (pendiente de pago)`}
-                        </Typography>
-                      ) : (
-                        ''
-                      )}
-                      {currentEvent?.estatus === 8 ? (
-                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                          Cita en {`${currentEvent?.beneficio} (reagendado)`}
-                        </Typography>
-                      ) : (
-                        ''
-                      )}
-                      {currentEvent?.estatus === 9 ? (
-                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                          Cita en {`${currentEvent?.beneficio} (cita expirada)`}
-                        </Typography>
-                      ) : (
-                        ''
-                      )}
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Iconify
+                          icon="mdi:account-circle"
+                          width={30}
+                          sx={{ color: 'text.disabled' }}
+                        />
+                      </Stack>
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        {currentEvent?.estatus === 1 ? (
+                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                            Cita en {`${currentEvent?.beneficio} (por asistir)`}
+                          </Typography>
+                        ) : (
+                          ''
+                        )}
+                        {currentEvent?.estatus === 2 || currentEvent?.estatus === 7 ? (
+                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                            Cita en {`${currentEvent?.beneficio} (cancelado)`}
+                          </Typography>
+                        ) : (
+                          ''
+                        )}
+                        {currentEvent?.estatus === 3 ? (
+                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                            Cita en {`${currentEvent?.beneficio} (penalizado)`}
+                          </Typography>
+                        ) : (
+                          ''
+                        )}
+                        {currentEvent?.estatus === 4 ? (
+                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                            Cita en {`${currentEvent?.beneficio} (finalizada)`}
+                          </Typography>
+                        ) : (
+                          ''
+                        )}
+                        {currentEvent?.estatus === 5 ? (
+                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                            Cita en {`${currentEvent?.beneficio} (justificado)`}
+                          </Typography>
+                        ) : (
+                          ''
+                        )}
+                        {currentEvent?.estatus === 6 ? (
+                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                            Cita en {`${currentEvent?.beneficio} (pendiente de pago)`}
+                          </Typography>
+                        ) : (
+                          ''
+                        )}
+                        {currentEvent?.estatus === 8 ? (
+                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                            Cita en {`${currentEvent?.beneficio} (reagendado)`}
+                          </Typography>
+                        ) : (
+                          ''
+                        )}
+                        {currentEvent?.estatus === 9 ? (
+                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                            Cita en {`${currentEvent?.beneficio} (cita expirada)`}
+                          </Typography>
+                        ) : (
+                          ''
+                        )}
+                      </Stack>
                     </Stack>
                     <Stack
                       alignItems="center"
@@ -1378,14 +1561,30 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                         alignItems: 'center',
                       }}
                     >
-                      <Iconify
-                        icon="solar:user-id-broken"
-                        width={30}
-                        sx={{ color: 'text.disabled' }}
-                      />
-                      <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                        {currentEvent?.especialista ? currentEvent?.especialista : 'Especialista'}
-                      </Typography>
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Iconify
+                          icon="solar:user-id-broken"
+                          width={30}
+                          sx={{ color: 'text.disabled' }}
+                        />
+                      </Stack>
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                          {currentEvent?.especialista ? currentEvent?.especialista : 'Especialista'}
+                        </Typography>
+                      </Stack>
                     </Stack>
                     <Stack
                       alignItems="center"
@@ -1396,12 +1595,28 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                         alignItems: 'center',
                       }}
                     >
-                      <Iconify icon="mdi:phone" width={30} sx={{ color: 'text.disabled' }} />
-                      <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                        {currentEvent?.telefonoEspecialista
-                          ? currentEvent?.telefonoEspecialista
-                          : 'n/a'}
-                      </Typography>
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Iconify icon="mdi:phone" width={30} sx={{ color: 'text.disabled' }} />
+                      </Stack>
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                          {currentEvent?.telefonoEspecialista
+                            ? currentEvent?.telefonoEspecialista
+                            : 'n/a'}
+                        </Typography>
+                      </Stack>
                     </Stack>
                     <Stack
                       alignItems="center"
@@ -1412,18 +1627,34 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                         alignItems: 'center',
                       }}
                     >
-                      <Iconify
-                        icon="mdi:calendar-clock"
-                        width={30}
-                        sx={{ color: 'text.disabled' }}
-                      />
-                      <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                        {currentEvent?.id
-                          ? `${dayjs(currentEvent?.start).format('HH:mm a')} - ${dayjs(
-                              currentEvent?.end
-                            ).format('HH:mm a')}`
-                          : 'Fecha'}
-                      </Typography>
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Iconify
+                          icon="mdi:calendar-clock"
+                          width={30}
+                          sx={{ color: 'text.disabled' }}
+                        />
+                      </Stack>
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                          {currentEvent?.id
+                            ? `${dayjs(currentEvent?.start).format('HH:mm a')} - ${dayjs(
+                                currentEvent?.end
+                              ).format('HH:mm a')}`
+                            : 'Fecha'}
+                        </Typography>
+                      </Stack>
                     </Stack>
                     <Stack
                       alignItems="center"
@@ -1436,19 +1667,49 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                     >
                       {currentEvent?.modalidad === 1 ? (
                         <>
-                          <Iconify icon="mdi:earth" width={30} sx={{ color: 'text.disabled' }} />
-
-                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                            {currentEvent?.sede ? currentEvent?.sede : 'Querétaro'}
-                          </Typography>
+                          <Stack
+                            alignItems="center"
+                            sx={{
+                              alignItems: 'center',
+                              display: 'flex',
+                            }}
+                          >
+                            <Iconify icon="mdi:earth" width={30} sx={{ color: 'text.disabled' }} />
+                          </Stack>
+                          <Stack
+                            alignItems="center"
+                            sx={{
+                              alignItems: 'center',
+                              display: 'flex',
+                            }}
+                          >
+                            <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                              {currentEvent?.sede ? currentEvent?.sede : 'Sede desconocida'}
+                            </Typography>
+                          </Stack>
                         </>
                       ) : (
                         <>
-                          <Iconify icon="mdi:earth" width={30} sx={{ color: 'text.disabled' }} />
-
-                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                            {currentEvent?.sede ? `${currentEvent?.sede} (En línea)` : 'En línea'}
-                          </Typography>
+                          <Stack
+                            alignItems="center"
+                            sx={{
+                              alignItems: 'center',
+                              display: 'flex',
+                            }}
+                          >
+                            <Iconify icon="mdi:earth" width={30} sx={{ color: 'text.disabled' }} />
+                          </Stack>
+                          <Stack
+                            alignItems="center"
+                            sx={{
+                              alignItems: 'center',
+                              display: 'flex',
+                            }}
+                          >
+                            <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                              {currentEvent?.sede ? `${currentEvent?.sede} (En línea)` : 'En línea'}
+                            </Typography>
+                          </Stack>
                         </>
                       )}
                     </Stack>
@@ -1463,31 +1724,69 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                     >
                       {currentEvent?.modalidad === 1 ? (
                         <>
-                          <Iconify
-                            icon="ic:outline-place"
-                            width={30}
-                            sx={{ color: 'text.disabled' }}
-                          />
-
-                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                            {currentEvent?.ubicación
-                              ? currentEvent?.ubicación
-                              : 'Calle Callerinas, 00, Centro, 76000'}
-                          </Typography>
+                          <Stack
+                            alignItems="center"
+                            sx={{
+                              alignItems: 'center',
+                              display: 'flex',
+                            }}
+                          >
+                            <Iconify
+                              icon="ic:outline-place"
+                              width={30}
+                              sx={{ color: 'text.disabled' }}
+                            />
+                          </Stack>
+                          <Stack
+                            alignItems="center"
+                            sx={{
+                              alignItems: 'center',
+                              display: 'flex',
+                            }}
+                          >
+                            <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                              {currentEvent?.ubicación
+                                ? currentEvent?.ubicación
+                                : 'Ubicación desconocida'}
+                            </Typography>
+                          </Stack>
                         </>
                       ) : (
                         <>
-                          <Iconify
-                            icon="ic:outline-place"
-                            width={30}
-                            sx={{ color: 'text.disabled' }}
-                          />
-
-                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                            {currentEvent?.ubicación
-                              ? currentEvent?.ubicación
-                              : 'Remoto (En línea)'}
-                          </Typography>
+                          <Stack
+                            alignItems="center"
+                            sx={{
+                              alignItems: 'center',
+                              display: 'flex',
+                            }}
+                          >
+                            <Stack
+                              alignItems="center"
+                              sx={{
+                                alignItems: 'center',
+                                display: 'flex',
+                              }}
+                            >
+                              <Iconify
+                                icon="ic:outline-place"
+                                width={30}
+                                sx={{ color: 'text.disabled' }}
+                              />
+                            </Stack>
+                          </Stack>
+                          <Stack
+                            alignItems="center"
+                            sx={{
+                              alignItems: 'center',
+                              display: 'flex',
+                            }}
+                          >
+                            <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                              {currentEvent?.ubicación
+                                ? currentEvent?.ubicación
+                                : 'Remoto (En línea)'}
+                            </Typography>
+                          </Stack>
                         </>
                       )}
                     </Stack>
@@ -1499,14 +1798,27 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                         alignItems: 'center',
                       }}
                     >
-                      <Stack>
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
                         <Iconify
                           icon="ic:outline-email"
                           width={30}
                           sx={{ color: 'text.disabled' }}
                         />
                       </Stack>
-                      <Stack sx={{ flexDirection: 'col' }}>
+
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
                         <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
                           {currentEvent?.correoEspecialista
                             ? currentEvent?.correoEspecialista.toLowerCase()
@@ -1522,17 +1834,32 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                         alignItems: 'center',
                       }}
                     >
-                      <Iconify
-                        icon="fa-solid:money-bill"
-                        width={30}
-                        sx={{ color: 'text.disabled' }}
-                      />
-
-                      <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                        {currentEvent?.idDetalle === null || currentEvent?.idDetalle === 0
-                          ? 'Sin pago'
-                          : 'Pagado'}
-                      </Typography>
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Iconify
+                          icon="fa-solid:money-bill"
+                          width={30}
+                          sx={{ color: 'text.disabled' }}
+                        />
+                      </Stack>
+                      <Stack
+                        alignItems="center"
+                        sx={{
+                          alignItems: 'center',
+                          display: 'flex',
+                        }}
+                      >
+                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                          {currentEvent?.idDetalle === null || currentEvent?.idDetalle === 0
+                            ? 'Sin pago'
+                            : 'Pagado'}
+                        </Typography>
+                      </Stack>
                     </Stack>
                     {currentEvent?.fechasFolio && (
                       <Stack
@@ -1542,14 +1869,26 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                         spacing={2}
                         sx={{ px: { xs: 1, md: 2 }, py: 1 }}
                       >
-                        <Stack spacing={2} direction="row">
+                        <Stack
+                          alignItems="center"
+                          sx={{
+                            alignItems: 'center',
+                            display: 'flex',
+                          }}
+                        >
                           <Iconify
                             icon="mdi:clock-remove-outline"
                             width={30}
                             sx={{ color: 'text.disabled' }}
                           />
                         </Stack>
-                        <Stack>
+                        <Stack
+                          alignItems="center"
+                          sx={{
+                            alignItems: 'center',
+                            display: 'flex',
+                          }}
+                        >
                           {fechasFolio.map((fecha, i) => [
                             i > 0 && '',
                             <Typography
@@ -1632,7 +1971,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                     color="success"
                     disabled={currentEvent?.estatus !== 6}
                     loading={btnPayDisabled}
-                    onClick={onPay}
+                    onClick={pagarCitaPendiente}
                   >
                     Pagar
                   </LoadingButton>
@@ -1662,37 +2001,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
           )}
         </FormProvider>
       )}
-
-      <Dialog
-        open={open}
-        maxWidth="sm"
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogContent sx={{ pb: 2 }}>
-          <Stack
-            direction="row"
-            justifyContent="center"
-            useFlexGap
-            flexWrap="wrap"
-            sx={{ pt: { xs: 1, md: 2 }, pb: { xs: 1, md: 2 } }}
-          >
-            <Typography color="black" sx={{ mt: 1, mb: 1 }}>
-              <strong>Confirmando pago...</strong>
-            </Typography>
-          </Stack>
-          <Stack
-            direction="row"
-            justifyContent="center"
-            useFlexGap
-            flexWrap="wrap"
-            sx={{ pt: { xs: 1, md: 2 }, pb: { xs: 1, md: 2 } }}
-          >
-            <Iconify icon="eos-icons:bubble-loading" width={30} sx={{ color: 'text.disabled' }} />
-          </Stack>
-          {/* eos-icons:bubble-loading */}
-        </DialogContent>
-      </Dialog>
 
       {/* REAGENDAR CITA */}
       <Dialog
@@ -1799,13 +2107,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         </DialogActions>
       </Dialog>
 
-      <CalendarPreview
-        event={event}
-        open={open2}
-        handleClose={handleClose}
-        btnNotificationDisabled={btnNotificationDisabled}
-        setBtnNotificationDisabled={setBtnNotificationDisabled}
-      />
+      <CalendarPreview event={event} open={open2} handleClose={handleClose} />
       {pendiente && openEvaluateDialog && (
         <EvaluateDialog
           open={openEvaluateDialog}

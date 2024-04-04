@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
-import { useMemo } from 'react';
 import PropTypes from 'prop-types';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useLocation } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -19,12 +19,18 @@ import { useRouter } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
+import { endpoints } from 'src/utils/axios';
+
 import { useAuthContext } from 'src/auth/hooks';
+import { useInsert } from 'src/api/verificacion';
 import { registrarColaborador } from 'src/api/register';
 
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
+
+import Verificacion from './jwt-verificacion-view';
+
 // ----------------------------------------------------------------------
 
 export default function PreRegisterUser({ currentUser }) {
@@ -34,6 +40,46 @@ export default function PreRegisterUser({ currentUser }) {
   const passwordConfirm = useBoolean();
   const router = useRouter();
   const location = useLocation();
+
+  const insertData = useInsert(endpoints.user.verificacion);
+
+  const [btnLoad, setBtnLoad] = useState(false);
+
+  const [mail, setMail] = useState(true);
+
+  const [valida, setValida] = useState(false);
+
+  const [registroForm, setRegistroForm] = useState(false);
+
+  const form = useForm({});
+
+  const email = location.state.data[0]?.mail_emp;
+
+  const handleChange = async (data) => {
+    try {
+      const insert = await insertData(data);
+
+      if (insert.estatus === true) {
+        enqueueSnackbar(insert.msj, { variant: 'success' });
+
+        /* mutate(endpoints.gestor.getOfi); */
+
+        setBtnLoad(false);
+        setValida(true);
+        setMail(false);
+      } else {
+        enqueueSnackbar(insert.msj, { variant: 'error' });
+
+        setBtnLoad(false);
+        setValida(false);
+        setMail(true);
+      }
+    } catch (error) {
+      setBtnLoad(false);
+      console.error('Error en handleEstatus:', error);
+      enqueueSnackbar(`¡No se pudo enviar el código!`, { variant: 'danger' });
+    }
+  };
 
   const NewUserSchema = Yup.object().shape({
     numEmpleado: Yup.string(),
@@ -89,8 +135,13 @@ export default function PreRegisterUser({ currentUser }) {
     return true;
   });
 
+  const formReg = (newFormReg) => {
+    setRegistroForm(newFormReg);
+  };
+
   const styles = {
-    background: 'linear-gradient(135deg, #f5f5f8 22px,#0000000a 22px,#0000000a 24px,transparent 24px,transparent 67px,#0000000a 67px,#0000000a 69px,transparent 69px),linear-gradient(225deg, #f5f5f8 22px,#0000000a 22px,#0000000a 24px,transparent 24px,transparent 67px,#0000000a 67px,#0000000a 69px,transparent 69px) 0 64px',
+    background:
+      'linear-gradient(135deg, #f5f5f8 22px,#0000000a 22px,#0000000a 24px,transparent 24px,transparent 67px,#0000000a 67px,#0000000a 69px,transparent 69px),linear-gradient(225deg, #f5f5f8 22px,#0000000a 22px,#0000000a 24px,transparent 24px,transparent 67px,#0000000a 67px,#0000000a 69px,transparent 69px) 0 64px',
     backgroundColor: 'rgb(245,245,248)',
     backgroundSize: '64px 128px',
     height: '100%',
@@ -102,75 +153,114 @@ export default function PreRegisterUser({ currentUser }) {
   return (
     <Grid container sx={styles}>
       <Grid xs={12} sm={12} md={3}>
-        <FormProvider methods={methods} onSubmit={onSubmit}>
-          <div style={{ height: '70%', backgroundColor: 'white', borderRadius: '25px' }}>
-            <DialogContent>
-              <Box
-                rowGap={3}
-                columnGap={2}
-                display="grid"
-                gridTemplateColumns={{
-                  xs: 'repeat(1, 1fr)',
-                  sm: 'repeat(1, 1fr)',
-                }}
-              >
-                <DialogTitle style={{ paddingLeft: '0px' }}>Registro de usuario</DialogTitle>
-                <RHFTextField
-                  name="numEmpleado"
-                  value={location.state.data[0].num_empleado}
-                  disabled
-                  label="Número de empleado"
-                />
-                <RHFTextField
-                  name="name"
-                  value={`${location.state.data[0].nombre_persona} ${location.state.data[0].pri_apellido} ${location.state.data[0].sec_apellido}`}
-                  label="Nombre completo"
-                  disabled
-                />
-                <RHFTextField
-                  name="newPassword"
-                  label="Contraseña"
-                  type={password.value ? 'text' : 'password'}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton onClick={password.onToggle} edge="end">
-                          <Iconify
-                            icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'}
-                          />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
+        <div style={{ height: '70%', backgroundColor: 'white', borderRadius: '25px' }}>
+          {mail !== false && registroForm === false ? (
+            <FormProvider methods={form}>
+              <DialogContent>
+                <Box
+                  rowGap={3}
+                  columnGap={2}
+                  display="grid"
+                  gridTemplateColumns={{
+                    xs: 'repeat(1, 1fr)',
+                    sm: 'repeat(1, 1fr)',
                   }}
-                />
-                <RHFTextField
-                  name="confirmNewPassword"
-                  type={passwordConfirm.value ? 'text' : 'password'}
-                  label="Confirmar nueva contraseña"
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton onClick={passwordConfirm.onToggle} edge="end">
-                          <Iconify
-                            icon={
-                              passwordConfirm.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'
-                            }
-                          />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Box>
-            </DialogContent>
+                >
+                  <DialogTitle style={{ paddingLeft: '0px' }}>Registro de usuario</DialogTitle>
 
-            <DialogActions>
-              <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                Registrarse
-              </LoadingButton>
-            </DialogActions>
-          </div>
-        </FormProvider>
+                  <RHFTextField name="correo" label="Correo" value={email} disabled />
+
+                  <DialogActions>
+                    <LoadingButton
+                      variant="contained"
+                      loading={btnLoad}
+                      onClick={() => {
+                        setBtnLoad(true);
+                        handleChange(email);
+                      }}
+                    >
+                      Enviar código de verificación
+                    </LoadingButton>
+                  </DialogActions>
+                </Box>
+              </DialogContent>
+            </FormProvider>
+          ) : null}
+
+          {valida !== false && registroForm === false ? (
+            <Verificacion email={email} formReg={formReg} />
+          ) : null}
+
+          {registroForm !== false ? (
+            <FormProvider methods={methods} onSubmit={onSubmit}>
+              <DialogContent>
+                <Box
+                  rowGap={3}
+                  columnGap={2}
+                  display="grid"
+                  gridTemplateColumns={{
+                    xs: 'repeat(1, 1fr)',
+                    sm: 'repeat(1, 1fr)',
+                  }}
+                >
+                  <DialogTitle style={{ paddingLeft: '0px' }}>Registro de usuario</DialogTitle>
+                  <RHFTextField
+                    name="numEmpleado"
+                    value={location.state.data[0].num_empleado}
+                    disabled
+                    label="Número de empleado"
+                  />
+                  <RHFTextField
+                    name="name"
+                    value={`${location.state.data[0].nombre_persona} ${location.state.data[0].pri_apellido} ${location.state.data[0].sec_apellido}`}
+                    label="Nombre completo"
+                    disabled
+                  />
+                  <RHFTextField
+                    name="newPassword"
+                    label="Contraseña"
+                    type={password.value ? 'text' : 'password'}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton onClick={password.onToggle} edge="end">
+                            <Iconify
+                              icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'}
+                            />
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                  <RHFTextField
+                    name="confirmNewPassword"
+                    type={passwordConfirm.value ? 'text' : 'password'}
+                    label="Confirmar nueva contraseña"
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton onClick={passwordConfirm.onToggle} edge="end">
+                            <Iconify
+                              icon={
+                                passwordConfirm.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'
+                              }
+                            />
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Box>
+              </DialogContent>
+
+              <DialogActions>
+                <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+                  Registrarse
+                </LoadingButton>
+              </DialogActions>
+            </FormProvider>
+          ) : null}
+        </div>
       </Grid>
     </Grid>
   );

@@ -63,11 +63,19 @@ export default function FilasTabla({ row, selected, rol, rel }) {
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{sexo}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{motivoCita}</TableCell>
+        <Tooltip title={motivoCita.length > 19 ? motivoCita : ''} placement="top" arrow>
+          <TableCell sx={{
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+            minWidth: '200px',
+            maxWidth: '100px', 
+          }}>{motivoCita}</TableCell>
+        </Tooltip>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{pagoGenerado}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{metodoPago !== null ? metodoPago : 'Pendiente de pago'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{metodoPago}</TableCell>
 
         <TableCell>
           <Label
