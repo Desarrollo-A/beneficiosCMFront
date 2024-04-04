@@ -11,7 +11,7 @@ export function useGetMenu() {
 
   const config = {
     headers : {
-      token : accessToken
+      Token : accessToken
     }
   }
 
