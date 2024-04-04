@@ -75,7 +75,7 @@ export function useGetAuthorized() {
 
   const config = {
     headers: {
-      token: accessToken,
+      Token: accessToken,
     },
   };
 
