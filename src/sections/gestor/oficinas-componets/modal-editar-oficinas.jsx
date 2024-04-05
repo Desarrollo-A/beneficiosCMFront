@@ -8,6 +8,7 @@ import Dialog from '@mui/material/Dialog';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -22,9 +23,20 @@ import { useAuthContext } from 'src/auth/hooks';
 import { useGetGeneral } from 'src/api/general';
 
 import { useSnackbar } from 'src/components/snackbar';
+import { Box } from '@mui/system';
 // ----------------------------------------------------------------------
 
-export default function ModalEditarOficinas({ open, onClose, idOficina, oficina, sede, ubicación, estatus }) {
+export default function ModalEditarOficinas({
+  open,
+  onClose,
+  idHorario,
+  especialista,
+  horaInicio,
+  horaFin,
+  sabado,
+  horaInicioSabado,
+  horaFinSabado,
+  estatus }) {
 
   const confirm = useBoolean();
 
@@ -38,13 +50,13 @@ export default function ModalEditarOficinas({ open, onClose, idOficina, oficina,
 
   const [est, setEst] = useState(estatus);
 
-  const [ofic, setOfi] = useState(oficina);
+  /*   const [ofic, setOfi] = useState(oficina);
+  
+    const [ubic, setUbi] = useState(ubicación);
+  
+    const [sed, setSed] = useState(sede); */
 
-  const [ubic, setUbi] = useState(ubicación);
-
-  const [sed, setSed] = useState(sede);
-
-  const handleChange = (event) => {
+  /* const handleChange = (event) => {
     setEst(event.target.value);
   }
 
@@ -82,7 +94,7 @@ export default function ModalEditarOficinas({ open, onClose, idOficina, oficina,
       enqueueSnackbar(`¡No se pudieron actualizar los datos!`, { variant: 'danger' });
     }
 
-  }
+  } */
 
   return (
     <Dialog
@@ -97,22 +109,30 @@ export default function ModalEditarOficinas({ open, onClose, idOficina, oficina,
 
       <Stack spacing={1} >
 
-        <DialogTitle>Edición de oficina</DialogTitle>
+        <DialogTitle>
+          Edición de horario
+          <Box>
+            <Typography variant="caption" sx={{ color: 'text.disabled' }}>
+              Especialista: {especialista}
+            </Typography>
+          </Box>
+        </DialogTitle>
+
 
         <FormControl spacing={3} sx={{ p: 3 }}>
 
-          <TextField
+          {/* <TextField
             id="outlined-basic"
             label="Oficina"
             variant="outlined"
             value={ofic}
             onChange={(e) => handleOfi(e)}
             sx={{ mb: 3 }}
-          />
+          /> */}
 
           <FormControl >
             <InputLabel spacing={3} sx={{ p: 0 }} id="demo-simple-select-label">Sede</InputLabel>
-            <Select
+            {/* <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
               label="Modalidad"
@@ -125,21 +145,21 @@ export default function ModalEditarOficinas({ open, onClose, idOficina, oficina,
                     {i.sede}
                   </MenuItem>
               ))}
-            </Select>
+            </Select> */}
           </FormControl>
 
-          <TextField
+          {/* <TextField
             id="outlined-basic"
             label="Ubicación"
             variant="outlined"
             value={ubic}
             onChange={(e) => handleUbi(e)}
             sx={{ mb: 3 }}
-          />
+          /> */}
 
           <FormControl >
             <InputLabel spacing={3} sx={{ p: 0 }} id="demo-simple-select-label">Estatus</InputLabel>
-            <Select
+            {/* <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
               label="Estatus"
@@ -153,7 +173,7 @@ export default function ModalEditarOficinas({ open, onClose, idOficina, oficina,
               <MenuItem value={0}>
                 Inactiva
               </MenuItem>
-            </Select>
+            </Select> */}
           </FormControl>
 
         </FormControl>
@@ -165,7 +185,7 @@ export default function ModalEditarOficinas({ open, onClose, idOficina, oficina,
           Cerrar
         </Button>
         <Button variant="contained" color="success" onClick={() => {
-          handleEstatus(
+          /* handleEstatus(
             {
               'idOfi': idOficina,
               'ofi': ofic,
@@ -173,7 +193,7 @@ export default function ModalEditarOficinas({ open, onClose, idOficina, oficina,
               'ubi': ubic,
               'estatus': est,
               'modificadoPor': user.idUsuario,
-            });
+            }); */
           confirm.onFalse();
         }}>
           Guardar
@@ -188,9 +208,12 @@ export default function ModalEditarOficinas({ open, onClose, idOficina, oficina,
 ModalEditarOficinas.propTypes = {
   onClose: PropTypes.func,
   open: PropTypes.bool,
-  idOficina: PropTypes.number,
-  oficina: PropTypes.any,
-  sede: PropTypes.any,
-  ubicación: PropTypes.any,
+  idHorario: PropTypes.any,
+  especialista: PropTypes.any,
+  horaInicio: PropTypes.any,
+  horaFin: PropTypes.any,
+  sabado: PropTypes.any,
+  horaInicioSabado: PropTypes.any,
+  horaFinSabado: PropTypes.any,
   estatus: PropTypes.any,
 };

@@ -2,19 +2,19 @@ import { Helmet } from 'react-helmet-async';
 
 import { useSession } from 'src/hooks/use-session';
 
-import { OficinasView } from 'src/sections/gestor/view';
+import { HorariosEspeView } from 'src/sections/gestor/view';
 
 // ----------------------------------------------------------------------
 
-export default function OficinasPage() {
+export default function HorariosEspePage() {
   useSession();
   return (
     <>
       <Helmet>
-        <title> Gestor: Oficinas</title>
+        <title> Gestor: Horario Especificos</title>
       </Helmet>
 
-      < OficinasView />
+      < HorariosEspeView />
     </>
   );
 }

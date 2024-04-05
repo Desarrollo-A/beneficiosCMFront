@@ -48,10 +48,10 @@ import ModalAgregarOficinas from '../oficinas-componets/modal-agregar-oficinas';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'idOficina', label: 'ID' },
-  { id: 'oficina', label: 'Oficina', with: 220 },
-  { id: 'sede', label: 'Sede', with: 100 },
-  { id: 'ubicación', label: 'Ubicación', with: 220 },
+  { id: 'idHorario', label: 'ID' },
+  { id: 'especialista', label: 'Especialista' },
+  { id: 'horario', label: 'Horario', with: 220 },
+  { id: 'horarioSabado', label: 'Horario sabatino', with: 100 },
   { id: 'estatus', label: 'Estatus', width: 100 },
   { id: '', width: 88 },
 ];
@@ -68,12 +68,12 @@ function handleDownloadExcel(tableData) {
 
   const data = [
     {
-      sheet: "Historial Reportes",
+      sheet: "Horarios especificos",
       columns: [
-        { label: "ID", value: "idOficina" },
-        { label: "Oficina", value: "oficina" },
-        { label: "Sede", value: "sede" },
-        { label: "Ubicación", value: "ubicación" },
+        { label: "ID", value: "idHorario" },
+        { label: "Especialista", value: "especialista" },
+        { label: "Horario", value: "horario" },
+        { label: "Horario sabatino", value: "horarioSabado" },
         { label: "Estatus", value: "estatus" },
       ],
       content: tableData,
@@ -81,7 +81,7 @@ function handleDownloadExcel(tableData) {
   ];
 
   const settings = {
-    fileName: "Oficinas",
+    fileName: "Horarios especificos",
     extraLength: 3,
     writeMode: "writeFile",
     writeOptions: {},
@@ -96,20 +96,20 @@ function handleDownloadPDF(tableData, headerBase) {
 
   let data = [];
 
-  data = tableData.map(item => ([item.idOficina, item.oficina, item.sede, item.ubicación, item.estatus]))
+  data = tableData.map(item => ([item.idHorario, item.especialista, item.horario, item.horarioSabado, item.estatus]));
 
   autoTable(doc, {
     head: [headerBase],
     body: data,
   })
-  doc.save('Oficinas.pdf')
+  doc.save('Horarios especificos.pdf')
 }
 
 // ----------------------------------------------------------------------
 
-export default function OficinasView() {
+export default function HorariosEspeView() {
 
-  const headerBase = ["ID", "Oficina", "Sede", "Ubicación", "Estatus"];
+  const headerBase = ["ID", "Especialista", "Horario", "Horario sabatino", "Estatus"];
 
   const table = useTable();
 
@@ -128,7 +128,7 @@ export default function OficinasView() {
     idPuesto: user?.idPuesto,
   });
 
-  const { oficinasData } = usePostGeneral(userDt, endpoints.gestor.getOfi, "oficinasData");
+  const { horariosData } = usePostGeneral(userDt, endpoints.gestor.getHorariosEspecificos, "horariosData");
 
   const [tableData, setTableData] = useState([]);
 
@@ -221,8 +221,8 @@ export default function OficinasView() {
   }
 
   useEffect(() => {
-    setTableData(oficinasData);
-  }, [oficinasData]);
+    setTableData(horariosData);
+  }, [horariosData]);
 
   const modal = useBoolean();
 
@@ -230,10 +230,10 @@ export default function OficinasView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Oficinas"
+          heading="Horarios especificos"
           links={[
             { name: 'Gestor' },
-            { name: 'Oficinas' },
+            { name: 'Horarios especificos' },
           ]}
           sx={{
             mb: { xs: 3, md: 0 },
@@ -256,7 +256,7 @@ export default function OficinasView() {
               modal.onTrue();
             }}
           >
-            Agregar oficina
+            Agregar horario
             <Iconify icon="lucide:plus" />
           </Button>
         </Box>

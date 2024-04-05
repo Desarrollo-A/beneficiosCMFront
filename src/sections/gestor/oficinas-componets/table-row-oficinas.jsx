@@ -17,7 +17,18 @@ import ModalEditarOficinas from './modal-editar-oficinas';
 // ----------------------------------------------------------------------
 
 export default function TableRowOficinas({ row, rol }) {
-  const { idOficina, oficina, idSede, sede, ubicación, estatus } = row;
+  const { 
+    idHorario, 
+    especialista, 
+    horario, 
+    horarioSabado, 
+    estatus, 
+    horaInicio, 
+    horaFin, 
+    sabado,
+    horaInicioSabado,
+    horaFinSabado
+  } = row;
 
   const quickEditar = useBoolean();
 
@@ -29,13 +40,13 @@ export default function TableRowOficinas({ row, rol }) {
     <>
       <TableRow>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{idOficina}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{idHorario}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{oficina}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{especialista}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{sede}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{horario}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{ubicación}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{horarioSabado}</TableCell>
 
         <TableCell>
           <Label
@@ -62,11 +73,13 @@ export default function TableRowOficinas({ row, rol }) {
       </TableRow>
 
       <ModalEditarOficinas
-        idOficina={row.idOficina}
-        oficina={oficina}
-        sede={idSede}
-        ubicación={ubicación}
-        estatus={estatus}
+        especialista={especialista}
+        idHorario={row.idHorario}
+        horaInicio={horaInicio}
+        horaFin={horaFin}
+        sabado={sabado}
+        horaInicioSabado={horaInicioSabado}
+        horaFinSabado={horaFinSabado}
         open={quickEditar.value}
         onClose={quickEditar.onFalse}
       />
