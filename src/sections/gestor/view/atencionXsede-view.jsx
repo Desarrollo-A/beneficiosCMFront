@@ -163,6 +163,8 @@ export default function AtencionXsedeView() {
 
   const _of = oficinas.flatMap((i) => (i.oficina));
 
+  const _ofMore = [..._of, 'VIRTUAL'];
+
   const _pu = puestos.flatMap((i) => (i.nombre));
 
   const _mod = modalidades.flatMap((i) => (i.modalidad));
@@ -325,7 +327,7 @@ export default function AtencionXsedeView() {
               onFilters={handleFilters}
               //
               roleOptions={_sd}
-              OptionsOff={_of}
+              OptionsOff={_ofMore}
               OptionsPue={_pu}
               OptionsMod={_mod}
               rol={rol}

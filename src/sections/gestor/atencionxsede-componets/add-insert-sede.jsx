@@ -36,16 +36,16 @@ export default function AddInsertSede({ idSede, especiaData, oficinaData, modali
     name: 'items',
   });
 
-  const handleChangeOfi = (e) => {
-    setSelect(e.target.value);
+  const handleChangeOfi = (value) => {
+    setSelect(value?.value);
 
-    if (e.target.value === 9) {
+    if (value?.value === 0) {
       setBol(false);
       handleMod({
         modalidad: 2,
         sede: idSede,
         usuario: user?.idUsuario,
-        oficina: e.target.value,
+        oficina: value?.value,
       });
     } else {
       setBol(true);
@@ -53,6 +53,7 @@ export default function AddInsertSede({ idSede, especiaData, oficinaData, modali
   }
 
   const handleChangeMod = (e) => {
+
     setMod(e.target.value);
     handleMod({
       modalidad: e.target.value,
@@ -74,12 +75,21 @@ export default function AddInsertSede({ idSede, especiaData, oficinaData, modali
     handleEsp({ especialista: e.target.value });
   }
 
+  const opciones = [
+    ...oficinaData.map((i) => ({
+      key: i.idOficina,
+      value: i.idOficina,
+      label: i.lugar,
+    })),
+    { key: 0, value: 0, label: "VIRTUAL" }
+  ];
+
   return (
     <Box sx={{ p: 3 }}>
       <Stack divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3}>
         <Stack alignItems="flex-end" spacing={1.5}>
           <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ width: 1 }}>
-            <RHFSelect
+            {/* <RHFSelect
               name="oficina"
               size="small"
               label="Oficina"
@@ -89,6 +99,9 @@ export default function AddInsertSede({ idSede, especiaData, oficinaData, modali
             >
               <Divider sx={{ borderStyle: 'dashed' }} />
 
+              <MenuItem value={0}>
+                  Virtual
+              </MenuItem>
               {!isEmpty(oficinaData) ? (
               oficinaData.map((i) => (
                 <MenuItem key={i.idOficina} value={i.idOficina}>
@@ -101,7 +114,23 @@ export default function AddInsertSede({ idSede, especiaData, oficinaData, modali
                   <Box mb={3} />
                 </Grid>
               )}
-            </RHFSelect>
+            </RHFSelect> */}
+
+            <Stack spacing={3} sx={{ width: 1500}}>
+              <RHFAutocomplete
+                name="oficina"
+                label="Oficina"
+                size="small"
+                value=""
+                onChange={(_event, value, reason) => {
+                  handleChangeOfi(value);
+                }}
+                onKeyDown={(i) => {
+                  handleKeyDown();
+                }}
+                options={opciones}
+              />
+            </Stack>
 
             <RHFSelect
               name="especialista"
