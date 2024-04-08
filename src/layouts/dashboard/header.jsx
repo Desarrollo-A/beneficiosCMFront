@@ -52,8 +52,7 @@ export default function Header({ onOpenNav }) {
         </IconButton>
       )}
 
-      <Searchbar />
-      {datosUser?.idRol === 2 && <PendingModalUser />}
+      {/* {datosUser?.idRol === 2 && <PendingModalUser />} */}
       {datosUser?.idRol === 3 && <PendingModal />}
 
       <Stack

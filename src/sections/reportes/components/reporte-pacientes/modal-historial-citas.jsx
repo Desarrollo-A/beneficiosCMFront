@@ -21,7 +21,6 @@ import { endpoints } from 'src/utils/axios';
 import { usePostGeneral } from 'src/api/general';
 // ----------------------------------------------------------------------
 export default function HistorialCitas({ open, onClose, idUsuario, area, idUs, rol }) {
-
   let espe = '';
   switch (area) {
     case 158:
@@ -46,18 +45,21 @@ export default function HistorialCitas({ open, onClose, idUsuario, area, idUs, r
     idRol: rol,
   });
 
-  const { citasData } = usePostGeneral(data, endpoints.reportes.citas, "citasData");
+  const { citasData } = usePostGeneral(data, endpoints.reportes.citas, 'citasData');
 
   return (
     <>
       {citasData.length > 0 ? (
-
-        <Card >
-          <CardHeader title='Historial Citas' subheader={citasData[0]?.nombre} />
-          <Typography variant="caption" sx={{
-            color: 'text.disabled', p: 3,
-            pr: { xs: 2.5, md: 2.5 },
-          }}>
+        <Card>
+          <CardHeader title="Historial Citas" subheader={citasData[0]?.nombre} />
+          <Typography
+            variant="caption"
+            sx={{
+              color: 'text.disabled',
+              p: 3,
+              pr: { xs: 2.5, md: 2.5 },
+            }}
+          >
             {espe}
           </Typography>
           <Timeline
@@ -73,31 +75,26 @@ export default function HistorialCitas({ open, onClose, idUsuario, area, idUs, r
             {citasData.map((item, index) => (
               <OrderItem key={index} item={item} lastTimeline={index === citasData.length - 1} />
             ))}
-
           </Timeline>
 
           <DialogActions>
-
             <Button variant="contained" color="error" onClick={onClose}>
               Cerrar
             </Button>
-
           </DialogActions>
         </Card>
-
       ) : (
         <Card sx={{ pr: 2, pl: 1 }}>
-          <CardHeader title='Historial Citas' />
+          <CardHeader title="Historial Citas" />
 
           <Grid container spacing={1} sx={{ p: 5 }} justifyContent="center" alignItems="center">
             <CircularProgress />
           </Grid>
         </Card>
-
       )}
-
     </>
-  )}
+  );
+}
 
 HistorialCitas.propTypes = {
   onClose: PropTypes.func,
@@ -126,6 +123,8 @@ function OrderItem({ item, lastTimeline }) {
               (estatusCita === 6 && 'blue') ||
               (estatusCita === 7 && 'red') ||
               (estatusCita === 8 && 'red') ||
+              (estatusCita === 9 && 'red') ||
+              (estatusCita === 10 && 'purple') ||
               'error.main',
           }}
         />
@@ -138,12 +137,12 @@ function OrderItem({ item, lastTimeline }) {
         <Typography variant="caption" sx={{ color: 'text.disabled' }}>
           {estatus}
         </Typography>
-        <Stack spacing={1} >
+        <Stack spacing={1}>
           <Typography variant="caption" sx={{ color: 'text.disabled' }}>
             Especialista: {especialista}
           </Typography>
         </Stack>
-        <Stack spacing={1} >
+        <Stack spacing={1}>
           <Typography variant="caption" sx={{ color: 'text.disabled' }}>
             {motivoCita}
           </Typography>

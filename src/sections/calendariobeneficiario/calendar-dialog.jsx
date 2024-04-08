@@ -51,6 +51,7 @@ import {
   getCitasSinFinalizar,
   getOficinaByAtencion,
   registrarDetalleDePago,
+  updateStatusAppointment,
   insertGoogleCalendarEvent,
   updateGoogleCalendarEvent,
   deleteGoogleCalendarEvent,
@@ -265,11 +266,11 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     let organizador = 'programador.analista36@ciudadmaderas.com';
     let correosNotificar = [
       organizador, // datosUser.correo Sustituir correo de analista
-      // 'programador.analista34@ciudadmaderas.com',
-      // 'programador.analista32@ciudadmaderas.com',
-      // 'programador.analista12@ciudadmaderas.com',
-      // 'tester.ti2@ciudadmaderas.com',
-      // 'tester.ti3@ciudadmaderas.com',
+      'programador.analista34@ciudadmaderas.com',
+      'programador.analista32@ciudadmaderas.com',
+      'programador.analista12@ciudadmaderas.com',
+      'tester.ti2@ciudadmaderas.com',
+      'tester.ti3@ciudadmaderas.com',
       // algun correo de especialista
     ];
 
@@ -277,11 +278,11 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       organizador = 'programador.analista34@ciudadmaderas.com'; // especialista
       correosNotificar = [
         organizador, // datosUser.correo Sustituir correo de analista
-        // 'programador.analista36@ciudadmaderas.com',
-        // 'programador.analista34@ciudadmaderas.com',
-        // 'programador.analista32@ciudadmaderas.com',
-        // 'tester.ti2@ciudadmaderas.com',
-        // 'tester.ti3@ciudadmaderas.com',
+        'programador.analista36@ciudadmaderas.com',
+        'programador.analista34@ciudadmaderas.com',
+        'programador.analista32@ciudadmaderas.com',
+        'tester.ti2@ciudadmaderas.com',
+        'tester.ti3@ciudadmaderas.com',
       ];
     }
 
@@ -338,7 +339,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       ESTATUS_CITA:
         datosUser.tipoPuesto.toLowerCase() === 'operativa'
           ? ESTATUS_CITA.POR_ASISTIR
-          : ESTATUS_CITA.PENDIENTE_PAGO,
+          : ESTATUS_CITA.PROCESO_PAGO,
     });
 
     const agendar = await agendarCita(
@@ -382,13 +383,21 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     });
 
     if (datosUser.tipoPuesto.toLowerCase() !== 'operativa') {
-      await bbPago(
+      const resultadoPago = await bbPago(
         DATOS_PAGO.FOLIO,
         DATOS_PAGO.REFERENCIA,
         DATOS_PAGO.MONTO,
         DATOS_PAGO.CONCEPTO,
         DATOS_PAGO.SERVICIO
       );
+      if (!resultadoPago) {
+        const update = await updateStatusAppointment(
+          DATOS_CITA.ID_USUARIO,
+          agendar.data,
+          ESTATUS_CITA.PENDIENTE_PAGO
+        );
+        if (!update) console.error('La cita no se pudo actualizar para realizar el pago');
+      }
     }
     if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
       const METODO_PAGO = Object.freeze({
@@ -402,8 +411,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       await pagoGratuito(
         DATOS_PAGO.FOLIO,
         DATOS_PAGO.REFERENCIA,
-        DATOS_PAGO.MONTO,
         DATOS_PAGO.CONCEPTO,
+        DATOS_PAGO.MONTO,
         METODO_PAGO.NO_APLICA,
         ESTATUS_PAGO.COBRADO,
         agendar.data
@@ -486,18 +495,25 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     document.body.appendChild(form);
 
-    window.open('', windowName, params);
+    const popupWindow = window.open('', windowName, params);
     form.target = windowName;
     form.submit();
     document.body.removeChild(form);
+
+    if (!popupWindow) {
+      enqueueSnackbar('¡Activa las ventanas emergentes para realizar el pago de la cita!', {
+        variant: 'danger',
+      });
+      return false;
+    }
     return true;
   };
 
   const pagoGratuito = async (
     folio,
     referencia,
-    cantidad,
     concepto,
+    cantidad,
     metodoPago,
     estatusPago,
     idCita
@@ -506,8 +522,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       datosUser.idUsuario,
       folio,
       referencia,
-      cantidad,
       concepto,
+      cantidad,
       metodoPago,
       estatusPago,
       idCita
@@ -622,6 +638,10 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         break;
     }
 
+    const ESTATUS_CITA = Object.freeze({
+      PENDIENTE_PAGO: 6,
+    });
+
     const DATOS_CITA = Object.freeze({
       TITULO: `Cita ${nombreBeneficio} - ${datosUser.nombre}`,
       ID_ESPECIALISTA: currentEvent.idEspecialista,
@@ -641,13 +661,21 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     });
 
     if (datosUser.tipoPuesto.toLowerCase() !== 'operativa') {
-      await bbPago(
+      const resultadoPago = await bbPago(
         DATOS_PAGO.FOLIO,
         DATOS_PAGO.REFERENCIA,
         DATOS_PAGO.MONTO,
         DATOS_PAGO.CONCEPTO,
         DATOS_PAGO.SERVICIO
       );
+      if (!resultadoPago) {
+        const update = await updateStatusAppointment(
+          DATOS_CITA.ID_USUARIO,
+          currentEvent.id,
+          ESTATUS_CITA.PENDIENTE_PAGO
+        );
+        if (!update) console.error('La cita no se pudo actualizar para realizar el pago');
+      }
     }
 
     if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
@@ -662,8 +690,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       await pagoGratuito(
         DATOS_PAGO.FOLIO,
         DATOS_PAGO.REFERENCIA,
-        DATOS_PAGO.MONTO,
         DATOS_PAGO.CONCEPTO,
+        DATOS_PAGO.MONTO,
         METODO_PAGO.NO_APLICA,
         ESTATUS_PAGO.COBRADO,
         currentEvent.id
@@ -905,11 +933,17 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     return registrosFecha;
   };
 
-  const getHorariosDisponibles = async (beneficio, especialistah) => {
+  const getHorariosDisponibles = async (beneficio, especialista) => {
     setIsLoading(true);
     // Consultamos el horario del especialista segun su beneficio.
     const horarioACubrir = await getHorario(beneficio);
-    if (!horarioACubrir.result) return; // En caso de que no halla horario detenemos el proceso.
+    if (!horarioACubrir.result) {
+      enqueueSnackbar('¡El especialista no cuenta con horarios registrados!', {
+        variant: 'error',
+      });
+      onClose();
+      return;
+    } // En caso de que no halla horario detenemos el proceso.
 
     // Teniendo en cuenta el dia actual, consultamos los dias restantes del mes actual y todos los dias del mes que sigue.
     let diasProximos = generarFechas(initialValue, lastDayOfNextMonth);
@@ -923,7 +957,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     // Traemos citas y horarios bloqueados por parte del usuario y especialsita
     const horariosOcupados = await getHorariosOcupados(
-      especialistah,
+      especialista,
       datosUser.idUsuario,
       initialValue.format('YYYY-MM-DD'),
       lastDayOfNextMonth.format('YYYY-MM-DD')
@@ -1550,6 +1584,13 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                         ) : (
                           ''
                         )}
+                        {currentEvent?.estatus === 10 ? (
+                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                            Cita en {`${currentEvent?.beneficio} (proceso de pago)`}
+                          </Typography>
+                        ) : (
+                          ''
+                        )}
                       </Stack>
                     </Stack>
                     <Stack
@@ -1855,9 +1896,15 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                         }}
                       >
                         <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                          {currentEvent?.idDetalle === null || currentEvent?.idDetalle === 0
-                            ? 'Sin pago'
-                            : 'Pagado'}
+                          {currentEvent?.idDetalle === null || currentEvent?.idDetalle === 0 ? (
+                            'Sin pago'
+                          ) : (
+                            <>
+                              {currentEvent?.estatusPago === 1 || currentEvent?.estatusPago === 3
+                                ? 'Pago aprobado'
+                                : 'Pago declinado'}
+                            </>
+                          )}
                         </Typography>
                       </Stack>
                     </Stack>

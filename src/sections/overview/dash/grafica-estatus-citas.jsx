@@ -140,7 +140,7 @@ export default function GraficaEstatusCitas({
       position: 'right',
       itemMargin: {
         horizontal: 0,
-        vertical: 3,
+        vertical: 1,
       },
     },
     tooltip: {
