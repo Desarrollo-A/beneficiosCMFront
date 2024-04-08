@@ -214,6 +214,13 @@ export default function CalendarPreview({ event, open, handleClose }) {
             ) : (
               ''
             )}
+            {event?.estatus === 10 ? (
+              <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                Cita en {`${event?.beneficio} (proceso de pago)`}
+              </Typography>
+            ) : (
+              ''
+            )}
           </Stack>
         </Stack>
         <Stack
@@ -444,7 +451,7 @@ export default function CalendarPreview({ event, open, handleClose }) {
             }}
           >
             <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-              {event?.correo
+              {event?.correoEspecialista
                 ? event?.correoEspecialista.toLowerCase()
                 : 'correo-demo@ciudadmaderas.com.mx'}
             </Typography>
@@ -474,7 +481,15 @@ export default function CalendarPreview({ event, open, handleClose }) {
             }}
           >
             <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-              {event?.idDetalle === null || event?.idDetalle === 0 ? 'Sin pago' : 'Pagado'}
+              {event?.idDetalle === null || event?.idDetalle === 0 ? (
+                'Sin pago'
+              ) : (
+                <>
+                  {event?.estatusPago === 1 || event?.estatusPago === 3
+                    ? 'Pago aprobado'
+                    : 'Pago declinado'}
+                </>
+              )}
             </Typography>
           </Stack>
         </Stack>
