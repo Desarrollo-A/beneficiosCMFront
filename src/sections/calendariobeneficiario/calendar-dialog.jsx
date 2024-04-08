@@ -1457,21 +1457,38 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const startDate = dayjs(currentEvent.start);
     const endDate = startDate.add(1, 'hour');
 
+    // Aqui colocar
+    let organizador = 'programador.analista36@ciudadmaderas.com';
+    let correosNotificar = [
+      organizador, // datosUser.correo Sustituir correo de analista
+      // 'programador.analista34@ciudadmaderas.com',
+      // 'programador.analista32@ciudadmaderas.com',
+      // 'programador.analista12@ciudadmaderas.com',
+      // 'tester.ti2@ciudadmaderas.com',
+      // 'tester.ti3@ciudadmaderas.com',
+      // algun correo de especialista
+      ...emails,
+    ];
+
+    if (datosUser.correo === null) {
+      organizador = 'programador.analista34@ciudadmaderas.com'; // especialista
+      correosNotificar = [
+        organizador, // datosUser.correo Sustituir correo de analista
+        // 'programador.analista36@ciudadmaderas.com',
+        // 'programador.analista34@ciudadmaderas.com',
+        // 'programador.analista32@ciudadmaderas.com',
+        // 'tester.ti2@ciudadmaderas.com',
+        // 'tester.ti3@ciudadmaderas.com',
+        ...emails,
+      ];
+    }
+
     const updateGoogleEvent = await updateGoogleCalendarEvent(
       currentEvent.idEventoGoogle,
       startDate.format('YYYY-MM-DDTHH:mm:ss'),
       endDate.format('YYYY-MM-DDTHH:mm:ss'),
-      'programador.analista36@ciudadmaderas.com', // datosUser.correo, Sustituir correo de analista.
-      [
-        'programador.analista36@ciudadmaderas.com', // datosUser.correo Sustituir correo de analista.
-        'artturo.alarcon@gmail.com',
-        'programador.analista34@ciudadmaderas.com',
-        'programador.analista32@ciudadmaderas.com',
-        'programador.analista12@ciudadmaderas.com',
-        'tester.ti2@ciudadmaderas.com',
-        'tester.ti3@ciudadmaderas.com',
-        ...emails,
-      ]
+      organizador, // datosUser.correo, Sustituir correo de analista.
+      correosNotificar
     );
     if (!updateGoogleEvent.result) {
       enqueueSnackbar('No se pudo sincronizar el evento con la cuenta de google', {
