@@ -176,6 +176,18 @@ export function updateAppointment(idUsuario, idCita, estatus, detalle, evaluacio
   return update;
 }
 
+// Actualizar solo algun estatus de cita
+export function updateStatusAppointment(idUsuario, idCita, estatus) {
+  const URL = [endpoints.calendarioColaborador.updateStatusAppointment];
+  const update = fetcherPost(URL, {
+    idUsuario,
+    idCita,
+    estatus,
+  });
+
+  return update;
+}
+
 // Actualizar el registro de detalle paciente que indica que un usuario esta activo en el beneficio.
 export function updateDetailPacient(usuario, beneficio) {
   const URL = [endpoints.calendarioColaborador.updateDetail];

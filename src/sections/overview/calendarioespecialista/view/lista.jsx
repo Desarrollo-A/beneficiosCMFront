@@ -255,11 +255,8 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
     const diferenciaMeses = Math.floor(
       (diferenciaMilisegundos % milisegundosEnUnAnio) / (milisegundosEnUnDia * 30.44)
     );
-    console.log(ingreso);
-    console.log(hoy);
     // Compara la diferencia de meses beneficio, y  puesto.
     if (diferenciaMeses >= 3 || diferenciaAnios > 0) {
-      console.log('si aqui');
       return true;
     }
     return false;

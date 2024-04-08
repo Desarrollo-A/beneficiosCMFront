@@ -4,7 +4,6 @@ import useSWR, { mutate } from 'swr';
 import { useMemo, useEffect } from 'react';
 import { enqueueSnackbar } from 'notistack';
 
-import uuidv4 from 'src/utils/uuidv4';
 import { endpoints, fetcherPost } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
@@ -61,7 +60,11 @@ export function GetCustomEvents(current, idUsuario) {
     idUsuario,
   };
 
-  const { data, isLoading, error, isValidating } = useSWR( get_all_events, (url) => fetcherPost(url, dataValue), options );
+  const { data, isLoading, error, isValidating } = useSWR(
+    get_all_events,
+    (url) => fetcherPost(url, dataValue),
+    options
+  );
 
   if (data?.events?.length > 0) {
     data.events = data.events.map((item) => ({ ...item, id: item.id.toString() }));
@@ -179,11 +182,11 @@ export async function deleteEvent(eventId, idUsuario) {
 
 export async function createAppointment(eventData, modalitie, datosUser) {
   let create = '';
-  let transaction = '';
-  let transactionId = 0;
+  let abreviatura = '';
   let especialidad = '';
   let sede = modalitie?.sede || 'virtual';
   let oficina = modalitie?.oficina || 'virtual';
+  const precio = 0.01;
 
   const fechaInicio = dayjs(`${eventData.fechaInicio} ${eventData.hora_inicio}`).format(
     'YYYY/MM/DD HH:mm:ss'
@@ -207,18 +210,22 @@ export async function createAppointment(eventData, modalitie, datosUser) {
   switch (datosUser.idPuesto) {
     case 537:
       especialidad = 'nutrición';
+      abreviatura = 'NUTR';
       break;
 
     case 585:
       especialidad = 'psicología';
+      abreviatura = 'PSIC';
       break;
 
     case 686:
       especialidad = 'guía espiritual';
+      abreviatura = 'GUIA';
       break;
 
     case 158:
       especialidad = 'quantum balance';
+      abreviatura = 'QUAN';
       break;
 
     default:
@@ -231,27 +238,11 @@ export async function createAppointment(eventData, modalitie, datosUser) {
     oficina = 'Confirmado por especialista';
   }
 
-  if(eventData.hora_inicio < '08:00:00' || eventData.hora_final > '18:00:00'){
+  if (eventData.hora_inicio < '08:00:00' || eventData.hora_final > '18:00:00') {
     bussinessHours = false;
   }
 
-  const dataTransaction = {
-    usuario: eventData.paciente.idUsuario,
-    folio: uuidv4(),
-    concepto: 1,
-    cantidad: 0,
-    metodoPago: 3,
-  };
-
   if (start > now && bussinessHours) {
-    if (fundacion === 1 || eventData.paciente.tipoPuesto === 'Operativa') {
-      transaction = await fetcherPost(registar_transaccion, dataTransaction);
-
-      if (transaction.result) {
-        transactionId = transaction.data;
-      }
-    }
-
     const data = {
       idUsuario: datosUser.idUsuario,
       idPaciente: eventData.paciente.idUsuario,
@@ -262,12 +253,12 @@ export async function createAppointment(eventData, modalitie, datosUser) {
       modificadoPor: datosUser.idUsuario,
       idCatalogo: modalitie.idAtencionXSede,
       fundacion,
-      idDetalle: transactionId,
+      idDetalle: 0,
       especialidad,
       reagenda: 0,
       tipoPuesto: eventData.paciente.tipoPuesto,
       idSede: eventData.paciente.idSede,
-      modalidad: modalitie.modalidad
+      modalidad: modalitie.modalidad,
     };
 
     const mailMessage = {
@@ -282,8 +273,8 @@ export async function createAppointment(eventData, modalitie, datosUser) {
       sede,
       tituloEmail: 'Reservación',
       temaEmail: 'Se ha agendado tu cita con: ',
-      correo: eventData.paciente.correo,
-      idUsuario: datosUser.idUsuario
+      correo: [eventData.paciente.correo],
+      idUsuario: datosUser.idUsuario,
     };
 
     const googleData = {
@@ -324,9 +315,30 @@ export async function createAppointment(eventData, modalitie, datosUser) {
 
     create = await fetcherPost(create_appointment, data);
 
-    if ((create.result && fundacion === 1) || (create.result && eventData.paciente.tipoPuesto === 'Operativa')) {
+    if (create.result && (fundacion === 1 || eventData.paciente.tipoPuesto === 'Operativa')) {
+      const dataTransaction = {
+        usuario: eventData.paciente.idUsuario,
+        folio: `${eventData.paciente.idUsuario}${dayjs(new Date()).format('HHmmssYYYYMMDD')}`,
+        referencia: `U${eventData.paciente.idUsuario}-${abreviatura}-E${datosUser.idPuesto}-C${create.data}`,
+        concepto: 1, // 1: citas
+        cantidad: precio,
+        metodoPago: 7, // 7: No aplica (gratis)
+        estatusPago: 1, // 1:cobrado
+        idCita: create.data,
+      };
+
+      await fetcherPost(registar_transaccion, dataTransaction);
+    }
+
+    if (
+      (create.result && fundacion === 1) ||
+      (create.result && eventData.paciente.tipoPuesto === 'Operativa')
+    ) {
       const googleEvent = await fetcherPost(insert_google_event, googleData);
-      fetcherPost(sendMail, mailMessage);
+
+      if (eventData.paciente.correo) {
+        fetcherPost(sendMail, mailMessage);
+      }
 
       if (googleEvent.result) {
         const updateData = {
@@ -416,7 +428,7 @@ export async function cancelAppointment(currentEvent, id, cancelType, idUsuario)
     especialista: currentEvent.especialista,
     view: 'email-cancelar',
     correo: currentEvent?.correo,
-    idUsuario
+    idUsuario,
   };
 
   const delDate = await fetcherPost(cancel_appointment, data);
@@ -494,7 +506,7 @@ export async function endAppointment(currentEvent, reason, idUsuario) {
     view: 'email-end',
     correo: currentEvent?.correo,
     link: 'https://prueba.gphsis.com/beneficiosmaderas/dashboard/calendariobeneficiario',
-    idUsuario
+    idUsuario,
   };
 
   const update = await fetcherPost(end_appointment, data);
@@ -602,7 +614,7 @@ export async function reschedule(eventData, idDetalle, cancelType, datosUser) {
     idEventoGoogle: eventData.idEventoGoogle,
     oldEventTipo: eventData.oldEventTipo,
     idSede: eventData.idSede,
-    modalidad: eventData.modalidad
+    modalidad: eventData.modalidad,
   };
 
   const cancelData = {
@@ -626,7 +638,7 @@ export async function reschedule(eventData, idDetalle, cancelType, datosUser) {
     horaFinalOld: dayjs(eventData.oldEventEnd).format('HH:mm: a'),
     view: 'email-reschedule',
     correo: eventData?.correo,
-    idUsuario: datosUser?.idUsuario
+    idUsuario: datosUser?.idUsuario,
   };
 
   response = await fetcherPost(check_invoice, idDetalle);
@@ -683,7 +695,6 @@ export async function reschedule(eventData, idDetalle, cancelType, datosUser) {
 // ----------------------------------------------------------------------
 
 export async function UpdateDetallePaciente(idPaciente, idPuesto) {
-
   const data = {
     usuario: idPaciente,
     beneficio: idPuesto,

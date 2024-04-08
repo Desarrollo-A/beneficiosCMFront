@@ -175,6 +175,7 @@ export const endpoints = {
     registrarDetallePago: 'CalendarioController/registrarTransaccionPago',
     getLastAppointment: 'CalendarioController/getLastAppointment',
     updateAppointment: 'CalendarioController/updateAppointmentData',
+    updateStatusAppointment: 'CalendarioController/updateStatusAppointmentData',
     getPendientes: 'CalendarioController/getPendientes',
     updateDetail: 'CalendarioController/updateDetallePaciente',
     cancelAppointment: 'CalendarioController/cancelAppointmentUser',

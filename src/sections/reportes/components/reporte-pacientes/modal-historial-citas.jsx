@@ -124,7 +124,7 @@ function OrderItem({ item, lastTimeline }) {
               (estatusCita === 7 && 'red') ||
               (estatusCita === 8 && 'red') ||
               (estatusCita === 9 && 'red') ||
-              (estatusCita === 10 && 'red') ||
+              (estatusCita === 10 && 'purple') ||
               'error.main',
           }}
         />

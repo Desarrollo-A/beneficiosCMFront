@@ -42,6 +42,10 @@ export default function ColorsDialog({ onClose }) {
       color: '#0000ff',
       text: 'Cita en línea',
     },
+    {
+      color: '#33105D',
+      text: 'Cita en proceso de pago',
+    },
   ];
 
   return (
