@@ -1,109 +1,14 @@
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
-import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Dialog, DialogContent } from '@material-ui/core';
 
-import { LoadingButton } from '@mui/lab';
-import Tooltip from '@mui/material/Tooltip';
 import DialogTitle from '@mui/material/DialogTitle';
-import FormHelperText from '@mui/material/FormHelperText';
-import InputAdornment from '@mui/material/InputAdornment';
-import { Chip, Stack, Button, TextField, Typography, DialogActions } from '@mui/material';
-
-// import { useAuthContext } from 'src/auth/hooks';
-import { updateGoogleCalendarEvent } from 'src/api/calendar-colaborador';
+import { Stack, Button, Typography, DialogActions } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
-import { useSnackbar } from 'src/components/snackbar';
 
 export default function CalendarPreview({ event, open, handleClose }) {
-  const [email, setEmail] = useState('');
-  const [emails, setEmails] = useState([]);
-  const [errorMessage, setErrorMessage] = useState('Formato de correo erróneo');
-  const [errorEmail, setErrorEmail] = useState(false);
-  const [sendEmails, setSendEmails] = useState(false);
-  const [btnNotificationDisabled, setBtnNotificationDisabled] = useState(false);
-
-  const { enqueueSnackbar } = useSnackbar();
-  // const { user: datosUser } = useAuthContext();
-
-  const handleSendEmails = () => {
-    setSendEmails(!sendEmails);
-    setErrorEmail(false);
-    setEmail('');
-    setEmails([]);
-  };
-
-  const handleEmails = (newEmail) => {
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
-    // Verificar si la cadena cumple con la expresión regular
-    if (!emailRegex.test(newEmail)) {
-      setErrorMessage('Formato de correo erróneo');
-      return setErrorEmail(true);
-    }
-
-    // Verificar si el nuevo correo ya existe en el arreglo
-    if (emails.some((emailObj) => emailObj.toLowerCase() === newEmail.toLowerCase())) {
-      setErrorMessage('Correo ya registrado');
-      return setErrorEmail(true);
-    }
-
-    setEmails([...emails, newEmail]);
-    setEmail('');
-    setErrorEmail(false);
-    return '';
-  };
-
-  const sendNotifications = async () => {
-    if (emails.length === 0) {
-      enqueueSnackbar('Añada un correo electrónico para poder notificar a la persona', {
-        variant: 'warning',
-      });
-      return false;
-    }
-    setBtnNotificationDisabled(true);
-
-    const startDate = dayjs(event.start);
-    const endDate = startDate.add(1, 'hour');
-
-    const updateGoogleEvent = await updateGoogleCalendarEvent(
-      event.idEventoGoogle,
-      startDate.format('YYYY-MM-DDTHH:mm:ss'),
-      endDate.format('YYYY-MM-DDTHH:mm:ss'),
-      'programador.analista36@ciudadmaderas.com', // datosUser.correo, Sustituir correo de analista.
-      [
-        'programador.analista36@ciudadmaderas.com', // datosUser.correo Sustituir correo de analista.
-        'artturo.alarcon@gmail.com',
-        'programador.analista34@ciudadmaderas.com',
-        'programador.analista32@ciudadmaderas.com',
-        'programador.analista12@ciudadmaderas.com',
-        'tester.ti2@ciudadmaderas.com',
-        'tester.ti3@ciudadmaderas.com',
-        ...emails,
-      ]
-    );
-    if (!updateGoogleEvent.result) {
-      enqueueSnackbar('No se pudo sincronizar el evento con la cuenta de google', {
-        variant: 'error',
-      });
-      handleClose();
-      return false;
-    }
-    enqueueSnackbar('¡Invitaciones enviadas correctamente!', {
-      variant: 'success',
-    });
-    handleClose();
-    setBtnNotificationDisabled(false);
-    return true;
-  };
-
-  const deleteEmail = (removedEmail) => {
-    const newEmails = emails.filter((each) => each !== removedEmail);
-    setEmails(newEmails);
-  };
-
   return (
     <Dialog
       open={open}
@@ -493,124 +398,11 @@ export default function CalendarPreview({ event, open, handleClose }) {
             </Typography>
           </Stack>
         </Stack>
-
-        <Stack
-          sx={{
-            flexDirection: 'row',
-            px: { xs: 1, md: 2 },
-            py: 1,
-            alignItems: 'center',
-          }}
-          spacing={2}
-        >
-          <Typography variant="subtitle1" sx={{ py: { xs: 1, md: 1 } }}>
-            Notificar a externos
-          </Typography>
-          <Stack
-            onClick={() => handleSendEmails()}
-            sx={{
-              cursor: 'pointer', // Hace que aparezca la manita al pasar el ratón
-            }}
-          >
-            {!sendEmails ? (
-              <Iconify icon="icons8:plus" width={24} sx={{ color: 'text.disabled' }} />
-            ) : (
-              <Iconify icon="icons8:minus" width={24} sx={{ color: 'text.disabled' }} />
-            )}
-          </Stack>
-        </Stack>
-
-        {sendEmails === true && (
-          <>
-            <Stack
-              sx={{
-                px: { xs: 1, md: 2 },
-                pt: 1,
-                alignItems: 'start',
-              }}
-            >
-              <TextField
-                fullWidth
-                id="input-with-icon-textfield"
-                label="Correo electrónico"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                error={errorEmail}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <Button
-                        variant="contained"
-                        size="small"
-                        sx={{ backgroundColor: 'text.disabled' }}
-                        onClick={() => handleEmails(email)}
-                      >
-                        Invitar
-                      </Button>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              {errorEmail && <FormHelperText error={errorEmail}>{errorMessage}</FormHelperText>}
-            </Stack>
-
-            <Stack
-              flexDirection="row"
-              flexWrap="wrap"
-              flex={1}
-              spacing={2}
-              sx={{ px: { xs: 1, md: 3 }, py: 1 }}
-            >
-              {emails.length > 0 &&
-                emails.map((each) => (
-                  <Tooltip title={each} key={each}>
-                    <Chip
-                      label={each}
-                      variant="outlined"
-                      sx={{
-                        backgroundColor: '#e0e0e0',
-                        borderRadius: '20px',
-                        alignItems: 'center',
-                        alignContent: 'center',
-                        justifyContent: 'center',
-                      }}
-                      deleteIcon={
-                        <Stack
-                          style={{
-                            width: '24px',
-                            height: '24px',
-                            display: 'flex',
-                            alignItems: 'center',
-                          }}
-                        >
-                          <Iconify
-                            icon="typcn:delete-outline"
-                            sx={{
-                              color: 'black',
-                            }}
-                          />
-                        </Stack>
-                      }
-                      onDelete={() => deleteEmail(each)}
-                    />
-                  </Tooltip>
-                ))}
-            </Stack>
-          </>
-        )}
       </DialogContent>
       <DialogActions>
         <Button variant="contained" color="error" onClick={handleClose}>
           Cerrar
         </Button>
-        <LoadingButton
-          variant="contained"
-          color="success"
-          onClick={() => sendNotifications()}
-          loading={btnNotificationDisabled}
-        >
-          Notificar
-        </LoadingButton>
       </DialogActions>
     </Dialog>
   );
