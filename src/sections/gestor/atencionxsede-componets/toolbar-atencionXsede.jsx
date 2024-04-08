@@ -11,6 +11,7 @@ import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Unstable_Grid2';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
+import Autocomplete from '@mui/material/Autocomplete';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 import LinearProgress from '@mui/material/LinearProgress';
@@ -52,10 +53,10 @@ export default function ToolbarAtencionXsede({
 
   const handleFilterOficina = useCallback(
     (event) => {
-      onFilters(
-        'oficina',
-        typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value
-      );
+      if (event !== null) {
+        const eventData = [event];
+        onFilters('oficina', eventData);
+      }
     },
     [onFilters]
   );
@@ -137,9 +138,20 @@ export default function ToolbarAtencionXsede({
             width: { xs: 1, md: 200 },
           }}
         >
-          <InputLabel>Oficina</InputLabel>
+          {/* <InputLabel>Oficina</InputLabel> */}
 
-          <Select
+          <Autocomplete
+          name="oficina"
+          label="Oficina"
+          onChange={(_event, value, reason) => {
+            handleFilterOficina(value);
+          }}
+          clear={false}
+          options={OptionsOff}
+          renderInput={(params) => <TextField {...params} label="Oficina" />}
+        />
+        
+          {/* <Select
             multiple
             value={filters.oficina}
             onChange={handleFilterOficina}
@@ -164,7 +176,7 @@ export default function ToolbarAtencionXsede({
                 <Box mb={3} />
               </Grid>
             )}
-          </Select>
+          </Select> */}
         </FormControl>
 
         {rol === "4" || rol === 4 ? (
