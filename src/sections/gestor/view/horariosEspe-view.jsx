@@ -40,15 +40,16 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-import ToolbarOficinas from '../oficinas-componets/toolbar-oficinas';
-import FiltersOficinas from '../oficinas-componets/filters-oficinas';
-import TableRowOficinas from '../oficinas-componets/table-row-oficinas';
-import ModalAgregarOficinas from '../oficinas-componets/modal-agregar-oficinas';
+import ToolbarOficinas from '../horarios-especificos-componets/toolbar-oficinas';
+import FiltersOficinas from '../horarios-especificos-componets/filters-oficinas';
+import TableRowOficinas from '../horarios-especificos-componets/table-row-oficinas';
+import ModalAgregarOficinas from '../horarios-especificos-componets/modal-agregar-oficinas';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: 'idHorario', label: 'ID' },
+  { id: 'beneficio', label: 'Beneficio' },
   { id: 'especialista', label: 'Especialista' },
   { id: 'horario', label: 'Horario', with: 220 },
   { id: 'horarioSabado', label: 'Horario sabatino', with: 100 },
@@ -71,6 +72,7 @@ function handleDownloadExcel(tableData) {
       sheet: "Horarios especificos",
       columns: [
         { label: "ID", value: "idHorario" },
+        { label: "Beneficio", value: "beneficio" },
         { label: "Especialista", value: "especialista" },
         { label: "Horario", value: "horario" },
         { label: "Horario sabatino", value: "horarioSabado" },
@@ -96,7 +98,7 @@ function handleDownloadPDF(tableData, headerBase) {
 
   let data = [];
 
-  data = tableData.map(item => ([item.idHorario, item.especialista, item.horario, item.horarioSabado, item.estatus]));
+  data = tableData.map(item => ([item.idHorario, item.beneficio, item.especialista, item.horario, item.horarioSabado, item.estatus]));
 
   autoTable(doc, {
     head: [headerBase],
@@ -109,7 +111,7 @@ function handleDownloadPDF(tableData, headerBase) {
 
 export default function HorariosEspeView() {
 
-  const headerBase = ["ID", "Especialista", "Horario", "Horario sabatino", "Estatus"];
+  const headerBase = ["ID", "Beneficio", "Especialista", "Horario", "Horario sabatino", "Estatus"];
 
   const table = useTable();
 

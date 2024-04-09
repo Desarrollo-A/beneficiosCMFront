@@ -275,6 +275,10 @@ export const endpoints = {
     insertSedes: '/GestorController/insertSedes',
     checkModalidades: '/GestorController/checkModalidades',
     getAreas: '/GestorController/getAreas',
+    updateHorario: '/GestorController/updateHorario',
+    updateEstatusHorario: '/GestorController/updateEstatusHorario',
+    insertHorario: '/GestorController/insertHorario',
+    especialistas: '/GestorController/especialistas',
   },
   avisosPrivacidad: {
     getEspecialidadToSelect: '/AvisosPrivacidadController/getEspecialidades',
