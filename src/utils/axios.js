@@ -26,7 +26,6 @@ export const fetcher = async (args) => {
 
   const accessToken = sessionStorage.getItem('accessToken');
 
-
   /* const accessToken = sessionStorage.getItem('accessToken'); */
   /* const fetchConfig = {
     ...config,
@@ -38,7 +37,7 @@ export const fetcher = async (args) => {
   const res = await axiosInstance.get(url, data, {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
-      Token: accessToken
+      Token: accessToken,
     },
     ...config,
   });
@@ -60,9 +59,9 @@ export const fetcherGet = async (args) => {
 
   const res = await instance.get(url, {
     headers: {
-      Token: accessToken
+      Token: accessToken,
     },
-    ...config
+    ...config,
   });
 
   return res.data;
@@ -78,9 +77,9 @@ export const fetcherPost = async (args, dataValue) => {
     {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        Token: accessToken
+        Token: accessToken,
       },
-      ...config
+      ...config,
     }
   );
 
@@ -197,6 +196,7 @@ export const endpoints = {
     getCitaById: 'CalendarioController/getCitaById',
     insertGoogleEvent: 'CalendarioController/insertGoogleEvent',
     updateGoogleEvent: 'CalendarioController/updateGoogleEvent',
+    actualizaFechaIntentoPago: 'CalendarioController/actualizaFechaIntentoPago',
     deleteGoogleEvent: 'CalendarioController/deleteGoogleEvent',
     getSedesEspecialista: 'CalendarioController/getSedesDeAtencionEspecialista',
     getDisponibilidadEspecialista: 'CalendarioController/getDiasDisponiblesAtencionEspecialista',

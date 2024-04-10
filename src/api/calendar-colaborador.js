@@ -484,3 +484,11 @@ export function deleteGoogleCalendarEvent(id, email) {
 
   return deleteEvent;
 }
+
+// Actualizar la fecha de intento de pago en las citas para que se les inhabilite.
+export function actualizarFechaIntentoPago(idUsuario, idCita) {
+  const URL = [endpoints.calendarioColaborador.actualizaFechaIntentoPago];
+  const update = fetcherPost(URL, { idUsuario, idCita });
+
+  return update;
+}

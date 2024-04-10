@@ -29,6 +29,7 @@ import {
   registrarDetalleDePago,
   updateStatusAppointment,
   deleteGoogleCalendarEvent,
+  actualizarFechaIntentoPago,
 } from 'src/api/calendar-colaborador';
 
 import Iconify from 'src/components/iconify';
@@ -191,6 +192,10 @@ export default function PendingModalUser() {
           ESTATUS_CITA.PENDIENTE_PAGO
         );
         if (!update) console.error('La cita no se pudo actualizar para realizar el pago');
+      }
+      // Actualizamos la fecha de intento de pago para que tenga una duración de 10 minutos desde que se intento pagar
+      if (resultadoPago) {
+        await actualizarFechaIntentoPago(DATOS_CITA.ID_USUARIO, currentEvent.id);
       }
     }
 
