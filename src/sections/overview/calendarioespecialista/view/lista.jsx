@@ -5,9 +5,9 @@ import { mutate } from 'swr';
 // import { Base64 } from 'js-base64';
 import PropTypes from 'prop-types';
 import { es } from 'date-fns/locale';
-import { useState, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useState, useEffect, useCallback } from 'react';
 
 import Stack from '@mui/system/Stack';
 import Button from '@mui/material/Button';
@@ -27,7 +27,7 @@ import { endpoints } from 'src/utils/axios';
 import { fDate } from 'src/utils/format-time';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { getModalities } from 'src/api/calendar-colaborador';
+import { getHorario, getModalities } from 'src/api/calendar-colaborador';
 import {
   reRender,
   createCustom,
@@ -45,13 +45,57 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
   dayjs.locale('es'); // valor para cambiar el idioma del dayjs
 
   const [allDay, setAllDay] = useState(false);
-  const defaultHour = {
-    horaInicio: dayjs('0000/00/00 08:00:00').format('HH:mm:ss'),
-    horaFinal: dayjs('0000/00/00 18:00:00').format('HH:mm:ss'),
-  };
+
+  const [hrInicio, setHrInicio] = useState('');
+
+  const [hrFinal, setHrFinal] = useState('');
+
+  const [sabado, setSabado] = useState(0);
+
   const [defaultFecha, setDefaultFecha] = useState(selectedDate);
   const [btnDisable, setBtnDisable] = useState(false);
   const [defaultInicio, setDefaultInicio] = useState(selectedDate);
+
+  const [defaultInicioCl, setDefaultInicioCl] = useState(selectedDate);
+
+  useEffect(() => {
+    const getHr = async () => {
+      try {
+        const horario = await getHorario(user?.idPuesto, user?.idUsuario);
+
+        const dayOfWeek = dayjs(defaultInicio).day();
+
+        setSabado(horario?.data[0]?.sabados);
+
+        if (dayOfWeek === 6) {
+          setHrInicio(horario?.data[0]?.horaInicioSabado);
+          setHrFinal(horario?.data[0]?.horaFinSabado);
+        } else {
+          setHrInicio(horario?.data[0]?.horaInicio);
+          setHrFinal(horario?.data[0]?.horaFin);
+        }
+
+      } catch (error) {
+        console.error("Error al obtener el horario:", error);
+        // Manejo de errores, si es necesario
+      }
+    };
+
+    if (user) {
+      getHr();
+    }
+  }, [user, defaultInicio]);
+
+  const defaultHour = {
+    horaInicio: hrInicio,
+    horaFinal: hrFinal,
+  };
+
+  const defaultHourCancel = {
+    horaInicio: dayjs('0000/00/00 08:00:00').format('HH:mm:ss'),
+    horaFinal: dayjs('0000/00/00 18:00:00').format('HH:mm:ss'),
+  };
+
   const [defaultEnd, setDefaultEnd] = useState(null);
   const [dateTitle, setDateTitle] = useState(dayjs(selectedDate).format('dddd, DD MMMM YYYY'));
   const [type, setType] = useState('cancel'); // constante para el cambio entre cancelar hora y agendar cita
@@ -147,6 +191,17 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
       paciente: patient,
     };
 
+    const eventDataCancel = {
+      // se da el formato juntando la fecha elegida y la hora que se elige con los minutos
+      id: uuidv4().substring(0, 20),
+      title: type === 'cancel' ? data?.title : `Cita con ${patient?.nombreCompleto}`,
+      hora_inicio: !allDay ? dayjs(data?.start).format('HH:mm:ss') : defaultHourCancel.horaInicio,
+      hora_final: !allDay ? dayjs(defaultEnd).format('HH:mm:ss') : defaultHourCancel.horaFinal,
+      fechaInicio: fDate(defaultInicioCl),
+      fechaFinal: type === 'date' ? fDate(defaultInicioCl) : fDate(defaultFecha),
+      paciente: patient,
+    };
+
     if (dateError || !selectedUser || hourError.result || !endValidation || !selectedModalitie) {
       setBtnDisable(false);
       return enqueueSnackbar('Faltan datos en el formulario', { variant: 'error' });
@@ -176,11 +231,11 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
 
     switch (type) {
       case 'cancel':
-        save = await createCustom(eventData, user.idUsuario);
+        save = await createCustom(eventDataCancel, user.idUsuario);
         break;
 
       case 'date':
-        save = await createAppointment(eventData, modalitie, user);
+        save = await createAppointment(eventData, modalitie, user, defaultHour);
         if (save.result) {
           UpdateDetallePaciente(patient.idUsuario, user?.idPuesto);
         }
@@ -365,34 +420,60 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
           sx={{ p: { xs: 1, md: 2 } }}
         >
           <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns} localeText={esp}>
-            <Controller
-              name="fechaInicio"
-              render={({ field }) => (
+            {type === 'cancel' ? (
+              <>
                 <MobileDatePicker
                   label="Fecha inicial"
                   sx={{ width: '100%' }}
                   value={defaultInicio}
                   onChange={(value) => {
-                    setDefaultInicio(value);
+                    setDefaultInicioCl(value);
                     setDateTitle(dayjs(value).format('dddd, DD MMMM YYYY')); // al momento de cambiar el valor en el input, cambia el valor del titulo
                   }}
+                  shouldDisableDate={(value) => dayjs(value).day() === 0} // Deshabilita los domingos
                 />
-              )}
-            />
-            {type === 'cancel' && (
-              <MobileDatePicker
-                label="Fecha final"
-                sx={{ width: '100%' }}
-                value={defaultFecha}
-                slotProps={{
-                  textField: {
-                    error: dateError,
-                    helperText: dateError && 'Error: Menor a la fecha Inicial',
-                  },
-                }}
-                onChange={(value) => {
-                  setDefaultFecha(value);
-                }}
+                <MobileDatePicker
+                  label="Fecha final"
+                  sx={{ width: '100%' }}
+                  value={defaultFecha}
+                  slotProps={{
+                    textField: {
+                      error: dateError,
+                      helperText: dateError && 'Error: Menor a la fecha Inicial',
+                    },
+                  }}
+                  onChange={(value) => {
+                    setDefaultFecha(value);
+                  }}
+                  shouldDisableDate={(value) => dayjs(value).day() === 0}
+                />
+              </>
+            ) : (
+              <Controller
+                name="fechaInicio"
+                render={({ field }) => (
+                  <MobileDatePicker
+                    label="Fecha"
+                    sx={{ width: '100%' }}
+                    value={defaultInicio}
+                    onChange={(value) => {
+                      setDefaultInicio(value);
+                      setDateTitle(dayjs(value).format('dddd, DD MMMM YYYY')); // al momento de cambiar el valor en el input, cambia el valor del titulo
+                    }}
+                    shouldDisableDate={(value) => {
+                      const dayOfWeek = dayjs(value).day();
+                      if (dayOfWeek === 0) {
+                        return true;
+                      }
+                      if(dayOfWeek === 6){
+                        if(sabado === 0){
+                        return true; 
+                        }
+                      }
+                      return false;
+                    }}
+                  />
+                )}
               />
             )}
           </LocalizationProvider>

@@ -1,26 +1,21 @@
+import dayjs from 'dayjs';
 import { mutate } from 'swr';
 import { isEmpty } from 'lodash';
-import dayjs from 'dayjs';
 import { useState } from 'react';
 import { format } from 'date-fns';
 import PropTypes from 'prop-types';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm, FormProvider } from 'react-hook-form';
 
 import { Box } from '@mui/system';
 import Stack from '@mui/material/Stack';
-import Dialog from '@mui/material/Dialog';
 import { LoadingButton } from '@mui/lab';
+import Dialog from '@mui/material/Dialog';
 import Button from '@mui/material/Button';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import TextField from '@mui/material/TextField';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import { MobileTimePicker } from '@mui/x-date-pickers';
-import FormGroup from '@mui/material/FormGroup';
 import Checkbox from '@mui/material/Checkbox';
+import FormGroup from '@mui/material/FormGroup';
 import Typography from '@mui/material/Typography';
 import DialogTitle from '@mui/material/DialogTitle';
+import { MobileTimePicker } from '@mui/x-date-pickers';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -42,6 +37,8 @@ import { RHFAutocomplete } from 'src/components/hook-form';
 export default function ModalAgregarOficinas({ open, onClose }) {
 
   const confirm = useBoolean();
+
+  const loadingSend = useBoolean();
 
   dayjs.locale('es');
 
@@ -120,9 +117,9 @@ export default function ModalAgregarOficinas({ open, onClose }) {
 
   const handleHorario = async (data) => {
 
-    console.log(data)
-
     try {
+
+      loadingSend.onFalse();
 
       onClose();
 
@@ -136,8 +133,12 @@ export default function ModalAgregarOficinas({ open, onClose }) {
 
         setBtnLoad(false);
 
+        setBtnLoad(false);
+
       } else {
         enqueueSnackbar(insert.msj, { variant: 'error' });
+
+        setBtnLoad(false);
 
         setBtnLoad(false);
       }
@@ -261,7 +262,7 @@ export default function ModalAgregarOficinas({ open, onClose }) {
             <Button variant="contained" color="error" onClick={onClose}>
               Cerrar
             </Button>
-            <Button variant="contained" color="success" loading={btnLoad} onClick={() => {
+            <LoadingButton variant="contained" color="success" loading={btnLoad} onClick={() => {
               handleHorario(
                 {
                   'espe': espe,
@@ -273,9 +274,10 @@ export default function ModalAgregarOficinas({ open, onClose }) {
                   'creadoPor': user.idUsuario,
                 });
               confirm.onFalse();
-            }}>
+            }}
+            >
               Guardar
-            </Button>
+            </LoadingButton>
           </DialogActions>
         </>
       ) : (

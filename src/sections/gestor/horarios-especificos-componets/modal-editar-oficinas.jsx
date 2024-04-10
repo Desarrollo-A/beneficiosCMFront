@@ -25,7 +25,6 @@ import { endpoints } from 'src/utils/axios';
 
 import { useUpdate } from 'src/api/reportes';
 import { useAuthContext } from 'src/auth/hooks';
-import { useGetGeneral } from 'src/api/general';
 
 import { useSnackbar } from 'src/components/snackbar';
 // ----------------------------------------------------------------------
