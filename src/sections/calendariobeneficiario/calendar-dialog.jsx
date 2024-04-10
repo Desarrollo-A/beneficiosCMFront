@@ -15,12 +15,15 @@ import Chip from '@mui/material/Chip';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import Tooltip from '@mui/material/Tooltip';
+import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
+import FormHelperText from '@mui/material/FormHelperText';
+import InputAdornment from '@mui/material/InputAdornment';
 
 import { endpoints } from 'src/utils/axios';
 import { generarFechas } from 'src/utils/general';
@@ -51,6 +54,7 @@ import {
   getCitasSinFinalizar,
   getOficinaByAtencion,
   registrarDetalleDePago,
+  updateStatusAppointment,
   insertGoogleCalendarEvent,
   updateGoogleCalendarEvent,
   deleteGoogleCalendarEvent,
@@ -104,6 +108,13 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const [pendiente, setPendiente] = useState({});
   const [sedesAtencionEspecialista, setSedesAtencionEspecialista] = useState({});
   const [diasPresenciales, setDiasPresenciales] = useState([]);
+
+  const [btnNotificationDisabled, setBtnNotificationDisabled] = useState(false);
+  const [email, setEmail] = useState('');
+  const [emails, setEmails] = useState([]);
+  const [errorMessage, setErrorMessage] = useState('Formato de correo erróneo');
+  const [errorEmail, setErrorEmail] = useState(false);
+  const [sendEmails, setSendEmails] = useState(false);
 
   const { user: datosUser } = useAuthContext();
 
@@ -259,9 +270,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     }
 
     // Evento de google
-    const startDate = dayjs(horarioSeleccionado);
-    const endDate = startDate.add(1, 'hour');
-
+    let newGoogleEvent = null;
     let organizador = 'programador.analista36@ciudadmaderas.com';
     let correosNotificar = [
       organizador, // datosUser.correo Sustituir correo de analista
@@ -284,29 +293,33 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         // 'tester.ti3@ciudadmaderas.com',
       ];
     }
+    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
+      const startDate = dayjs(horarioSeleccionado);
+      const endDate = startDate.add(1, 'hour');
 
-    const GOOGLE_EVENT = Object.freeze({
-      TITULO: `Cita ${nombreBeneficio} - ${datosUser.nombre}`,
-      INICIO_CITA: startDate.format('YYYY-MM-DDTHH:mm:ss'),
-      FIN_CITA: endDate.format('YYYY-MM-DDTHH:mm:ss'),
-      OFICINA: oficina?.data ? oficina.data[0].ubicación : 'Oficina virtual ',
-      DESCRIPCION: `Cita de ${datosUser.nombre} en ${nombreBeneficio}`,
-    });
-
-    const newGoogleEvent = await insertGoogleCalendarEvent(
-      GOOGLE_EVENT.TITULO,
-      GOOGLE_EVENT.INICIO_CITA,
-      GOOGLE_EVENT.FIN_CITA,
-      GOOGLE_EVENT.OFICINA,
-      GOOGLE_EVENT.DESCRIPCION,
-      correosNotificar, // Sustituir valores de correos
-      organizador // datosUser.correo
-    );
-
-    if (!newGoogleEvent.result) {
-      enqueueSnackbar('Error al conectar con la cuenta de google', {
-        variant: 'error',
+      const GOOGLE_EVENT = Object.freeze({
+        TITULO: `Cita ${nombreBeneficio} - ${datosUser.nombre}`,
+        INICIO_CITA: startDate.format('YYYY-MM-DDTHH:mm:ss'),
+        FIN_CITA: endDate.format('YYYY-MM-DDTHH:mm:ss'),
+        OFICINA: oficina?.data ? oficina.data[0].ubicación : 'Oficina virtual ',
+        DESCRIPCION: `Cita de ${datosUser.nombre} en ${nombreBeneficio}`,
       });
+
+      newGoogleEvent = await insertGoogleCalendarEvent(
+        GOOGLE_EVENT.TITULO,
+        GOOGLE_EVENT.INICIO_CITA,
+        GOOGLE_EVENT.FIN_CITA,
+        GOOGLE_EVENT.OFICINA,
+        GOOGLE_EVENT.DESCRIPCION,
+        correosNotificar, // Sustituir valores de correos
+        organizador // datosUser.correo
+      );
+
+      if (!newGoogleEvent.result) {
+        enqueueSnackbar('Error al conectar con la cuenta de google', {
+          variant: 'error',
+        });
+      }
     }
 
     /* otro proceso */
@@ -324,7 +337,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     });
 
     const DATOS_CITA = Object.freeze({
-      TITULO: GOOGLE_EVENT.TITULO,
+      TITULO: `Cita ${nombreBeneficio} - ${datosUser.nombre}`,
       ID_ESPECIALISTA: selectedValues.especialista,
       OBSERVACIONES: '',
       HORA_CITA: horarioSeleccionado,
@@ -333,16 +346,17 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       ID_USUARIO: datosUser.idUsuario,
       ID_DETALLE_PAGO: null,
       ID_BENEFICIO: selectedValues.beneficio,
-      ID_GOOGLE_EVENT: newGoogleEvent.result ? newGoogleEvent.data.id : null,
+      ID_GOOGLE_EVENT:
+        datosUser.tipoPuesto.toLowerCase() === 'operativa' ? newGoogleEvent.data.id : null, // newGoogleEvent.result ? newGoogleEvent.data.id : null,
       MODALIDAD: selectedValues.modalidad,
       ESTATUS_CITA:
         datosUser.tipoPuesto.toLowerCase() === 'operativa'
           ? ESTATUS_CITA.POR_ASISTIR
-          : ESTATUS_CITA.PENDIENTE_PAGO,
+          : ESTATUS_CITA.PROCESO_PAGO,
     });
 
     const agendar = await agendarCita(
-      GOOGLE_EVENT.TITULO,
+      DATOS_CITA.TITULO,
       DATOS_CITA.ID_ESPECIALISTA,
       DATOS_CITA.OBSERVACIONES,
       DATOS_CITA.HORA_CITA,
@@ -384,13 +398,21 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     });
 
     if (datosUser.tipoPuesto.toLowerCase() !== 'operativa') {
-      await bbPago(
+      const resultadoPago = await bbPago(
         DATOS_PAGO.FOLIO,
         DATOS_PAGO.REFERENCIA,
         DATOS_PAGO.MONTO,
         DATOS_PAGO.CONCEPTO,
         DATOS_PAGO.SERVICIO
       );
+      if (!resultadoPago) {
+        const update = await updateStatusAppointment(
+          DATOS_CITA.ID_USUARIO,
+          agendar.data,
+          ESTATUS_CITA.PENDIENTE_PAGO
+        );
+        if (!update) console.error('La cita no se pudo actualizar para realizar el pago');
+      }
     }
     if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
       const METODO_PAGO = Object.freeze({
@@ -404,8 +426,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       await pagoGratuito(
         DATOS_PAGO.FOLIO,
         DATOS_PAGO.REFERENCIA,
-        DATOS_PAGO.MONTO,
         DATOS_PAGO.CONCEPTO,
+        DATOS_PAGO.MONTO,
         METODO_PAGO.NO_APLICA,
         ESTATUS_PAGO.COBRADO,
         agendar.data
@@ -434,15 +456,19 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     setEvent({ ...scheduledAppointment.data[0] });
     setOpen2(true);
 
-    const email = await sendMail(
-      scheduledAppointment.data[0],
-      1,
-      correosNotificar,
-      datosUser.idUsuario
-    );
+    // Evento de google
+    let sentEmail = null;
+    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
+      sentEmail = await sendMail(
+        scheduledAppointment.data[0],
+        1,
+        correosNotificar,
+        datosUser.idUsuario
+      );
 
-    if (!email.result) {
-      console.error('No se pudo notificar al usuario');
+      if (!sentEmail.result) {
+        console.error('No se pudo notificar al usuario');
+      }
     }
 
     return true;
@@ -488,18 +514,25 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     document.body.appendChild(form);
 
-    window.open('', windowName, params);
+    const popupWindow = window.open('', windowName, params);
     form.target = windowName;
     form.submit();
     document.body.removeChild(form);
+
+    if (!popupWindow) {
+      enqueueSnackbar('¡Activa las ventanas emergentes para realizar el pago de la cita!', {
+        variant: 'danger',
+      });
+      return false;
+    }
     return true;
   };
 
   const pagoGratuito = async (
     folio,
     referencia,
-    cantidad,
     concepto,
+    cantidad,
     metodoPago,
     estatusPago,
     idCita
@@ -508,8 +541,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       datosUser.idUsuario,
       folio,
       referencia,
-      cantidad,
       concepto,
+      cantidad,
       metodoPago,
       estatusPago,
       idCita
@@ -581,14 +614,14 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       return false;
     }
 
-    const email = await sendMail(
+    const sentEmail = await sendMail(
       scheduledAppointment.data[0],
       2,
       correosNotificar,
       datosUser.idUsuario
     );
 
-    if (!email.result) {
+    if (!sentEmail.result) {
       console.error('No se pudo notificar al usuario');
     }
     appointmentMutate();
@@ -624,6 +657,10 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         break;
     }
 
+    const ESTATUS_CITA = Object.freeze({
+      PENDIENTE_PAGO: 6,
+    });
+
     const DATOS_CITA = Object.freeze({
       TITULO: `Cita ${nombreBeneficio} - ${datosUser.nombre}`,
       ID_ESPECIALISTA: currentEvent.idEspecialista,
@@ -643,13 +680,21 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     });
 
     if (datosUser.tipoPuesto.toLowerCase() !== 'operativa') {
-      await bbPago(
+      const resultadoPago = await bbPago(
         DATOS_PAGO.FOLIO,
         DATOS_PAGO.REFERENCIA,
         DATOS_PAGO.MONTO,
         DATOS_PAGO.CONCEPTO,
         DATOS_PAGO.SERVICIO
       );
+      if (!resultadoPago) {
+        const update = await updateStatusAppointment(
+          DATOS_CITA.ID_USUARIO,
+          currentEvent.id,
+          ESTATUS_CITA.PENDIENTE_PAGO
+        );
+        if (!update) console.error('La cita no se pudo actualizar para realizar el pago');
+      }
     }
 
     if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
@@ -664,8 +709,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       await pagoGratuito(
         DATOS_PAGO.FOLIO,
         DATOS_PAGO.REFERENCIA,
-        DATOS_PAGO.MONTO,
         DATOS_PAGO.CONCEPTO,
+        DATOS_PAGO.MONTO,
         METODO_PAGO.NO_APLICA,
         ESTATUS_PAGO.COBRADO,
         currentEvent.id
@@ -917,6 +962,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const horarioACubrir = await getHorario(beneficio, especialista);
 
     if (!horarioACubrir.result) return; // En caso de que no halla horario detenemos el proceso.
+
 
     // Teniendo en cuenta el dia actual, consultamos los dias restantes del mes actual y todos los dias del mes que sigue.
     const todosLosDiasSiguientes = generarFechas(initialValue, lastDayOfNextMonth);
@@ -1344,7 +1390,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       onClose();
       return false;
     }
-    const email = await sendMail(
+    const sentEmail = await sendMail(
       {
         ...scheduledAppointment.data[0],
         oldEventStart: currentEvent.start,
@@ -1354,7 +1400,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       correosNotificar,
       datosUser.idUsuario
     );
-    if (!email.result) {
+    if (!sentEmail.result) {
       console.error('No se pudo notificar al usuario');
     }
     enqueueSnackbar(agendar.msg, {
@@ -1373,6 +1419,99 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const handleClose = () => {
     setOpen2(false);
     onClose();
+  };
+
+  const handleSendEmails = () => {
+    setSendEmails(!sendEmails);
+    setErrorEmail(false);
+    setEmail('');
+    setEmails([]);
+  };
+
+  const handleEmails = (newEmail) => {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+    // Verificar si la cadena cumple con la expresión regular
+    if (!emailRegex.test(newEmail)) {
+      setErrorMessage('Formato de correo erróneo');
+      return setErrorEmail(true);
+    }
+
+    // Verificar si el nuevo correo ya existe en el arreglo
+    if (emails.some((emailObj) => emailObj.toLowerCase() === newEmail.toLowerCase())) {
+      setErrorMessage('Correo ya registrado');
+      return setErrorEmail(true);
+    }
+
+    setEmails([...emails, newEmail]);
+    setEmail('');
+    setErrorEmail(false);
+    return '';
+  };
+
+  const sendNotifications = async () => {
+    if (emails.length === 0) {
+      enqueueSnackbar('Añada un correo electrónico para poder notificar a la persona', {
+        variant: 'warning',
+      });
+      return false;
+    }
+    setBtnNotificationDisabled(true);
+
+    const startDate = dayjs(currentEvent.start);
+    const endDate = startDate.add(1, 'hour');
+
+    // Aqui colocar
+    let organizador = 'programador.analista36@ciudadmaderas.com';
+    let correosNotificar = [
+      organizador, // datosUser.correo Sustituir correo de analista
+      // 'programador.analista34@ciudadmaderas.com',
+      // 'programador.analista32@ciudadmaderas.com',
+      // 'programador.analista12@ciudadmaderas.com',
+      // 'tester.ti2@ciudadmaderas.com',
+      // 'tester.ti3@ciudadmaderas.com',
+      // algun correo de especialista
+      ...emails,
+    ];
+
+    if (datosUser.correo === null) {
+      organizador = 'programador.analista34@ciudadmaderas.com'; // especialista
+      correosNotificar = [
+        organizador, // datosUser.correo Sustituir correo de analista
+        // 'programador.analista36@ciudadmaderas.com',
+        // 'programador.analista34@ciudadmaderas.com',
+        // 'programador.analista32@ciudadmaderas.com',
+        // 'tester.ti2@ciudadmaderas.com',
+        // 'tester.ti3@ciudadmaderas.com',
+        ...emails,
+      ];
+    }
+
+    const updateGoogleEvent = await updateGoogleCalendarEvent(
+      currentEvent.idEventoGoogle,
+      startDate.format('YYYY-MM-DDTHH:mm:ss'),
+      endDate.format('YYYY-MM-DDTHH:mm:ss'),
+      organizador, // datosUser.correo, Sustituir correo de analista.
+      correosNotificar
+    );
+    if (!updateGoogleEvent.result) {
+      enqueueSnackbar('No se pudo sincronizar el evento con la cuenta de google', {
+        variant: 'error',
+      });
+      handleClose();
+      return false;
+    }
+    enqueueSnackbar('¡Invitaciones enviadas correctamente!', {
+      variant: 'success',
+    });
+    handleClose();
+    setBtnNotificationDisabled(false);
+    return true;
+  };
+
+  const deleteEmail = (removedEmail) => {
+    const newEmails = emails.filter((each) => each !== removedEmail);
+    setEmails(newEmails);
   };
 
   const Items = () => {
@@ -1555,6 +1694,13 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                         {currentEvent?.estatus === 9 ? (
                           <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
                             Cita en {`${currentEvent?.beneficio} (cita expirada)`}
+                          </Typography>
+                        ) : (
+                          ''
+                        )}
+                        {currentEvent?.estatus === 10 ? (
+                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                            Cita en {`${currentEvent?.beneficio} (proceso de pago)`}
                           </Typography>
                         ) : (
                           ''
@@ -1864,9 +2010,15 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                         }}
                       >
                         <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                          {currentEvent?.idDetalle === null || currentEvent?.idDetalle === 0
-                            ? 'Sin pago'
-                            : 'Pagado'}
+                          {currentEvent?.idDetalle === null || currentEvent?.idDetalle === 0 ? (
+                            'Sin pago'
+                          ) : (
+                            <>
+                              {currentEvent?.estatusPago === 1 || currentEvent?.estatusPago === 3
+                                ? 'Pago aprobado'
+                                : 'Pago declinado'}
+                            </>
+                          )}
                         </Typography>
                       </Stack>
                     </Stack>
@@ -1936,6 +2088,126 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                     ) : (
                       ''
                     )}
+                    {currentEvent?.estatus === 1 ? (
+                      <>
+                        <Stack
+                          sx={{
+                            flexDirection: 'row',
+                            px: { xs: 1, md: 2 },
+                            py: 1,
+                            alignItems: 'center',
+                          }}
+                          spacing={2}
+                        >
+                          <Typography variant="subtitle1" sx={{ py: { xs: 1, md: 1 } }}>
+                            Notificar a externos
+                          </Typography>
+                          <Stack
+                            onClick={() => handleSendEmails()}
+                            sx={{
+                              cursor: 'pointer', // Hace que aparezca la manita al pasar el ratón
+                            }}
+                          >
+                            {!sendEmails ? (
+                              <Iconify
+                                icon="icons8:plus"
+                                width={24}
+                                sx={{ color: 'text.disabled' }}
+                              />
+                            ) : (
+                              <Iconify
+                                icon="icons8:minus"
+                                width={24}
+                                sx={{ color: 'text.disabled' }}
+                              />
+                            )}
+                          </Stack>
+                        </Stack>
+
+                        {sendEmails === true && (
+                          <>
+                            <Stack
+                              sx={{
+                                px: { xs: 1, md: 2 },
+                                pt: 1,
+                                alignItems: 'start',
+                              }}
+                            >
+                              <TextField
+                                fullWidth
+                                id="input-with-icon-textfield"
+                                label="Correo electrónico"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                error={errorEmail}
+                                InputProps={{
+                                  endAdornment: (
+                                    <InputAdornment position="end">
+                                      <Button
+                                        variant="contained"
+                                        size="small"
+                                        sx={{ backgroundColor: 'text.disabled' }}
+                                        onClick={() => handleEmails(email)}
+                                      >
+                                        Invitar
+                                      </Button>
+                                    </InputAdornment>
+                                  ),
+                                }}
+                              />
+                              {errorEmail && (
+                                <FormHelperText error={errorEmail}>{errorMessage}</FormHelperText>
+                              )}
+                            </Stack>
+
+                            <Stack
+                              flexDirection="row"
+                              flexWrap="wrap"
+                              flex={1}
+                              spacing={2}
+                              sx={{ px: { xs: 1, md: 3 }, py: 1 }}
+                            >
+                              {emails.length > 0 &&
+                                emails.map((each) => (
+                                  <Tooltip title={each} key={each}>
+                                    <Chip
+                                      label={each}
+                                      variant="outlined"
+                                      sx={{
+                                        backgroundColor: '#e0e0e0',
+                                        borderRadius: '20px',
+                                        alignItems: 'center',
+                                        alignContent: 'center',
+                                        justifyContent: 'center',
+                                      }}
+                                      deleteIcon={
+                                        <Stack
+                                          style={{
+                                            width: '24px',
+                                            height: '24px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                          }}
+                                        >
+                                          <Iconify
+                                            icon="typcn:delete-outline"
+                                            sx={{
+                                              color: 'black',
+                                            }}
+                                          />
+                                        </Stack>
+                                      }
+                                      onDelete={() => deleteEmail(each)}
+                                    />
+                                  </Tooltip>
+                                ))}
+                            </Stack>
+                          </>
+                        )}
+                      </>
+                    ) : (
+                      ''
+                    )}
                   </>
                 ) : (
                   <AppointmentSchedule
@@ -1983,6 +2255,16 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                     onClick={pagarCitaPendiente}
                   >
                     Pagar
+                  </LoadingButton>
+                )}
+                {currentEvent?.id && currentEvent?.estatus === 1 && (
+                  <LoadingButton
+                    variant="contained"
+                    color="success"
+                    onClick={() => sendNotifications()}
+                    loading={btnNotificationDisabled}
+                  >
+                    Notificar
                   </LoadingButton>
                 )}
                 {!currentEvent?.id && (

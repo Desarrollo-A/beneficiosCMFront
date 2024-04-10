@@ -329,6 +329,10 @@ export default function AppointmentSchedule({
                     </Typography>
                   </Stack>
                 </Stack>
+                <Stack spacing={1} sx={{ p: { xs: 1, md: 1 } }}>
+                  Es necesario habilitar las ventanas emergentes en el navegador para poder realizar
+                  el pago de la cita.
+                </Stack>
               </>
             )}{' '}
             {selectedValues.modalidad === 2 && selectedValues.beneficio && (
@@ -375,6 +379,10 @@ export default function AppointmentSchedule({
                         : 'Se consideran 10 minutos de tolerancia.'}
                     </Typography>
                   </Stack>
+                </Stack>
+                <Stack spacing={1} sx={{ p: { xs: 1, md: 1 } }}>
+                  Es necesario habilitar las ventanas emergentes en el navegador para poder realizar
+                  el pago de la cita.
                 </Stack>
               </>
             )}

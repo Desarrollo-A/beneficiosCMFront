@@ -26,8 +26,8 @@ import {
   consultarCita,
   useGetPendientes,
   cancelAppointment,
-  // updateAppointment,
   registrarDetalleDePago,
+  updateStatusAppointment,
   deleteGoogleCalendarEvent,
 } from 'src/api/calendar-colaborador';
 
@@ -61,64 +61,6 @@ export default function PendingModalUser() {
     setOpen2(false);
     setEvent({});
   };
-
-  // const handleOpen = async (currentEvent) => {
-  //   setEvent(currentEvent);
-  //   setOpen3(true);
-  //   // SIMULACIÓN DE PAGO
-
-  //   // checar si paga o no
-  //   await new Promise((resolve) => setTimeout(resolve, 2000));
-  //   setOpen3(false);
-  //   let precio = 50;
-  //   let metodoPago = 1;
-  //   if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
-  //     precio = 0;
-  //     metodoPago = 3;
-  //   }
-  //   const registrarPago = await registrarDetalleDePago(
-  //     datosUser.idUsuario,
-  //     uuidv4(),
-  //     1,
-  //     precio,
-  //     metodoPago
-  //   );
-  //   if (registrarPago.result) {
-  //     // enqueueSnackbar('¡Detalle de pago registrado!', {
-  //     //   variant: 'success',
-  //     // });
-  //     // Hacer el proceso de actualizar cita
-  //     const update = await updateAppointment(
-  //       datosUser.idUsuario,
-  //       currentEvent.id,
-  //       1,
-  //       registrarPago.data,
-  //       null,
-  //       currentEvent.idEventoGoogle
-  //     );
-  //     if (update.result) {
-  //       enqueueSnackbar('¡Se ha generado el pago con éxito!', {
-  //         variant: 'success',
-  //       });
-  //       setEvent({ ...currentEvent, estatus: 1 });
-  //       setOpen2(true);
-  //     }
-  //     if (!update.result) {
-  //       enqueueSnackbar('¡Se obtuvo un error al intentar generar el pago de cita!', {
-  //         variant: 'error',
-  //       });
-  //     }
-  //   }
-  //   if (!registrarPago.result) {
-  //     enqueueSnackbar('¡Ha surgido un error al intentar registrar el detalle de pago!', {
-  //       variant: 'error',
-  //     });
-  //     return onClose();
-  //   }
-  //   pendingsMutate();
-
-  //   return '';
-  // };
 
   const handleCancel = (cita) => {
     setBtnConfirmAction(false);
@@ -212,6 +154,10 @@ export default function PendingModalUser() {
         break;
     }
 
+    const ESTATUS_CITA = Object.freeze({
+      PENDIENTE_PAGO: 6,
+    });
+
     const DATOS_CITA = Object.freeze({
       TITULO: `Cita ${nombreBeneficio} - ${datosUser.nombre}`,
       ID_ESPECIALISTA: currentEvent.idEspecialista,
@@ -231,13 +177,21 @@ export default function PendingModalUser() {
     });
 
     if (datosUser.tipoPuesto.toLowerCase() !== 'operativa') {
-      await bbPago(
+      const resultadoPago = await bbPago(
         DATOS_PAGO.FOLIO,
         DATOS_PAGO.REFERENCIA,
         DATOS_PAGO.MONTO,
         DATOS_PAGO.CONCEPTO,
         DATOS_PAGO.SERVICIO
       );
+      if (!resultadoPago) {
+        const update = await updateStatusAppointment(
+          DATOS_CITA.ID_USUARIO,
+          currentEvent.id,
+          ESTATUS_CITA.PENDIENTE_PAGO
+        );
+        if (!update) console.error('La cita no se pudo actualizar para realizar el pago');
+      }
     }
 
     if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
@@ -252,8 +206,8 @@ export default function PendingModalUser() {
       await pagoGratuito(
         DATOS_PAGO.FOLIO,
         DATOS_PAGO.REFERENCIA,
-        DATOS_PAGO.MONTO,
         DATOS_PAGO.CONCEPTO,
+        DATOS_PAGO.MONTO,
         METODO_PAGO.NO_APLICA,
         ESTATUS_PAGO.COBRADO,
         currentEvent.id
@@ -307,18 +261,25 @@ export default function PendingModalUser() {
 
     document.body.appendChild(form);
 
-    window.open('', windowName, params);
+    const popupWindow = window.open('', windowName, params);
     form.target = windowName;
     form.submit();
     document.body.removeChild(form);
+
+    if (!popupWindow) {
+      enqueueSnackbar('¡Activa las ventanas emergentes para realizar el pago de la cita!', {
+        variant: 'danger',
+      });
+      return false;
+    }
     return true;
   };
 
   const pagoGratuito = async (
     folio,
     referencia,
-    cantidad,
     concepto,
+    cantidad,
     metodoPago,
     estatusPago,
     idCita
@@ -327,8 +288,8 @@ export default function PendingModalUser() {
       datosUser.idUsuario,
       folio,
       referencia,
-      cantidad,
       concepto,
+      cantidad,
       metodoPago,
       estatusPago,
       idCita
