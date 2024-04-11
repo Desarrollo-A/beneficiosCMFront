@@ -57,12 +57,15 @@ export const fetcherGet = async (args) => {
 
   const accessToken = sessionStorage.getItem('accessToken');
 
-  const res = await instance.get(url, {
+  const res = await instance.get(
+    url, 
+    {
     headers: {
       Token: accessToken,
     },
     ...config,
   });
+
 
   return res.data;
 };
@@ -266,13 +269,17 @@ export const endpoints = {
     updateEstatus: '/GestorController/updateEstatus',
     getEsp: '/GestorController/getEsp',
     getAtencionXsedeEsp: '/GestorController/getAtencionXsedeEsp',
-    getOfi: '/GestorController/getOficinas',
+    getHorariosEspecificos: '/GestorController/getHorariosEspecificos',
     updateOficina: '/GestorController/updateOficina',
     insertOficinas: '/GestorController/insertOficinas',
     updateSede: '/GestorController/updateSede',
     insertSedes: '/GestorController/insertSedes',
     checkModalidades: '/GestorController/checkModalidades',
     getAreas: '/GestorController/getAreas',
+    updateHorario: '/GestorController/updateHorario',
+    updateEstatusHorario: '/GestorController/updateEstatusHorario',
+    insertHorario: '/GestorController/insertHorario',
+    especialistas: '/GestorController/especialistas',
   },
   avisosPrivacidad: {
     getEspecialidadToSelect: '/AvisosPrivacidadController/getEspecialidades',
