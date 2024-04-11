@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 
+import Dialog from '@mui/material/Dialog';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
@@ -12,12 +14,25 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
+import ModalEstatus from './estatusDialog';
 import ModalEditarOficinas from './modal-editar-oficinas';
 
 // ----------------------------------------------------------------------
 
-export default function TableRowOficinas({ row, rol }) {
-  const { idOficina, oficina, idSede, sede, ubicación, estatus } = row;
+export default function TableRowOficinas({ row, rol, close }) {
+  const { 
+    idHorario, 
+    beneficio,
+    especialista, 
+    horario, 
+    horarioSabado, 
+    estatus, 
+    horaInicio, 
+    horaFin, 
+    sabados,
+    horaInicioSabado,
+    horaFinSabado
+  } = row;
 
   const quickEditar = useBoolean();
 
@@ -25,17 +40,29 @@ export default function TableRowOficinas({ row, rol }) {
 
   const popover = usePopover();
 
+  const [open4, setOpen4] = useState(false);
+
+  const handleOpen4 = () => {
+    setOpen4(true);
+  }
+
+  const handleClose4 = () => {
+    setOpen4(false);
+  }
+
   return (
     <>
       <TableRow>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{idOficina}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{idHorario}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{oficina}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{beneficio}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{sede}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{especialista}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{ubicación}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{horario}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{horarioSabado}</TableCell>
 
         <TableCell>
           <Label
@@ -62,11 +89,13 @@ export default function TableRowOficinas({ row, rol }) {
       </TableRow>
 
       <ModalEditarOficinas
-        idOficina={row.idOficina}
-        oficina={oficina}
-        sede={idSede}
-        ubicación={ubicación}
-        estatus={estatus}
+        especialista={especialista}
+        idHorario={row.idHorario}
+        horaInicio={horaInicio}
+        horaFin={horaFin}
+        sabado={sabados}
+        horaInicioSabado={horaInicioSabado}
+        horaFinSabado={horaFinSabado}
         open={quickEditar.value}
         onClose={quickEditar.onFalse}
       />
@@ -85,9 +114,40 @@ export default function TableRowOficinas({ row, rol }) {
           }}
         >
           <Iconify icon="solar:pen-bold" />
-          Editar datos
+          Editar horario
+        </MenuItem>
+
+        <MenuItem
+          onClick={() => {
+            handleOpen4();
+          }}
+        >
+          {estatus === 1 ?
+            <Iconify icon="material-symbols:disabled-by-default" /> :
+            <Iconify icon="material-symbols:check-box" />
+          }
+          {estatus === 1 ?
+            'Deshabilitar' :
+            'Habilitar'
+          }
+          
         </MenuItem>
       </CustomPopover>
+
+      <Dialog
+        maxWidth={false}
+        open={open4}
+        onClose={close}
+        PaperProps={{
+          sx: { maxWidth: 720 },
+        }}
+      >
+        <ModalEstatus
+          id={idHorario} 
+          onClose={handleClose4}
+          estatus={estatus} 
+        />
+      </Dialog>
     </>
   );
 }
@@ -96,4 +156,5 @@ TableRowOficinas.propTypes = {
   row: PropTypes.object,
   rol: PropTypes.any,
   estatus: PropTypes.any,
+  close: PropTypes.func,
 };

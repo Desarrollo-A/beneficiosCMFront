@@ -70,15 +70,6 @@ export default function EvaluateDialog({ open, pendiente, mutate, cerrar }) {
 
   const onSubmit = handleSubmit(async (data) => {
 
-    const update = await updateAppointment(
-      datosUser.idUsuario,
-      id,
-      estatus,
-      idDetalle,
-      idEncuesta,
-      idEventoGoogle
-    );
-
     const newData = encuestaData.map((item, index) => {
       const respKey = `resp_${index}`;
 
@@ -97,7 +88,17 @@ export default function EvaluateDialog({ open, pendiente, mutate, cerrar }) {
 
       const insert = await insertData(newData);
 
-      if (insert.estatus === true && update.result) {
+      if (insert.estatus === true /* && update.result */) {
+
+        await updateAppointment(
+          datosUser.idUsuario,
+          id,
+          estatus,
+          idDetalle,
+          idEncuesta,
+          idEventoGoogle
+        );
+
         enqueueSnackbar(insert.msj, { variant: 'success' });
         resetForm();
         mutate(endpoints.encuestas.getEcuestaValidacion);
@@ -131,17 +132,17 @@ export default function EvaluateDialog({ open, pendiente, mutate, cerrar }) {
       padding={0}
     >
 
-      <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-        Encuesta de satisfacción {beneficio}
+      <DialogTitle sx={{ m: 0, p: 2, margin: '25px', textAlign: 'center' }} id="customized-dialog-title">
+        ENCUESTA DE SATISFACCIÓN {beneficio.toUpperCase()}
         <Typography variant="subtitle2" >
-           Especialista: {especialista}
+           ESPECIALISTA: {especialista}
         </Typography>
       </DialogTitle>
 
       {!isEmpty(encuestaData) ? (
 
-        <Stack sx={{ mt: 3 }}>
-          <DialogContent dividers>
+        <Stack sx={{ mt: 0 }}>
+          <DialogContent dividers sx={{margin: '25px'}}>
 
             <FormProvider methods={methods} onSubmit={onSubmit} key={formKey}>
               <Grid container spacing={3}>
@@ -166,23 +167,29 @@ export default function EvaluateDialog({ open, pendiente, mutate, cerrar }) {
                         </Typography>
 
                         {item.respuestas === "1" || item.respuestas === 1 && (
-                          <RHFRadioGroup row spacing={4} name={`resp_${index}`} options={Resp1Data} />
+                          <RHFRadioGroup row sx={{
+                            display: 'grid',
+                            columnGap: 1,
+                            rowGap: 1,
+                            m: 1,
+                            gridTemplateColumns: 'repeat(3, 1fr)',
+                          }} name={`resp_${index}`} options={Resp1Data} />
                         )}
-
+                        
                         {item.respuestas === "2" || item.respuestas === 2 && (
                           <RHFRadioGroup row spacing={4} name={`resp_${index}`} options={Resp2Data} />
                         )}
 
                         {item.respuestas === "3" || item.respuestas === 3 && (
-                          <RHFRadioGroup row spacing={4} name={`resp_${index}`} options={Resp3Data} />
+                          <RHFRadioGroup row sx={{ m: 2 }} spacing={4} name={`resp_${index}`} options={Resp3Data} />
                         )}
 
                         {item.respuestas === "4" || item.respuestas === 4 && (
-                          <RHFRadioGroup row spacing={4} name={`resp_${index}`} options={Resp4Data} />
+                          <RHFRadioGroup row sx={{ m: 1 }} name={`resp_${index}`} options={Resp4Data} />
                         )}
 
                         {item.respuestas === "5" || item.respuestas === 5 && (
-                          <RHFTextField name={`resp_${index}`} multiline rows={4} />
+                          <RHFTextField name={`resp_${index}`} multiline rows={3} />
                         )}
 
                       </Stack>

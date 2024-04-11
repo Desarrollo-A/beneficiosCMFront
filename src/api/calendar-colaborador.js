@@ -52,9 +52,9 @@ export function getModalities(sede, especialista, area) {
 }
 
 // Trae el horario de un beneficio
-export function getHorario(beneficio) {
+export function getHorario(beneficio, especialistah) {
   const URL = [endpoints.calendarioColaborador.getHorarioBeneficio];
-  const horario = fetcherPost(URL, { beneficio });
+  const horario = fetcherPost(URL, { beneficio, especialistah });
 
   return horario;
 }
@@ -483,4 +483,12 @@ export function deleteGoogleCalendarEvent(id, email) {
   const deleteEvent = fetcherPost(URL, { id, email });
 
   return deleteEvent;
+}
+
+// Actualizar la fecha de intento de pago en las citas para que se les inhabilite.
+export function actualizarFechaIntentoPago(idUsuario, idCita) {
+  const URL = [endpoints.calendarioColaborador.actualizaFechaIntentoPago];
+  const update = fetcherPost(URL, { idUsuario, idCita });
+
+  return update;
 }
