@@ -8,7 +8,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #003764;
+    background: #a1a1a1;
     border-radius: 10px;
     transition: width 0.3s;
 }
