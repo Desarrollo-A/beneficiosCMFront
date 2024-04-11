@@ -58,6 +58,7 @@ import {
   insertGoogleCalendarEvent,
   updateGoogleCalendarEvent,
   deleteGoogleCalendarEvent,
+  actualizarFechaIntentoPago,
 } from 'src/api/calendar-colaborador';
 
 import Iconify from 'src/components/iconify';
@@ -413,6 +414,9 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         );
         if (!update) console.error('La cita no se pudo actualizar para realizar el pago');
       }
+      if (resultadoPago) {
+        await actualizarFechaIntentoPago(DATOS_CITA.ID_USUARIO, agendar.data);
+      }
     }
     if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
       const METODO_PAGO = Object.freeze({
@@ -694,6 +698,9 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
           ESTATUS_CITA.PENDIENTE_PAGO
         );
         if (!update) console.error('La cita no se pudo actualizar para realizar el pago');
+      }
+      if (resultadoPago) {
+        await actualizarFechaIntentoPago(DATOS_CITA.ID_USUARIO, currentEvent.id);
       }
     }
 
