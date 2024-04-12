@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
 import { es } from 'date-fns/locale';
 import { enqueueSnackbar } from 'notistack';
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import { LoadingButton } from '@mui/lab';
 import { Box, Stack } from '@mui/system';
@@ -25,6 +25,7 @@ import {
 import { fDate } from 'src/utils/format-time';
 
 import { useAuthContext } from 'src/auth/hooks';
+import { getHorario } from 'src/api/calendar-colaborador';
 import {
   reRender,
   reschedule,
@@ -46,6 +47,45 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
   const [dateTitle, setDateTitle] = useState(dayjs(selectedDate).format('dddd, DD MMMM YYYY'));
   const selectedReason = validateSelect(type, reason, cancelType, horaInicio, horaFinal);
   const [btnLoading, setBtnLoading] = useState(false);
+
+  const [hrInicio, setHrInicio] = useState('');
+
+  const [hrFinal, setHrFinal] = useState('');
+
+  const [sabado, setSabado] = useState(0);
+
+  useEffect(() => {
+    const getHr = async () => {
+      try {
+        const horario = await getHorario(user?.idPuesto, user?.idUsuario);
+
+        const dayOfWeek = dayjs(fecha).day();
+
+        setSabado(horario?.data[0]?.sabados);
+
+        if (dayOfWeek === 6) {
+          setHrInicio(horario?.data[0]?.horaInicioSabado);
+          setHrFinal(horario?.data[0]?.horaFinSabado);
+        } else {
+          setHrInicio(horario?.data[0]?.horaInicio);
+          setHrFinal(horario?.data[0]?.horaFin);
+        }
+
+      } catch (error) {
+        console.error("Error al obtener el horario:", error);
+        // Manejo de errores, si es necesario
+      }
+    };
+
+    if (user) {
+      getHr();
+    }
+  }, [user, fecha]);
+
+  const defaultHour = {
+    horaInicio: hrInicio,
+    horaFinal: hrFinal,
+  };
 
   const esp = { // idioma de los botones
     okButtonLabel: "Seleccionar",
@@ -118,7 +158,7 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
     };
     switch (cancelType) {
       case 8:
-        resp = await reschedule(eventData, eventData.idDetalle, cancelType, user);
+        resp = await reschedule(eventData, eventData.idDetalle, cancelType, user, defaultHour);
         break;
 
       default:
@@ -283,12 +323,24 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
 
             <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns} localeText={esp}>
               <MobileDatePicker
-                label="Fecha inicial"
+                label="Fecha"
                 sx={{ width: '100%' }}
                 value={fecha}
                 onChange={(value) => {
                   setFecha(value);
                   setDateTitle(dayjs(value).format('dddd, DD MMMM YYYY')); // al momento de cambiar el valor en el input, cambia el valor del titulo
+                }}
+                shouldDisableDate={(value) => {
+                  const dayOfWeek = dayjs(value).day();
+                  if (dayOfWeek === 0) {
+                    return true;
+                  }
+                  if(dayOfWeek === 6){
+                    if(sabado === 0){
+                    return true; 
+                    }
+                  }
+                  return false;
                 }}
               />
             </LocalizationProvider>

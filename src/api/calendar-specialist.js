@@ -264,12 +264,10 @@ export async function createAppointment(eventData, modalitie, datosUser, default
     oficina = 'Confirmado por especialista';
   }
 
-
-  if(eventData.hora_inicio < defaultHour.horaInicio || eventData.hora_final > defaultHour.horaFinal){
-
+  if(!(eventData.hora_inicio >= defaultHour.horaInicio && eventData.hora_final <= defaultHour.horaFinal && eventData.hora_final > eventData.hora_inicio)){
     bussinessHours = false;
   }
-
+  
   if (start > now && bussinessHours) {
     const data = {
       idUsuario: datosUser.idUsuario,
@@ -588,7 +586,7 @@ export function useGetEventReasons(idCita) {
 
 // ----------------------------------------------------------------------
 
-export async function reschedule(eventData, idDetalle, cancelType, datosUser) {
+export async function reschedule(eventData, idDetalle, cancelType, datosUser, defaultHour) {
   let response = '';
   const { fundacion } = eventData; // para verificar si es fundacion Lamat
   let sede = eventData?.sede || 'virtual';
@@ -682,27 +680,34 @@ export async function reschedule(eventData, idDetalle, cancelType, datosUser) {
     idUsuario: datosUser?.idUsuario,
   };
 
-  response = await fetcherPost(check_invoice, idDetalle);
+  if(!(eventData.hora_inicio >= defaultHour.horaInicio && eventData.hora_final <= defaultHour.horaFinal && eventData.hora_final > eventData.hora_inicio)){
 
-  if (response.result) {
-    response = await fetcherPost(create_appointment, data);
+    enqueueSnackbar('Horas seleccionadas fuera de horario', { variant: 'error' });
+    
+  }else{
+
+    response = await fetcherPost(check_invoice, idDetalle);
 
     if (response.result) {
-      const del = await fetcherPost(cancel_appointment, cancelData);
-      if (del.result) {
-        if (eventData?.correo) {
-          fetcherPost(sendMail, mailReschedule);
+      response = await fetcherPost(create_appointment, data);
+
+      if (response.result) {
+        const del = await fetcherPost(cancel_appointment, cancelData);
+        if (del.result) {
+          if (eventData?.correo) {
+            fetcherPost(sendMail, mailReschedule);
+          }
+
+          const dataGoogle = {
+            start: dayjs(fechaInicio).format('YYYY-MM-DDTHH:mm:ss'),
+            end: dayjs(fechaFinal).format('YYYY-MM-DDTHH:mm:ss'),
+            id: eventData?.idEventoGoogle,
+            email: organizador,
+            attendees: correosNotificar,
+          };
+
+          fetcherPost(update_google_event, dataGoogle);
         }
-
-        const dataGoogle = {
-          start: dayjs(fechaInicio).format('YYYY-MM-DDTHH:mm:ss'),
-          end: dayjs(fechaFinal).format('YYYY-MM-DDTHH:mm:ss'),
-          id: eventData?.idEventoGoogle,
-          email: organizador,
-          attendees: correosNotificar,
-        };
-
-        fetcherPost(update_google_event, dataGoogle);
       }
     }
   }
