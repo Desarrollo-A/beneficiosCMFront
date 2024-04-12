@@ -278,7 +278,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       // 'programador.analista34@ciudadmaderas.com',
       // 'programador.analista32@ciudadmaderas.com',
       // 'programador.analista12@ciudadmaderas.com',
-      // 'tester.ti2@ciudadmaderas.com',
       // 'tester.ti3@ciudadmaderas.com',
       // algun correo de especialista
     ];
@@ -290,7 +289,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         // 'programador.analista36@ciudadmaderas.com',
         // 'programador.analista34@ciudadmaderas.com',
         // 'programador.analista32@ciudadmaderas.com',
-        // 'tester.ti2@ciudadmaderas.com',
         // 'tester.ti3@ciudadmaderas.com',
       ];
     }
@@ -462,7 +460,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     // Evento de google
     let sentEmail = null;
-    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
+    if (datosUser.tipoPuesto.toLowerCase() === 'operativa' && datosUser.correo) {
       sentEmail = await sendMail(
         scheduledAppointment.data[0],
         1,
@@ -581,7 +579,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       'programador.analista34@ciudadmaderas.com',
       'programador.analista32@ciudadmaderas.com',
       'programador.analista12@ciudadmaderas.com',
-      'tester.ti2@ciudadmaderas.com',
       'tester.ti3@ciudadmaderas.com',
       // currentEvent.correoEspecialista
     ];
@@ -592,7 +589,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         'programador.analista36@ciudadmaderas.com',
         'programador.analista34@ciudadmaderas.com',
         'programador.analista32@ciudadmaderas.com',
-        'tester.ti2@ciudadmaderas.com',
         'tester.ti3@ciudadmaderas.com',
       ];
     }
@@ -606,7 +602,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         variant: 'error',
       });
       appointmentMutate();
-      return onClose();
     }
 
     const scheduledAppointment = await consultarCita(currentEvent.id);
@@ -618,16 +613,19 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       return false;
     }
 
-    const sentEmail = await sendMail(
-      scheduledAppointment.data[0],
-      2,
-      correosNotificar,
-      datosUser.idUsuario
-    );
+    if (datosUser.correo) {
+      const sentEmail = await sendMail(
+        scheduledAppointment.data[0],
+        2,
+        correosNotificar,
+        datosUser.idUsuario
+      );
 
-    if (!sentEmail.result) {
-      console.error('No se pudo notificar al usuario');
+      if (!sentEmail.result) {
+        console.error('No se pudo notificar al usuario');
+      }
     }
+
     appointmentMutate();
     return onClose();
   };
@@ -1358,7 +1356,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       'programador.analista34@ciudadmaderas.com',
       'programador.analista32@ciudadmaderas.com',
       'programador.analista12@ciudadmaderas.com',
-      'tester.ti2@ciudadmaderas.com',
       'tester.ti3@ciudadmaderas.com',
       // Algun correo de especialista
     ];
@@ -1370,7 +1367,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         'programador.analista36@ciudadmaderas.com',
         'programador.analista34@ciudadmaderas.com',
         'programador.analista32@ciudadmaderas.com',
-        'tester.ti2@ciudadmaderas.com',
         'tester.ti3@ciudadmaderas.com',
       ];
     }
@@ -1397,19 +1393,23 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       onClose();
       return false;
     }
-    const sentEmail = await sendMail(
-      {
-        ...scheduledAppointment.data[0],
-        oldEventStart: currentEvent.start,
-        oldEventEnd: currentEvent.end,
-      },
-      3,
-      correosNotificar,
-      datosUser.idUsuario
-    );
-    if (!sentEmail.result) {
-      console.error('No se pudo notificar al usuario');
+
+    if (datosUser.correo) {
+      const sentEmail = await sendMail(
+        {
+          ...scheduledAppointment.data[0],
+          oldEventStart: currentEvent.start,
+          oldEventEnd: currentEvent.end,
+        },
+        3,
+        correosNotificar,
+        datosUser.idUsuario
+      );
+      if (!sentEmail.result) {
+        console.error('No se pudo notificar al usuario');
+      }
     }
+
     enqueueSnackbar(agendar.msg, {
       variant: 'success',
     });
@@ -1475,7 +1475,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       // 'programador.analista34@ciudadmaderas.com',
       // 'programador.analista32@ciudadmaderas.com',
       // 'programador.analista12@ciudadmaderas.com',
-      // 'tester.ti2@ciudadmaderas.com',
       // 'tester.ti3@ciudadmaderas.com',
       // algun correo de especialista
       ...emails,
@@ -1488,7 +1487,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         // 'programador.analista36@ciudadmaderas.com',
         // 'programador.analista34@ciudadmaderas.com',
         // 'programador.analista32@ciudadmaderas.com',
-        // 'tester.ti2@ciudadmaderas.com',
         // 'tester.ti3@ciudadmaderas.com',
         ...emails,
       ];
