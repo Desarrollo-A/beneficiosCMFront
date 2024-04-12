@@ -54,6 +54,7 @@ export default function UserQuickEditForm({
   const defaultValues = useMemo(
     () => ({
       id: currentUser?.id || '',
+      contrato: currentUser?.contrato || '',
       nombre: currentUser?.nombre || '',
       sexo: currentUser?.sexo || '',
       telefono: currentUser?.telefono || '',
@@ -89,7 +90,7 @@ export default function UserQuickEditForm({
         estatus: data.estatus,
       };
 
-      const update = await updateExternalUser(data.id, updateData); // Id del usuario a actualizar y su data.
+      const update = await updateExternalUser(data.contrato, updateData); // Id del usuario a actualizar y su data.
 
       if (update.result) {
         enqueueSnackbar(`¡Se ha actualizado los datos del usuario exitosamente!`, {
@@ -136,6 +137,14 @@ export default function UserQuickEditForm({
             }}
             sx={{ mt: 2 }}
           >
+            <RHFTextField
+              name="contrato"
+              label="contrato"
+              value={currentUser.contrato}
+              defaultValue={currentUser.contrato}
+              disabled
+              hidden
+            />
             <RHFTextField
               name="id"
               label="ID"

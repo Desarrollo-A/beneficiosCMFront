@@ -235,7 +235,7 @@ export default function UserList({ userData, usersMutate }) {
                       row={usuario}
                       selected={table.selected.includes(usuario.id)}
                       onSelectRow={() => table.onSelectRow(usuario.id)}
-                      onDisableRow={() => handleDisableUser(usuario.id, usuario.estatus)}
+                      onDisableRow={() => handleDisableUser(usuario.contrato, usuario.estatus)}
                       usersMutate={usersMutate}
                     />
                   ))}
