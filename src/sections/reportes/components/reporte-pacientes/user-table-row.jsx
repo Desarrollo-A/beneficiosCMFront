@@ -19,7 +19,7 @@ import HistorialCitas from './modal-historial-citas'
 
 // ----------------------------------------------------------------------
 
-export default function RowResumenTerapias({ row, area, idUs, rol }) {
+export default function RowResumenTerapias({ row, area, idUs, rol, typeusersData }) {
 
   const {
     nombre,
@@ -157,7 +157,7 @@ export default function RowResumenTerapias({ row, area, idUs, rol }) {
          id="scroll-dialog-description"
          ref={descriptionElementRef}
          tabIndex={-1}>
-        <HistorialCitas idUsuario={us} area={area} rol={rol} idUs={idUs} open={quickHisCit.value} onClose={handleClose} />
+        <HistorialCitas idUsuario={us} area={area} rol={rol} idUs={idUs} open={quickHisCit.value} onClose={handleClose} typeusersData={typeusersData} />
         </DialogContentText>
       </Dialog>
     </>
@@ -169,4 +169,5 @@ RowResumenTerapias.propTypes = {
   area: PropTypes.any,
   idUs: PropTypes.any,
   rol: PropTypes.any,
+  typeusersData: PropTypes.any
 };

@@ -2,6 +2,7 @@ import * as XLSX from 'xlsx';
 import { useState, useEffect, useCallback } from 'react';
 
 import { Button } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 import Dialog from '@mui/material/Dialog';
 import Container from '@mui/material/Container';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -38,11 +39,13 @@ export default function UserListView() {
 
   const [file, setFile] = useState(null);
   const [userData, setUserData] = useState([]);
+  const [loadingButton, setLoadingButton] = useState(false);
 
   useEffect(() => {
     if (usersData) {
       const obj = usersData.map((i) => ({
-        id: i.idUsuarioExt,
+        id: i.idUsuario,
+        contrato: i.idContrato,
         nombre: i.nombre,
         telefono: i.telPersonal,
         correo: i.correo,
@@ -81,6 +84,8 @@ export default function UserListView() {
       enqueueSnackbar('Seleccione un archivo!', { variant: 'warning' });
       return;
     }
+
+    setLoadingButton(true);
 
     reader.onload = (e) => {
       const data = new Uint8Array(e.target.result);
@@ -188,6 +193,7 @@ export default function UserListView() {
     };
 
     reader.readAsArrayBuffer(file);
+    setLoadingButton(true);
   };
 
   const handleCreateUsers = async (users) => {
@@ -266,14 +272,15 @@ export default function UserListView() {
           >
             Cerrar
           </Button>
-          <Button
+          <LoadingButton
+            loading={loadingButton}
             variant="contained"
             color="success"
             startIcon={<Iconify icon="eva:cloud-upload-fill" />}
             onClick={handleUpload}
           >
             Subir
-          </Button>
+          </LoadingButton>
         </DialogActions>
       </Dialog>
     </>

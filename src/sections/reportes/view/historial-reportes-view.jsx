@@ -154,6 +154,20 @@ export default function HistorialReportesView() {
 
   const [dataValue, setReportData] = useState(0);
 
+  const [typeusersData, setTypeusersData] = useState(0); 
+
+  const [dtReport, setDtReport] = useState({
+    reporte: dataValue,
+    tipoUsuario: typeusersData
+  });
+
+  useEffect(() => {
+    setDtReport({
+      reporte: dataValue,
+      tipoUsuario: typeusersData
+    });
+  }, [dataValue, typeusersData]);
+
   const { espeUserData } = usePostGeneral(user?.idUsuario, endpoints.reportes.getEspeUser, "espeUserData");
 
   const [esp, setEsp] = useState([]);
@@ -162,7 +176,7 @@ export default function HistorialReportesView() {
     setEsp(espeUserData);
   }, [espeUserData]);
 
-  const { reportesData } = usePostGeneral(dataValue, endpoints.reportes.lista, "reportesData");
+  const { reportesData } = usePostGeneral(dtReport, endpoints.reportes.lista, "reportesData");
 
   const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
 
@@ -312,6 +326,10 @@ export default function HistorialReportesView() {
     setReportData(newData);
   }
 
+  const handleChangeTypeUsers = (newData) => {
+    setTypeusersData(newData);
+  }
+
   useEffect(() => {
     setDatosTabla(reportesData);
   }, [reportesData]);
@@ -345,6 +363,7 @@ export default function HistorialReportesView() {
             roleOptions={_rp}
             modOptions={_mod}
             handleChangeReport={handleChangeReport}
+            handleChangeTypeUsers={handleChangeTypeUsers}
             table={table}
             tot={dataFiltered.length}
             dataValue={dataValue}
@@ -427,6 +446,7 @@ export default function HistorialReportesView() {
                         onEditRow={() => handleEditRow(row.idCita)}
                         rol={rol}
                         rel={handleChangeReport}
+                        typeusersData={typeusersData}
                       />
                     ))}
 
