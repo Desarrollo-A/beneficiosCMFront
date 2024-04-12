@@ -147,10 +147,13 @@ export default function ReportePacientesView() {
 
   const [area, setArea] = useState(puestos);
 
+  const [typeusersData, setTypeusersData] = useState(0);
+
   const [dt, setDt] = useState({
     idRol: user?.idRol,
     esp: area,
     idUs: user?.idUsuario,
+    tipoUsuario: typeusersData
   });
 
   useEffect(() => {
@@ -158,8 +161,9 @@ export default function ReportePacientesView() {
       idRol: user?.idRol,
       esp: area,
       idUs: user?.idUsuario,
+      tipoUsuario: typeusersData
     });
-  }, [area, user ]);
+  }, [area, user, typeusersData ]);
 
   const { pacientesData } = usePostGeneral(dt, endpoints.reportes.pacientes, "pacientesData");
 
@@ -266,6 +270,10 @@ export default function ReportePacientesView() {
     );
   }
 
+  const handleChangeTypeUsers = (newData) => {
+    setTypeusersData(newData);
+  }
+
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -289,6 +297,8 @@ export default function ReportePacientesView() {
             roleOptions={_rp}
             handleChangeId={handleChangeId}
             rol={rol}
+            table={table}
+            handleChangeTypeUsers={handleChangeTypeUsers}
           />
 
           {canReset && (
@@ -366,6 +376,7 @@ export default function ReportePacientesView() {
                         onSelectRow={() => table.onSelectRow(row.id)}
                         onDeleteRow={() => handleDeleteRow(row.id)}
                         onEditRow={() => handleEditRow(row.id)}
+                        typeusersData={typeusersData}
                       />
                     ))}
 

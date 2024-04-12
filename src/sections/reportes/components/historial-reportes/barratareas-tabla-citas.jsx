@@ -42,8 +42,8 @@ export default function BarraTareasTabla({
   //
   roleOptions,
   handleChangeReport,
+  handleChangeTypeUsers,
   table,
-  dataValue,
   rol,
   _eu,
   idUsuario,
@@ -87,7 +87,14 @@ export default function BarraTareasTabla({
     { value: 5, label: 'Reporte justificiones' },
   ];
 
+  const typeUsers = [
+    { value: 0, label: 'Colaborador' },
+    { value: 1, label: 'Externo' },
+  ];
+
   const [currentStatus, setCurrentStatus] = useState(report[0].value);
+
+  const [currenTypeUsers, setCurrenTypeUsers] = useState(typeUsers[0].value);
 
   const [dt, setDt] = useState({
     esp: rol === 4 ? area : _eu,
@@ -97,7 +104,8 @@ export default function BarraTareasTabla({
     idUsr: idUsuario,
     idEsp: selectEsp,
     modalidad: mod,
-    reporte: currentStatus
+    reporte: currentStatus,
+    tipo: currenTypeUsers
   });
 
   useEffect(() => {
@@ -110,7 +118,8 @@ export default function BarraTareasTabla({
         idUsr: idUsuario,
         idEsp: selectEsp,
         modalidad: mod,
-        reporte: currentStatus
+        reporte: currentStatus,
+        tipo: currenTypeUsers
       });
     }
   }, [
@@ -122,7 +131,8 @@ export default function BarraTareasTabla({
     idUsuario,
     selectEsp,
     mod,
-    currentStatus
+    currentStatus,
+    currenTypeUsers
   ]);
 
   const [condi, setCondi] = useState(true);
@@ -172,6 +182,12 @@ export default function BarraTareasTabla({
     handleChangeReport(event.target.value);
     table.onResetPage();
   }, [handleChangeReport, table]);
+
+  const handleTypeUsers = useCallback((event) => {
+    setCurrenTypeUsers(event.target.value);
+    handleChangeTypeUsers(event.target.value);
+    table.onResetPage();
+  }, [handleChangeTypeUsers, table]);
 
   const handleFilterStartDate = useCallback(
     (newValue) => {
@@ -248,7 +264,7 @@ export default function BarraTareasTabla({
           <Grid xs={12} md={6}>
             <WidgetIngresos
               title="Total de ingresos"
-              total={_in}
+              total={currenTypeUsers === 0 ? _in : [0]}
               length={_in.length}
               icon={<CheckInIllustration />}
             />
@@ -269,6 +285,31 @@ export default function BarraTareasTabla({
           pr: { xs: 2.5, md: 1 },
         }}
       >
+
+        <FormControl
+          sx={{
+            flexShrink: 0,
+            width: { xs: 1, md: 200 },
+          }}
+        >
+          <TextField
+            fullWidth
+            select
+            label="Tipo de usuario"
+            value={currenTypeUsers}
+            onChange={handleTypeUsers}
+          >
+
+            {typeUsers.map((option, index) => (
+              <MenuItem
+                key={index}
+                value={option.value}
+              >
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
+        </FormControl>
 
         <FormControl
           sx={{
@@ -319,12 +360,12 @@ export default function BarraTareasTabla({
                 }}
               >
                 {!isEmpty(roleOptions) ? (
-                roleOptions.map((option, index) => (
-                  <MenuItem key={index} value={option}>
-                    <Checkbox disableRipple size="small" checked={filters.area.includes(option)} />
-                    {option}
-                  </MenuItem>
-                ))
+                  roleOptions.map((option, index) => (
+                    <MenuItem key={index} value={option}>
+                      <Checkbox disableRipple size="small" checked={filters.area.includes(option)} />
+                      {option}
+                    </MenuItem>
+                  ))
                 ) : (
                   <Grid style={{ paddingTop: '3%' }}>
                     <LinearProgress />
@@ -337,7 +378,7 @@ export default function BarraTareasTabla({
             <FormControl
               sx={{
                 flexShrink: 0,
-                width: { xs: 1, md: 400 },
+                width: { xs: 1, md: 458 },
               }}
             >
               <InputLabel>Especialistas</InputLabel>
@@ -356,12 +397,12 @@ export default function BarraTareasTabla({
                 }}
               >
                 {!isEmpty(espData) ? (
-                espData.map((option) => (
-                  <MenuItem key={option} value={option.nombre}>
-                    <Checkbox disableRipple size="small" checked={filters.especialista.includes(option.nombre)} />
-                    {option.nombre}
-                  </MenuItem>
-                ))
+                  espData.map((option) => (
+                    <MenuItem key={option} value={option.nombre}>
+                      <Checkbox disableRipple size="small" checked={filters.especialista.includes(option.nombre)} />
+                      {option.nombre}
+                    </MenuItem>
+                  ))
                 ) : (
                   <Grid style={{ paddingTop: '3%' }}>
                     <LinearProgress />
@@ -380,7 +421,7 @@ export default function BarraTareasTabla({
         <FormControl
           sx={{
             flexShrink: 0,
-            width: { xs: 1, md: 275 },
+            width: { xs: 1, md: 200 },
           }}
         >
           <InputLabel>Modalidad</InputLabel>
@@ -398,12 +439,12 @@ export default function BarraTareasTabla({
             }}
           >
             {!isEmpty(modOptions) ? (
-            modOptions.map((option, index) => (
-              <MenuItem key={index} value={option}>
-                <Checkbox disableRipple size="small" checked={filters.modalidad.includes(option)} />
-                {option}
-              </MenuItem>
-            ))
+              modOptions.map((option, index) => (
+                <MenuItem key={index} value={option}>
+                  <Checkbox disableRipple size="small" checked={filters.modalidad.includes(option)} />
+                  {option}
+                </MenuItem>
+              ))
             ) : (
               <Grid style={{ paddingTop: '3%' }}>
                 <LinearProgress />
@@ -555,8 +596,8 @@ BarraTareasTabla.propTypes = {
   onFilters: PropTypes.func,
   roleOptions: PropTypes.array,
   handleChangeReport: PropTypes.func,
+  handleChangeTypeUsers: PropTypes.func,
   table: PropTypes.any,
-  dataValue: PropTypes.any,
   rol: PropTypes.any,
   _eu: PropTypes.any,
   idUsuario: PropTypes.any,
