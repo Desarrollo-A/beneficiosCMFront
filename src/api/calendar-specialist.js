@@ -180,7 +180,7 @@ export async function deleteEvent(eventId, idUsuario) {
 
 // ----------------------------------------------------------------------
 
-export async function createAppointment(eventData, modalitie, datosUser) {
+export async function createAppointment(eventData, modalitie, datosUser, defaultHour) {
   let create = '';
   let abreviatura = '';
   let especialidad = '';
@@ -264,7 +264,9 @@ export async function createAppointment(eventData, modalitie, datosUser) {
     oficina = 'Confirmado por especialista';
   }
 
-  if (eventData.hora_inicio < '08:00:00' || eventData.hora_final > '18:00:00') {
+
+  if(eventData.hora_inicio < defaultHour.horaInicio || eventData.hora_final > defaultHour.horaFinal){
+
     bussinessHours = false;
   }
 
