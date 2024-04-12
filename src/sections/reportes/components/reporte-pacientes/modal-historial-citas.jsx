@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useState, useEffect } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -20,7 +20,7 @@ import { endpoints } from 'src/utils/axios';
 
 import { usePostGeneral } from 'src/api/general';
 // ----------------------------------------------------------------------
-export default function HistorialCitas({ open, onClose, idUsuario, area, idUs, rol }) {
+export default function HistorialCitas({ open, onClose, idUsuario, area, idUs, rol, typeusersData }) {
   let espe = '';
   switch (area) {
     case 158:
@@ -38,12 +38,23 @@ export default function HistorialCitas({ open, onClose, idUsuario, area, idUs, r
     default:
   }
 
-  const [data] = useState({
+  const [data, setData] = useState({
     idUser: idUsuario,
     espe: area,
     idEspe: idUs,
     idRol: rol,
+    tipoUsuario: typeusersData
   });
+
+  useEffect(() => {
+    setData({
+      idUser: idUsuario,
+      espe: area,
+      idEspe: idUs,
+      idRol: rol,
+      tipoUsuario: typeusersData
+    });
+  }, [idUsuario, area, idUs, rol, typeusersData ]);
 
   const { citasData } = usePostGeneral(data, endpoints.reportes.citas, 'citasData');
 
@@ -103,6 +114,7 @@ HistorialCitas.propTypes = {
   area: PropTypes.any,
   rol: PropTypes.any,
   idUs: PropTypes.any,
+  typeusersData: PropTypes.any
 };
 
 function OrderItem({ item, lastTimeline }) {

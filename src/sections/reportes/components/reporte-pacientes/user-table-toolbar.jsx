@@ -27,6 +27,8 @@ export default function ToolbarResumenTerapias({
   onFilters,
   //
   handleChangeId,
+  handleChangeTypeUsers,
+  table,
   rol
 }) {
 
@@ -36,6 +38,13 @@ export default function ToolbarResumenTerapias({
     },
     [onFilters]
   );
+
+  const typeUsers = [
+    { value: 0, label: 'Colaborador' },
+    { value: 1, label: 'Externo' },
+  ];
+
+  const [currenTypeUsers, setCurrenTypeUsers] = useState(typeUsers[0].value);
 
   const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
 
@@ -58,6 +67,13 @@ export default function ToolbarResumenTerapias({
     [handleChangeId]
   );
 
+  const handleTypeUsers = useCallback((event) => {
+    setCurrenTypeUsers(event.target.value);
+    handleChangeTypeUsers(event.target.value);
+    mutate(endpoints.reportes.pacientes);
+    table.onResetPage();
+  }, [handleChangeTypeUsers, table]);
+
   return (
 
     <Stack
@@ -73,26 +89,51 @@ export default function ToolbarResumenTerapias({
       }}
     >
 
+      <FormControl
+        sx={{
+          flexShrink: 0,
+          width: { xs: 1, md: 200 },
+        }}
+      >
+        <TextField
+          fullWidth
+          select
+          label="Tipo de usuario"
+          value={currenTypeUsers}
+          onChange={handleTypeUsers}
+        >
+
+          {typeUsers.map((option, index) => (
+            <MenuItem
+              key={index}
+              value={option.value}
+            >
+              {option.label}
+            </MenuItem>
+          ))}
+        </TextField>
+      </FormControl>
+
       {rol === "4" || rol === 4 ? (
         <FormControl
           sx={{
             flexShrink: 0,
             width: { xs: 1, md: 200 },
           }}>
-          <InputLabel id="demo-simple-select-label">Área</InputLabel>
+          <InputLabel id="demo-simple-select-label">Beneficio</InputLabel>
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
             value={area}
-            label="Área"
+            label="Beneficio"
             onChange={handleChange}
           >
             {!isEmpty(especialistas) ? (
-            especialistas.map((i) => (
-              <MenuItem key={i.idPuesto} value={i.idPuesto}>
-                {i.nombre}
-              </MenuItem>
-            ))
+              especialistas.map((i) => (
+                <MenuItem key={i.idPuesto} value={i.idPuesto}>
+                  {i.nombre}
+                </MenuItem>
+              ))
             ) : (
               <Grid style={{ paddingTop: '3%' }}>
                 <LinearProgress />
@@ -135,4 +176,6 @@ ToolbarResumenTerapias.propTypes = {
   onFilters: PropTypes.func,
   handleChangeId: PropTypes.func,
   rol: PropTypes.any,
+  handleChangeTypeUsers: PropTypes.any,
+  table: PropTypes.any
 };
