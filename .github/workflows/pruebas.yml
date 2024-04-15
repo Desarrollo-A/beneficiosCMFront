@@ -34,3 +34,16 @@ jobs:
           local_path: ./dist/*
           remote_path: /mnt/data/aplicaciones/Prueba/beneficiosmaderas/
           delete_remote_files: true
+
+      - name: 🖋️ Rename .htaccess
+        run: cp ./public/.htaccess_pruebas ./public/.htaccess
+          
+      - name: 📄 Upload .htaccess
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+          server: 104.198.134.0
+          port: 22
+          username: prohab
+          ssh_private_key: ${{ secrets.SFTP_SSH_PRIVATE_KEY }}
+          local_path: ./public/.htaccess
+          remote_path: /mnt/data/aplicaciones/Prueba/beneficiosmaderas/

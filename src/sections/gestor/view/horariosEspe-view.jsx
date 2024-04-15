@@ -417,10 +417,10 @@ function applyFilter({ inputData, comparator, filters }) {
   if (name) {
     inputData = inputData.filter(
       (i) =>
-        i.oficina.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        i.sede.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        i.ubicación.toLowerCase().indexOf(name.toLowerCase()) !== -1 || 
-        i.idOficina.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1
+        i.beneficio.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        i.especialista.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
+        i.horario.toLowerCase().indexOf(name.toLowerCase()) !== -1 || 
+        i.horarioSabado.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1
     );
   }
 
