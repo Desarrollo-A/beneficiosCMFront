@@ -943,12 +943,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
   const filtradoDias = (diasProximos, filtroDias) => {
     // Utiliza el método filter para obtener los días que están en diasProximos pero no en filtroDias
-    console.log(diasProximos, filtroDias);
-    const diasNoFiltrados = diasProximos.filter((dia) => {
-      console.log(dia, !filtroDias.includes(dia));
-      return !filtroDias.includes(dia);
-    });
-    console.log(diasNoFiltrados);
+    const diasNoFiltrados = diasProximos.filter((dia) => !filtroDias.includes(dia));
     return diasNoFiltrados;
   };
 
@@ -1161,7 +1156,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         noPresencial = !diasPresenciales.includes(formattedDate); // Deshabilitar si no esta entre los dias
       }
     }
-    // console.log("TT", formattedDate, isWeekendDay, diasOcupados, diasPresenciales)
     // Deshabilitar la fecha si es un fin de semana o está en la lista de fechas deshabilitadas
     return isDisabledFromSQLServer || noPresencial; // isWeekendDay ||
   };

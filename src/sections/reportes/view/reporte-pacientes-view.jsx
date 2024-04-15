@@ -79,7 +79,7 @@ function handleDownloadExcel(dataFiltered, area) {
 
   const data = [
     {
-      sheet: "Historial Reportes",
+      sheet: "Reporte pacientes",
       columns: [
         { label: "ID", value: "idUsuario" },
         { label: "Nombre", value: "nombre" },
@@ -93,7 +93,7 @@ function handleDownloadExcel(dataFiltered, area) {
   ];
 
   const settings = {
-    fileName: "Historial Reportes",
+    fileName: "Reporte pacientes",
     extraLength: 3,
     writeMode: "writeFile",
     writeOptions: {},
@@ -446,9 +446,9 @@ function applyFilter({ inputData, comparator, filters }) {
   if (name) {
     inputData = inputData.filter(
       (user) =>
-        user?.nombre.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        user?.sede.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        user?.correo.toLowerCase().indexOf(name.toLowerCase()) !== -1
+      (user.nombre && user.nombre.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
+      (user.sede && user.sede.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
+      (user.correo && user.correo.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1) 
     );
   }
 
