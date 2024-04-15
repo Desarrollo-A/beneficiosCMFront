@@ -16,7 +16,7 @@ import Logo from 'src/components/logoMini';
 import SvgColor from 'src/components/svg-color';
 import { useSettingsContext } from 'src/components/settings';
 
-// import PendingModalUser from 'src/sections/calendariobeneficiario/pendingModalUser';
+import PendingModalUser from 'src/sections/calendariobeneficiario/pendingModalUser';
 import PendingModal from 'src/sections/overview/calendarioespecialista/view/pendingModal';
 
 import { NAV, HEADER } from '../config-layout';
@@ -51,7 +51,7 @@ export default function Header({ onOpenNav }) {
         </IconButton>
       )}
 
-      {/* {datosUser?.idRol === 2 && <PendingModalUser />} */}
+      {datosUser?.idRol === 2 && <PendingModalUser />}
       {datosUser?.idRol === 3 && <PendingModal />}
 
       <Stack
