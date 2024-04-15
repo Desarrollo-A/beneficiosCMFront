@@ -43,4 +43,4 @@ jobs:
           username: prohab
           ssh_private_key: ${{ secrets.SFTP_SSH_PRIVATE_KEY }}
           local_path: ./public/.htaccess_pruebas
-          remote_path: /mnt/data/aplicaciones/Prueba/beneficiosmaderas/.htaccess_pruebas
+          remote_path: /mnt/data/aplicaciones/Prueba/beneficiosmaderas/.htaccess
