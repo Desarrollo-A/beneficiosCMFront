@@ -178,7 +178,7 @@ export default function GraficaEncuestas({
         )));
 
     const resultArray = respArray.map((respuesta) => {
-        const matchingObj = respPreg.find((obj) => obj.respuesta === respuesta);
+        const matchingObj = respPreg.find((obj) => obj.respuesta.toString() === respuesta);
         return matchingObj ? matchingObj.cantidad : 0;
     });
 
