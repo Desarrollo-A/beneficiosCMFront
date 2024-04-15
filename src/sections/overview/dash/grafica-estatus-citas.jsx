@@ -119,10 +119,11 @@ export default function GraficaEstatusCitas({
   const _4 = countEstCitasData.flatMap((est) => (est.asistencia));
   const _5 = countEstCitasData.flatMap((est) => (est.justificada));
   const _6 = countEstCitasData.flatMap((est) => (est.pendiente));
+  const _7 = countEstCitasData.flatMap((est) => (est.procesandoPago));
 
   const citas = countEstCitasData.flatMap((est) => (est.citas));
 
-  const countEstCt = [_1, _2, _3, _4, _5, _6];
+  const countEstCt = [_1, _2, _3, _4, _5, _6, _7];
 
   const smUp = useResponsive('up', 'sm');
 
