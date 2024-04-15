@@ -35,7 +35,7 @@ jobs:
           remote_path: /mnt/data/aplicaciones/Prueba/beneficiosmaderas/
           delete_remote_files: true
           
-      - name: 📂 Sync files
+      - name: 📄 Upload .htaccess
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
           server: 104.198.134.0
