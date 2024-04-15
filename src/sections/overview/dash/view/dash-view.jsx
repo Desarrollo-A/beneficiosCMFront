@@ -269,7 +269,7 @@ export default function DashView() {
                   <Grid xs={12} sm={6} md={3} key={index}>
                     <WidgetConteo
                       title="Citas diponibles del mes presente"
-                      total={2 - i.total}
+                      total={(2 - i.total) < 0 ? 0 : 2 - i.total}
                       sx={{ backgroundColor: "#E5D7FA" }}
                       icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/calendario.png`} />}
                     />
