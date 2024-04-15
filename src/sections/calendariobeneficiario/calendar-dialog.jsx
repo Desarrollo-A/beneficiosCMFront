@@ -1647,7 +1647,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                         ) : (
                           ''
                         )}
-                        {currentEvent?.estatus === 2 || currentEvent?.estatus === 7 ? (
+                        {currentEvent?.estatus === 2 ? (
                           <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
                             Cita en {`${currentEvent?.beneficio} (cancelado)`}
                           </Typography>
@@ -1678,6 +1678,13 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                         {currentEvent?.estatus === 6 ? (
                           <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
                             Cita en {`${currentEvent?.beneficio} (pendiente de pago)`}
+                          </Typography>
+                        ) : (
+                          ''
+                        )}
+                        {currentEvent?.estatus === 7 ? (
+                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                            Cita en {`${currentEvent?.beneficio} (cancelado por especialista)`}
                           </Typography>
                         ) : (
                           ''

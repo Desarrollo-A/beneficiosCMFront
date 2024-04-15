@@ -70,7 +70,7 @@ export default function CalendarPreview({ event, open, handleClose }) {
             ) : (
               ''
             )}
-            {event?.estatus === 2 || event?.estatus === 7 ? (
+            {event?.estatus === 2 ? (
               <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
                 Cita en {`${event?.beneficio} (cancelado)`}
               </Typography>
@@ -101,6 +101,13 @@ export default function CalendarPreview({ event, open, handleClose }) {
             {event?.estatus === 6 ? (
               <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
                 Cita en {`${event?.beneficio} (pendiente de pago)`}
+              </Typography>
+            ) : (
+              ''
+            )}
+            {event?.estatus === 7 ? (
+              <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                Cita en {`${event?.beneficio} (cancelado por especialista)`}
               </Typography>
             ) : (
               ''
