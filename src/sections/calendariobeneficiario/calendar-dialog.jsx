@@ -943,12 +943,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
   const filtradoDias = (diasProximos, filtroDias) => {
     // Utiliza el método filter para obtener los días que están en diasProximos pero no en filtroDias
-    console.log(diasProximos, filtroDias);
-    const diasNoFiltrados = diasProximos.filter((dia) => {
-      console.log(dia, !filtroDias.includes(dia));
-      return !filtroDias.includes(dia)
-    });
-    console.log(diasNoFiltrados);
+    const diasNoFiltrados = diasProximos.filter((dia) => !filtroDias.includes(dia));
     return diasNoFiltrados;
   };
 
@@ -968,18 +963,17 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     if (!horarioACubrir.result) return; // En caso de que no halla horario detenemos el proceso.
 
-
     // Teniendo en cuenta el dia actual, consultamos los dias restantes del mes actual y todos los dias del mes que sigue.
     const todosLosDiasSiguientes = generarFechas(initialValue, lastDayOfNextMonth);
 
     // Le quitamos los registros del dia domingo y tambien sabados en el caso de que no lo trabaje el especialista.
     const diasProximos = todosLosDiasSiguientes.filter((date) => {
       const dayOfWeek = dayjs(date).day();
-      // Habilita aquellos dias en los que regrese el true en return 
+      // Habilita aquellos dias en los que regrese el true en return
       if (horarioACubrir?.data[0]?.sabados === 0) {
-        return dayOfWeek !== 0 && dayOfWeek !== 6
+        return dayOfWeek !== 0 && dayOfWeek !== 6;
       }
-        return dayOfWeek !== 0
+      return dayOfWeek !== 0;
     });
 
     // Traemos citas y horarios bloqueados por parte del usuario y especialsita
@@ -1057,23 +1051,23 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       beneficio === 158
         ? []
         : [
-          `${year}-01-01`,
-          `${year}-02-05`,
-          `${year}-03-21`,
-          `${year}-05-01`,
-          `${year}-09-16`,
-          `${year}-11-20`,
-          `${year}-12-01`,
-          `${year}-12-25`,
-          `${year + 1}-01-01`,
-          `${year + 1}-02-05`,
-          `${year + 1}-03-21`,
-          `${year + 1}-05-01`,
-          `${year + 1}-09-16`,
-          `${year + 1}-11-20`,
-          `${year + 1}-12-01`,
-          `${year + 1}-12-25`,
-        ];
+            `${year}-01-01`,
+            `${year}-02-05`,
+            `${year}-03-21`,
+            `${year}-05-01`,
+            `${year}-09-16`,
+            `${year}-11-20`,
+            `${year}-12-01`,
+            `${year}-12-25`,
+            `${year + 1}-01-01`,
+            `${year + 1}-02-05`,
+            `${year + 1}-03-21`,
+            `${year + 1}-05-01`,
+            `${year + 1}-09-16`,
+            `${year + 1}-11-20`,
+            `${year + 1}-12-01`,
+            `${year + 1}-12-25`,
+          ];
 
     const diasADeshabilitar = new Set([...diasOcupadosFiltro, ...diasFestivos]);
 
@@ -1162,7 +1156,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         noPresencial = !diasPresenciales.includes(formattedDate); // Deshabilitar si no esta entre los dias
       }
     }
-    // console.log("TT", formattedDate, isWeekendDay, diasOcupados, diasPresenciales)
     // Deshabilitar la fecha si es un fin de semana o está en la lista de fechas deshabilitadas
     return isDisabledFromSQLServer || noPresencial; // isWeekendDay ||
   };
@@ -1601,12 +1594,12 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                 sx={
                   !currentEvent?.id && selectedValues.modalidad
                     ? {
-                      p: { xs: 1, md: 2 },
-                      background: {
-                        xs: 'linear-gradient(180deg, #2c3239 54%, white 46%)',
-                        md: 'linear-gradient(90deg, #2c3239 50%, white 50%)',
-                      },
-                    }
+                        p: { xs: 1, md: 2 },
+                        background: {
+                          xs: 'linear-gradient(180deg, #2c3239 54%, white 46%)',
+                          md: 'linear-gradient(90deg, #2c3239 50%, white 50%)',
+                        },
+                      }
                     : { p: { xs: 1, md: 2 } }
                 }
                 direction="row"
@@ -1810,8 +1803,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                         <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
                           {currentEvent?.id
                             ? `${dayjs(currentEvent?.start).format('HH:mm a')} - ${dayjs(
-                              currentEvent?.end
-                            ).format('HH:mm a')}`
+                                currentEvent?.end
+                              ).format('HH:mm a')}`
                             : 'Fecha'}
                         </Typography>
                       </Stack>
@@ -2240,11 +2233,11 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                 sx={
                   !currentEvent?.id && selectedValues.modalidad
                     ? {
-                      background: {
-                        xs: 'white',
-                        md: 'linear-gradient(90deg, #2c3239 50%, white 50%)',
-                      },
-                    }
+                        background: {
+                          xs: 'white',
+                          md: 'linear-gradient(90deg, #2c3239 50%, white 50%)',
+                        },
+                      }
                     : {}
                 }
               >
