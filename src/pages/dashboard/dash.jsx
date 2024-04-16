@@ -18,7 +18,7 @@ export default function DashPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Dash</title>
+        <title> Dashboard</title>
       </Helmet>
 
       {/* <PendingModalUser /> */}

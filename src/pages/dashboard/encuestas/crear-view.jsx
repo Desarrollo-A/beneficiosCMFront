@@ -11,7 +11,7 @@ export default function CrearEncuestaPage() {
   return (
     <>
       <Helmet>
-        <title> Encuestas: Crear Encuesta</title>
+        <title>Encuestas: Crear</title>
       </Helmet>
 
       < CrearEncuestaView />
