@@ -1331,7 +1331,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       currentEvent.idDetalle,
       selectedValues.beneficio,
       currentEvent.idEventoGoogle,
-      currentEvent.modalidad
+      currentEvent.modalidad,
+      1
     );
 
     if (!agendar.result) {
