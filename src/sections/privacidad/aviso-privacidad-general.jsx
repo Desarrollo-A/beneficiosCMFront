@@ -214,6 +214,8 @@ export default function AvisoPrivacidadGeneral() {
       setArchivo('');
     };
 
+    const accessToken = sessionStorage.getItem('accessToken');
+
     const manejarEnvioFormulario = (event) => {
       event.preventDefault();
       if (archivo) {
@@ -228,6 +230,9 @@ export default function AvisoPrivacidadGeneral() {
         fetch(`${HOST}${endpoints.avisosPrivacidad.actualizarArchivoPrivacidad}`, {
           method: 'POST',
           body: formData,
+          headers: {
+              Token: accessToken,
+            }
         })
           .then((response) => response.json())
           .then((data) => {

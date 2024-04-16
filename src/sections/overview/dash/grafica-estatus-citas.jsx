@@ -113,6 +113,8 @@ export default function GraficaEstatusCitas({
 
   const _estColor = estatusCitasData.flatMap((est) => (est.color));
 
+  console.log(estatusCitasData)
+
   const _1 = countEstCitasData.flatMap((est) => (est.asistir));
   const _2 = countEstCitasData.flatMap((est) => (est.cancelada));
   const _3 = countEstCitasData.flatMap((est) => (est.penalizada));
