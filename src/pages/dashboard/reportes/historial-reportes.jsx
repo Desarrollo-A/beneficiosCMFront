@@ -14,7 +14,7 @@ export default function HistorialReportesPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Historial Reportes</title>
+        <title>Reportes: historial</title>
       </Helmet>
 
       < HistorialReportesView />

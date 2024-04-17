@@ -73,6 +73,7 @@ function handleDownloadExcel(dataFiltered, rol) {
       sheet: "Historial Reportes",
       columns: [
         { label: "ID Colaborador", value: "idColab" },
+        { label: "Usuario", value: "usuario" },
         { label: "Especialista", value: "especialista" },
         { label: "Paciente", value: "paciente" },
         { label: "Oficina", value: "oficina" },
@@ -121,10 +122,10 @@ function handleDownloadPDF(dataFiltered, header, rol) {
   let data = [];
 
   if(rol === 3){
-    data = dataFiltered.map(item => ([item.idColab, item.paciente,
+    data = dataFiltered.map(item => ([item.idColab, item.usuario, item.paciente,
       item.oficina, item.area, item.sede, item.modalidad, item.sexo, item.motivoCita, item.pagoGenerado, item.metodoPago !== null ? item.metodoPago : 'Pendiente de pago', item.estatus, item.horario,]))
   }else{
-    data = dataFiltered.map(item => ([item.idColab, item.especialista, item.paciente,
+    data = dataFiltered.map(item => ([item.idColab, item.usuario, item.especialista, item.paciente,
     item.oficina, item.area, item.sede, item.modalidad, item.sexo, item.motivoCita, item.pagoGenerado, item.metodoPago !== null ? item.metodoPago : 'Pendiente de pago', item.estatus, item.horario,]))
   }
   
@@ -149,12 +150,12 @@ export default function HistorialReportesView() {
 
   let header = [];
 
-  const headerBase = ["ID Colaborador", "Especialista", "Paciente", "Oficina", "Departamento", "Sede",
+  const headerBase = ["ID Colaborador", "Usuario", "Especialista", "Paciente", "Oficina", "Departamento", "Sede",
     "Modalidad", "Sexo", "Motivo consulta", "Pago Generado", "Método de pago", "Estatus", "Horario cita"];
 
   const [dataValue, setReportData] = useState(0);
 
-  const [typeusersData, setTypeusersData] = useState(0); 
+  const [typeusersData, setTypeusersData] = useState(2); 
 
   const [dtReport, setDtReport] = useState({
     reporte: dataValue,
@@ -213,6 +214,7 @@ export default function HistorialReportesView() {
 
   const TABLE_BASE = [
     { id: '', label: 'ID Colaborador' },
+    { id: '', label: 'Usuario' },
     { id: '', label: 'Especialista' },
     { id: '', label: 'Paciente' },
     { id: '', label: 'Oficina' },

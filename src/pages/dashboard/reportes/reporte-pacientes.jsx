@@ -8,7 +8,7 @@ export default function ReportePacientesPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Reporte de Pacientes</title>
+        <title>Reportes: Pacientes</title>
       </Helmet>
 
       <ReportePacientesView />

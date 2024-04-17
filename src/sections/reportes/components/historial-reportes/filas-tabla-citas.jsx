@@ -32,7 +32,8 @@ export default function FilasTabla({ row, selected, rol, rel }) {
     metodoPago,
     estatusCita,
     pagoGenerado,
-    color
+    color,
+    usuario
   } = row;
   const quickEdit = useBoolean();
 
@@ -42,6 +43,8 @@ export default function FilasTabla({ row, selected, rol, rel }) {
       <TableRow hover selected={selected}>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{idColab}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{usuario}</TableCell>
 
         {rol !== 3 ? (
 

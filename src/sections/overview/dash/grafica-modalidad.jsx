@@ -61,6 +61,8 @@ export default function GraficaModalidad({
 
   const [_es, set_es] = useState(rol === 3 ? id : '0');
 
+  const [_usr, set_usr] = useState(2);
+
   const [fechaI, setFechaI] = useState(diaUnoMes);
 
   const [fechaF, setFechaF] = useState(ultimoDiaMes);
@@ -73,7 +75,8 @@ export default function GraficaModalidad({
     area: areas,
     espe: _es,
     fhI: fechaI,
-    fhF: fechaF
+    fhF: fechaF,
+    usuario: _usr
   });
 
   useEffect(() => {
@@ -81,9 +84,10 @@ export default function GraficaModalidad({
       area: areas,
       espe: _es,
       fhI: fechaI,
-      fhF: fechaF
+      fhF: fechaF,
+      usuario: _usr
     });
-  }, [areas, _es, fechaI, fechaF]);
+  }, [areas, _es, fechaI, fechaF, _usr]);
 
   const { modalidadData } = usePostGeneral(val, endpoints.dashboard.getCountModalidades, "modalidadData");
 
@@ -159,6 +163,13 @@ export default function GraficaModalidad({
     []
   );
 
+  const handleChangeUsr = useCallback(
+    (event) => {
+      set_usr(event.target.value);
+    },
+    []
+  );
+
   const {
     colors = [
       ['#6620D1'],
@@ -204,6 +215,32 @@ export default function GraficaModalidad({
       {modalidadData.length > 0 ? (
         <>
           <Grid container spacing={2} sx={{ p: 3 }}>
+
+          <Grid md={12} xs={12}>
+              <FormControl sx={{
+                width: "100%",
+                pr: { xs: 1, md: 1 },
+              }}>
+                <InputLabel id="demo-simple-select-label">Tipo de usuario</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={_usr}
+                  label="Tipo de usuario"
+                  onChange={(e) => handleChangeUsr(e)}
+                >
+                  <MenuItem value={2}>
+                    Todos
+                  </MenuItem>
+                  <MenuItem value={0}>
+                    Colaborador
+                  </MenuItem>
+                  <MenuItem value={1}>
+                    Externo
+                  </MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
 
             {rol !== 3 ? (
               <>

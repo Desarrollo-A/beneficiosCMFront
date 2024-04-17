@@ -24,6 +24,7 @@ import GraficaPacientes from '../grafica-pacientes';
 import GraficaEncuestas from '../grafica-encuestas';
 import GraficaModalidad from '../grafica-modalidad';
 import GraficaMetasArea from '../grafica-metas-area';
+import AppCurrentDownload from '../app-current-download';
 import GraficaEstatusCitas from '../grafica-estatus-citas'
 
 // ----------------------------------------------------------------------
@@ -129,11 +130,30 @@ export default function DashView() {
 
             <Grid xs={12} md={6} lg={4}>
 
-              <GraficaPacientes
+              <AppCurrentDownload
+                title="Total pacientes"
+                chart={{
+                  series: [
+                    { label: 'Mac', value: 15 },
+                    { label: 'Window', value: 5 },
+                  ],
+                }}
+                rol={rol}
+                id={id}
+                beneficios={especialistasData}
+                especialistas={especialistas}
+                diaUnoMes={diaUnoMes}
+                ultimoDiaMes={ultimoDiaMes}
+                datePikerI={datePikerI}
+                datePikerF={datePikerF}
+                puesto={puesto}
+              />
+
+              {/* <GraficaPacientes
                 title="Total pacientes"
                 rol={rol}
                 id={id}
-              />
+              /> */}
 
               <Stack
                 spacing={1}
@@ -182,6 +202,31 @@ export default function DashView() {
                 puesto={puesto}
                 id={id}
               />
+
+              <Stack
+                spacing={1}
+                alignItems={{ xs: 'flex-start', md: 'flex-start' }}
+                direction={{
+                  xs: 'column',
+                  md: 'row',
+                }}
+                sx={{
+                  p: 0,
+                  pr: { xs: 1, md: 1 },
+                }}
+              >ㅤ</Stack>
+
+              {rol === 4 ? (
+                  <GraficaMetasArea id={id} />
+              ) : (
+                null
+              )}
+
+              {rol === 3 ? (
+                  <GraficaMetas id={id} />
+              ) : (
+                null
+              )}
             </Grid>
 
           </>
@@ -189,24 +234,8 @@ export default function DashView() {
           null
         )}
 
-        {rol === 4 ? (
-          <Grid xs={12} sm={6} md={6}>
-            <GraficaMetasArea id={id} />
-          </Grid>
-        ) : (
-          null
-        )}
-
-        {rol === 3 ? (
-          <Grid xs={12} sm={6} md={6}>
-            <GraficaMetas id={id} />
-          </Grid>
-        ) : (
-          null
-        )}
-
         {rol === 4 || rol === 3 ? (
-          <Grid xs={12} sm={6} md={6}>
+          <Grid xs={12} sm={12} md={12}>
             <GraficaEncuestas
               user={user}
               _es={_es}

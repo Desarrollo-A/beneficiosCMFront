@@ -442,6 +442,9 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     appointmentMutate();
 
     mutate(endpoints.reportes.citas);
+    mutate(endpoints.dashboard.getCtDisponibles);
+    mutate(endpoints.reportes.pacientes);
+    mutate(endpoints.dashboard.getCountModalidades);
     mutate(endpoints.citas.getCitas);
     mutate(endpoints.dashboard.getCountModalidades);
     mutate(endpoints.dashboard.getCountEstatusCitas);
@@ -572,6 +575,10 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     enqueueSnackbar('¡Se ha cancelado la cita!', {
       variant: 'success',
     });
+
+    mutate(endpoints.reportes.citas);
+    mutate(endpoints.dashboard.getCountEstatusCitas);
+    mutate(endpoints.dashboard.getCtCanceladas);
 
     let organizador = 'programador.analista36@ciudadmaderas.com';
     let correosNotificar = [

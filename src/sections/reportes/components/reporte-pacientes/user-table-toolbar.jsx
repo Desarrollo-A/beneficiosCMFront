@@ -40,6 +40,7 @@ export default function ToolbarResumenTerapias({
   );
 
   const typeUsers = [
+    { value: 2, label: 'Todos' },
     { value: 0, label: 'Colaborador' },
     { value: 1, label: 'Externo' },
   ];
