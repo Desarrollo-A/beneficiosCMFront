@@ -264,10 +264,16 @@ export async function createAppointment(eventData, modalitie, datosUser, default
     oficina = 'Confirmado por especialista';
   }
 
-  if(!(eventData.hora_inicio >= defaultHour.horaInicio && eventData.hora_final <= defaultHour.horaFinal && eventData.hora_final > eventData.hora_inicio)){
+  if (
+    !(
+      eventData.hora_inicio >= defaultHour.horaInicio &&
+      eventData.hora_final <= defaultHour.horaFinal &&
+      eventData.hora_final > eventData.hora_inicio
+    )
+  ) {
     bussinessHours = false;
   }
-  
+
   if (start > now && bussinessHours) {
     const data = {
       idUsuario: datosUser.idUsuario,
@@ -351,6 +357,29 @@ export async function createAppointment(eventData, modalitie, datosUser, default
         };
 
         fetcherPost(insert_google_id, updateData);
+      }
+    }
+    if (
+      create.result &&
+      eventData.paciente.tipoPuesto !== 'Operativa' &&
+      (fundacion === 0 || fundacion === '0')
+    ) {
+      const pendingMail = {
+        especialidad,
+        especialista: datosUser.nombre,
+        fecha,
+        horaInicio,
+        horaFinal,
+        view: 'email-pending-appointment',
+        oficina,
+        sede,
+        tituloEmail: 'Reservación pendiente',
+        temaEmail: `Se te ha agendado una cita para el beneficio de ${especialidad} con un estatus pendiente de pago.`,
+        correo: ['programador.analista36@ciudadmaderas.com'], // [eventData.paciente.correo],
+        idUsuario: datosUser.idUsuario,
+      };
+      if (eventData.paciente.correo) {
+        fetcherPost(sendMail, pendingMail);
       }
     }
   } else {
@@ -680,12 +709,15 @@ export async function reschedule(eventData, idDetalle, cancelType, datosUser, de
     idUsuario: datosUser?.idUsuario,
   };
 
-  if(!(eventData.hora_inicio >= defaultHour.horaInicio && eventData.hora_final <= defaultHour.horaFinal && eventData.hora_final > eventData.hora_inicio)){
-
+  if (
+    !(
+      eventData.hora_inicio >= defaultHour.horaInicio &&
+      eventData.hora_final <= defaultHour.horaFinal &&
+      eventData.hora_final > eventData.hora_inicio
+    )
+  ) {
     enqueueSnackbar('Horas seleccionadas fuera de horario', { variant: 'error' });
-    
-  }else{
-
+  } else {
     response = await fetcherPost(check_invoice, idDetalle);
 
     if (response.result) {
