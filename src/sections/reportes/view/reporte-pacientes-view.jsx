@@ -47,6 +47,7 @@ import UserTableFiltersResult from '../components/reporte-pacientes/user-table-f
 
 const TABLE_HEAD = [
   { id: 'id', label: 'ID' },
+  { id: 'usuario', label: 'Usuario' },
   { id: 'nombre', label: 'Nombre', width: 300 },
   { id: 'depto', label: 'Departamento', width: 200 },
   { id: 'sede', label: 'Sede', width: 200 },
@@ -82,6 +83,7 @@ function handleDownloadExcel(dataFiltered, area) {
       sheet: "Reporte pacientes",
       columns: [
         { label: "ID", value: "idUsuario" },
+        { label: "Usuario", value: "usuario" },
         { label: "Nombre", value: "nombre" },
         { label: "Departamento", value: "depto" },
         { label: "Sede", value: "sede" },
@@ -108,7 +110,7 @@ function handleDownloadPDF(dataFiltered, headerBase) {
 
   let data = [];
 
-  data = dataFiltered.map(item => ([item.idUsuario, item.nombre, item.depto, item.sede, item.puesto, item.estNut || item.estPsi || item.estQB || item.estGE ]))
+  data = dataFiltered.map(item => ([item.idUsuario, item.usuario, item.nombre, item.depto, item.sede, item.puesto, item.estNut || item.estPsi || item.estQB || item.estGE ]))
 
   autoTable(doc, {
     head: [headerBase],
@@ -121,7 +123,7 @@ function handleDownloadPDF(dataFiltered, headerBase) {
 
 export default function ReportePacientesView() {
 
-  const headerBase = ["ID", "Nombre", "Departamento", "Sede", "Puesto", "Estatus"];
+  const headerBase = ["ID", "Usuario", "Nombre", "Departamento", "Sede", "Puesto", "Estatus"];
 
   const table = useTable();
 
@@ -147,7 +149,7 @@ export default function ReportePacientesView() {
 
   const [area, setArea] = useState(puestos);
 
-  const [typeusersData, setTypeusersData] = useState(0);
+  const [typeusersData, setTypeusersData] = useState(2);
 
   const [dt, setDt] = useState({
     idRol: user?.idRol,
