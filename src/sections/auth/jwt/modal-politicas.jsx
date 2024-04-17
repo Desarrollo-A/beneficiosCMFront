@@ -28,26 +28,26 @@ export default function ModalPoliticas({ open, onClose }) {
 <div className="scroll-shadows">
       <DialogContent>
 
-        <DialogTitle sx={{ textAlign: 'center', color: '#003764' }}>TÉRMINOS Y CONDICIONES</DialogTitle>
+        <DialogTitle sx={{ textAlign: 'center', color: '#B4A46C' }}>TÉRMINOS Y CONDICIONES</DialogTitle>
 
         <Stack spacing={1} sx={{ textAlign: 'justify' }}>
 
-          <DialogContent style={{ textAlign: 'center', fontWeight: 'bold', color: '#003764' }} variant="h7">OBJETIVO GENERAL </DialogContent>
+          <DialogContent style={{ textAlign: 'center', fontWeight: 'bold', color: '#B4A46C' }} variant="h7">OBJETIVO GENERAL </DialogContent>
 
           <DialogContent>
-            El sistema de <b style={{ color: '#003764' }}>BENEFICIOS MADERAS</b> pertenece a Ciudad Maderas, se define como
+            El sistema de <b style={{ color: '#B4A46C' }}>BENEFICIOS MADERAS</b> pertenece a Ciudad Maderas, se define como
             aquél medio que ayuda a facilitar la gestión y agenda de los colaboradores con los diversos beneficios que
             ofrece la empresa como; Quantum Balance, Nutrición, Psicología, Guía Espiritual en que esta manera los colaboradores pueden visualizar la disponibilidad de los
             servicios que ofrece Ciudad Maderas y agendar citas con el área de interés.
           </DialogContent>
 
-          <DialogContent style={{ fontWeight: 'bold', color: '#003764' }}>
+          <DialogContent style={{ fontWeight: 'bold', color: '#B4A46C' }}>
             Con este sistema, facilita a los colaboradores el seguimiento de su agenda y poder organizar sus actividades de
             la empresa, además de notificar cada evento registrado.
           </DialogContent>
 
           <DialogContent>
-            <b style={{ color: '#003764' }}>La presente página web, es propiedad de Ciudad Maderas y este operando por el
+            <b style={{ color: '#B4A46C' }}>La presente página web, es propiedad de Ciudad Maderas y este operando por el
               sistema BENEFICIOS MADERAS,</b> por lo que CIUDAD MADERAS hace del conocimiento que mediante el uso del
             sistema BENEFICIOS MADERAS y de la plataforma de “Calendario de Google”, gestionará todo lo relacionado a la
             calendarización de agenda (eventos, reuniones presenciales y/o virtuales, etc.) de sus colaboradores, bajo las
@@ -57,33 +57,33 @@ export default function ModalPoliticas({ open, onClose }) {
 
           <Box mb={2} />
 
-          <DialogContent style={{ fontWeight: 'bold', color: '#003764' }}>
+          <DialogContent style={{ fontWeight: 'bold', color: '#B4A46C' }}>
             Del Funcionamiento en Conjunto
           </DialogContent>
 
           <DialogContent>
             Debido a la utilización de la plataforma de “Calendario de Google” para los fines anteriormente mencionados, <b
-              style={{ color: '#003764' }}>CIUDAD MADERAS</b> trabajará en conjunto con los parámetros y lineamientos que
-            <b style={{ color: '#003764' }}> GOOGLE</b> utiliza por sí y para cada uno de sus servicios de aplicaciones que
+              style={{ color: '#B4A46C' }}>CIUDAD MADERAS</b> trabajará en conjunto con los parámetros y lineamientos que
+            <b style={{ color: '#B4A46C' }}> GOOGLE</b> utiliza por sí y para cada uno de sus servicios de aplicaciones que
             éste ofrece, siendo estos independientes a todos aquellos parámetros y lineamientos que <b style={{
-              color: '#003764'
+              color: '#B4A46C'
             }}>CIUDAD MADERAS</b> señale para el uso de su calendarización interna. En ese sentido, se
             presume que a la aceptación de los presentes Términos y Condiciones, se da por consentido no sólo a los
-            parámetros de uso de <b style={{ color: '#003764' }}>CIUDAD MADERAS</b>, sino también a los que pertenezcan a <b
-              style={{ color: '#003764' }}>GOOGLE.</b>
+            parámetros de uso de <b style={{ color: '#B4A46C' }}>CIUDAD MADERAS</b>, sino también a los que pertenezcan a <b
+              style={{ color: '#B4A46C' }}>GOOGLE.</b>
           </DialogContent>
 
           <Box mb={2} />
 
-          <DialogContent style={{ fontWeight: 'bold', color: '#003764' }}>
+          <DialogContent style={{ fontWeight: 'bold', color: '#B4A46C' }}>
             De la Información a Recabar y de la que GOOGLE puede hacer uso
           </DialogContent>
 
           <DialogContent>
             Para la gestión de eventos que serán creados en la plataforma “Calendario de Google”, <b style={{
-              color: '#003764'
+              color: '#B4A46C'
             }}>CIUDAD MADERAS</b> podrá compartir en conjunto con <b style={{
-              color: '#003764'
+              color: '#B4A46C'
             }}>GOOGLE</b>, información respectiva a sus colaboradores, con el propósito de dar correcto funcionamiento a
             la calendarización en la plataforma. Dicha información puede abarcar de manera enunciativa más no limitativa,
             los siguientes :
@@ -122,7 +122,7 @@ export default function ModalPoliticas({ open, onClose }) {
 
           <Box mb={2} />
 
-          <DialogContent style={{ fontWeight: 'bold', color: '#003764' }}>
+          <DialogContent style={{ fontWeight: 'bold', color: '#B4A46C' }}>
             De las Políticas para el uso de “Calendario de Google”
           </DialogContent>
 
@@ -165,36 +165,36 @@ export default function ModalPoliticas({ open, onClose }) {
 
           <Box mb={2} />
 
-          <DialogContent style={{ fontWeight: 'bold', color: '#003764' }}>
+          <DialogContent style={{ fontWeight: 'bold', color: '#B4A46C' }}>
             De la Sincronización de Datos
           </DialogContent>
 
           <DialogContent>
             <b style={{
-              color: '#003764'
+              color: '#B4A46C'
             }}>CIUDAD MADERAS</b> hace del conocimiento que, en atención a que dentro de las funciones que <b style={{
-              color: '#003764'
+              color: '#B4A46C'
             }}>GOOGLE</b> ofrece, se encuentra la de sincronización de datos, por lo que el nombre de usuario y correo electrónico del colaborador pueden ser usados por <b style={{
-              color: '#003764'
+              color: '#B4A46C'
             }}>GOOGLE</b> para almacenar información de preferencias de uso basadas en el historial de actividad del colaborador dentro de la plataforma, facilitar el acceso a la cuenta y mostrar los datos del Calendario que hayan sido subidos incluso desde otros dispositivos.
           </DialogContent>
 
           <Box mb={2} />
 
-          <DialogContent style={{ fontWeight: 'bold', color: '#003764' }}>
+          <DialogContent style={{ fontWeight: 'bold', color: '#B4A46C' }}>
             De los Derechos de Propiedad Intelectual y Cesión de Derechos
           </DialogContent>
 
           <DialogContent>
             A la aceptación de los presentes Términos y Condiciones, se entiende por confirmado que todos los colaboradores
-            pertenecientes a <b style={{ color: '#003764' }}>CIUDAD MADERAS</b>, cuentan con los permisos y/o
+            pertenecientes a <b style={{ color: '#B4A46C' }}>CIUDAD MADERAS</b>, cuentan con los permisos y/o
             autorizaciones necesarias para el uso de información, datos o cualquier otro factor que sea dado de alta en la
-            plataforma. En ese sentido y como se ha estipulado anteriormente, si bien <b style={{ color: '#003764' }}>CIUDAD
+            plataforma. En ese sentido y como se ha estipulado anteriormente, si bien <b style={{ color: '#B4A46C' }}>CIUDAD
               MADERAS</b> trabajará en conjunto con
-            los parámetros y lineamientos que <b style={{ color: '#003764' }}>GOOGLE</b> utiliza, esto no supone la cesión de
+            los parámetros y lineamientos que <b style={{ color: '#B4A46C' }}>GOOGLE</b> utiliza, esto no supone la cesión de
             derechos por parte de algún
-            colaborador o de <b style={{ color: '#003764' }}>CIUDAD MADERAS</b> hacía <b style={{
-              color: '#003764'
+            colaborador o de <b style={{ color: '#B4A46C' }}>CIUDAD MADERAS</b> hacía <b style={{
+              color: '#B4A46C'
             }}>GOOGLE</b>, pues la información compartida y
             dada de alta en la plataforma de
             “Calendario de Google”, será destinada ÚNICA Y EXCLUSIVAMENTE a los fines anteriormente descritos.
@@ -202,44 +202,44 @@ export default function ModalPoliticas({ open, onClose }) {
 
           <Box mb={2} />
 
-          <DialogContent style={{ fontWeight: 'bold', color: '#003764' }}>
+          <DialogContent style={{ fontWeight: 'bold', color: '#B4A46C' }}>
             De la Duración del Permiso de Uso de la Plataforma
           </DialogContent>
 
           <DialogContent >
-            Los términos de vigencia en los que <b style={{ color: '#003764' }}>CIUDAD MADERAS</b> podrá hacer uso de la
+            Los términos de vigencia en los que <b style={{ color: '#B4A46C' }}>CIUDAD MADERAS</b> podrá hacer uso de la
             plataforma de “Calendario de Google, será
             hasta en tanto ésta cumpla con “Los Términos Adicionales Específicos de los Servicios” de <b style={{
-              color: '#003764'
+              color: '#B4A46C'
             }}>GOOGLE</b> (los cuales pueden
-            ser consultados por medio de la siguiente liga <a href="https://policies.google.com/terms?hl=es"
+            ser consultados por medio de la siguiente liga <a style={{ color: '#B4A46C' }} href="https://policies.google.com/terms?hl=es"
               target="_blank" rel="noreferrer">(https://policies.google.com/terms?hl=es)</a> y con las “Políticas para el
             uso de “Calendario de Google”, mencionadas con anterioridad.
           </DialogContent>
 
           <Box mb={2} />
 
-          <DialogContent style={{ fontWeight: 'bold', color: '#003764' }}>
+          <DialogContent style={{ fontWeight: 'bold', color: '#B4A46C' }}>
             Del Acceso a la Plataforma
           </DialogContent>
 
           <DialogContent>
             Al ingresar al presente sitio web, se otorga una licencia limitada, no exclusiva, intransferible, susceptible de
             cesión y revocable; para consultar de forma temporal el contenido ofrecido en el presente sitio web, siendo
-            únicamente para uso personal del usuario perteneciente al grupo de <b style={{ color: '#003764' }}>CIUDAD
+            únicamente para uso personal del usuario perteneciente al grupo de <b style={{ color: '#B4A46C' }}>CIUDAD
               MADERAS</b> y se podrá usar únicamente para
             fines laborales de la empresa.
           </DialogContent>
 
           <DialogContent>
-            Al ingresar al sistema de <b style={{ color: '#003764' }}>BENEFICIOS MADERAS</b> el usuario se obliga a:
+            Al ingresar al sistema de <b style={{ color: '#B4A46C' }}>BENEFICIOS MADERAS</b> el usuario se obliga a:
           </DialogContent>
 
           <DialogContent>
             <li>1. Cumplir con todas las leyes, reglamentos y normas aplicables a nivel local, estatal y nacional, así como
               cualquiera otra legislación aplicable.</li>
             <ul>2. No infringir los derechos de propiedad intelectual y de privacidad, derechos de patente, derechos sobre el
-              sistema <b style={{ color: '#003764' }}>BENEFICIOS MADERAS</b> las marcas registradas y toda la información
+              sistema <b style={{ color: '#B4A46C' }}>BENEFICIOS MADERAS</b> las marcas registradas y toda la información
               dentro del presente sistema.</ul>
             <ul>3. NO descargar, transmitir, enviar o almacenar material que;
               <ul>
@@ -266,7 +266,7 @@ export default function ModalPoliticas({ open, onClose }) {
 
           <Box mb={2} />
 
-          <DialogContent sx={{ fontWeight: 'bold', color: '#003764' }}>
+          <DialogContent sx={{ fontWeight: 'bold', color: '#B4A46C' }}>
             De la Utilización del Sistema:
           </DialogContent>
 
@@ -290,7 +290,7 @@ export default function ModalPoliticas({ open, onClose }) {
 
           <Box mb={2} />
 
-          <DialogContent style={{ fontWeight: 'bold', color: '#003764' }}>
+          <DialogContent style={{ fontWeight: 'bold', color: '#B4A46C' }}>
             Del Nombre de Usuario y Contraseña
           </DialogContent>
 
@@ -301,20 +301,20 @@ export default function ModalPoliticas({ open, onClose }) {
 
           <Box mb={2} />
 
-          <DialogContent style={{ fontWeight: 'bold', color: '#003764' }}>
+          <DialogContent style={{ fontWeight: 'bold', color: '#B4A46C' }}>
             De la Exclusividad:
           </DialogContent>
 
           <DialogContent>
             La información que se encuentra en el siguiente sistema es contenido exclusiva propiedad de <b style={{
-              color: '#003764'
+              color: '#B4A46C'
             }}>CIUDAD MADERAS</b>, por lo
             cual queda estrictamente prohibido revelar, duplicar, o copiar la información y el contenido del sistema.
           </DialogContent>
 
           <Box mb={2} />
 
-          <DialogContent style={{ fontWeight: 'bold', color: '#003764' }}>
+          <DialogContent style={{ fontWeight: 'bold', color: '#B4A46C' }}>
             De los Vínculos Directos con Terceros
           </DialogContent>
 
@@ -330,19 +330,19 @@ export default function ModalPoliticas({ open, onClose }) {
 
           <Box mb={2} />
 
-          <DialogContent style={{ textAlign: 'center', fontWeight: 'bold', color: '#003764' }}>
+          <DialogContent style={{ textAlign: 'center', fontWeight: 'bold', color: '#B4A46C' }}>
             DE LA CANCELACIÓN DE UNA CITA:
           </DialogContent>
 
           <DialogContent>
             El tiempo para hacer una cancelación sin penalización (la cual es por un costo de <b style={{
-              color: '#003764'
+              color: '#B4A46C'
             }}>$500.00</b> pesos más el costo de
-            reservación de la cita <b style={{ color: '#003764' }}>$50.00 pesos)</b> son tres horas previas a la fecha y horario
+            reservación de la cita <b style={{ color: '#B4A46C' }}>$50.00 pesos)</b> son tres horas previas a la fecha y horario
             a la que se debe de acudir a la
             cita, los administradores del sistema tendrán la posibilidad de justificar una penalización según lo requieran para
             que el colaborador no se vea perjudicado con ese monto, pero si perdiendo los <b style={{
-              color: '#003764'
+              color: '#B4A46C'
             }}>$50.00</b> pesos que pagaron inicialmente
             por hacer la reservación.
           </DialogContent>
@@ -357,7 +357,7 @@ export default function ModalPoliticas({ open, onClose }) {
 
           <Box mb={2} />
 
-          <DialogContent style={{ textAlign: 'center', fontWeight: 'bold', color: '#003764' }}>
+          <DialogContent style={{ textAlign: 'center', fontWeight: 'bold', color: '#B4A46C' }}>
             REQUISITOS PARA SER ACREEDOR A UN BENEFICIO
           </DialogContent>
 
@@ -377,7 +377,7 @@ export default function ModalPoliticas({ open, onClose }) {
 
           <Box mb={2} />
 
-          <DialogContent style={{ textAlign: 'center', fontWeight: 'bold', color: '#003764' }}>
+          <DialogContent style={{ textAlign: 'center', fontWeight: 'bold', color: '#B4A46C' }}>
             RESTRICCIONES
           </DialogContent>
 

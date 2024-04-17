@@ -20,7 +20,6 @@ import AppWelcome from '../app-welcome';
 import AppFeatured from '../app-featured';
 import WidgetConteo from '../widget-conteo';
 import GraficaMetas from '../grafica-metas';
-import GraficaPacientes from '../grafica-pacientes';
 import GraficaEncuestas from '../grafica-encuestas';
 import GraficaModalidad from '../grafica-modalidad';
 import GraficaMetasArea from '../grafica-metas-area';
