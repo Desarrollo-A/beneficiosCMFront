@@ -26,7 +26,7 @@ import FormHelperText from '@mui/material/FormHelperText';
 import InputAdornment from '@mui/material/InputAdornment';
 
 import { endpoints } from 'src/utils/axios';
-import { generarFechas } from 'src/utils/general';
+import { generarFechas, generarDiasFestivos } from 'src/utils/general';
 
 import { getEncodedHash } from 'src/api/api';
 import { useAuthContext } from 'src/auth/hooks';
@@ -1053,28 +1053,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     const year = initialValue.year();
 
-    // Dias festivos
-    const diasFestivos =
-      beneficio === 158
-        ? []
-        : [
-            `${year}-01-01`,
-            `${year}-02-05`,
-            `${year}-03-21`,
-            `${year}-05-01`,
-            `${year}-09-16`,
-            `${year}-11-20`,
-            `${year}-12-01`,
-            `${year}-12-25`,
-            `${year + 1}-01-01`,
-            `${year + 1}-02-05`,
-            `${year + 1}-03-21`,
-            `${year + 1}-05-01`,
-            `${year + 1}-09-16`,
-            `${year + 1}-11-20`,
-            `${year + 1}-12-01`,
-            `${year + 1}-12-25`,
-          ];
+    const diasFestivos = beneficio === 158 ? [] : generarDiasFestivos(year);
 
     const diasADeshabilitar = new Set([...diasOcupadosFiltro, ...diasFestivos]);
 
