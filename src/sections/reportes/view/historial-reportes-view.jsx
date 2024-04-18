@@ -233,8 +233,8 @@ export default function HistorialReportesView() {
 
   if (rol === 3) {
 
-    TABLE_BASE.splice(1, 1);
-    headerBase.splice(1, 1);
+    TABLE_BASE.splice(2, 1);
+    headerBase.splice(2, 1);
 
     TABLE_HEAD = TABLE_BASE;
     header = headerBase;
