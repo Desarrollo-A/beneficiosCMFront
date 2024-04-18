@@ -7,6 +7,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import { endpoints } from 'src/utils/axios';
 
@@ -18,6 +19,23 @@ import FormProvider, { RHFTextField } from 'src/components/hook-form';
 // ----------------------------------------------------------------------
 
 export default function Verificacion({ email, formReg }) {
+
+  const lightTheme = createTheme({
+    palette: {
+      mode: 'light',
+    },
+    components: {
+      MuiPickersDay: {
+        // Sobrescribe los estilos del día del calendario
+        styleOverrides: {
+          root: {
+            color: 'black', // Establece el color del día a negro
+          },
+        },
+      },
+    },
+  });
+
   const { enqueueSnackbar } = useSnackbar();
 
   const [btnLoad, setBtnLoad] = useState(false);
@@ -103,6 +121,7 @@ export default function Verificacion({ email, formReg }) {
   };
 
   return (
+
     <FormProvider methods={methods}>
       <DialogContent>
         <Box
@@ -114,18 +133,20 @@ export default function Verificacion({ email, formReg }) {
             sm: 'repeat(1, 1fr)',
           }}
         >
-          <DialogTitle style={{ paddingLeft: '0px' }}>Registro de usuario</DialogTitle>
+          <DialogTitle style={{ paddingLeft: '0px', color: 'black' }}>Registro de usuario</DialogTitle>
 
           {countdown !== 0 ? (
             <>
-              <p>
+              <p style={{color: 'black'}}>
                 El código vence en <b>{formatTime(countdown)}</b>
               </p>
 
+              <ThemeProvider theme={lightTheme}>
               <RHFTextField name="codigo" label="Código" autoComplete="off" />
+              </ThemeProvider>
             </>
           ) : (
-            <p>El código de verificación expiró</p>
+            <p style={{color: 'black'}}>El código de verificación expiró</p>
           )}
 
           <DialogActions>
