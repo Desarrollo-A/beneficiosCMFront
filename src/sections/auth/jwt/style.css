@@ -19,7 +19,7 @@
   background:
     /* Shadow Cover TOP */
     linear-gradient(
-      white 100%,
+      rgba(255, 255, 255, 0) 100%,
       rgb(255, 255, 255)
     ) center top,
     

@@ -54,6 +54,9 @@ export default function AvisoPrivacidadGeneral({datos, enviarDatosAlPadre, idPue
         setArchivo('');
         setNombreArchivo({nombre: '', activo: false});
     };
+
+
+    const accessToken = sessionStorage.getItem('accessToken');
     
     return (
       <>
@@ -111,6 +114,9 @@ export default function AvisoPrivacidadGeneral({datos, enviarDatosAlPadre, idPue
                   fetch(`${HOST}${endpoints.avisosPrivacidad.actualizarArchivoPrivacidad}`, {
                     method: 'POST',
                     body: formData,
+                    headers: {
+                      Token: accessToken,
+                    }
                   })
                     .then((response) => response.json())
                     .then((data) => {

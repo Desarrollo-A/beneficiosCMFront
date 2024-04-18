@@ -8,7 +8,7 @@ export default function TourCreatePage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Listado de usuarios</title>
+        <title> Usuarios externos: Listado de usuarios</title>
       </Helmet>
 
       <TestCreateView />

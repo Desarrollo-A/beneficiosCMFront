@@ -88,6 +88,7 @@ export default function BarraTareasTabla({
   ];
 
   const typeUsers = [
+    { value: 2, label: 'Todos' },
     { value: 0, label: 'Colaborador' },
     { value: 1, label: 'Externo' },
   ];
@@ -264,7 +265,7 @@ export default function BarraTareasTabla({
           <Grid xs={12} md={6}>
             <WidgetIngresos
               title="Total de ingresos"
-              total={currenTypeUsers === 0 ? _in : [0]}
+              total={currenTypeUsers === 0 || currenTypeUsers === 2 ? _in : [0]}
               length={_in.length}
               icon={<CheckInIllustration />}
             />

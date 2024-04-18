@@ -14,6 +14,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import CircularProgress from '@mui/material/CircularProgress';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
@@ -32,6 +33,22 @@ import FormProvider, {
 
 export default function EvaluateDialog({ open, pendiente, mutate, cerrar }) {
   const { especialista, beneficio, idEspecialista, idEncuesta, id, estatus, idDetalle, idEventoGoogle } = pendiente;
+
+  const lightTheme = createTheme({
+    palette: {
+      mode: 'light',
+    },
+    components: {
+      MuiPickersDay: {
+        // Sobrescribe los estilos del día del calendario
+        styleOverrides: {
+          root: {
+            color: 'black', // Establece el color del día a negro
+          },
+        },
+      },
+    },
+  });
 
   const { user: datosUser } = useAuthContext();
 
@@ -189,7 +206,9 @@ export default function EvaluateDialog({ open, pendiente, mutate, cerrar }) {
                         )}
 
                         {item.respuestas === "5" || item.respuestas === 5 && (
+                          <ThemeProvider theme={lightTheme}>
                           <RHFTextField name={`resp_${index}`} multiline rows={3} />
+                          </ThemeProvider>
                         )}
 
                       </Stack>

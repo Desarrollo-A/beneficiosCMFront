@@ -2,34 +2,48 @@ import PropTypes from 'prop-types';
 import { es } from 'date-fns/locale';
 import { useState, useEffect, useCallback } from 'react';
 
-import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import Stack from '@mui/material/Stack';
 import Select from '@mui/material/Select';
-import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
 import Grid from '@mui/material/Unstable_Grid2';
-import { useTheme } from '@mui/material/styles';
 import CardHeader from '@mui/material/CardHeader';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
+import { styled, useTheme } from '@mui/material/styles';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import CircularProgress from '@mui/material/CircularProgress';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
-import { useResponsive } from 'src/hooks/use-responsive';
-
 import { endpoints } from 'src/utils/axios';
+import { fNumber } from 'src/utils/format-number';
 
-import { useGetGeneral, usePostGeneral } from 'src/api/general';
+import { usePostGeneral } from 'src/api/general';
 import { useGetEspecialistasPorArea } from 'src/api/especialistas';
 
 import Chart, { useChart } from 'src/components/chart';
 
 // ----------------------------------------------------------------------
 
-export default function GraficaEstatusCitas({
+const CHART_HEIGHT = 400;
+
+const LEGEND_HEIGHT = 72;
+
+const StyledChart = styled(Chart)(({ theme }) => ({
+  height: CHART_HEIGHT,
+  '& .apexcharts-canvas, .apexcharts-inner, svg, foreignObject': {
+    height: `100% !important`,
+  },
+  '& .apexcharts-legend': {
+    height: LEGEND_HEIGHT,
+    borderTop: `dashed 1px ${theme.palette.divider}`,
+    top: `calc(${CHART_HEIGHT - LEGEND_HEIGHT}px) !important`,
+  },
+}));
+
+// ----------------------------------------------------------------------
+
+export default function AppCurrentDownload({
   title,
   subheader,
   beneficios,
@@ -40,7 +54,8 @@ export default function GraficaEstatusCitas({
   rol,
   puesto,
   id,
-  ...other }) {
+  ...other
+}) {
   const theme = useTheme();
 
   const [fechaI, setFechaI] = useState(diaUnoMes);
@@ -55,31 +70,31 @@ export default function GraficaEstatusCitas({
 
   const [_es, set_es] = useState(rol === 3 ? id : '0');
 
-  const [_usr, set_usr] = useState(2);
-
   const [val, setVal] = useState({
     area: areas,
     espe: _es,
     fhI: fechaI,
-    fhF: fechaF,
-    usuario: _usr
+    fhF: fechaF
   });
-
-  const { especialistas } = useGetEspecialistasPorArea({ areas });
-
-  const { estatusCitasData } = useGetGeneral(endpoints.dashboard.getEstatusCitas, "estatusCitasData");
-
-  const { countEstCitasData } = usePostGeneral(val, endpoints.dashboard.getCountEstatusCitas, "countEstCitasData");
 
   useEffect(() => {
     setVal({
       area: areas,
       espe: _es,
       fhI: fechaI,
-      fhF: fechaF,
-      usuario: _usr
+      fhF: fechaF
     });
-  }, [areas, _es, fechaI, fechaF, _usr]);
+  }, [areas, _es, fechaI, fechaF]);
+
+  const { pacientesData } = usePostGeneral(val, endpoints.dashboard.getCountPacientes, "pacientesData");
+
+  const externo = pacientesData.flatMap((x) => (x.externo));
+
+  const colaborador = pacientesData.flatMap((x) => (x.colaborador));
+
+  const chartSeries = [Number(colaborador), Number(externo)];
+
+  const { especialistas } = useGetEspecialistasPorArea({ areas });
 
   const handleFilterStartDate = useCallback(
     (newValue) => {
@@ -113,104 +128,57 @@ export default function GraficaEstatusCitas({
     []
   );
 
-  const handleChangeUsr = useCallback(
-    (event) => {
-      set_usr(event.target.value);
-    },
-    []
-  );
-
-  const _estNom = estatusCitasData.flatMap((est) => (est.nombre));
-
-  const _estColor = estatusCitasData.flatMap((est) => (est.color));
-
-  const _1 = countEstCitasData.flatMap((est) => (est.asistir));
-  const _2 = countEstCitasData.flatMap((est) => (est.cancelada));
-  const _3 = countEstCitasData.flatMap((est) => (est.penalizada));
-  const _4 = countEstCitasData.flatMap((est) => (est.asistencia));
-  const _5 = countEstCitasData.flatMap((est) => (est.justificada));
-  const _6 = countEstCitasData.flatMap((est) => (est.pendiente));
-  const _7 = countEstCitasData.flatMap((est) => (est.procesandoPago));
-
-  const citas = countEstCitasData.flatMap((est) => (est.citas));
-
-  const countEstCt = [_1, _2, _3, _4, _5, _6, _7];
-
-  const smUp = useResponsive('up', 'sm');
-
   const chartOptions = useChart({
-    _estColor,
-    colors: _estColor,
-    labels: _estNom,
-    stroke: {
-      colors: ['#fff']
-    },
-    fill: {
-      opacity: 0.9,
-    },
-    legend: {
-      position: 'right',
-      itemMargin: {
-        horizontal: 0,
-        vertical: 1,
+    chart: {
+      sparkline: {
+        enabled: true,
       },
+    },
+    labels: ['Colaborador', 'Externo'],
+    stroke: { colors: [theme.palette.background.paper] },
+    legend: {
+      offsetY: 0,
+      floating: true,
+      position: 'bottom',
+      horizontalAlign: 'center',
     },
     tooltip: {
       fillSeriesColor: false,
+      y: {
+        formatter: (value) => fNumber(value),
+        title: {
+          formatter: (seriesName) => `${seriesName}`,
+        },
+      },
     },
-    yaxis: {
-      show: true,
-      logBase: 10,
-      tickAmount: 1,
-      min: 0,
-    },
-    responsive: [
-      {
-        breakpoint: theme.breakpoints.values.sm,
-        options: {
-          legend: {
-            position: 'bottom',
-            horizontalAlign: 'left',
+    plotOptions: {
+      pie: {
+        donut: {
+          size: '90%',
+          labels: {
+            value: {
+              formatter: (value) => fNumber(value),
+            },
+            total: {
+              formatter: (w) => {
+                const sum = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                return fNumber(sum);
+              },
+            },
           },
         },
       },
-    ],
+    }
   });
 
   return (
     <Card {...other}>
-      <CardHeader title={title} subheader={subheader} />
+      <CardHeader title={title} subheader={subheader} sx={{ mb: 5 }} />
 
-      {countEstCitasData.length > 0 ? (
+      {pacientesData.length > 0 ? (
         <>
 
           <Grid container spacing={2} sx={{ p: 3 }}>
-
-            <Grid md={12} xs={12}>
-              <FormControl sx={{
-                width: "100%",
-                pr: { xs: 1, md: 1 },
-              }}>
-                <InputLabel id="demo-simple-select-label">Tipo de usuario</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={_usr}
-                  label="Tipo de usuario"
-                  onChange={(e) => handleChangeUsr(e)}
-                >
-                  <MenuItem value={2}>
-                    Todos
-                  </MenuItem>
-                  <MenuItem value={0}>
-                    Colaborador
-                  </MenuItem>
-                  <MenuItem value={1}>
-                    Externo
-                  </MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
 
             {rol !== 3 ? (
               <>
@@ -305,51 +273,14 @@ export default function GraficaEstatusCitas({
             </Grid>
           </Grid>
 
-          <Box
-            sx={{
-              my: 5,
-              '& .apexcharts-legend': {
-                m: 'auto',
-                height: { sm: 150 },
-                flexWrap: { sm: 'wrap' },
-                width: { xs: 240, sm: '30%' },
-              },
-              '& .apexcharts-datalabels-group': {
-                display: 'none',
-              },
-            }}
-          >
-            <Chart
-              dir="ltr"
-              type="polarArea"
-              series={countEstCt}
-              options={chartOptions}
-              width="100%"
-              height={smUp ? 470 : 480}
-            />
-          </Box>
-
-          <Divider sx={{ borderStyle: 'dashed' }} />
-
-          <Box
-            display="grid"
-            gridTemplateColumns="repeat(2, 1fr)"
-            sx={{ textAlign: 'center', typography: 'h4' }}
-          >
-            <Stack sx={{ py: 0, borderRight: `dashed 1px ${theme.palette.divider}` }}>
-              <Box component="span" sx={{ mb: 0, typography: 'body2', color: 'text.secondary' }}>
-                Estatus
-              </Box>
-              {estatusCitasData.length}
-            </Stack>
-
-            <Stack sx={{ py: 1 }}>
-              <Box component="span" sx={{ mb: 0, typography: 'body2', color: 'text.secondary' }}>
-                Total
-              </Box>
-              {citas}
-            </Stack>
-          </Box>
+          <StyledChart
+            dir="ltr"
+            type="donut"
+            series={chartSeries}
+            options={chartOptions}
+            width="100%"
+            height={280}
+          />
 
         </>
 
@@ -362,7 +293,8 @@ export default function GraficaEstatusCitas({
   );
 }
 
-GraficaEstatusCitas.propTypes = {
+AppCurrentDownload.propTypes = {
+  chart: PropTypes.object,
   subheader: PropTypes.string,
   title: PropTypes.string,
   beneficios: PropTypes.any,

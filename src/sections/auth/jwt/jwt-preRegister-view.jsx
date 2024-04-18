@@ -13,6 +13,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import InputAdornment from '@mui/material/InputAdornment';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
@@ -34,6 +35,23 @@ import Verificacion from './jwt-verificacion-view';
 // ----------------------------------------------------------------------
 
 export default function PreRegisterUser({ currentUser }) {
+
+  const lightTheme = createTheme({
+    palette: {
+      mode: 'light',
+    },
+    components: {
+      MuiPickersDay: {
+        // Sobrescribe los estilos del día del calendario
+        styleOverrides: {
+          root: {
+            color: 'black', // Establece el color del día a negro
+          },
+        },
+      },
+    },
+  });
+
   const { enqueueSnackbar } = useSnackbar();
   const { login } = useAuthContext();
   const password = useBoolean();
@@ -153,6 +171,7 @@ export default function PreRegisterUser({ currentUser }) {
   return (
     <Grid container sx={styles}>
       <Grid xs={12} sm={12} md={3}>
+
         <div style={{ height: '70%', backgroundColor: 'white', borderRadius: '25px' }}>
           {mail !== false && registroForm === false ? (
             <FormProvider methods={form}>
@@ -166,9 +185,36 @@ export default function PreRegisterUser({ currentUser }) {
                     sm: 'repeat(1, 1fr)',
                   }}
                 >
-                  <DialogTitle style={{ paddingLeft: '0px' }}>Registro de usuario</DialogTitle>
+                  <div>
+                    <Box
+                      component="img"
+                      alt="auth"
+                      src={`${import.meta.env.BASE_URL}assets/img/logoBeneficios.svg`}
+                      sx={{
+                        maxWidth: { sm: 120, xs: 80, lg: 60, md: 70, xl: 80 },
+                        position: 'relative',
+                        left: { xs: '75%', md: '71%' },
+                        top: { xs: '23%', md: '25%' }
+                      }}
+                    />
+                    <Box
+                      component="img"
+                      alt="auth"
+                      src={`${import.meta.env.BASE_URL}assets/img/beneficiosBrand.svg`}
+                      sx={{
+                        maxWidth: { sm: 800, xs: 480, md: 900, lg: 560, xl: 370 },
+                        position: 'relative',
+                        left: { xs: '2%', md: '1%' },
+                        top: { xs: '15%', md: '15%' }
+                      }}
+                    />
+                  </div>
 
+                  <DialogTitle style={{ paddingLeft: '0px', color: 'black' }}>Registro de usuario</DialogTitle>
+
+                  <ThemeProvider theme={lightTheme}>
                   <RHFTextField name="correo" label="Correo" value={email} disabled />
+                  </ThemeProvider>
 
                   <DialogActions>
                     <LoadingButton
@@ -203,7 +249,33 @@ export default function PreRegisterUser({ currentUser }) {
                     sm: 'repeat(1, 1fr)',
                   }}
                 >
-                  <DialogTitle style={{ paddingLeft: '0px' }}>Registro de usuario</DialogTitle>
+                  <div>
+                    <Box
+                      component="img"
+                      alt="auth"
+                      src={`${import.meta.env.BASE_URL}assets/img/logoBeneficios.svg`}
+                      sx={{
+                        maxWidth: { sm: 120, xs: 80, lg: 60, md: 70, xl: 80 },
+                        position: 'relative',
+                        left: { xs: '75%', md: '71%' },
+                        top: { xs: '23%', md: '25%' }
+                      }}
+                    />
+                    <Box
+                      component="img"
+                      alt="auth"
+                      src={`${import.meta.env.BASE_URL}assets/img/beneficiosBrand.svg`}
+                      sx={{
+                        maxWidth: { sm: 800, xs: 480, md: 900, lg: 560, xl: 370 },
+                        position: 'relative',
+                        left: { xs: '2%', md: '1%' },
+                        top: { xs: '15%', md: '15%' }
+                      }}
+                    />
+                  </div>
+                  <DialogTitle style={{ paddingLeft: '0px', color: 'black' }}>Registro de usuario</DialogTitle>
+
+                  <ThemeProvider theme={lightTheme}>
                   <RHFTextField
                     name="numEmpleado"
                     value={location.state.data[0].num_empleado}
@@ -250,6 +322,7 @@ export default function PreRegisterUser({ currentUser }) {
                       ),
                     }}
                   />
+                  </ThemeProvider>
                 </Box>
               </DialogContent>
 

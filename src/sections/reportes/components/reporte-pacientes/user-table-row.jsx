@@ -30,7 +30,9 @@ export default function RowResumenTerapias({ row, area, idUs, rol, typeusersData
     estNut,
     estPsi,
     estQB,
-    estGE, } = row;
+    estGE,
+    usuario
+   } = row;
 
   const quickEditar = useBoolean();
 
@@ -76,6 +78,8 @@ export default function RowResumenTerapias({ row, area, idUs, rol, typeusersData
       <TableRow>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.idUsuario}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{usuario}</TableCell>
 
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
 

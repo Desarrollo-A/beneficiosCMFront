@@ -14,7 +14,7 @@ export default function AvisosDePrivacidad() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Políticas de privacidad</title>
+        <title> Políticas de privacidad</title>
       </Helmet>
 
       <AvisoPrivacidadGeneral/>
