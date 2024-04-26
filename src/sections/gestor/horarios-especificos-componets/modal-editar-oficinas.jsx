@@ -59,6 +59,8 @@ export default function ModalEditarOficinas({
 
   const [isChecked, setIsChecked] = useState(sabado !== 0);
 
+  const [sd, setSabado] = useState(0);
+
   // Función para manejar el cambio de estado del checkbox
   const handleCheckboxChange = (event) => {
     setIsChecked(event.target.checked);
@@ -66,6 +68,10 @@ export default function ModalEditarOficinas({
     if(event.target.checked === false){
     setInicioSabado(null);
     setFinSabado(null);
+    setSabado(0);
+    }
+    else {
+      setSabado(1);
     }
 
   };
@@ -233,7 +239,7 @@ export default function ModalEditarOficinas({
               'id': idHorario,
               'horaInicio': inicio,
               'horaFin': fin,
-              'sabado': isChecked,
+              'sabado': sd,
               'horaInicioSabado': inicioSabado,
               'horaFinSabado': finSabado,
               'modificadoPor': user.idUsuario,
