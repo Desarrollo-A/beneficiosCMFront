@@ -72,7 +72,7 @@ function handleDownloadExcel(dataFiltered, rol) {
     {
       sheet: "Historial Reportes",
       columns: [
-        { label: "ID Colaborador", value: "idColab" },
+        { label: "ID", value: "idColab" },
         { label: "Usuario", value: "usuario" },
         { label: "Especialista", value: "especialista" },
         { label: "Paciente", value: "paciente" },
@@ -93,7 +93,7 @@ function handleDownloadExcel(dataFiltered, rol) {
 
   if (rol === 3) {
     const arr = baseArray[0].columns;
-    arr.splice(1, 1);
+    arr.splice(2, 1);
 
     data = [
       {
@@ -123,10 +123,10 @@ function handleDownloadPDF(dataFiltered, header, rol) {
 
   if(rol === 3){
     data = dataFiltered.map(item => ([item.idColab, item.usuario, item.paciente,
-      item.oficina, item.area, item.sede, item.modalidad, item.sexo, item.motivoCita, item.pagoGenerado, item.metodoPago !== null ? item.metodoPago : 'Pendiente de pago', item.estatus, item.horario,]))
+      item.oficina, item.depto, item.sede, item.modalidad, item.sexo, item.motivoCita, item.pagoGenerado, item.metodoPago !== null ? item.metodoPago : 'Pendiente de pago', item.estatus, item.horario,]))
   }else{
     data = dataFiltered.map(item => ([item.idColab, item.usuario, item.especialista, item.paciente,
-    item.oficina, item.area, item.sede, item.modalidad, item.sexo, item.motivoCita, item.pagoGenerado, item.metodoPago !== null ? item.metodoPago : 'Pendiente de pago', item.estatus, item.horario,]))
+    item.oficina, item.depto, item.sede, item.modalidad, item.sexo, item.motivoCita, item.pagoGenerado, item.metodoPago !== null ? item.metodoPago : 'Pendiente de pago', item.estatus, item.horario,]))
   }
   
   autoTable(doc, {
@@ -150,7 +150,7 @@ export default function HistorialReportesView() {
 
   let header = [];
 
-  const headerBase = ["ID Colaborador", "Usuario", "Especialista", "Paciente", "Oficina", "Departamento", "Sede",
+  const headerBase = ["ID", "Usuario", "Especialista", "Paciente", "Oficina", "Departamento", "Sede",
     "Modalidad", "Sexo", "Motivo consulta", "Pago Generado", "Método de pago", "Estatus", "Horario cita"];
 
   const [dataValue, setReportData] = useState(0);
@@ -213,7 +213,7 @@ export default function HistorialReportesView() {
       : false;
 
   const TABLE_BASE = [
-    { id: '', label: 'ID Colaborador' },
+    { id: '', label: 'ID' },
     { id: '', label: 'Usuario' },
     { id: '', label: 'Especialista' },
     { id: '', label: 'Paciente' },
@@ -233,8 +233,8 @@ export default function HistorialReportesView() {
 
   if (rol === 3) {
 
-    TABLE_BASE.splice(1, 1);
-    headerBase.splice(1, 1);
+    TABLE_BASE.splice(2, 1);
+    headerBase.splice(2, 1);
 
     TABLE_HEAD = TABLE_BASE;
     header = headerBase;
