@@ -86,6 +86,118 @@ export const nLunesDelMes = (fecha, n) => {
   return nuevaFecha;
 };
 
+export const segundoDomingoDeMarzo = (año) => {
+  // Crear una fecha que representa el primer día de marzo del año dado
+  const fecha = new Date(año, 2, 1);
+
+  // Avanzar a la fecha hasta el primer domingo de marzo
+  while (fecha.getDay() !== 0) {
+    fecha.setDate(fecha.getDate() + 1);
+  }
+
+  // Avanzar una semana para llegar al segundo domingo de marzo
+  fecha.setDate(fecha.getDate() + 7);
+
+  return fecha;
+};
+
+export const primerDomingoDeNoviembre = (año) => {
+  // Crear una fecha que representa el primer día de noviembre del año dado
+  const fecha = new Date(año, 10, 1);
+
+  // Avanzar a la fecha hasta el primer domingo de noviembre
+  while (fecha.getDay() !== 0) {
+    fecha.setDate(fecha.getDate() + 1);
+  }
+
+  return fecha;
+};
+
+export const estaEntre = (fecha, fechaInicio, fechaFin) => {
+  fecha = new Date(fecha);
+  fechaInicio = new Date(fechaInicio);
+  fechaFin = new Date(fechaFin);
+
+  // Verificar si la fecha está entre fechaInicio y fechaFin
+  return fecha >= fechaInicio && fecha <= fechaFin;
+};
+
+export const horaTijuana = (fechaStr) => {
+  const fecha = new Date(fechaStr);
+  const año = fecha.getFullYear();
+  const horasARestar =
+    fecha >= segundoDomingoDeMarzo(año) && fecha <= primerDomingoDeNoviembre(año) ? 1 : 2;
+  fecha.setHours(fecha.getHours() - horasARestar);
+
+  return fecha;
+};
+
+export const horaTijuanaAEstandar = (fechaStr) => {
+  const fecha = new Date(fechaStr);
+  const año = fecha.getFullYear();
+  const horasASumar =
+    fecha >= segundoDomingoDeMarzo(año) && fecha <= primerDomingoDeNoviembre(año) ? 1 : 2;
+  fecha.setHours(fecha.getHours() + horasASumar);
+
+  return fecha;
+};
+
+export const toLocalISOString = (date) => {
+  const tzo = -date.getTimezoneOffset();
+  const dif = tzo >= 0 ? '+' : '-';
+  const pad = (num) => {
+    const norm = Math.floor(Math.abs(num));
+    return (norm < 10 ? '0' : '') + norm;
+  };
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(
+    date.getHours()
+  )}:${pad(date.getMinutes())}:${pad(date.getSeconds())}${dif}${pad(tzo / 60)}:${pad(tzo % 60)}`;
+};
+
+export const formatearDosFechaAUna = (fechaHoraInicio, fechaHoraFin) => {
+  // Función para formatear una fecha a 'HH:mm'
+  function formatearHora(fecha) {
+    const hora = fecha.getHours().toString().padStart(2, '0');
+    const minuto = fecha.getMinutes().toString().padStart(2, '0');
+    return `${hora}:${minuto}`;
+  }
+
+  // Función para formatear una fecha a 'YYYY-MM-DD'
+  function formatearAFecha(fecha) {
+    const año = fecha.getFullYear();
+    const mes = (fecha.getMonth() + 1).toString().padStart(2, '0'); // los meses empiezan desde 0
+    const dia = fecha.getDate().toString().padStart(2, '0');
+    return `${año}-${mes}-${dia}`;
+  }
+
+  return `${formatearAFecha(fechaHoraInicio)} ${formatearHora(fechaHoraInicio)} - ${formatearHora(
+    fechaHoraFin
+  )}`;
+};
+
+export const obtenerFechasConHoras = (folios) => {
+  // Dividir la cadena de texto por comas para obtener cada fecha
+  if (!folios) return [];
+  const fechas = folios.split(',');
+
+  // Mapear cada fecha a un objeto Date
+  const fechasEnDate = fechas.map((fecha) => {
+    // Dividir la fecha y la hora
+    const [fechaSinHoras, hora] = fecha.split(' A las ');
+
+    // Dividir la fecha por espacios y reordenarla para que sea compatible con el constructor de Date
+    const partesDeLaFecha = fechaSinHoras.split(' / ').reverse().join('-');
+
+    // Reemplazar el punto al final de la hora y convertir la hora a formato 24h
+    const hora24h = hora.replace(' horas.', '');
+
+    // Crear un nuevo objeto Date y agregarlo al arreglo
+    return new Date(`${partesDeLaFecha}T${hora24h}`);
+  });
+
+  return fechasEnDate;
+};
+
 export const parseStartDate = (value, originalValue) => originalValue.toISOString();
 
 export const parseEndDate = (value, originalValue) => originalValue.toISOString();

@@ -26,7 +26,13 @@ import FormHelperText from '@mui/material/FormHelperText';
 import InputAdornment from '@mui/material/InputAdornment';
 
 import { endpoints } from 'src/utils/axios';
-import { generarFechas, generarDiasFestivos } from 'src/utils/general';
+import {
+  horaTijuana,
+  generarFechas,
+  generarDiasFestivos,
+  segundoDomingoDeMarzo,
+  primerDomingoDeNoviembre,
+} from 'src/utils/general';
 
 import { getEncodedHash } from 'src/api/api';
 import { useAuthContext } from 'src/auth/hooks';
@@ -149,6 +155,11 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     setBtnDisabled(true);
 
     const ahora = new Date();
+    const añoDate = ahora.getFullYear();
+    const horasARestar =
+      ahora >= segundoDomingoDeMarzo(añoDate) && ahora <= primerDomingoDeNoviembre(añoDate) ? 1 : 2;
+    ahora.setHours(ahora.getHours() - horasARestar);
+
     const fechaActual = dayjs(ahora).format('YYYY-MM-DD');
 
     const año = horarioSeleccionado.substring(0, 4);
@@ -450,7 +461,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     mutate(endpoints.dashboard.getCountEstatusCitas);
 
     /* *** PROCESO DE MUESTRA DE PREVIEW *** */
-    const scheduledAppointment = await consultarCita(agendar.data);
+    const scheduledAppointment = await consultarCita(agendar.data, datosUser.idSede);
     if (!scheduledAppointment.result) {
       enqueueSnackbar('¡Surgió un error al poder mostrar la previsualización de la cita!', {
         variant: 'danger',
@@ -966,7 +977,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const getHorariosDisponibles = async (beneficio, especialista) => {
     setIsLoading(true);
     // Consultamos el horario del especialista segun su beneficio.
-    const horarioACubrir = await getHorario(beneficio, especialista);
+    const horarioACubrir = await getHorario(beneficio, especialista, datosUser.idSede);
 
     if (!horarioACubrir.result) return; // En caso de que no halla horario detenemos el proceso.
 
@@ -1071,9 +1082,13 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     setBtnDisabled(false);
 
     // Bloque para obtener las horas del dia actual mas una cant de horas para validar registros del mismo dia actual.
-    const ahora = new Date();
-    const horaActual = ((ahora.getHours() + 3) % 24).toString().padStart(2, '0');
+    // 3 HORAS DE MARGEN PARA NO PENALIZARLOS.
+    let ahora = new Date();
+    if (datosUser.idSede === 11) {
+      ahora = horaTijuana(ahora);
+    }
 
+    const horaActual = ((ahora.getHours() + 3) % 24).toString().padStart(2, '0');
     const minutosActuales = ahora.getMinutes().toString().padStart(2, '0');
     const segundosActuales = ahora.getSeconds().toString().padStart(2, '0');
 
@@ -1122,16 +1137,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     }
   };
 
-  // const isWeekend = (date) => {
-  //   const day = date.day();
-
-  //   return day === 0
-  //   // Deshabilitar los sábados
-  // };
-
   const shouldDisableDate = (date) => {
     // Verificar si la fecha es un fin de semana
-    // const isWeekendDay = isWeekend(date);
 
     // Verificar si la fecha está en la lista de fechas deshabilitadas
     const formattedDate = date.format('YYYY-MM-DD');
@@ -1221,6 +1228,10 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     if (horarioSeleccionado === '') return setErrorHorarioSeleccionado(true);
 
     const ahora = new Date();
+    const añoDate = ahora.getFullYear();
+    const horasARestar =
+      ahora >= segundoDomingoDeMarzo(añoDate) && ahora <= primerDomingoDeNoviembre(añoDate) ? 1 : 2;
+    ahora.setHours(ahora.getHours() - horasARestar);
     const fechaActual = dayjs(ahora).format('YYYY-MM-DD');
 
     const año = horarioSeleccionado.substring(0, 4);

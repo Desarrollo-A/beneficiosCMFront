@@ -40,7 +40,13 @@ import FormProvider from 'src/components/hook-form/form-provider';
 
 import CancelEventDialog from './cancelEventDialog';
 
-export default function EventContent({ currentEvent, onClose, selectedDate, selectedEnd, reasons}) {
+export default function EventContent({
+  currentEvent,
+  onClose,
+  selectedDate,
+  selectedEnd,
+  reasons,
+}) {
   const { user } = useAuthContext(); // variable del la sesion del usuario
   dayjs.locale('es'); // valor para cambiar el idioma del dayjs
 
@@ -53,11 +59,14 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
   const [dateTitle, setDateTitle] = useState(dayjs(selectedDate).format('dddd, DD MMMM YYYY'));
   const pastCheck = selectedDate < new Date(); // checar si la fecha del evento es inferior a la fecha actual
   const disableInputs = (currentEvent?.estatus !== 1 && currentEvent?.estatus !== 6) || pastCheck; // deshabilitar inputs
-  const allDay = dayjs(currentEvent?.start).format('YYYY/MM/DD') < dayjs(currentEvent?.end).format('YYYY/MM/DD');
+  const allDay =
+    dayjs(currentEvent?.start).format('YYYY/MM/DD') < dayjs(currentEvent?.end).format('YYYY/MM/DD');
   const [defaultInicio, setDefaultInicio] = useState(selectedDate);
   const [defaultFecha, setDefaultFecha] = useState(selectedEnd);
   const [defaultEnd, setDefaultEnd] = useState(dayjs(currentEvent.end).$d);
-  const { data: eventReasons } = useGetEventReasons( currentEvent?.type === 'date' ? currentEvent?.id : 0 );
+  const { data: eventReasons } = useGetEventReasons(
+    currentEvent?.type === 'date' ? currentEvent?.id : 0
+  );
   const formSchema = yup.object().shape({
     title: type === 'cancel' ? yup.string().max(100).required('Se necesita el título').trim() : '', // maximo de caracteres para el titulo 100
     start: !allDay ? yup.date().required() : '',
@@ -67,7 +76,7 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
   let sede = currentEvent?.sede || 'Virtual';
   let oficina = currentEvent?.oficina || 'Virtual';
 
-  if(currentEvent?.externo === 1){
+  if (currentEvent?.externo === 1) {
     sede = 'Quéretaro';
     oficina = 'Confirmado por especialista';
   }
@@ -76,23 +85,33 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
     resolver: yupResolver(formSchema),
     defaultValues: currentEvent,
   });
-  
-  const Items = () => { // items de los motivos que se trae el evento
+
+  const Items = () => {
+    // items de los motivos que se trae el evento
     let items = '';
     // reasonsMutate();
     if (eventReasons?.length > 0) {
       items = eventReasons.map((er) => (
         <Tooltip title={er.nombre} key={er.idOpcion}>
-          <Chip label={er.nombre} variant="outlined" size="small" style={{ backgroundColor: '#e0e0e0', borderRadius: '20px' }}/>
+          <Chip
+            label={er.nombre}
+            variant="outlined"
+            size="small"
+            style={{ backgroundColor: '#e0e0e0', borderRadius: '20px' }}
+          />
         </Tooltip>
       ));
-    }
-    else{
+    } else {
       items = (
         <Tooltip title="Sin motivos de cita">
-          <Chip label="Sin motivos de cita" variant="outlined" size="small" style={{ backgroundColor: '#e0e0e0', borderRadius: '20px' }}/>
+          <Chip
+            label="Sin motivos de cita"
+            variant="outlined"
+            size="small"
+            style={{ backgroundColor: '#e0e0e0', borderRadius: '20px' }}
+          />
         </Tooltip>
-        )
+      );
     }
     return items;
   };
@@ -104,7 +123,6 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
   const dateError =
     type === 'cancel' &&
     dayjs(defaultInicio).format('YYYY/MM/DD') > dayjs(defaultFecha).format('YYYY/MM/DD'); // validacion que la fecha final no sea menor a la fecha inicio, unicamente año/mes/dia
-  
 
   const onSubmit = handleSubmit(async (data) => {
     let save = '';
@@ -120,7 +138,7 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
       fechaFinal: type === 'date' ? fDate(defaultInicio) : fDate(defaultFecha),
       paciente: currentEvent?.idPaciente,
       estatus: currentEvent?.estatus,
-      idEventoGoogle: currentEvent?.idEventoGoogle
+      idEventoGoogle: currentEvent?.idEventoGoogle,
     };
 
     try {
@@ -131,7 +149,7 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
             break;
 
           case 'date':
-            save = await updateAppointment(eventData, user.idUsuario);
+            save = await updateAppointment(eventData, user.idUsuario, user.idSede);
             break;
 
           default:
@@ -236,30 +254,32 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
               )}
             </Stack>
           </Stack>
-          {type === 'cancel' && 
-          <Stack spacing={3} sx={{ p: { xs: 1, md: 2 } }}>
-            <Typography variant="subtitle1">{dateTitle}</Typography>
+          {type === 'cancel' && (
+            <Stack spacing={3} sx={{ p: { xs: 1, md: 2 } }}>
+              <Typography variant="subtitle1">{dateTitle}</Typography>
               <RHFTextField disabled={disableInputs} name="title" label="Título" />
-          </Stack>
-          }
+            </Stack>
+          )}
 
-          {type === 'cancel' ?
-          <><Stack
-              direction="row"
-              justifyContent="space-between"
-              spacing={2}
-              sx={{ p: { xs: 1, md: 2 } }}
-            >
-              <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
-                <MobileDatePicker
-                  label="Fecha inicial"
-                  disabled={disableInputs}
-                  sx={{ width: '100%' }}
-                  value={defaultInicio}
-                  onChange={(value) => {
-                    setDefaultInicio(value);
-                    setDateTitle(dayjs(value).format('dddd, DD MMMM YYYY')); // al momento de cambiar el valor en el input, cambia el valor del titulo
-                  } } />
+          {type === 'cancel' ? (
+            <>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                spacing={2}
+                sx={{ p: { xs: 1, md: 2 } }}
+              >
+                <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
+                  <MobileDatePicker
+                    label="Fecha inicial"
+                    disabled={disableInputs}
+                    sx={{ width: '100%' }}
+                    value={defaultInicio}
+                    onChange={(value) => {
+                      setDefaultInicio(value);
+                      setDateTitle(dayjs(value).format('dddd, DD MMMM YYYY')); // al momento de cambiar el valor en el input, cambia el valor del titulo
+                    }}
+                  />
 
                   <MobileDatePicker
                     label="Fecha final"
@@ -274,16 +294,16 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
                     }}
                     onChange={(value) => {
                       setDefaultFecha(value);
-                    }} />
-                
-              </LocalizationProvider>
-            </Stack>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              spacing={2}
-              sx={{ p: { xs: 1, md: 2 } }}
-            >
+                    }}
+                  />
+                </LocalizationProvider>
+              </Stack>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                spacing={2}
+                sx={{ p: { xs: 1, md: 2 } }}
+              >
                 <Controller
                   name="start"
                   render={({ field }) => (
@@ -295,8 +315,10 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
                       onChange={(value) => {
                         field.onChange(value);
                         handleHourChange(value);
-                      } } />
-                  )} />
+                      }}
+                    />
+                  )}
+                />
 
                 <Controller
                   name="end"
@@ -312,290 +334,293 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
                         },
                       }}
                       value={defaultEnd}
-                      onChange={(value) => setDefaultEnd(value)} />
-                  )} />
+                      onChange={(value) => setDefaultEnd(value)}
+                    />
+                  )}
+                />
               </Stack>
-              </> : ''}
-          
+            </>
+          ) : (
+            ''
+          )}
 
           {type === 'date' && (
             <Stack>
-              <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1 }} >
+              <Stack
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+                spacing={1}
+                sx={{ px: { xs: 1, md: 2 }, py: 1 }}
+              >
                 <Typography variant="h6">{dateTitle}</Typography>
               </Stack>
 
               <Stack
-                      sx={{
-                        flexDirection: 'row',
-                        px: { xs: 1, md: 2 },
-                        py: 1,
-                        alignItems: 'center',
-                      }}
-                    >
-                      <Stack
-                        alignItems="center"
-                        sx={{
-                          alignItems: 'center',
-                          display: 'flex',
-                        }}
-                      >
-                        <Iconify
-                          icon="mdi:account-circle"
-                          width={30}
-                          sx={{ color: 'text.disabled' }}
-                        />
-                      </Stack>
-
-                      <Stack
-                        alignItems="center"
-                        sx={{
-                          alignItems: 'center',
-                          display: 'flex',
-                        }}
-                      >
-                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                          {currentEvent?.title}
-                        </Typography>
-                      </Stack>
-              </Stack>
-              
-              <Stack
-                      sx={{
-                        flexDirection: 'row',
-                        px: { xs: 1, md: 2 },
-                        py: 1,
-                        alignItems: 'center',
-                      }}
-                    >
-                      <Stack
-                        alignItems="center"
-                        sx={{
-                          alignItems: 'center',
-                          display: 'flex',
-                        }}
-                      >
-                        <Iconify
-                          icon="solar:user-id-broken"
-                          width={30}
-                          sx={{ color: 'text.disabled' }}
-                        />
-                      </Stack>
-
-                      <Stack
-                        alignItems="center"
-                        sx={{
-                          alignItems: 'center',
-                          display: 'flex',
-                        }}
-                      >
-                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                          {currentEvent?.nombre}
-                        </Typography>
-                      </Stack>
-              </Stack>
-
-              <Stack
-                      sx={{
-                        flexDirection: 'row',
-                        px: { xs: 1, md: 2 },
-                        py: 1,
-                        alignItems: 'center',
-                      }}
-                    >
-                      <Stack
-                        alignItems="center"
-                        sx={{
-                          alignItems: 'center',
-                          display: 'flex',
-                        }}
-                      >
-                        <Iconify
-                          icon="mdi:phone"
-                          width={30}
-                          sx={{ color: 'text.disabled' }}
-                        />
-                      </Stack>
-
-                      <Stack
-                        alignItems="center"
-                        sx={{
-                          alignItems: 'center',
-                          display: 'flex',
-                        }}
-                      >
-                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                          {currentEvent?.telPersonal}
-                        </Typography>
-                      </Stack>
-              </Stack>
-
-              <Stack
-                      sx={{
-                        flexDirection: 'row',
-                        px: { xs: 1, md: 2 },
-                        py: 1,
-                        alignItems: 'center',
-                      }}
-                    >
-                      <Stack
-                        alignItems="center"
-                        sx={{
-                          alignItems: 'center',
-                          display: 'flex',
-                        }}
-                      >
-                        <Iconify
-                          icon="mdi:calendar-clock"
-                          width={30}
-                          sx={{ color: 'text.disabled' }}
-                        />
-                      </Stack>
-
-                      <Stack
-                        alignItems="center"
-                        sx={{
-                          alignItems: 'center',
-                          display: 'flex',
-                        }}
-                      >
-                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                          {dayjs(currentEvent?.start).format('HH:mm a')} - {dayjs(currentEvent?.end).format('HH:mm a')}
-                        </Typography>
-                      </Stack>
-              </Stack>
-
-              <Stack
-                      sx={{
-                        flexDirection: 'row',
-                        px: { xs: 1, md: 2 },
-                        py: 1,
-                        alignItems: 'center',
-                      }}
-                    >
-                      <Stack
-                        alignItems="center"
-                        sx={{
-                          alignItems: 'center',
-                          display: 'flex',
-                        }}
-                      >
-                        <Iconify
-                          icon="mdi:world"
-                          width={30}
-                          sx={{ color: 'text.disabled' }}
-                        />
-                      </Stack>
-
-                      <Stack
-                        alignItems="center"
-                        sx={{
-                          alignItems: 'center',
-                          display: 'flex',
-                        }}
-                      >
-                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                          {sede}
-                        </Typography>
-                      </Stack>
-              </Stack>
-
-              <Stack
-                      sx={{
-                        flexDirection: 'row',
-                        px: { xs: 1, md: 2 },
-                        py: 1,
-                        alignItems: 'center',
-                      }}
-                    >
-                      <Stack
-                        alignItems="center"
-                        sx={{
-                          alignItems: 'center',
-                          display: 'flex',
-                        }}
-                      >
-                        <Iconify
-                          icon="ic:outline-place"
-                          width={30}
-                          sx={{ color: 'text.disabled' }}
-                        />
-                      </Stack>
-
-                      <Stack
-                        alignItems="center"
-                        sx={{
-                          alignItems: 'center',
-                          display: 'flex',
-                        }}
-                      >
-                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                          {oficina}
-                        </Typography>
-                      </Stack>
-              </Stack>
-
-              <Stack
-                      sx={{
-                        flexDirection: 'row',
-                        px: { xs: 1, md: 2 },
-                        py: 1,
-                        alignItems: 'center',
-                      }}
-                    >
-                      <Stack
-                        alignItems="center"
-                        sx={{
-                          alignItems: 'center',
-                          display: 'flex',
-                        }}
-                      >
-                        <Iconify
-                          icon="ic:outline-email"
-                          width={30}
-                          sx={{ color: 'text.disabled' }}
-                        />
-                      </Stack>
-
-                      <Stack
-                        alignItems="center"
-                        sx={{
-                          alignItems: 'center',
-                          display: 'flex',
-                        }}
-                      >
-                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                          {currentEvent?.correo
-                            ? currentEvent?.correo.toLowerCase()
-                            : 'correo-demo@ciudadmaderas.com.mx'}
-                        </Typography>
-                      </Stack>
-                    </Stack>
-
-              {currentEvent?.fechasFolio &&
-              <Stack flexDirection="row" flexWrap="wrap" flex={1} spacing={2}  sx={{ px: { xs: 1, md: 2 }, py: 1 }} >
-                <Stack spacing={2} direction="row">
-                  <Iconify icon="mdi:clock-remove-outline" width={30}  sx={{ color: 'text.disabled' }}/>
+                sx={{
+                  flexDirection: 'row',
+                  px: { xs: 1, md: 2 },
+                  py: 1,
+                  alignItems: 'center',
+                }}
+              >
+                <Stack
+                  alignItems="center"
+                  sx={{
+                    alignItems: 'center',
+                    display: 'flex',
+                  }}
+                >
+                  <Iconify icon="mdi:account-circle" width={30} sx={{ color: 'text.disabled' }} />
                 </Stack>
-                <Stack >
-                {fechasFolio.map((fecha, i) => [
-                  i > 0 && "",
-                  <Typography key={i} style={{textDecoration: 'line-through'}} fontSize="90%">{fecha}</Typography>
-                  ])
-                }
+
+                <Stack
+                  alignItems="center"
+                  sx={{
+                    alignItems: 'center',
+                    display: 'flex',
+                  }}
+                >
+                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                    {currentEvent?.title}
+                  </Typography>
                 </Stack>
               </Stack>
-              }
-              
+
+              <Stack
+                sx={{
+                  flexDirection: 'row',
+                  px: { xs: 1, md: 2 },
+                  py: 1,
+                  alignItems: 'center',
+                }}
+              >
+                <Stack
+                  alignItems="center"
+                  sx={{
+                    alignItems: 'center',
+                    display: 'flex',
+                  }}
+                >
+                  <Iconify icon="solar:user-id-broken" width={30} sx={{ color: 'text.disabled' }} />
+                </Stack>
+
+                <Stack
+                  alignItems="center"
+                  sx={{
+                    alignItems: 'center',
+                    display: 'flex',
+                  }}
+                >
+                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                    {currentEvent?.nombre}
+                  </Typography>
+                </Stack>
+              </Stack>
+
+              <Stack
+                sx={{
+                  flexDirection: 'row',
+                  px: { xs: 1, md: 2 },
+                  py: 1,
+                  alignItems: 'center',
+                }}
+              >
+                <Stack
+                  alignItems="center"
+                  sx={{
+                    alignItems: 'center',
+                    display: 'flex',
+                  }}
+                >
+                  <Iconify icon="mdi:phone" width={30} sx={{ color: 'text.disabled' }} />
+                </Stack>
+
+                <Stack
+                  alignItems="center"
+                  sx={{
+                    alignItems: 'center',
+                    display: 'flex',
+                  }}
+                >
+                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                    {currentEvent?.telPersonal}
+                  </Typography>
+                </Stack>
+              </Stack>
+
+              <Stack
+                sx={{
+                  flexDirection: 'row',
+                  px: { xs: 1, md: 2 },
+                  py: 1,
+                  alignItems: 'center',
+                }}
+              >
+                <Stack
+                  alignItems="center"
+                  sx={{
+                    alignItems: 'center',
+                    display: 'flex',
+                  }}
+                >
+                  <Iconify icon="mdi:calendar-clock" width={30} sx={{ color: 'text.disabled' }} />
+                </Stack>
+
+                <Stack
+                  alignItems="center"
+                  sx={{
+                    alignItems: 'center',
+                    display: 'flex',
+                  }}
+                >
+                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                    {dayjs(currentEvent?.start).format('HH:mm a')} -{' '}
+                    {dayjs(currentEvent?.end).format('HH:mm a')}
+                  </Typography>
+                </Stack>
+              </Stack>
+
+              <Stack
+                sx={{
+                  flexDirection: 'row',
+                  px: { xs: 1, md: 2 },
+                  py: 1,
+                  alignItems: 'center',
+                }}
+              >
+                <Stack
+                  alignItems="center"
+                  sx={{
+                    alignItems: 'center',
+                    display: 'flex',
+                  }}
+                >
+                  <Iconify icon="mdi:world" width={30} sx={{ color: 'text.disabled' }} />
+                </Stack>
+
+                <Stack
+                  alignItems="center"
+                  sx={{
+                    alignItems: 'center',
+                    display: 'flex',
+                  }}
+                >
+                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                    {sede}
+                  </Typography>
+                </Stack>
+              </Stack>
+
+              <Stack
+                sx={{
+                  flexDirection: 'row',
+                  px: { xs: 1, md: 2 },
+                  py: 1,
+                  alignItems: 'center',
+                }}
+              >
+                <Stack
+                  alignItems="center"
+                  sx={{
+                    alignItems: 'center',
+                    display: 'flex',
+                  }}
+                >
+                  <Iconify icon="ic:outline-place" width={30} sx={{ color: 'text.disabled' }} />
+                </Stack>
+
+                <Stack
+                  alignItems="center"
+                  sx={{
+                    alignItems: 'center',
+                    display: 'flex',
+                  }}
+                >
+                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                    {oficina}
+                  </Typography>
+                </Stack>
+              </Stack>
+
+              <Stack
+                sx={{
+                  flexDirection: 'row',
+                  px: { xs: 1, md: 2 },
+                  py: 1,
+                  alignItems: 'center',
+                }}
+              >
+                <Stack
+                  alignItems="center"
+                  sx={{
+                    alignItems: 'center',
+                    display: 'flex',
+                  }}
+                >
+                  <Iconify icon="ic:outline-email" width={30} sx={{ color: 'text.disabled' }} />
+                </Stack>
+
+                <Stack
+                  alignItems="center"
+                  sx={{
+                    alignItems: 'center',
+                    display: 'flex',
+                  }}
+                >
+                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                    {currentEvent?.correo
+                      ? currentEvent?.correo.toLowerCase()
+                      : 'correo-demo@ciudadmaderas.com.mx'}
+                  </Typography>
+                </Stack>
+              </Stack>
+
+              {currentEvent?.fechasFolio && (
+                <Stack
+                  flexDirection="row"
+                  flexWrap="wrap"
+                  flex={1}
+                  spacing={2}
+                  sx={{ px: { xs: 1, md: 2 }, py: 1 }}
+                >
+                  <Stack spacing={2} direction="row">
+                    <Iconify
+                      icon="mdi:clock-remove-outline"
+                      width={30}
+                      sx={{ color: 'text.disabled' }}
+                    />
+                  </Stack>
+                  <Stack>
+                    {fechasFolio.map((fecha, i) => [
+                      i > 0 && '',
+                      <Typography key={i} style={{ textDecoration: 'line-through' }} fontSize="90%">
+                        {fecha}
+                      </Typography>,
+                    ])}
+                  </Stack>
+                </Stack>
+              )}
+
               <Stack spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1 }}>
                 <Stack spacing={2} direction="row">
-                  <Iconify icon="solar:chat-round-line-outline" width={30}  sx={{ color: 'text.disabled' }}/>
+                  <Iconify
+                    icon="solar:chat-round-line-outline"
+                    width={30}
+                    sx={{ color: 'text.disabled' }}
+                  />
                   <Typography>Motivos</Typography>
                 </Stack>
-                <Stack flexDirection="row" flexWrap="wrap" flex={1} spacing={2} sx={{ px: { xs: 1, md: 3 }, py: 1 }} >
+                <Stack
+                  flexDirection="row"
+                  flexWrap="wrap"
+                  flex={1}
+                  spacing={2}
+                  sx={{ px: { xs: 1, md: 3 }, py: 1 }}
+                >
                   <Items />
                 </Stack>
               </Stack>
-              
             </Stack>
           )}
         </DialogContent>
@@ -604,7 +629,7 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
           <Button variant="contained" color="error" onClick={onClose}>
             Cerrar
           </Button>
-          {(currentEvent?.estatus === 1 && type === 'cancel') && !pastCheck ? (
+          {currentEvent?.estatus === 1 && type === 'cancel' && !pastCheck ? (
             <LoadingButton
               type="submit"
               variant="contained"
@@ -659,14 +684,14 @@ export default function EventContent({ currentEvent, onClose, selectedDate, sele
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <CancelEventDialog 
-           type = {type}
-           currentEvent = { currentEvent }
-           pastCheck = { pastCheck }
-           reasons = { reasons }
-           onClose={handleClose2}
-           close = {onClose}
-           selectedDate = {selectedDate}
+        <CancelEventDialog
+          type={type}
+          currentEvent={currentEvent}
+          pastCheck={pastCheck}
+          reasons={reasons}
+          onClose={handleClose2}
+          close={onClose}
+          selectedDate={selectedDate}
         />
       </Dialog>
     </>

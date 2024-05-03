@@ -74,7 +74,7 @@ export default function CalendarView() {
     data: events,
     appointmentLoading: eventsLoading,
     appointmentMutate,
-  } = useGetAppointmentsByUser(date, datosUser?.idUsuario);
+  } = useGetAppointmentsByUser(date, datosUser?.idUsuario, datosUser?.idSede);
 
   const currentEvent = useEvent(events, selectEventId, openForm);
 
