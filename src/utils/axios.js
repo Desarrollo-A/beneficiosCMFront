@@ -24,9 +24,9 @@ export { instance };
 export const fetcher = async (args) => {
   const [url, data, config] = Array.isArray(args) ? args : [args];
 
-  const accessToken = sessionStorage.getItem('accessToken');
+  const accessToken = localStorage.getItem('accessToken');
 
-  /* const accessToken = sessionStorage.getItem('accessToken'); */
+  /* const accessToken = localStorage.getItem('accessToken'); */
   /* const fetchConfig = {
     ...config,
     headers: {
@@ -47,7 +47,7 @@ export const fetcher = async (args) => {
 
 export const fetcherGet = async (args) => {
   const [url, config] = Array.isArray(args) ? args : [args];
-  /* const accessToken = sessionStorage.getItem('accessToken'); */
+  /* const accessToken = localStorage.getItem('accessToken'); */
   /* const fetchConfig = {
     ...config,
     headers: {
@@ -55,7 +55,7 @@ export const fetcherGet = async (args) => {
     },
   }; */
 
-  const accessToken = sessionStorage.getItem('accessToken');
+  const accessToken = localStorage.getItem('accessToken');
 
   const res = await instance.get(
     url, 
@@ -72,7 +72,7 @@ export const fetcherGet = async (args) => {
 
 export const fetcherPost = async (args, dataValue) => {
   const [url, config] = Array.isArray(args) ? args : [args];
-  const accessToken = sessionStorage.getItem('accessToken');
+  const accessToken = localStorage.getItem('accessToken');
 
   const res = await instance.post(
     url,

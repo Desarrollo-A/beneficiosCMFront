@@ -34,7 +34,7 @@ const OPTIONS = [
 export default function AccountPopover() {
   const router = useRouter();
 
-  // const userData = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+  // const userData = JSON.parse(Base64.decode(localStorage.getItem('accessToken').split('.')[2]));
   const { user: userData } = useAuthContext();
 
   useMockedUser();

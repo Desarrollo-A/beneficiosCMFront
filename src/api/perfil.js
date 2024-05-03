@@ -8,7 +8,7 @@ import { HOST } from 'src/config-global';
 export async function getDecodedPass() {
     const URL = endpoints.user.decodePass;
 
-    const accessToken = sessionStorage.getItem('accessToken');
+    const accessToken = localStorage.getItem('accessToken');
 
     const instance = axios.create({
         baseURL: HOST,
