@@ -291,6 +291,7 @@ export async function createAppointment(eventData, modalitie, datosUser, default
       tipoPuesto: eventData.paciente.tipoPuesto,
       idSede: eventData.paciente.idSede,
       modalidad: fundacion === 1 || fundacion === '1' ? 1 : modalitie.modalidad,
+      comentario: eventData.comentario,
     };
 
     const mailMessage = {

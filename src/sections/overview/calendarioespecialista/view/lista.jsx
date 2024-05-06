@@ -189,6 +189,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
       fechaInicio: fDate(defaultInicio),
       fechaFinal: type === 'date' ? fDate(defaultInicio) : fDate(defaultFecha),
       paciente: patient,
+      comentario: data.comentario
     };
 
     const eventDataCancel = {
@@ -462,9 +463,9 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
                       if (dayOfWeek === 0) {
                         return true;
                       }
-                      if(dayOfWeek === 6){
-                        if(sabado === 0){
-                        return true; 
+                      if (dayOfWeek === 6) {
+                        if (sabado === 0) {
+                          return true;
                         }
                       }
                       return false;
@@ -519,6 +520,13 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
             </LocalizationProvider>
           </Stack>
         )}
+
+        {type === 'date' && (
+          <Stack spacing={3} sx={{ p: { xs: 1, md: 2 } }}>
+            <RHFTextField name="comentario" label="Comentario" multiline rows={3} />
+          </Stack>
+        )}
+
       </DialogContent>
 
       <DialogActions>
