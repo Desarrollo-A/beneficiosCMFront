@@ -613,3 +613,19 @@ export function actualizarFechaIntentoPago(idUsuario, idCita) {
 
   return update;
 }
+
+export function getBeneficioActivo(idUsuario){
+  const URL = [endpoints.calendarioColaborador.getBeneficioActivo];
+
+  const get = fetcherPost(URL, { idUsuario });
+
+  return get;
+}
+
+export function getDocumento(beneficio){
+  const URL = [endpoints.calendarioColaborador.getDocumento];
+
+  const get = fetcherPost(URL, { beneficio });
+
+  return get;
+}

@@ -24,6 +24,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import FormHelperText from '@mui/material/FormHelperText';
 import InputAdornment from '@mui/material/InputAdornment';
+import { Checkbox, FormControl, FormControlLabel, FormGroup } from '@mui/material';
 
 import { endpoints } from 'src/utils/axios';
 import {
@@ -53,6 +54,7 @@ import {
   cancelAppointment,
   getDiasDisponibles,
   getCitasSinEvaluar,
+  getBeneficioActivo,
   getCitasFinalizadas,
   updateDetailPacient,
   getHorariosOcupados,
@@ -64,7 +66,7 @@ import {
   insertGoogleCalendarEvent,
   updateGoogleCalendarEvent,
   deleteGoogleCalendarEvent,
-  actualizarFechaIntentoPago,
+  actualizarFechaIntentoPago
 } from 'src/api/calendar-colaborador';
 
 import Iconify from 'src/components/iconify';
@@ -115,6 +117,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const [pendiente, setPendiente] = useState({});
   const [sedesAtencionEspecialista, setSedesAtencionEspecialista] = useState({});
   const [diasPresenciales, setDiasPresenciales] = useState([]);
+  const [aceptar, setAceptar] = useState(false);
 
   const [btnNotificationDisabled, setBtnNotificationDisabled] = useState(false);
   const [email, setEmail] = useState('');
@@ -122,6 +125,18 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const [errorMessage, setErrorMessage] = useState('Formato de correo erróneo');
   const [errorEmail, setErrorEmail] = useState(false);
   const [sendEmails, setSendEmails] = useState(false);
+
+  const onAceptar = () => {
+    if(aceptar)
+      setAceptar(false);
+    else
+      setAceptar(true);
+  }
+
+  const [beneficioActivo, setBeneficioActivo] = useState({
+    beneficio: '',
+    primeraCita: ''
+  });
 
   const { user: datosUser } = useAuthContext();
 
@@ -1067,6 +1082,30 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const diasFestivos = beneficio === 158 ? [] : generarDiasFestivos(year);
 
     const diasADeshabilitar = new Set([...diasOcupadosFiltro, ...diasFestivos]);
+
+    const activo = await getBeneficioActivo(datosUser?.idUsuario);
+
+    switch(beneficio){
+      case 537:
+        setBeneficioActivo({beneficio, primeraCita: activo[0].estatusNut}); 
+      break;
+
+      case 585:
+        setBeneficioActivo({beneficio, primeraCita: activo[0].estatusPsi});
+      break;
+
+      case 686:
+        setBeneficioActivo({beneficio, primeraCita: activo[0].estatusGE});
+      break;
+
+      case 158:
+        setBeneficioActivo({beneficio, primeraCita: activo[0].estatusQB});
+      break;
+
+      default:
+        enqueueSnackbar('Error en terminos y condiciones', { variant: 'error'});
+      break;
+    }
 
     setDiasOcupados([...diasADeshabilitar]);
     setIsLoading(false);
@@ -2231,8 +2270,12 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                     errorHorarioSeleccionado={errorHorarioSeleccionado}
                     btnDisabled={btnDisabled}
                     handleHorarioSeleccionado={handleHorarioSeleccionado}
+                    beneficioActivo={beneficioActivo}
+                    aceptarTerminos= {onAceptar}
+                    aceptar={aceptar}
                   />
-                )}
+                  
+                )}                
               </DialogContent>
               <DialogActions
                 sx={
@@ -2275,7 +2318,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                     type="submit"
                     variant="contained"
                     color="success"
-                    loading={btnDisabled}
+                    disabled={beneficioActivo.primeraCita === 0 && !aceptar}
+                    loading={btnDisabled} // para desactivar en caso de que tenga terminos sin aceptar
                   >
                     Agendar
                   </LoadingButton>

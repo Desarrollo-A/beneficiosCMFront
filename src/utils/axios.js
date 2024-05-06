@@ -200,6 +200,8 @@ export const endpoints = {
     deleteGoogleEvent: 'CalendarioController/deleteGoogleEvent',
     getSedesEspecialista: 'CalendarioController/getSedesDeAtencionEspecialista',
     getDisponibilidadEspecialista: 'CalendarioController/getDiasDisponiblesAtencionEspecialista',
+    getBeneficioActivo: 'CalendarioController/getBeneficioActivo',
+    getDocumento: 'CalendarioController/getDocumento'
   },
   reportes: {
     lista: '/ReportesController/citas',
