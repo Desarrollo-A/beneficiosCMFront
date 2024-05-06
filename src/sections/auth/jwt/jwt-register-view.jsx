@@ -99,31 +99,32 @@ export default function JwtRegisterView() {
 
   const renderHead = (
     <Stack spacing={1} sx={{ mb: 0 }}>
-      ´
-      <Box
-        component="img"
-        alt="auth"
-        src={`${import.meta.env.BASE_URL}assets/img/logoBeneficios.svg`}
-        sx={{
-          maxWidth: { xs: 480, lg: 560, xl: 720 },
-          position: 'absolute',
-          width: { xs: '25%', md: '16%' },
-          left: '64%',
-          top: { xs: '10%', md: '-9%' },
-        }}
-      />
-      <Box
-        component="img"
-        alt="auth"
-        src={`${import.meta.env.BASE_URL}assets/img/beneficiosBrand.svg`}
-        sx={{
-          maxWidth: {
-            xs: 480,
-            lg: 560,
-            xl: 720,
-          },
-        }}
-      />
+      <div>
+        <Box
+          component="img"
+          alt="auth"
+          src={`${import.meta.env.BASE_URL}assets/img/logoBeneficios.svg`}
+          sx={{
+            maxWidth: { xs: 480, lg: 560, xl: 720 },
+            position: 'absolute',
+            width: { xs: '20%', md: '16%' },
+            left: '64%',
+            top: { xs: '1%', md: '-9%' }
+          }}
+        />
+        <Box
+          component="img"
+          alt="auth"
+          src={`${import.meta.env.BASE_URL}assets/img/beneficiosBrand.svg`}
+          sx={{
+            maxWidth: {
+              xs: 480,
+              lg: 560,
+              xl: 720,
+            }
+          }}
+        />
+      </div>
       <Typography variant="h4">Registro de usuarios</Typography>
       <Stack direction="row" spacing={0.5}>
         <Typography variant="body2"> ¿Ya tienes una cuenta? </Typography>
@@ -185,32 +186,32 @@ export default function JwtRegisterView() {
   const logoMd = (
     <Stack>
       {isMobile && (
-        <Box
-          component="img"
-          alt="auth"
-          src={`${import.meta.env.BASE_URL}assets/img/logoMaderas.svg`}
-          sx={{
-            maxWidth: { xs: 480, lg: 560, xl: 720 },
-            position: 'absolute',
-            width: { xs: '50%', md: '21%' },
-            left: '25%',
-            top: { xs: '83%' },
-          }}
-        />
-      )}
-      {!isMobile && (
-        <Box
-          component="img"
-          alt="auth"
-          src={`${import.meta.env.BASE_URL}assets/img/logoMaderas.svg`}
-          sx={{
-            position: 'absolute',
-            left: '37%',
-            width: { xs: '55%', md: '26%' },
-            top: { md: '103%' },
-          }}
-        />
-      )}
+          <Box
+            component="img"
+            alt="auth"
+            src={`${import.meta.env.BASE_URL}assets/img/logoMaderas.svg`}
+            sx={{
+              maxWidth: { xs: 480, lg: 560, xl: 720 },
+              position: 'absolute',
+              width: { xs: '50%', md: '21%' },
+              left: { xs: '25%', md: '40%'},
+              top: { xs: '85%', md: '87%'}
+            }}
+          />
+        )}
+        {!isMobile && (
+          <Box
+            component="img"
+            alt="auth"
+            src={`${import.meta.env.BASE_URL}assets/img/logoMaderas.svg`}
+            sx={{
+              position: 'absolute',
+              left: '37%',
+              width: { xs: '55%', md: '26%' },
+              top: { md: '87%', lg: '95%', xl:'102%' }
+            }}
+          />
+        )}
     </Stack>
   );
 
