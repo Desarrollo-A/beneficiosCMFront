@@ -38,7 +38,7 @@ const options = {
   refreshInterval: 0,
 };
 
-// const session = sessionStorage.getItem('accessToken');
+// const session = localStorage.getItem('accessToken');
 // const datosUser = session ? JSON.parse(Base64.decode(session.split('.')[2])) : [];
 
 // ----------------------------------------------------------------------

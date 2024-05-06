@@ -56,7 +56,7 @@ export default function AvisoPrivacidadGeneral({datos, enviarDatosAlPadre, idPue
     };
 
 
-    const accessToken = sessionStorage.getItem('accessToken');
+    const accessToken = localStorage.getItem('accessToken');
     
     return (
       <>

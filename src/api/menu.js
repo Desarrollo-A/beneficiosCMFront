@@ -7,7 +7,7 @@ import { endpoints, fetcherGet } from 'src/utils/axios';
 
 export function useGetMenu() {
   const URL = endpoints.user.menu;
-  const accessToken = sessionStorage.getItem('accessToken');
+  const accessToken = localStorage.getItem('accessToken');
 
   const config = {
     headers : {

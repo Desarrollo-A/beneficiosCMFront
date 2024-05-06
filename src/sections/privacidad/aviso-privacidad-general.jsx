@@ -214,7 +214,7 @@ export default function AvisoPrivacidadGeneral() {
       setArchivo('');
     };
 
-    const accessToken = sessionStorage.getItem('accessToken');
+    const accessToken = localStorage.getItem('accessToken');
 
     const manejarEnvioFormulario = (event) => {
       event.preventDefault();

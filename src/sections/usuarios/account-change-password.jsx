@@ -27,7 +27,7 @@ import FormProvider, { RHFTextField } from 'src/components/hook-form';
 export default function AccountChangePassword() {
   const { enqueueSnackbar } = useSnackbar();
 
-  const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+  const datosUser = JSON.parse(Base64.decode(localStorage.getItem('accessToken').split('.')[2]));
 
   const updatePass = useUpdate(endpoints.user.updatePass);
 
