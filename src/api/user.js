@@ -71,7 +71,7 @@ export function useGetAuthorized() {
 
   const URL = `${endpoints.user.authorized}?path=${location.pathname}`;
 
-  const accessToken = sessionStorage.getItem('accessToken');
+  const accessToken = localStorage.getItem('accessToken');
 
   const config = {
     headers: {

@@ -1,18 +1,27 @@
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
+import axios from 'axios';
+import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
+import React, { useState, useEffect } from 'react';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import { Marker, GoogleMap, LoadScript, } from '@react-google-maps/api';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/system/Stack';
+import Dialog from '@mui/material/Dialog';
 import Select from '@mui/material/Select';
+import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import Grid from '@mui/material/Unstable_Grid2';
 import InputLabel from '@mui/material/InputLabel';
 import Typography from '@mui/material/Typography';
+import DialogTitle from '@mui/material/DialogTitle';
 import FormControl from '@mui/material/FormControl';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
 import FormHelperText from '@mui/material/FormHelperText';
 import LinearProgress from '@mui/material/LinearProgress';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -74,6 +83,53 @@ export default function AppointmentSchedule({
   handleHorarioSeleccionado,
 }) {
 
+  const mapStyles = {
+    height: "60vh",
+    width: "100%"
+  };
+
+  const [address, setAddress] = useState('');
+
+  useEffect(() => {
+
+    if (!isEmpty(oficina)) {
+      setAddress(oficina.data[0].ubicación);
+    }
+
+  }, [oficina]);
+
+  const [open, setOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const [coordinates, setCoordinates] = useState(null);
+
+  useEffect(() => {
+    const fetchCoordinates = async () => {
+      try {
+        const response = await axios.get(`
+        https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
+        `);
+
+        if (response.data.results[0]?.geometry) {
+          setCoordinates(response.data.results[0]?.geometry.location);
+
+        } else {
+          console.log('No se encontraron coordenadas para esta dirección');
+        }
+      } catch (error) {
+        console.error('Error al obtener las coordenadas', error);
+      }
+    };
+
+    fetchCoordinates();
+  }, [address]);
 
   return (
     <Grid sx={{ display: { xs: 'block', sm: 'flex', md: 'flex' } }}>
@@ -103,7 +159,7 @@ export default function AppointmentSchedule({
                 {dayjs().locale('es').format('dddd, DD MMMM YYYY')}
               </Typography>
             )}
-            
+
             {!currentEvent?.id && selectedValues?.modalidad ? (
               <ThemeProvider theme={darkTheme}>
                 <Stack direction="column" spacing={3} justifyContent="space-between">
@@ -149,14 +205,14 @@ export default function AppointmentSchedule({
                       value={selectedValues.especialista}
                       defaultValue=""
                       onChange={(e) => handleChange('especialista', e.target.value)}
-                      /* disabled={!!(especialistas?.length === 0 || currentEvent?.id)} */
+                    /* disabled={!!(especialistas?.length === 0 || currentEvent?.id)} */
                     >
                       {!(especialistas?.length === 0 || currentEvent?.id) ? (
-                      especialistas?.map((e, index) => (
-                        <MenuItem key={e.id} value={e.id}>
-                          {e.especialista.toUpperCase()}
-                        </MenuItem>
-                      ))
+                        especialistas?.map((e, index) => (
+                          <MenuItem key={e.id} value={e.id}>
+                            {e.especialista.toUpperCase()}
+                          </MenuItem>
+                        ))
                       ) : (
                         <Grid style={{ paddingTop: '3%' }}>
                           <LinearProgress />
@@ -180,14 +236,14 @@ export default function AppointmentSchedule({
                       defaultValue=""
                       value={selectedValues.modalidad}
                       onChange={(e) => handleChange('modalidad', e.target.value)}
-                      /* disabled={!!(modalidades?.length === 0 || currentEvent?.id)} */
+                    /* disabled={!!(modalidades?.length === 0 || currentEvent?.id)} */
                     >
                       {!(modalidades?.length === 0 || currentEvent?.id) ? (
-                      modalidades?.map((e, index) => (
-                        <MenuItem key={e.tipoCita} value={e.tipoCita}>
-                          {e.modalidad.toUpperCase()}
-                        </MenuItem>
-                      ))
+                        modalidades?.map((e, index) => (
+                          <MenuItem key={e.tipoCita} value={e.tipoCita}>
+                            {e.modalidad.toUpperCase()}
+                          </MenuItem>
+                        ))
                       ) : (
                         <Grid style={{ paddingTop: '3%' }}>
                           <LinearProgress />
@@ -219,65 +275,65 @@ export default function AppointmentSchedule({
                     disabled={!!(beneficios?.length === 0 || currentEvent?.id)}
                   >
                     {beneficios?.map((e) => (
-                        <MenuItem key={e.idPuesto} value={e.idPuesto}>
-                          {e.puesto.toUpperCase()}
-                        </MenuItem>
-                      ))}
+                      <MenuItem key={e.idPuesto} value={e.idPuesto}>
+                        {e.puesto.toUpperCase()}
+                      </MenuItem>
+                    ))}
                   </Select>
                   {errorBeneficio && selectedValues.beneficio === '' && (
                     <FormHelperText error={errorBeneficio}>Seleccione un beneficio</FormHelperText>
                   )}
                 </FormControl>
 
-                  <>
-                    <FormControl error={!!errorEspecialista} fullWidth>
-                      <InputLabel id="especialista-input">Especialista</InputLabel>
-                      <Select
-                        labelId="especialista-input"
-                        id="select-especialista"
-                        label="Especialista"
-                        name="especialista"
-                        value={selectedValues.especialista}
-                        defaultValue=""
-                        onChange={(e) => handleChange('especialista', e.target.value)}
-                        disabled={!!(especialistas?.length === 0 || currentEvent?.id)}
-                      >
-                        {especialistas?.map((e, index) => (
-                          <MenuItem key={e.id} value={e.id}>
-                            {e.especialista.toUpperCase()}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      {errorEspecialista && selectedValues.especialista === '' && (
-                        <FormHelperText error={errorEspecialista}>
-                          Seleccione un especialista
-                        </FormHelperText>
-                      )}
-                    </FormControl>
+                <>
+                  <FormControl error={!!errorEspecialista} fullWidth>
+                    <InputLabel id="especialista-input">Especialista</InputLabel>
+                    <Select
+                      labelId="especialista-input"
+                      id="select-especialista"
+                      label="Especialista"
+                      name="especialista"
+                      value={selectedValues.especialista}
+                      defaultValue=""
+                      onChange={(e) => handleChange('especialista', e.target.value)}
+                      disabled={!!(especialistas?.length === 0 || currentEvent?.id)}
+                    >
+                      {especialistas?.map((e, index) => (
+                        <MenuItem key={e.id} value={e.id}>
+                          {e.especialista.toUpperCase()}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    {errorEspecialista && selectedValues.especialista === '' && (
+                      <FormHelperText error={errorEspecialista}>
+                        Seleccione un especialista
+                      </FormHelperText>
+                    )}
+                  </FormControl>
 
-                    <FormControl error={!!errorModalidad} fullWidth>
-                      <InputLabel id="modalidad-input">Modalidad</InputLabel>
-                      <Select
-                        labelId="Modalidad"
-                        id="select-modalidad"
-                        label="Modalidad"
-                        name="Modalidad"
-                        defaultValue=""
-                        value={selectedValues.modalidad}
-                        onChange={(e) => handleChange('modalidad', e.target.value)}
-                        disabled={!!(modalidades?.length === 0 || currentEvent?.id)}
-                      >
-                        {modalidades?.map((e, index) => (
-                          <MenuItem key={e.tipoCita} value={e.tipoCita}>
-                            {e.modalidad.toUpperCase()}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      {errorModalidad && selectedValues.modalidad === '' && (
-                        <FormHelperText error={errorModalidad}>Seleccione una modalidad</FormHelperText>
-                      )}
-                    </FormControl>
-                  </>
+                  <FormControl error={!!errorModalidad} fullWidth>
+                    <InputLabel id="modalidad-input">Modalidad</InputLabel>
+                    <Select
+                      labelId="Modalidad"
+                      id="select-modalidad"
+                      label="Modalidad"
+                      name="Modalidad"
+                      defaultValue=""
+                      value={selectedValues.modalidad}
+                      onChange={(e) => handleChange('modalidad', e.target.value)}
+                      disabled={!!(modalidades?.length === 0 || currentEvent?.id)}
+                    >
+                      {modalidades?.map((e, index) => (
+                        <MenuItem key={e.tipoCita} value={e.tipoCita}>
+                          {e.modalidad.toUpperCase()}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    {errorModalidad && selectedValues.modalidad === '' && (
+                      <FormHelperText error={errorModalidad}>Seleccione una modalidad</FormHelperText>
+                    )}
+                  </FormControl>
+                </>
               </Stack>
             )}
             {selectedValues.modalidad === 1 && selectedValues.beneficio && (
@@ -285,24 +341,56 @@ export default function AppointmentSchedule({
                 <Stack spacing={1} sx={{ p: { xs: 1, md: 1 } }}>
                   Dirección de la oficina :
                   {oficina && oficina.result ? (
-                    <Stack
-                      sx={{
-                        flexDirection: 'row',
-                      }}
-                    >
-                      <Stack>
-                        <Iconify
-                          icon="mdi:office-building-marker"
-                          width={30}
-                          sx={{ color: 'text.disabled' }}
-                        />
+                    <>
+                      <Stack
+                        sx={{
+                          flexDirection: 'row',
+                        }}
+                      >
+                        <Stack>
+                          <Iconify
+                            icon="mdi:office-building-marker"
+                            width={30}
+                            sx={{ color: 'text.disabled' }}
+                          />
+                        </Stack>
+                        <Stack sx={{ flexDirection: 'col' }}>
+                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                            {oficina.data[0].ubicación || 'Sin dirección'}
+                          </Typography>
+                        </Stack>
+                        <Button variant="contained" color="primary" onClick={handleClickOpen}>
+                          Ver Mapa
+                        </Button>
                       </Stack>
-                      <Stack sx={{ flexDirection: 'col' }}>
-                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                          {oficina.data[0].ubicación || 'Sin dirección'}
-                        </Typography>
-                      </Stack>
-                    </Stack>
+
+                      {coordinates !== null ? (
+                        <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
+                          <DialogTitle>OFICINA: {oficina.data[0].oficina}</DialogTitle>
+                          <DialogContent>
+
+                            <LoadScript
+                              googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
+                              <GoogleMap
+                                mapContainerStyle={mapStyles}
+                                zoom={15}
+                                center={coordinates}>
+                                <Marker position={coordinates} />
+                              </GoogleMap>
+                            </LoadScript>
+                          </DialogContent>
+                          <DialogActions>
+
+                            <Button onClick={handleClose} variant="contained" color="error">
+                              Cerrar
+                            </Button>
+                          </DialogActions>
+                        </Dialog>
+                      ) :
+                        null
+                      }
+
+                    </>
                   ) : (
                     <LinearProgress />
                   )}
@@ -381,8 +469,8 @@ export default function AppointmentSchedule({
                   </Stack>
                 </Stack>
                 <Stack spacing={1} sx={{ p: { xs: 1, md: 1 } }}>
-                  Es necesario habilitar las ventanas emergentes en el navegador para poder realizar
-                  el pago de la cita.
+                    Es necesario habilitar las ventanas emergentes en el navegador para poder realizar
+                    el pago de la cita.
                 </Stack>
               </>
             )}
@@ -438,22 +526,25 @@ export default function AppointmentSchedule({
           >
             {horariosDisponibles ? (
               <FormControl error={!!errorHorarioSeleccionado} fullWidth>
-                <InputLabel id="modalidad-input">Horarios disponibles</InputLabel>
-                <Select
-                  labelId="Horarios disponibles"
-                  id="select-horario"
-                  label="Horarios disponibles"
-                  name="Horarios disponibles"
-                  value={horarioSeleccionado}
-                  onChange={(e) => handleHorarioSeleccionado(e.target.value)}
-                  disabled={horariosDisponibles.length === 0}
-                >
-                  {horariosDisponibles.map((e, index) => (
-                    <MenuItem key={e.inicio} value={`${e.fecha} ${e.inicio}`}>
-                      {e.inicio}
-                    </MenuItem>
-                  ))}
-                </Select>
+                <ThemeProvider theme={lightTheme}>
+                  <InputLabel id="modalidad-input">Horarios disponibles</InputLabel>
+                  <Select
+                    labelId="Horarios disponibles"
+                    id="select-horario"
+                    label="Horarios disponibles"
+                    name="Horarios disponibles"
+                    value={horarioSeleccionado}
+                    onChange={(e) => handleHorarioSeleccionado(e.target.value)}
+                    disabled={horariosDisponibles.length === 0}
+                    theme={lightTheme}
+                  >
+                    {horariosDisponibles.map((e, index) => (
+                      <MenuItem key={e.inicio} value={`${e.fecha} ${e.inicio}`}>
+                        {e.inicio}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </ThemeProvider>
                 {errorHorarioSeleccionado && horarioSeleccionado === '' && (
                   <FormHelperText error={errorHorarioSeleccionado}>
                     Seleccione fecha y horario

@@ -23,7 +23,7 @@ export function useInsert(dt) {
 
 export const fetcherInsert = async (args) => {
   const [url, data, config] = Array.isArray(args) ? args : [args];
-  const accessToken = sessionStorage.getItem('accessToken');
+  const accessToken = localStorage.getItem('accessToken');
 
   const res = await instance.post(
     url,
@@ -44,7 +44,7 @@ export function useGetToken(object) {
   const params = new URLSearchParams(object).toString();
   const URL = `${endpoints.user.token}?${params}`;
 
-  const accessToken = sessionStorage.getItem('accessToken');
+  const accessToken = localStorage.getItem('accessToken');
 
   const config = {
     headers: {

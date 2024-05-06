@@ -51,7 +51,7 @@ export function useInsert(endpoints) {
 
 export const fetcherInsert = async (args) => {
   const [url, data, config] = Array.isArray(args) ? args : [args];
-  const accessToken = sessionStorage.getItem('accessToken');
+  const accessToken = localStorage.getItem('accessToken');
 
   const res = await instance.post(
     url,

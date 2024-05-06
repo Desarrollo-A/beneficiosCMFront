@@ -52,7 +52,7 @@ export const tokenExpired = (exp) => {
   expiredTimer = setTimeout(() => {
     // alert('La sesión ha caducado, inicie sesión');
 
-    sessionStorage.removeItem('accessToken');
+    localStorage.removeItem('accessToken');
 
     window.location.href = paths.auth.jwt.login;
   }, timeLeft);
@@ -62,7 +62,7 @@ export const tokenExpired = (exp) => {
 
 export const setSession = (accessToken) => {
   if (accessToken) {
-    sessionStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('accessToken', accessToken);
 
     axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
 
@@ -70,7 +70,7 @@ export const setSession = (accessToken) => {
     const { exp } = jwtDecode(accessToken); // ~3 days by minimals server
     tokenExpired(exp);
   } else {
-    sessionStorage.removeItem('accessToken');
+    localStorage.removeItem('accessToken');
 
     delete axios.defaults.headers.common.Authorization;
   }

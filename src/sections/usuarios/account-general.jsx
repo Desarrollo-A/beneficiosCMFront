@@ -18,7 +18,7 @@ import FormProvider, {
 
 export default function AccountGeneral() {
 
-  const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+  const datosUser = JSON.parse(Base64.decode(localStorage.getItem('accessToken').split('.')[2]));
 
   const { puestoData } = usePostGeneral(datosUser.idUsuario, endpoints.user.puesto, "puestoData");
 
