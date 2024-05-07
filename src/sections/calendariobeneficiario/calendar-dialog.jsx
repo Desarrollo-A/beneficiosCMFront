@@ -24,7 +24,6 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import FormHelperText from '@mui/material/FormHelperText';
 import InputAdornment from '@mui/material/InputAdornment';
-import { Checkbox, FormControl, FormControlLabel, FormGroup } from '@mui/material';
 
 import { endpoints } from 'src/utils/axios';
 import {
