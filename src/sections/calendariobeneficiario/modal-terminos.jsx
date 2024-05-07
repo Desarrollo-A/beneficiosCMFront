@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Dialog, DialogActions, DialogContent } from '@material-ui/core';
 
-import { Button, CircularProgress, Grid, Stack } from '@mui/material';
+import { Button, CircularProgress, Grid, Stack, Typography } from '@mui/material';
 
 import Label from 'src/components/label';
 

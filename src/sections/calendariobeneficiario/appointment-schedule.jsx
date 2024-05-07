@@ -89,7 +89,7 @@ export default function AppointmentSchedule({
     setOpen(true);
 
     const getDoc = await getDocumento(beneficioActivo.beneficio);
-    setArchivo(getDoc[0]?.expediente ? getDoc[0]?.expediente : 0)
+    setArchivo(getDoc[0]?.expediente)
   }
 
   const close = () => {
