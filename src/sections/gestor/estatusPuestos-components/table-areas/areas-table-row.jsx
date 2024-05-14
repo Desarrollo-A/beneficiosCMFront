@@ -47,7 +47,7 @@ export default function AreasTableRow({ row, selected, onViewRow, onFilters, onR
 
   const { user } = useAuthContext();
 
-  const idUser = {idUser : user.idUsuario};
+  const idUser = {idUser : user?.idUsuario};
 
   const collapse = useBoolean();
 

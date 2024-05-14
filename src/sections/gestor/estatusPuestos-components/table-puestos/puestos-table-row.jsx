@@ -32,7 +32,7 @@ export default function PuestosTableRow({ row, selected, onViewRow }) {
 
   const { user } = useAuthContext();
 
-  const idUser = {idUser : user.idUsuario};
+  const idUser = {idUser : user?.idUsuario};
 
   const active = useBoolean();
 

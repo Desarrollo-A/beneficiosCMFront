@@ -47,7 +47,7 @@ export default function TableDepartamentos({ row, selected, onViewRow, onDeleteR
 
   const { user } = useAuthContext();
 
-  const idUser = {idUser : user.idUsuario};
+  const idUser = {idUser : user?.idUsuario};
 
   const updateEstatus = useUpdate(endpoints.gestor.updateEstatusDepartamentos);
 
