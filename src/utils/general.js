@@ -86,7 +86,7 @@ export const nLunesDelMes = (fecha, n) => {
   return nuevaFecha;
 };
 
-export const segundoDomingoDeMarzo = (año) => {
+export const inicioHorarioVerano = (año) => {
   // Crear una fecha que representa el primer día de marzo del año dado
   const fecha = new Date(año, 2, 1);
 
@@ -101,7 +101,7 @@ export const segundoDomingoDeMarzo = (año) => {
   return fecha;
 };
 
-export const primerDomingoDeNoviembre = (año) => {
+export const finHorarioVerano = (año) => {
   // Crear una fecha que representa el primer día de noviembre del año dado
   const fecha = new Date(año, 10, 1);
 
@@ -126,7 +126,7 @@ export const horaTijuana = (fechaStr) => {
   const fecha = new Date(fechaStr);
   const año = fecha.getFullYear();
   const horasARestar =
-    fecha >= segundoDomingoDeMarzo(año) && fecha <= primerDomingoDeNoviembre(año) ? 1 : 2;
+    fecha >= inicioHorarioVerano(año) && fecha <= finHorarioVerano(año) ? 1 : 2;
   fecha.setHours(fecha.getHours() - horasARestar);
 
   return fecha;
@@ -136,8 +136,28 @@ export const horaTijuanaAEstandar = (fechaStr) => {
   const fecha = new Date(fechaStr);
   const año = fecha.getFullYear();
   const horasASumar =
-    fecha >= segundoDomingoDeMarzo(año) && fecha <= primerDomingoDeNoviembre(año) ? 1 : 2;
+    fecha >= inicioHorarioVerano(año) && fecha <= finHorarioVerano(año) ? 1 : 2;
   fecha.setHours(fecha.getHours() + horasASumar);
+
+  return fecha;
+};
+
+export const horaCancun = (fechaStr) => {
+  const fecha = new Date(fechaStr);
+  const año = fecha.getFullYear();
+  const horasASumar =
+    fecha >= inicioHorarioVerano(año) && fecha <= finHorarioVerano(año) ? 1 : 2;
+  fecha.setHours(fecha.getHours() + horasASumar);
+
+  return fecha;
+};
+
+export const horaCancunAEstandar = (fechaStr) => {
+  const fecha = new Date(fechaStr);
+  const año = fecha.getFullYear();
+  const horasARestar =
+    fecha >= inicioHorarioVerano(año) && fecha <= finHorarioVerano(año) ? 1 : 2;
+  fecha.setHours(fecha.getHours() - horasARestar);
 
   return fecha;
 };

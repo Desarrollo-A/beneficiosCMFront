@@ -30,8 +30,8 @@ import {
   horaTijuana,
   generarFechas,
   generarDiasFestivos,
-  segundoDomingoDeMarzo,
-  primerDomingoDeNoviembre,
+  inicioHorarioVerano,
+  finHorarioVerano,
 } from 'src/utils/general';
 
 import { getEncodedHash } from 'src/api/api';
@@ -41,6 +41,7 @@ import {
   sendMail,
   crearCita,
   getHorario,
+  getSedeEsp,
   checkInvoice,
   getModalities,
   consultarCita,
@@ -65,7 +66,7 @@ import {
   insertGoogleCalendarEvent,
   updateGoogleCalendarEvent,
   deleteGoogleCalendarEvent,
-  actualizarFechaIntentoPago
+  actualizarFechaIntentoPago,
 } from 'src/api/calendar-colaborador';
 
 import Iconify from 'src/components/iconify';
@@ -171,7 +172,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const ahora = new Date();
     const añoDate = ahora.getFullYear();
     const horasARestar =
-      ahora >= segundoDomingoDeMarzo(añoDate) && ahora <= primerDomingoDeNoviembre(añoDate) ? 1 : 2;
+      ahora >= inicioHorarioVerano(añoDate) && ahora <= finHorarioVerano(añoDate) ? 1 : 2;
     ahora.setHours(ahora.getHours() - horasARestar);
 
     const fechaActual = dayjs(ahora).format('YYYY-MM-DD');
@@ -990,8 +991,10 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
   const getHorariosDisponibles = async (beneficio, especialista) => {
     setIsLoading(true);
+    const sedeEsp = await getSedeEsp(especialista);
+
     // Consultamos el horario del especialista segun su beneficio.
-    const horarioACubrir = await getHorario(beneficio, especialista, datosUser.idSede);
+    const horarioACubrir = await getHorario(beneficio, especialista, datosUser.idSede, sedeEsp.data[0].idsede);
 
     if (!horarioACubrir.result) return; // En caso de que no halla horario detenemos el proceso.
 
@@ -1268,7 +1271,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const ahora = new Date();
     const añoDate = ahora.getFullYear();
     const horasARestar =
-      ahora >= segundoDomingoDeMarzo(añoDate) && ahora <= primerDomingoDeNoviembre(añoDate) ? 1 : 2;
+      ahora >= inicioHorarioVerano(añoDate) && ahora <= finHorarioVerano(añoDate) ? 1 : 2;
     ahora.setHours(ahora.getHours() - horasARestar);
     const fechaActual = dayjs(ahora).format('YYYY-MM-DD');
 

@@ -7,7 +7,7 @@ import IconButton from '@mui/material/IconButton';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import { formatearDosFechaAUna, horaTijuana, toLocalISOString } from 'src/utils/general';
+import { horaCancun, horaTijuana, formatearDosFechaAUna } from 'src/utils/general';
 
 import { useAuthContext } from 'src/auth/hooks';
 
@@ -51,12 +51,14 @@ export default function FilasTabla({ row, selected, rol, rel }) {
     ); // El de las 10
 
     let horaDeTijuana = horaTijuana(fechaHoraInicio);
-    const fechaInicio = horaDeTijuana;
+    let horaDeCancun = horaCancun(fechaHoraInicio);
+    const fechaInicio = user?.idSede === 11 ? horaDeTijuana : horaDeCancun;
 
     horaDeTijuana = horaTijuana(fechaHoraFin);
-    const fechaFin = horaDeTijuana;
+    horaDeCancun = horaCancun(fechaHoraFin);
+    const fechaFin = user?.idSede === 11 ? horaDeTijuana : horaDeCancun;
 
-    const horarioNuevo = formatearDosFechaAUna(fechaInicio, fechaFin);
+    formatearDosFechaAUna(fechaInicio, fechaFin);
 
   return (
     <>
@@ -111,7 +113,7 @@ export default function FilasTabla({ row, selected, rol, rel }) {
         </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {user.idSede === 11 ? 
+          {(user?.idSede === 11 || user?.idSede === 9) && user?.idSede === idColab ? 
             (formatearDosFechaAUna(fechaInicio, fechaFin)) :
             horario
           }

@@ -201,7 +201,8 @@ export const endpoints = {
     getSedesEspecialista: 'CalendarioController/getSedesDeAtencionEspecialista',
     getDisponibilidadEspecialista: 'CalendarioController/getDiasDisponiblesAtencionEspecialista',
     getBeneficioActivo: 'CalendarioController/getBeneficioActivo',
-    getDocumento: 'CalendarioController/getDocumento'
+    getDocumento: 'CalendarioController/getDocumento',
+    getSedeEsp: 'CalendarioController/getSedeEsp',
   },
   reportes: {
     lista: '/ReportesController/citas',

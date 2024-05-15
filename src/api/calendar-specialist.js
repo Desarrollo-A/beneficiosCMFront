@@ -6,8 +6,10 @@ import { enqueueSnackbar } from 'notistack';
 
 import { endpoints, fetcherPost } from 'src/utils/axios';
 import {
+  horaCancun,
   horaTijuana,
   toLocalISOString,
+  horaCancunAEstandar,
   horaTijuanaAEstandar,
   obtenerFechasConHoras,
 } from 'src/utils/general';
@@ -87,18 +89,19 @@ export function GetCustomEvents(current, idUsuario, idSede) {
 
   const memoizedValue = useMemo(() => {
     const events = data?.events?.map((event) => {
-      let startConverted = horaTijuana(event.start);
+
+      let startConverted = idSede === 11 ? horaTijuana(event.start) : horaCancun(event.start);
       startConverted = toLocalISOString(startConverted);
       startConverted = startConverted.slice(0, 19).replace('T', ' ');
-      const inicioCita = idSede !== 11 ? event.start : startConverted;
-      let endConverted = horaTijuana(event.end);
+      const inicioCita = idSede === 11 && event.idSedePaciente !== idSede ? startConverted : event.start;
+      let endConverted = idSede === 11 ? horaTijuana(event.end) : horaCancun(event.end);
       endConverted = toLocalISOString(endConverted);
       endConverted = endConverted.slice(0, 19).replace('T', ' ');
-      const finCita = idSede !== 11 ? event.end : endConverted;
+      const finCita = ((idSede === 11 || idSede === 9) && event.idSedePaciente !== idSede) ? endConverted : event.end;
       const fechasCitasReagendadas = obtenerFechasConHoras(event.fechasFolio);
       let fechas = '';
       fechasCitasReagendadas?.forEach((fecha) => {
-        const fechaInicioCita = horaTijuana(fecha);
+        const fechaInicioCita = idSede === 11 ? horaTijuana(fecha) : horaCancun(fecha);
         fechas +=
           fechas === ''
             ? `${dayjs(fechaInicioCita).format('DD / MM / YYYY')} A las ${dayjs(
@@ -153,6 +156,40 @@ export async function createCustom(eventData, idUsuario, idSede) {
     // Resultado en fecha tipo DATE
     fechaInicioCita = horaTijuanaAEstandar(inicioCita);
     fechaFinCita = horaTijuanaAEstandar(finCita);
+
+    let horasI = fechaInicioCita.getHours();
+    let minutosI = fechaInicioCita.getMinutes();
+    let segundosI = fechaInicioCita.getSeconds();
+
+    horasI = horasI < 10 ? `0${horasI}` : horasI;
+    minutosI = minutosI < 10 ? `0${minutosI}` : minutosI;
+    segundosI = segundosI < 10 ? `0${segundosI}` : segundosI;
+
+    let horasF = fechaFinCita.getHours();
+    let minutosF = fechaFinCita.getMinutes();
+    let segundosF = fechaFinCita.getSeconds();
+
+    horasF = horasF < 10 ? `0${horasF}` : horasF;
+    minutosF = minutosF < 10 ? `0${minutosF}` : minutosF;
+    segundosF = segundosF < 10 ? `0${segundosF}` : segundosF;
+
+    // Resultado en horas en string
+    horaInicioCita = `${horasI}:${minutosI}:${segundosI}`;
+    horaFinCita = `${horasF}:${minutosF}:${segundosF}`;
+  }
+
+  if (idSede === 9) {
+    const partesInicio = eventData.hora_inicio.split(':');
+    const inicioCita = new Date(`${eventData.fechaInicio} ${eventData.hora_inicio}`);
+    inicioCita.setHours(partesInicio[0], partesInicio[1], partesInicio[2]);
+
+    const partesFinal = eventData.hora_final.split(':');
+    const finCita = new Date(`${eventData.fechaFinal} ${eventData.hora_final}`);
+    finCita.setHours(partesFinal[0], partesFinal[1], partesFinal[2]);
+
+    // Resultado en fecha tipo DATE
+    fechaInicioCita = horaCancunAEstandar(inicioCita);
+    fechaFinCita = horaCancunAEstandar(finCita);
 
     let horasI = fechaInicioCita.getHours();
     let minutosI = fechaInicioCita.getMinutes();
@@ -301,6 +338,39 @@ export async function createAppointment(eventData, modalitie, datosUser, default
     // Resultado en fecha tipo DATE
     fechaInicioCita = horaTijuanaAEstandar(inicioCita);
     fechaFinCita = horaTijuanaAEstandar(finCita);
+
+    let horasI = fechaInicioCita.getHours();
+    let minutosI = fechaInicioCita.getMinutes();
+    let segundosI = fechaInicioCita.getSeconds();
+
+    horasI = horasI < 10 ? `0${horasI}` : horasI;
+    minutosI = minutosI < 10 ? `0${minutosI}` : minutosI;
+    segundosI = segundosI < 10 ? `0${segundosI}` : segundosI;
+
+    let horasF = fechaFinCita.getHours();
+    let minutosF = fechaFinCita.getMinutes();
+    let segundosF = fechaFinCita.getSeconds();
+
+    horasF = horasF < 10 ? `0${horasF}` : horasF;
+    minutosF = minutosF < 10 ? `0${minutosF}` : minutosF;
+    segundosF = segundosF < 10 ? `0${segundosF}` : segundosF;
+
+    // Resultado en horas en string
+    horaInicioCita = `${horasI}:${minutosI}:${segundosI}`;
+    horaFinCita = `${horasF}:${minutosF}:${segundosF}`;
+  }
+  if (datosUser.idSede === 9) {
+    const partesInicio = eventData.hora_inicio.split(':');
+    const inicioCita = new Date(`${eventData.fechaInicio} ${eventData.hora_inicio}`);
+    inicioCita.setHours(partesInicio[0], partesInicio[1], partesInicio[2]);
+
+    const partesFinal = eventData.hora_final.split(':');
+    const finCita = new Date(`${eventData.fechaFinal} ${eventData.hora_final}`);
+    finCita.setHours(partesFinal[0], partesFinal[1], partesFinal[2]);
+
+    // Resultado en fecha tipo DATE
+    fechaInicioCita = horaCancunAEstandar(inicioCita);
+    fechaFinCita = horaCancunAEstandar(finCita);
 
     let horasI = fechaInicioCita.getHours();
     let minutosI = fechaInicioCita.getMinutes();
@@ -540,6 +610,39 @@ export async function updateAppointment(eventData, idUsuario, idSede) {
     horaInicioCita = `${horasI}:${minutosI}:${segundosI}`;
     horaFinCita = `${horasF}:${minutosF}:${segundosF}`;
   }
+  if (idSede === 9) {
+    const partesInicio = eventData.hora_inicio.split(':');
+    const inicioCita = new Date(`${eventData.fechaInicio} ${eventData.hora_inicio}`);
+    inicioCita.setHours(partesInicio[0], partesInicio[1], partesInicio[2]);
+
+    const partesFinal = eventData.hora_final.split(':');
+    const finCita = new Date(`${eventData.fechaFinal} ${eventData.hora_final}`);
+    finCita.setHours(partesFinal[0], partesFinal[1], partesFinal[2]);
+
+    // Resultado en fecha tipo DATE
+    fechaInicioCita = horaCancunAEstandar(inicioCita);
+    fechaFinCita = horaCancunAEstandar(finCita);
+
+    let horasI = fechaInicioCita.getHours();
+    let minutosI = fechaInicioCita.getMinutes();
+    let segundosI = fechaInicioCita.getSeconds();
+
+    horasI = horasI < 10 ? `0${horasI}` : horasI;
+    minutosI = minutosI < 10 ? `0${minutosI}` : minutosI;
+    segundosI = segundosI < 10 ? `0${segundosI}` : segundosI;
+
+    let horasF = fechaFinCita.getHours();
+    let minutosF = fechaFinCita.getMinutes();
+    let segundosF = fechaFinCita.getSeconds();
+
+    horasF = horasF < 10 ? `0${horasF}` : horasF;
+    minutosF = minutosF < 10 ? `0${minutosF}` : minutosF;
+    segundosF = segundosF < 10 ? `0${segundosF}` : segundosF;
+
+    // Resultado en horas en string
+    horaInicioCita = `${horasI}:${minutosI}:${segundosI}`;
+    horaFinCita = `${horasF}:${minutosF}:${segundosF}`;
+  }
   const start = dayjs(`${eventData.fechaInicio} ${horaInicioCita}`).format('YYYY/MM/DD HH:mm:ss'); // fecha a la que se movera
   const end = dayjs(`${eventData.fechaFinal} ${horaFinCita}`).format('YYYY/MM/DD HH:mm:ss'); // fecha a la que se movera
   const now = dayjs(new Date()).format('YYYY/MM/DD HH:mm:ss');
@@ -595,6 +698,10 @@ export async function cancelAppointment(currentEvent, id, cancelType, idUsuario,
 
   if (idSede === 11) {
     fechaInicioCita = horaTijuanaAEstandar(currentEvent?.start);
+    fechaInicioCita = dayjs(fechaInicioCita).format('YYYY/MM/DD HH:mm:ss');
+  }
+  if (idSede === 9) {
+    fechaInicioCita = horaCancunAEstandar(currentEvent?.start);
     fechaInicioCita = dayjs(fechaInicioCita).format('YYYY/MM/DD HH:mm:ss');
   }
 
@@ -947,6 +1054,40 @@ export async function reschedule(eventData, idDetalle, cancelType, datosUser, de
     // Resultado en fecha tipo DATE
     fechaInicioCita = horaTijuanaAEstandar(inicioCita);
     fechaFinCita = horaTijuanaAEstandar(finCita);
+
+    let horasI = fechaInicioCita.getHours();
+    let minutosI = fechaInicioCita.getMinutes();
+    let segundosI = fechaInicioCita.getSeconds();
+
+    horasI = horasI < 10 ? `0${horasI}` : horasI;
+    minutosI = minutosI < 10 ? `0${minutosI}` : minutosI;
+    segundosI = segundosI < 10 ? `0${segundosI}` : segundosI;
+
+    let horasF = fechaFinCita.getHours();
+    let minutosF = fechaFinCita.getMinutes();
+    let segundosF = fechaFinCita.getSeconds();
+
+    horasF = horasF < 10 ? `0${horasF}` : horasF;
+    minutosF = minutosF < 10 ? `0${minutosF}` : minutosF;
+    segundosF = segundosF < 10 ? `0${segundosF}` : segundosF;
+
+    // Resultado en horas en string
+    horaInicioCita = `${horasI}:${minutosI}:${segundosI}`;
+    horaFinCita = `${horasF}:${minutosF}:${segundosF}`;
+  }
+
+  if (datosUser?.idSede === 9) {
+    const partesInicio = eventData.hora_inicio.split(':');
+    const inicioCita = new Date(`${eventData.fechaInicio} ${eventData.hora_inicio}`);
+    inicioCita.setHours(partesInicio[0], partesInicio[1], partesInicio[2]);
+
+    const partesFinal = eventData.hora_final.split(':');
+    const finCita = new Date(`${eventData.fechaInicio} ${eventData.hora_final}`);
+    finCita.setHours(partesFinal[0], partesFinal[1], partesFinal[2]);
+
+    // Resultado en fecha tipo DATE
+    fechaInicioCita = horaCancunAEstandar(inicioCita);
+    fechaFinCita = horaCancunAEstandar(finCita);
 
     let horasI = fechaInicioCita.getHours();
     let minutosI = fechaInicioCita.getMinutes();

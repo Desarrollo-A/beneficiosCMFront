@@ -15,13 +15,13 @@ import TimelineSeparator from '@mui/lab/TimelineSeparator';
 import TimelineConnector from '@mui/lab/TimelineConnector';
 import CircularProgress from '@mui/material/CircularProgress';
 import TimelineItem, { timelineItemClasses } from '@mui/lab/TimelineItem';
-import { useAuthContext } from 'src/auth/hooks';
-import { formatearDosFechaAUna, horaTijuana, toLocalISOString } from 'src/utils/general';
-
 
 import { endpoints } from 'src/utils/axios';
+import { horaCancun, horaTijuana, formatearDosFechaAUna } from 'src/utils/general';
 
+import { useAuthContext } from 'src/auth/hooks';
 import { usePostGeneral } from 'src/api/general';
+
 // ----------------------------------------------------------------------
 export default function HistorialCitas({ open, onClose, idUsuario, area, idUs, rol, typeusersData }) {
   let espe = '';
@@ -89,7 +89,7 @@ export default function HistorialCitas({ open, onClose, idUsuario, area, idUs, r
             }}
           >
             {citasData.map((item, index) => (
-              <OrderItem key={index} item={item} lastTimeline={index === citasData.length - 1} user={user}/>
+              <OrderItem key={index} item={item} idPaciente={idUsuario} lastTimeline={index === citasData.length - 1} user={user}/>
             ))}
           </Timeline>
 
@@ -122,7 +122,7 @@ HistorialCitas.propTypes = {
   typeusersData: PropTypes.any
 };
 
-function OrderItem({ item, lastTimeline, user }) {
+function OrderItem({ item, lastTimeline, user, idPaciente }) {
   const { estatus, estatusCita, horario, especialista, motivoCita } = item; // tipoCita
 
   // Dividir la cadena en dos partes
@@ -134,10 +134,12 @@ function OrderItem({ item, lastTimeline, user }) {
   ); // El de las 10
 
   let horaDeTijuana = horaTijuana(fechaHoraInicio);
-  const fechaInicio = horaDeTijuana;
+  let horaDeCancun = horaCancun(fechaHoraInicio);
+  const fechaInicio = user?.idSede === 11 ? horaDeTijuana : horaDeCancun;
 
   horaDeTijuana = horaTijuana(fechaHoraFin);
-  const fechaFin = horaDeTijuana;
+  horaDeCancun = horaCancun(fechaHoraFin);
+  const fechaFin = user?.idSede === 11 ? horaDeTijuana : horaDeCancun;
 
   return (
     <TimelineItem>
@@ -164,7 +166,7 @@ function OrderItem({ item, lastTimeline, user }) {
 
       <TimelineContent>
         <Typography variant="subtitle2">
-        {user.idSede === 11 ? 
+        {(user?.idSede === 11 || user?.idSede === 9) && user?.idSede === idPaciente ? 
             (formatearDosFechaAUna(fechaInicio, fechaFin)) :
             horario
           }
@@ -191,5 +193,6 @@ function OrderItem({ item, lastTimeline, user }) {
 OrderItem.propTypes = {
   item: PropTypes.any,
   lastTimeline: PropTypes.any,
-  user: PropTypes.any
+  user: PropTypes.any,
+  idPaciente: PropTypes.any
 };

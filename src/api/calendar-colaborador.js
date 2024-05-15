@@ -6,11 +6,13 @@ import { useMemo, useEffect } from 'react';
 import { endpoints, fetcherPost } from 'src/utils/axios';
 import {
   horaTijuana,
+  horaCancun,
   toLocalISOString,
+  finHorarioVerano,
+  inicioHorarioVerano,
   horaTijuanaAEstandar,
+  horaCancunAEstandar,
   obtenerFechasConHoras,
-  segundoDomingoDeMarzo,
-  primerDomingoDeNoviembre,
 } from 'src/utils/general';
 
 import { useAuthContext } from 'src/auth/hooks';
@@ -60,18 +62,18 @@ export function getModalities(sede, especialista, area) {
 }
 
 // Trae el horario de un beneficio
-export async function getHorario(beneficio, especialista, idSede) {
+export async function getHorario(beneficio, especialista, idSede, idSedeEsp) {
   const URL = [endpoints.calendarioColaborador.getHorarioBeneficio];
   const horario = await fetcherPost(URL, { beneficio, especialista });
 
   let dataModificada = horario.data;
 
-  if (idSede === 11) {
+  if (idSede === 11 && idSede !== idSedeEsp) {
     const hoy = new Date();
     const año = hoy.getFullYear();
 
     const horasARestar =
-      hoy >= segundoDomingoDeMarzo(año) && hoy <= primerDomingoDeNoviembre(año) ? 1 : 2;
+      hoy >= inicioHorarioVerano(año) && hoy <= finHorarioVerano(año) ? 1 : 2;
     dataModificada = dataModificada.map((item) => {
       const horaInicio = new Date(`1970-01-01T${item.horaInicio}Z`);
       const tempTime = horaInicio.getHours() - horasARestar;
@@ -82,6 +84,35 @@ export async function getHorario(beneficio, especialista, idSede) {
       horaInicioSabado.setHours(horaInicioSabado.getHours() - horasARestar);
       const horaFinSabado = new Date(`1970-01-01T${item.horaFinSabado}Z`);
       horaFinSabado.setHours(horaFinSabado.getHours() - horasARestar);
+
+      return {
+        ...item,
+        horaInicio: horaInicio.toISOString().substring(11, 19),
+        horaFin: horaFin.toISOString().substring(11, 19),
+        horaInicioSabado: item.horaInicioSabado
+          ? horaInicioSabado.toISOString().substring(11, 19)
+          : null,
+        horaFinSabado: item.horaFinSabado ? horaFinSabado.toISOString().substring(11, 19) : null,
+      };
+    });
+    horario.data = dataModificada;
+  }
+  if (idSede === 9 && idSede !== idSedeEsp) {
+    const hoy = new Date();
+    const año = hoy.getFullYear();
+
+    const horasASumar =
+      hoy >= inicioHorarioVerano(año) && hoy <= finHorarioVerano(año) ? 1 : 2;
+    dataModificada = dataModificada.map((item) => {
+      const horaInicio = new Date(`1970-01-01T${item.horaInicio}Z`);
+      const tempTime = horaInicio.getHours() + horasASumar;
+      horaInicio.setHours(tempTime);
+      const horaFin = new Date(`1970-01-01T${item.horaFin}Z`);
+      horaFin.setHours(horaFin.getHours() - horasASumar);
+      const horaInicioSabado = new Date(`1970-01-01T${item.horaInicioSabado}Z`);
+      horaInicioSabado.setHours(horaInicioSabado.getHours() + horasASumar);
+      const horaFinSabado = new Date(`1970-01-01T${item.horaFinSabado}Z`);
+      horaFinSabado.setHours(horaFinSabado.getHours() + horasASumar);
 
       return {
         ...item,
@@ -265,39 +296,86 @@ export function useGetPendientes() {
   }
 
   const memoizedValue = useMemo(() => {
-    const pagos = data?.data?.pago?.map((i) => {
-      let startConverted = horaTijuana(i.start);
-      startConverted = toLocalISOString(startConverted);
-      startConverted = startConverted.slice(0, 19).replace('T', ' ');
-      const inicioCita = datosUser.idSede !== 11 ? i.start : startConverted;
-      let endConverted = horaTijuana(i.end);
-      endConverted = toLocalISOString(endConverted);
-      endConverted = endConverted.slice(0, 19).replace('T', ' ');
-      const finCita = datosUser.idSede !== 11 ? i.end : endConverted;
-      return {
-        ...i,
-        start: inicioCita,
-        end: finCita,
-        textColor: i?.color ? i.color : 'black',
-      };
-    });
 
-    const evaluaciones = data?.data?.evaluacion?.map((i) => {
-      let startConverted = horaTijuana(i.start);
-      startConverted = toLocalISOString(startConverted);
-      startConverted = startConverted.slice(0, 19).replace('T', ' ');
-      const inicioCita = datosUser.idSede !== 11 ? i.start : startConverted;
-      let endConverted = horaTijuana(i.end);
-      endConverted = toLocalISOString(endConverted);
-      endConverted = endConverted.slice(0, 19).replace('T', ' ');
-      const finCita = datosUser.idSede !== 11 ? i.end : endConverted;
-      return {
-        ...i,
-        start: inicioCita,
-        end: finCita,
-        textColor: i?.color ? i.color : 'black',
-      };
-    });
+    let pagos = [];
+    let evaluaciones = [];
+    switch (datosUser.idSede) {
+      case 11:
+
+        pagos = data?.data?.pago?.map((i) => {
+          let startConverted = horaTijuana(i.start);
+          startConverted = toLocalISOString(startConverted);
+          startConverted = startConverted.slice(0, 19).replace('T', ' ');
+          const inicioCita = datosUser.idSede !== 11 ? i.start : startConverted;
+          let endConverted = horaTijuana(i.end);
+          endConverted = toLocalISOString(endConverted);
+          endConverted = endConverted.slice(0, 19).replace('T', ' ');
+          const finCita = datosUser.idSede !== 11 ? i.end : endConverted;
+          return {
+            ...i,
+            start: inicioCita,
+            end: finCita,
+            textColor: i?.color ? i.color : 'black',
+          }
+        });
+
+        evaluaciones = data?.data?.evaluacion?.map((i) => {
+          let startConverted = horaTijuana(i.start);
+          startConverted = toLocalISOString(startConverted);
+          startConverted = startConverted.slice(0, 19).replace('T', ' ');
+          const inicioCita = datosUser.idSede !== 11 ? i.start : startConverted;
+          let endConverted = horaTijuana(i.end);
+          endConverted = toLocalISOString(endConverted);
+          endConverted = endConverted.slice(0, 19).replace('T', ' ');
+          const finCita = datosUser.idSede !== 11 ? i.end : endConverted;
+          return {
+            ...i,
+            start: inicioCita,
+            end: finCita,
+            textColor: i?.color ? i.color : 'black',
+          }
+        });
+        break;
+      case 9:
+
+        pagos = data?.data?.pago?.map((i) => {
+          let startConverted = horaCancun(i.start);
+          startConverted = toLocalISOString(startConverted);
+          startConverted = startConverted.slice(0, 19).replace('T', ' ');
+          const inicioCita = datosUser.idSede !== 9 ? i.start : startConverted;
+          let endConverted = horaCancun(i.end);
+          endConverted = toLocalISOString(endConverted);
+          endConverted = endConverted.slice(0, 19).replace('T', ' ');
+          const finCita = datosUser.idSede !== 9 ? i.end : endConverted;
+          return {
+            ...i,
+            start: inicioCita,
+            end: finCita,
+            textColor: i?.color ? i.color : 'black',
+          }
+        });
+
+        evaluaciones = data?.data?.evaluacion?.map((i) => {
+          let startConverted = horaCancun(i.start);
+          startConverted = toLocalISOString(startConverted);
+          startConverted = startConverted.slice(0, 19).replace('T', ' ');
+          const inicioCita = datosUser.idSede !== 11 ? i.start : startConverted;
+          let endConverted = horaCancun(i.end);
+          endConverted = toLocalISOString(endConverted);
+          endConverted = endConverted.slice(0, 19).replace('T', ' ');
+          const finCita = datosUser.idSede !== 11 ? i.end : endConverted;
+          return {
+            ...i,
+            start: inicioCita,
+            end: finCita,
+            textColor: i?.color ? i.color : 'black',
+          }
+        });
+        break;
+      default:
+        pagos = [];
+        evaluaciones = [];
+    }
 
     const citas = {
       result: data?.result || false,
@@ -355,6 +433,11 @@ export function crearCita(
   horaDeTijuana = horaDeTijuana.slice(0, 19).replace('T', ' ');
   fechaInicio = idSede !== 11 ? fechaInicio : horaDeTijuana;
 
+  let horaDeCancun = horaCancunAEstandar(fechaInicio);
+  horaDeCancun = toLocalISOString(horaDeCancun);
+  horaDeCancun = horaDeCancun.slice(0, 19).replace('T', ' ');
+  fechaInicio = idSede !== 9 ? fechaInicio : horaDeCancun;
+
   const axs = fetcherPost(URL_CITA, {
     titulo,
     idEspecialista,
@@ -404,36 +487,77 @@ export function useGetAppointmentsByUser(current, id, idSede) {
   }, [current, revalidate]);
 
   const memoizedValue = useMemo(() => {
-    const events = data?.data?.map((event) => {
-      let startConverted = horaTijuana(event.start);
-      startConverted = toLocalISOString(startConverted);
-      startConverted = startConverted.slice(0, 19).replace('T', ' ');
-      const inicioCita = idSede !== 11 ? event.start : startConverted;
-      let endConverted = horaTijuana(event.end);
-      endConverted = toLocalISOString(endConverted);
-      endConverted = endConverted.slice(0, 19).replace('T', ' ');
-      const finCita = idSede !== 11 ? event.end : endConverted;
-      const fechasCitasReagendadas = obtenerFechasConHoras(event.fechasFolio);
-      let fechas = '';
-      fechasCitasReagendadas?.forEach((fecha) => {
-        const fechaInicioCita = horaTijuana(fecha);
-        fechas +=
-          fechas === ''
-            ? `${dayjs(fechaInicioCita).format('DD / MM / YYYY')} A las ${dayjs(
-                fechaInicioCita
-              ).format('HH:mm')} horas.`
-            : `,${dayjs(fechaInicioCita).format('DD / MM / YYYY')} A las ${dayjs(
-                fechaInicioCita
-              ).format('HH:mm')} horas.`;
-      });
-      return {
-        ...event,
-        start: inicioCita,
-        end: finCita,
-        textColor: event?.color ? event.color : 'black',
-        fechasFolio: fechas || event.fechasFolio,
-      };
-    });
+
+    let events = [];
+    switch (idSede) {
+      case 11:
+        events = data?.data?.map((event) => {
+          let startConverted = horaTijuana(event.start);
+          startConverted = toLocalISOString(startConverted);
+          startConverted = startConverted.slice(0, 19).replace('T', ' ');
+          const inicioCita = idSede !== 9 ? event.start : startConverted;
+          let endConverted = horaTijuana(event.end);
+          endConverted = toLocalISOString(endConverted);
+          endConverted = endConverted.slice(0, 19).replace('T', ' ');
+          const finCita = idSede !== 9 ? event.end : endConverted;
+          const fechasCitasReagendadas = obtenerFechasConHoras(event.fechasFolio);
+          let fechas = '';
+          fechasCitasReagendadas?.forEach((fecha) => {
+            const fechaInicioCita = horaCancun(fecha);
+            fechas +=
+              fechas === ''
+                ? `${dayjs(fechaInicioCita).format('DD / MM / YYYY')} A las ${dayjs(
+                    fechaInicioCita
+                  ).format('HH:mm')} horas.`
+                : `,${dayjs(fechaInicioCita).format('DD / MM / YYYY')} A las ${dayjs(
+                    fechaInicioCita
+                  ).format('HH:mm')} horas.`;
+          });
+          return {
+            ...event,
+            start: inicioCita,
+            end: finCita,
+            textColor: event?.color ? event.color : 'black',
+            fechasFolio: fechas || event.fechasFolio,
+          };
+        });
+        break;
+
+      case 9:
+        events = data?.data?.map((event) => {
+          let startConverted = horaCancun(event.start);
+          startConverted = toLocalISOString(startConverted);
+          startConverted = startConverted.slice(0, 19).replace('T', ' ');
+          const inicioCita = idSede !== 9 ? event.start : startConverted;
+          let endConverted = horaCancun(event.end);
+          endConverted = toLocalISOString(endConverted);
+          endConverted = endConverted.slice(0, 19).replace('T', ' ');
+          const finCita = idSede !== 9 ? event.end : endConverted;
+          const fechasCitasReagendadas = obtenerFechasConHoras(event.fechasFolio);
+          let fechas = '';
+          fechasCitasReagendadas?.forEach((fecha) => {
+            const fechaInicioCita = horaCancun(fecha);
+            fechas +=
+              fechas === ''
+                ? `${dayjs(fechaInicioCita).format('DD / MM / YYYY')} A las ${dayjs(
+                    fechaInicioCita
+                  ).format('HH:mm')} horas.`
+                : `,${dayjs(fechaInicioCita).format('DD / MM / YYYY')} A las ${dayjs(
+                    fechaInicioCita
+                  ).format('HH:mm')} horas.`;
+          });
+          return {
+            ...event,
+            start: inicioCita,
+            end: finCita,
+            textColor: event?.color ? event.color : 'black',
+            fechasFolio: fechas || event.fechasFolio,
+          };
+        });
+        break;
+      default:
+        events = [];
+    }
 
     return {
       data: events || [],
@@ -466,15 +590,43 @@ export async function consultarCita(idCita, idSede) {
   const URL = [endpoints.calendarioColaborador.getCitaById];
   const cita = await fetcherPost(URL, { idCita });
 
-  let startConverted = horaTijuana(cita.data[0].start);
-  startConverted = toLocalISOString(startConverted);
-  startConverted = startConverted.slice(0, 19).replace('T', ' ');
-  const inicioCita = idSede !== 11 ? cita.data[0].start : startConverted;
+  let startConverted = [];
+  let endConverted = [];
+  let inicioCita = [];
+  let finCita = [];
 
-  let endConverted = horaTijuana(cita.data[0].end);
-  endConverted = toLocalISOString(endConverted);
-  endConverted = endConverted.slice(0, 19).replace('T', ' ');
-  const finCita = idSede !== 11 ? cita.data[0].end : endConverted;
+  switch (idSede) {
+    case 11:
+      startConverted = horaTijuana(cita.data[0].start);
+      startConverted = toLocalISOString(startConverted);
+      startConverted = startConverted.slice(0, 19).replace('T', ' ');
+
+      endConverted = horaTijuana(cita.data[0].end);
+      endConverted = toLocalISOString(endConverted);
+      endConverted = endConverted.slice(0, 19).replace('T', ' ');
+
+      inicioCita = startConverted;
+      finCita = endConverted;
+      break;
+    case 9:
+      startConverted = horaTijuana(cita.data[0].start);
+      startConverted = toLocalISOString(startConverted);
+      startConverted = startConverted.slice(0, 19).replace('T', ' ');
+
+      endConverted = horaTijuana(cita.data[0].end);
+      endConverted = toLocalISOString(endConverted);
+      endConverted = endConverted.slice(0, 19).replace('T', ' ');
+
+      inicioCita = startConverted;
+      finCita = endConverted;
+      
+      break;
+    default:
+      startConverted = [];
+      endConverted = [];
+      startConverted = cita.data[0].start;
+      finCita = cita.data[0].end;
+  }
 
   if (cita?.data?.length > 0) {
     cita.data = cita.data.map((item) => ({
@@ -628,4 +780,12 @@ export function getDocumento(beneficio){
   const get = fetcherPost(URL, { beneficio });
 
   return get;
+}
+
+// Traer las citas sin evaluar y ya terminadas
+export function getSedeEsp(especialista) {
+  const URL = [endpoints.calendarioColaborador.getSedeEsp];
+  const idSede = fetcherPost(URL, { especialista });
+
+  return idSede;
 }
