@@ -27,7 +27,7 @@ export default function RowResumenTerapias({ row, area, idUs, rol }) {
     horario,
     estatus,
     color, 
-    idEspecialista } = row;
+    idSedeEsp } = row;
 
     // Dividir la cadena en dos partes
     const partes = horario.split(' - ');
@@ -75,7 +75,7 @@ export default function RowResumenTerapias({ row, area, idUs, rol }) {
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{metodoPago}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
-        {(user?.idSede === 11 || user?.idSede === 9) && user?.idSede === idEspecialista ? 
+        {(user?.idSede === 11 || user?.idSede === 9) && user?.idSede === idSedeEsp ? 
             (formatearDosFechaAUna(fechaInicio, fechaFin)) :
             horario
         }
