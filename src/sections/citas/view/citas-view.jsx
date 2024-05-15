@@ -186,9 +186,9 @@ export default function CitasView() {
         };
       });
     }
-    setTableData(datosUser.idSede !== 11 ? citasData : datos);
+    setTableData(datosUser?.idSede !== 11 ? citasData : datos);
     // setTableData(citasData);
-  }, [citasData, datosUser.idSede]);
+  }, [citasData, datosUser?.idSede]);
 
   const handleChangeId = (newAr) => {
     setArea(newAr);
