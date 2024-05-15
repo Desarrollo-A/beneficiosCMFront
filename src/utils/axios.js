@@ -280,6 +280,12 @@ export const endpoints = {
     updateEstatusHorario: '/GestorController/updateEstatusHorario',
     insertHorario: '/GestorController/insertHorario',
     especialistas: '/GestorController/especialistas',
+    getDepartamentos: '/GestorController/getDepartamentos',
+    getAreasPs: '/GestorController/getAreasPs',
+    getPuestos: '/GestorController/getPuestos',
+    updateEstatusPuestos: '/GestorController/updateEstatusPuestos',
+    updateEstatusAreas: '/GestorController/updateEstatusAreas',
+    updateEstatusDepartamentos: '/GestorController/updateEstatusDepartamentos'
   },
   avisosPrivacidad: {
     getEspecialidadToSelect: '/AvisosPrivacidadController/getEspecialidades',
