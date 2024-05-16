@@ -93,7 +93,7 @@ export default function AppointmentSchedule({
   useEffect(() => {
 
     if (!isEmpty(oficina)) {
-      setAddress(oficina.data[0].ubicación);
+      setAddress(oficina?.data[0]?.ubicación);
     }
 
   }, [oficina]);
@@ -342,7 +342,7 @@ export default function AppointmentSchedule({
               <>
                 <Stack spacing={1} sx={{ p: { xs: 1, md: 1 } }}>
                   Dirección de la oficina :
-                  {oficina && oficina.result ? (
+                  {!isEmpty(oficina) ? (
                     <>
                       <Stack
                         sx={{
