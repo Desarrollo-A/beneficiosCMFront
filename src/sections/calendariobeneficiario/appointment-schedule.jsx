@@ -111,24 +111,26 @@ export default function AppointmentSchedule({
   const [coordinates, setCoordinates] = useState(null);
 
   useEffect(() => {
-    const fetchCoordinates = async () => {
-      try {
-        const response = await axios.get(`
+
+    if (address !== '') {
+      const fetchCoordinates = async () => {
+        try {
+          const response = await axios.get(`
         https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
         `);
 
-        if (response.data.results[0]?.geometry) {
-          setCoordinates(response.data.results[0]?.geometry.location);
+          if (response.data.results[0]?.geometry) {
+            setCoordinates(response.data.results[0]?.geometry.location);
 
-        } else {
-          console.log('No se encontraron coordenadas para esta dirección');
+          } else {
+            console.log('No se encontraron coordenadas para esta dirección');
+          }
+        } catch (error) {
+          console.error('Error al obtener las coordenadas', error);
         }
-      } catch (error) {
-        console.error('Error al obtener las coordenadas', error);
-      }
-    };
-
-    fetchCoordinates();
+      };
+      fetchCoordinates();
+    }
   }, [address]);
 
   return (
@@ -360,7 +362,7 @@ export default function AppointmentSchedule({
                           </Typography>
                         </Stack>
                         <Button variant="contained" color="primary" onClick={handleClickOpen}>
-                          Ver Mapa
+                          Ver mapa
                         </Button>
                       </Stack>
 
