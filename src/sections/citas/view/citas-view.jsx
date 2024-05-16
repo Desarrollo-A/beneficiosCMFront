@@ -46,7 +46,7 @@ const TABLE_HEAD = [
   { id: 'sede', label: 'Sede', width: 100 },
   { id: 'oficina', label: 'Oficina', width: 100 },
   { id: 'pagoGenerado', label: 'Pago generado', width: 100 },
-  { id: 'metodoPago', label: 'Metodo de pago', width: 100 },
+  { id: 'metodoPago', label: 'Método de pago', width: 100 },
   { id: 'horario', label: 'Horario cita', width: 100 },
   { id: 'estatus', label: 'Estatus', width: 100 },
   { id: '', width: 88 },
