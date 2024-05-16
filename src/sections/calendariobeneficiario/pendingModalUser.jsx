@@ -86,7 +86,7 @@ export default function PendingModalUser() {
 
       const deleteGoogleEvent = await deleteGoogleCalendarEvent(
         datosCita.idEventoGoogle,
-        'programador.analista36@ciudadmaderas.com' // datosUser.correo Sustituir correo de analista.
+        datosUser.correo // datosUser.correo Sustituir correo de analista.
       );
       if (!deleteGoogleEvent.result) {
         enqueueSnackbar('¡No se pudo sincronizar el evento con el calendario de google!', {
@@ -110,11 +110,7 @@ export default function PendingModalUser() {
         scheduledAppointment.data[0],
         2,
         [
-          'programador.analista36@ciudadmaderas.com',
-          'programador.analista34@ciudadmaderas.com',
-          'programador.analista32@ciudadmaderas.com',
-          'programador.analista12@ciudadmaderas.com',
-          'tester.ti3@ciudadmaderas.com',
+          datosUser.correo
         ],
         datosUser.idUsuario
       );
@@ -132,8 +128,8 @@ export default function PendingModalUser() {
     // alert(JSON.stringify(currentEvent));
 
     /* VALIDAR SI ES GRATUITA LA CITA */
-    let precio = 0.02;
-    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') precio = 0.01;
+    let precio = 50.00;
+    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') precio = 0.00;
 
     let nombreBeneficio = '';
     let abreviatura = '';
