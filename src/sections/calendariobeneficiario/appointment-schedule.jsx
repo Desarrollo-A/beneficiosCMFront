@@ -88,6 +88,8 @@ export default function AppointmentSchedule({
     width: "100%"
   };
 
+  console.log(oficina)
+
   const [address, setAddress] = useState('');
 
   useEffect(() => {
@@ -358,7 +360,7 @@ export default function AppointmentSchedule({
                         </Stack>
                         <Stack sx={{ flexDirection: 'col' }}>
                           <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                            {oficina?.data[0]?.ubicación || 'Sin dirección'}
+                            {oficina?.data[0]?.ubicación ? oficina?.data[0]?.ubicación : 'Sin dirección'}
                           </Typography>
                         </Stack>
                         <Button variant="contained" color="primary" onClick={handleClickOpen}>
@@ -368,7 +370,7 @@ export default function AppointmentSchedule({
 
                       {coordinates !== null ? (
                         <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
-                          <DialogTitle>OFICINA: {oficina.data[0].oficina}</DialogTitle>
+                          <DialogTitle>OFICINA: {oficina?.data[0]?.oficina ? oficina?.data[0]?.oficina : ''}</DialogTitle>
                           <DialogContent>
 
                             <LoadScript
