@@ -358,7 +358,7 @@ export default function AppointmentSchedule({
                         </Stack>
                         <Stack sx={{ flexDirection: 'col' }}>
                           <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                            {oficina.data[0].ubicación || 'Sin dirección'}
+                            {oficina?.data[0]?.ubicación || 'Sin dirección'}
                           </Typography>
                         </Stack>
                         <Button variant="contained" color="primary" onClick={handleClickOpen}>
