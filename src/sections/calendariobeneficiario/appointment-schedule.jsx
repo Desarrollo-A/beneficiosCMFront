@@ -95,7 +95,7 @@ export default function AppointmentSchedule({
   useEffect(() => {
 
     if (!isEmpty(oficina)) {
-      setAddress(oficina?.data[0]?.ubicación);
+      setAddress(oficina?.data[0]?.ubicación ? oficina?.data[0]?.ubicación : '');
     }
 
   }, [oficina]);
