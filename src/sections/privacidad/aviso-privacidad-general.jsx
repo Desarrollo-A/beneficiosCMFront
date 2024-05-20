@@ -384,12 +384,17 @@ export default function AvisoPrivacidadGeneral() {
         </Grid>
       </Container>
 
-      {visorPdfFile}
+      {loading === false ? visorPdfFile : null }
+
+      {loading === false ? (
       <VisorPdf
         datos={propiedadesIFrame}
         enviarDatosAlPadre={manejarBanderaDesdeHijo}
         idPuesto={especialidadSelector.idPuesto}
-      />
+      /> 
+      ):(
+        null
+      )}
     </>
   );
 }
