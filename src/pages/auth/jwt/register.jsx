@@ -8,7 +8,7 @@ export default function RegisterPage() {
   return (
     <>
       <Helmet>
-        <title> CDM: Register</title>
+        <title>Beneficios CDM | Register</title>
       </Helmet>
 
       <JwtRegisterView />
