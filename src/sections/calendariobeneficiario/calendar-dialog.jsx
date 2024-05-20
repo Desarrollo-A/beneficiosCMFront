@@ -406,7 +406,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     }
 
     /* VALIDAR SI ES GRATUITA LA CITA */
-    let precio = 0.02;
+    let precio = 50.00;
     if (datosUser.tipoPuesto.toLowerCase() === 'operativa') precio = 0.01;
 
     /* PAGO  */
@@ -606,25 +606,15 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     mutate(endpoints.dashboard.getCountEstatusCitas);
     mutate(endpoints.dashboard.getCtCanceladas);
 
-    let organizador = 'programador.analista36@ciudadmaderas.com';
-    let correosNotificar = [
+    const organizador = datosUser.correo; /* 'programador.analista36@ciudadmaderas.com'; */
+    const correosNotificar = [
       organizador,
-      'programador.analista34@ciudadmaderas.com',
+      /* 'programador.analista34@ciudadmaderas.com',
       'programador.analista32@ciudadmaderas.com',
       'programador.analista12@ciudadmaderas.com',
-      'tester.ti3@ciudadmaderas.com',
-      // currentEvent.correoEspecialista
+      'tester.ti3@ciudadmaderas.com', */
+      currentEvent.correoEspecialista
     ];
-    if (datosUser.correo === null) {
-      organizador = 'programador.analista12@ciudadmaderas.com'; // currentEvent.correoEspecialista;
-      correosNotificar = [
-        organizador,
-        'programador.analista36@ciudadmaderas.com',
-        'programador.analista34@ciudadmaderas.com',
-        'programador.analista32@ciudadmaderas.com',
-        'tester.ti3@ciudadmaderas.com',
-      ];
-    }
 
     const deleteGoogleEvent = await deleteGoogleCalendarEvent(
       currentEvent.idEventoGoogle,
@@ -666,8 +656,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const pagarCitaPendiente = async () => {
     setBtnPayDisabled(true);
     /* VALIDAR SI ES GRATUITA LA CITA */
-    let precio = 0.02;
-    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') precio = 0.01;
+    let precio = 50.00;
+    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') precio = 0.00;
 
     let nombreBeneficio = '';
     let abreviatura = '';
@@ -1330,9 +1320,9 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     const citasFinalizadas = await getCitasFinalizadas(datosUser.idUsuario, mes, año);
 
-    if (citasFinalizadas.result === true && citasFinalizadas?.data.length >= 2) {
+    if (citasFinalizadas.result === true && citasFinalizadas?.data.length >= 3) {
       enqueueSnackbar(
-        'Ya cuentas con la cantidad máxima  de beneficios brindados en el mes seleccionado',
+        'Ya cuentas con la cantidad máxima de beneficios brindados en el mes seleccionado',
         {
           variant: 'error',
         }
@@ -1382,26 +1372,11 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const startDate = dayjs(horarioSeleccionado);
     const endDate = startDate.add(1, 'hour');
 
-    let organizador = 'programador.analista36@ciudadmaderas.com';
-    let correosNotificar = [
-      organizador, // datosUser.correo Sustituir correo de analista
-      'programador.analista34@ciudadmaderas.com',
-      'programador.analista32@ciudadmaderas.com',
-      'programador.analista12@ciudadmaderas.com',
-      'tester.ti3@ciudadmaderas.com',
-      // Algun correo de especialista
+    const organizador = datosUser.correo; /* 'programador.analista36@ciudadmaderas.com'; */
+    const correosNotificar = [
+      organizador,
+      currentEvent.correoEspecialista
     ];
-
-    if (datosUser === null) {
-      organizador = 'programador.analista12@ciudadmaderas.com'; // Algun correo de especialista
-      correosNotificar = [
-        organizador, // datosUser.correo Sustituir correo de analista
-        'programador.analista36@ciudadmaderas.com',
-        'programador.analista34@ciudadmaderas.com',
-        'programador.analista32@ciudadmaderas.com',
-        'tester.ti3@ciudadmaderas.com',
-      ];
-    }
 
     const updateGoogleEvent = await updateGoogleCalendarEvent(
       currentEvent.idEventoGoogle,
@@ -1501,7 +1476,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const endDate = startDate.add(1, 'hour');
 
     // Aqui colocar
-    let organizador = 'programador.analista36@ciudadmaderas.com';
+    /* let organizador = 'programador.analista36@ciudadmaderas.com';
     let correosNotificar = [
       organizador, // datosUser.correo Sustituir correo de analista
       // 'programador.analista34@ciudadmaderas.com',
@@ -1510,19 +1485,12 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       // 'tester.ti3@ciudadmaderas.com',
       // algun correo de especialista
       ...emails,
-    ];
+    ]; */
 
-    if (datosUser.correo === null) {
-      organizador = 'programador.analista34@ciudadmaderas.com'; // especialista
-      correosNotificar = [
-        organizador, // datosUser.correo Sustituir correo de analista
-        // 'programador.analista36@ciudadmaderas.com',
-        // 'programador.analista34@ciudadmaderas.com',
-        // 'programador.analista32@ciudadmaderas.com',
-        // 'tester.ti3@ciudadmaderas.com',
-        ...emails,
-      ];
-    }
+    const organizador = datosUser.correo; /* 'programador.analista36@ciudadmaderas.com'; */
+    const correosNotificar = [
+      organizador, ...emails, currentEvent.correoEspecialista
+    ];
 
     const updateGoogleEvent = await updateGoogleCalendarEvent(
       currentEvent.idEventoGoogle,

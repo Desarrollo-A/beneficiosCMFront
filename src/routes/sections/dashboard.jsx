@@ -24,6 +24,7 @@ const VerEncuestaDetallePage = lazy(() => import('src/pages/dashboard/encuestas/
 const AtencionXsedePage = lazy(() => import('src/pages/dashboard/gestor/atencionXsede-view'));
 const AtencionPorSedePage = lazy(() => import('src/pages/dashboard/gestor/atencion-por-sede'));
 const HorariosEspePage = lazy(() => import('src/pages/dashboard/gestor/horariosEspe-view'));
+const EstatusPuestosPage = lazy(() => import('src/pages/dashboard/gestor/estausPuestos-view'));
 const SedesPage = lazy(() => import('src/pages/dashboard/gestor/sedes-view'));
 // ----------------------------------------------------------------------
 
@@ -127,6 +128,7 @@ export const dashboardRoutes = [
           { path: 'atencionxsede', element: <AtencionXsedePage /> },
           { path: 'atencionporsede', element: <AtencionPorSedePage /> },
           { path: 'horariosEspecificos', element: <HorariosEspePage /> },
+          { path: 'estatusPuestos', element: <EstatusPuestosPage /> },
           { path: 'sedes', element: <SedesPage /> },
         ],
       },

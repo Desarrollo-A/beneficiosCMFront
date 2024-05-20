@@ -164,6 +164,7 @@ export default function CancelEventDialog({
       idSede: currentEvent?.idSede,
       modalidad: currentEvent?.modalidad,
     };
+    
     switch (cancelType) {
       case 8:
         resp = await reschedule(eventData, eventData.idDetalle, cancelType, user, defaultHour);
@@ -339,6 +340,7 @@ export default function CancelEventDialog({
                 label="Fecha"
                 sx={{ width: '100%' }}
                 value={fecha}
+                minDate={new Date()}
                 onChange={(value) => {
                   setFecha(value);
                   setDateTitle(dayjs(value).format('dddd, DD MMMM YYYY')); // al momento de cambiar el valor en el input, cambia el valor del titulo
@@ -348,9 +350,11 @@ export default function CancelEventDialog({
                   if (dayOfWeek === 0) {
                     return true;
                   }
-                  if (dayOfWeek === 6) {
-                    if (sabado === 0) {
-                      return true;
+                  
+                  if(dayOfWeek === 6){
+                    if(sabado === 0){
+                    return true; 
+
                     }
                   }
                   return false;

@@ -1,4 +1,3 @@
-import isEqual from 'lodash/isEqual';
 import { useState, useEffect, useCallback } from 'react';
 
 import Card from '@mui/material/Card';
@@ -14,10 +13,8 @@ import { useRouter } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import { endpoints } from 'src/utils/axios';
-import { horaTijuana, formatearDosFechaAUna } from 'src/utils/general';
 
-import { useAuthContext } from 'src/auth/hooks';
-import { useGetGeneral, usePostGeneral } from 'src/api/general';
+import { useGetGeneral } from 'src/api/general';
 
 import Scrollbar from 'src/components/scrollbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
@@ -33,37 +30,32 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-import UserTableRow from '../user-table-row';
-import UserTableToolbar from '../user-table-toolbar';
-import UserTableFiltersResult from '../user-table-filters-result';
+import TableDepartamentos from '../estatusPuestos-components/table-departamentos/departamentos-table-row';
+import DepartamentosTableToolbar from '../estatusPuestos-components/table-departamentos/order-table-toolbar';
+import DepartamentosTableFiltersResult from '../estatusPuestos-components/table-departamentos/departamentos-table-filters-result';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'id', label: 'ID Cita' },
-  { id: 'beneficio', label: 'Beneficio', width: 100 },
-  { id: 'especialista', label: 'Especialista', width: 220 },
-  { id: 'motivoCita', label: 'Motivo cita', width: 100 },
-  { id: 'sede', label: 'Sede', width: 100 },
-  { id: 'oficina', label: 'Oficina', width: 100 },
-  { id: 'pagoGenerado', label: 'Pago generado', width: 100 },
-  { id: 'metodoPago', label: 'Método de pago', width: 100 },
-  { id: 'horario', label: 'Horario cita', width: 100 },
-  { id: 'estatus', label: 'Estatus', width: 100 },
+  { id: 'id', label: 'ID', width: 400 },
+  { id: 'nombre', label: 'Departamento' },
+  { id: 'status', label: 'Estatus', width: 200 },
   { id: '', width: 88 },
 ];
 
 const defaultFilters = {
   name: '',
-  role: [],
   status: 'all',
+  startDate: null,
+  endDate: null,
 };
 
 // ----------------------------------------------------------------------
 
-export default function CitasView() {
-  const { user: datosUser } = useAuthContext();
-  const table = useTable();
+export default function EstatusPuestosView() {
+  const table = useTable({ });
+
+  const { depaData } = useGetGeneral(endpoints.gestor.getDepartamentos, "depaData");
 
   const settings = useSettingsContext();
 
@@ -71,41 +63,20 @@ export default function CitasView() {
 
   const confirm = useBoolean();
 
-  const { user } = useAuthContext();
-
-  const rol = user?.idRol;
-
-  const idUs = user?.idUsuario;
-
-  let puestos = 0;
-
-  if (rol === '4' || rol === 4) {
-    puestos = 158;
-  } else {
-    puestos = user?.idPuesto;
-  }
-
-  const [area, setArea] = useState(puestos);
-
-  const { citasData } = usePostGeneral(user?.idUsuario, endpoints.citas.getCitas, 'citasData');
-
-  const { especialistasData } = useGetGeneral(
-    endpoints.reportes.especialistas,
-    'especialistasData'
-  );
-
   const [tableData, setTableData] = useState([]);
 
   const [filters, setFilters] = useState(defaultFilters);
 
-  const [especialistas, setEspecialistas] = useState([]);
-
-  const _rp = especialistas.flatMap((es) => es.nombre);
+  const dateError =
+    filters.startDate && filters.endDate
+      ? filters.startDate.getTime() > filters.endDate.getTime()
+      : false;
 
   const dataFiltered = applyFilter({
     inputData: tableData,
     comparator: getComparator(table.order, table.orderBy),
     filters,
+    dateError,
   });
 
   const dataInPage = dataFiltered.slice(
@@ -115,7 +86,8 @@ export default function CitasView() {
 
   const denseHeight = table.dense ? 52 : 72;
 
-  const canReset = !isEqual(defaultFilters, filters);
+  const canReset =
+    !!filters.name || filters.status !== 'all' || (!!filters.startDate && !!filters.endDate);
 
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
@@ -151,74 +123,49 @@ export default function CitasView() {
     });
   }, [dataFiltered.length, dataInPage.length, table, tableData]);
 
-  const handleEditRow = useCallback(
-    (id) => {
-      router.push(paths.dashboard.user.edit(id));
-    },
-    [router]
-  );
-
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
 
+  const handleViewRow = useCallback(
+    (id) => {
+      router.push(paths.dashboard.order.details(id));
+    },
+    [router]
+  );
+
   useEffect(() => {
-    let datos = [];
-    if (datosUser.idSede === 11) {
-      datos = citasData.map((cita) => {
-        // Dividir la cadena en dos partes
-        const partes = cita.horario.split(' - ');
-        // Crear las fechas
-        const fechaHoraInicio = new Date(partes[0]); // El de las 9
-        const fechaHoraFin = new Date(
-          partes[1].replace(/(\d{2}:\d{2})$/, `${partes[0].slice(0, 11)}$1`)
-        ); // El de las 10
-
-        let horaDeTijuana = horaTijuana(fechaHoraInicio);
-        const fechaInicio = horaDeTijuana;
-
-        horaDeTijuana = horaTijuana(fechaHoraFin);
-        const fechaFin = horaDeTijuana;
-
-        return {
-          ...cita,
-          horario: formatearDosFechaAUna(fechaInicio, fechaFin),
-        };
-      });
-    }
-    setTableData(datosUser?.idSede !== 11 ? citasData : datos);
-    // setTableData(citasData);
-  }, [citasData, datosUser?.idSede]);
-
-  const handleChangeId = (newAr) => {
-    setArea(newAr);
-
-    setEspecialistas(especialistasData);
-  };
+    setTableData(depaData);
+  }, [depaData]);
 
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Citas"
-          links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Citas' }]}
+          heading="Estatus puestos"
+          links={[
+            {
+              name: 'Gestor',
+            },
+            { name: 'Estatus puestos' },
+          ]}
           sx={{
             mb: { xs: 3, md: 5 },
           }}
         />
 
         <Card>
-          <UserTableToolbar
+
+          <DepartamentosTableToolbar
             filters={filters}
             onFilters={handleFilters}
             //
-            roleOptions={_rp}
-            handleChangeId={handleChangeId}
-            rol={rol}
+            canReset={canReset}
+            onResetFilters={handleResetFilters}
           />
 
           {canReset && (
-            <UserTableFiltersResult
+            <DepartamentosTableFiltersResult
               filters={filters}
               onFilters={handleFilters}
               //
@@ -226,20 +173,24 @@ export default function CitasView() {
               //
               results={dataFiltered.length}
               sx={{ p: 2.5, pt: 0 }}
-              rol={rol}
             />
           )}
 
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+
             <Scrollbar>
               <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
                 <TableHeadCustom
                   order={table.order}
                   orderBy={table.orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={tableData.length}
-                  numSelected={table.selected.length}
                   onSort={table.onSort}
+                  onSelectAllRows={(checked) =>
+                    table.onSelectAllRows(
+                      checked,
+                      tableData.map((row) => row.id)
+                    )
+                  }
                 />
 
                 <TableBody>
@@ -248,17 +199,16 @@ export default function CitasView() {
                       table.page * table.rowsPerPage,
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
-                    .map((row, index) => (
-                      <UserTableRow
-                        key={index}
+                    .map((row) => (
+                      <TableDepartamentos
+                        key={row.id}
                         row={row}
-                        area={area}
-                        idUs={idUs}
-                        rol={rol}
                         selected={table.selected.includes(row.id)}
                         onSelectRow={() => table.onSelectRow(row.id)}
                         onDeleteRow={() => handleDeleteRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
+                        onViewRow={() => handleViewRow(row.id)}
+                        onFilters={handleFilters}
+                        onResetFilters={handleResetFilters}
                       />
                     ))}
 
@@ -280,6 +230,8 @@ export default function CitasView() {
             onPageChange={table.onChangePage}
             onRowsPerPageChange={table.onChangeRowsPerPage}
             //
+            dense={table.dense}
+            onChangeDense={table.onChangeDense}
           />
         </Card>
       </Container>
@@ -312,8 +264,8 @@ export default function CitasView() {
 
 // ----------------------------------------------------------------------
 
-function applyFilter({ inputData, comparator, filters }) {
-  const { name } = filters; // status, role
+function applyFilter({ inputData, comparator, filters, dateError }) {
+  const { name} = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
 
@@ -327,13 +279,8 @@ function applyFilter({ inputData, comparator, filters }) {
 
   if (name) {
     inputData = inputData.filter(
-      (i) =>
-        i.especialista.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        i.motivoCita.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        i.sede.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        i.oficina.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        i.pagoGenerado.toLowerCase().indexOf(name.toLowerCase()) !== -1 /* ||
-        i.metodoPago.toLowerCase().indexOf(name.toLowerCase()) !== -1 */
+      (order) =>
+        order.departamento.toLowerCase().indexOf(name.toLowerCase()) !== -1
     );
   }
 

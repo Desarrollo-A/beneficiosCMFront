@@ -9,7 +9,7 @@ export function useGetCitasArea(object) {
   const params = new URLSearchParams(object).toString();
   const URL = `${endpoints.areas.citas}?${params}`;
 
-  const accessToken = sessionStorage.getItem('accessToken');
+  const accessToken = localStorage.getItem('accessToken');
 
   const config = {
     headers: {
@@ -39,7 +39,7 @@ export function useGetMeta(object) {
   const params = new URLSearchParams(object).toString();
   const URL = `${endpoints.especialistas.meta}?${params}`;
 
-  const accessToken = sessionStorage.getItem('accessToken');
+  const accessToken = localStorage.getItem('accessToken');
 
   const config = {
     headers: {
@@ -69,7 +69,7 @@ export function useGetSedesPresenciales(object) {
   const params = new URLSearchParams(object).toString();
   const URL = `${endpoints.especialistas.sedes}?${params}`;
 
-  const accessToken = sessionStorage.getItem('accessToken');
+  const accessToken = localStorage.getItem('accessToken');
 
   const config = {
     headers: {
@@ -99,7 +99,7 @@ export function useGetHorariosPresenciales(object) {
   const params = new URLSearchParams(object).toString();
   const URL = `${endpoints.especialistas.horarios}?${params}`;
 
-  const accessToken = sessionStorage.getItem('accessToken');
+  const accessToken = localStorage.getItem('accessToken');
 
   const config = {
     headers: {
@@ -130,7 +130,7 @@ export function useGetDiasPresenciales(object) {
   const params = new URLSearchParams(object).toString();
   const URL = `${endpoints.especialistas.disponibles}?${params}`;
 
-  const accessToken = sessionStorage.getItem('accessToken');
+  const accessToken = localStorage.getItem('accessToken');
 
   const config = {
     headers: {
@@ -161,7 +161,7 @@ export function useGetDiasPresenciales2(object) {
   const params = new URLSearchParams(object).toString();
   const URL = `${endpoints.especialistas.disponibles}?${params}`;
 
-  const accessToken = sessionStorage.getItem('accessToken');
+  const accessToken = localStorage.getItem('accessToken');
 
   const config = {
     headers: {
@@ -211,7 +211,7 @@ export function useGetEspecialistasPorArea(object) {
   const params = new URLSearchParams(object).toString();
   const URL = `${endpoints.dashboard.getEsp}?${params}`;
 
-  const accessToken = sessionStorage.getItem('accessToken');
+  const accessToken = localStorage.getItem('accessToken');
 
   const config = {
     headers: {

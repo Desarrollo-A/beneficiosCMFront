@@ -39,7 +39,7 @@ import { enqueueSnackbar } from 'src/components/snackbar';
 import FormProvider from 'src/components/hook-form/form-provider';
 import { RHFTextField, RHFAutocomplete } from 'src/components/hook-form';
 
-// const datosUser = JSON.parse(Base64.decode(sessionStorage.getItem('accessToken').split('.')[2]));
+// const datosUser = JSON.parse(Base64.decode(localStorage.getItem('accessToken').split('.')[2]));
 export default function Lista({ currentEvent, onClose, userData, selectedDate, usersMutate }) {
   const { user } = useAuthContext(); // variable del la sesion del usuario
   dayjs.locale('es'); // valor para cambiar el idioma del dayjs
