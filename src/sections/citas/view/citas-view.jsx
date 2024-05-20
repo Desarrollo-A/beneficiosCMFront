@@ -14,7 +14,7 @@ import { useRouter } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import { endpoints } from 'src/utils/axios';
-import { formatearDosFechaAUna, horaTijuana, toLocalISOString } from 'src/utils/general';
+import { horaTijuana, formatearDosFechaAUna } from 'src/utils/general';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetGeneral, usePostGeneral } from 'src/api/general';

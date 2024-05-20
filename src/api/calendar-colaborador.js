@@ -5,13 +5,13 @@ import { useMemo, useEffect } from 'react';
 
 import { endpoints, fetcherPost } from 'src/utils/axios';
 import {
-  horaTijuana,
   horaCancun,
+  horaTijuana,
   toLocalISOString,
   finHorarioVerano,
   inicioHorarioVerano,
-  horaTijuanaAEstandar,
   horaCancunAEstandar,
+  horaTijuanaAEstandar,
   obtenerFechasConHoras,
 } from 'src/utils/general';
 

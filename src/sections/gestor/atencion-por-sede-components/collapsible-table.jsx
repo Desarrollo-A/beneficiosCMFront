@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
-import Box from '@mui/material/Box';
+/* import Box from '@mui/material/Box'; */
 import Table from '@mui/material/Table';
-import Stack from '@mui/material/Stack';
-import Paper from '@mui/material/Paper';
+/* import Stack from '@mui/material/Stack';
+import Paper from '@mui/material/Paper'; */
 import Select from '@mui/material/Select';
 import TableRow from '@mui/material/TableRow';
-import Collapse from '@mui/material/Collapse';
+/* import Collapse from '@mui/material/Collapse'; */
 import MenuItem from '@mui/material/MenuItem';
 import TableHead from '@mui/material/TableHead';
 import TableCell from '@mui/material/TableCell';
@@ -17,10 +17,10 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import FormControl from '@mui/material/FormControl';
 import { alpha, useTheme } from '@mui/material/styles';
-import FormHelperText from '@mui/material/FormHelperText';
+/* import FormHelperText from '@mui/material/FormHelperText'; */
 import TableContainer from '@mui/material/TableContainer';
-
-import { useBoolean } from 'src/hooks/use-boolean';
+/* 
+import { useBoolean } from 'src/hooks/use-boolean'; */
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -134,14 +134,14 @@ export default function CollapsibleTable() {
 // ----------------------------------------------------------------------
 
 function CollapsibleTableRow({ row, edit, deletee, add }) {
-  const [expandCount, setExpandCount] = useState(0);
+  /* const [expandCount, setExpandCount] = useState(0);
   const [rows, setRows] = useState(0);
-  const collapsible = useBoolean();
+  const collapsible = useBoolean(); */
   const theme = useTheme();
 
-  const handleExpand = () => {
+  /* const handleExpand = () => {
     setExpandCount((prevCount) => prevCount + 1);
-  };
+  }; */
 
   const pushRow = (data) => {
     const newRow = {

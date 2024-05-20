@@ -29,9 +29,9 @@ import { endpoints } from 'src/utils/axios';
 import {
   horaTijuana,
   generarFechas,
+  finHorarioVerano,
   generarDiasFestivos,
   inicioHorarioVerano,
-  finHorarioVerano,
 } from 'src/utils/general';
 
 import { getEncodedHash } from 'src/api/api';
