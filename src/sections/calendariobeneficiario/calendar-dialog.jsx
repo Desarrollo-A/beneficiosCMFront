@@ -1268,9 +1268,9 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     const citasFinalizadas = await getCitasFinalizadas(datosUser.idUsuario, mes, año);
 
-    if (citasFinalizadas.result === true && citasFinalizadas?.data.length >= 2) {
+    if (citasFinalizadas.result === true && citasFinalizadas?.data.length >= 3) {
       enqueueSnackbar(
-        'Ya cuentas con la cantidad máxima  de beneficios brindados en el mes seleccionado',
+        'Ya cuentas con la cantidad máxima de beneficios brindados en el mes seleccionado',
         {
           variant: 'error',
         }
