@@ -127,8 +127,6 @@ export default function RowsAtencionXsede({ row, selected, onEditRow, onDeleteRo
         )}
       </TableRow>
 
-      
-
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
