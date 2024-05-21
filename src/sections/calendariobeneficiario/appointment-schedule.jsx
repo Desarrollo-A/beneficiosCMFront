@@ -1,7 +1,11 @@
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
+
+import { useState } from 'react';
+
 import axios from 'axios';
 import { isEmpty } from 'lodash';
+
 import PropTypes from 'prop-types';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
@@ -27,10 +31,15 @@ import LinearProgress from '@mui/material/LinearProgress';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { Button, Dialog, Checkbox, FormControlLabel } from '@mui/material';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
+import { getDocumento } from 'src/api/calendar-colaborador';
+
 import Iconify from 'src/components/iconify';
+
+import ModalTerminos from './modal-terminos';
 
 dayjs.locale('es');
 dayjs.extend(utc);
@@ -81,7 +90,24 @@ export default function AppointmentSchedule({
   errorHorarioSeleccionado,
   currentEvent,
   handleHorarioSeleccionado,
+  beneficioActivo,
+  aceptarTerminos,
+  aceptar
 }) {
+
+
+  const [open, setOpen] = useState(false);
+  const [archivo, setArchivo] = useState(0);
+  const verTerminos = async () => {
+    setOpen(true);
+
+    const getDoc = await getDocumento(beneficioActivo.beneficio);
+    setArchivo(getDoc[0]?.expediente)
+  }
+
+  const close = () => {
+    setOpen(false);
+  }
 
   const mapStyles = {
     height: "60vh",
@@ -144,6 +170,7 @@ export default function AppointmentSchedule({
       fetchCoordinates();
     }
   }, [address]);
+
 
   return (
     <Grid sx={{ display: { xs: 'block', sm: 'flex', md: 'flex' } }}>
@@ -595,9 +622,36 @@ export default function AppointmentSchedule({
             ) : (
               <>Fecha sin horarios disponibles</>
             )}
+            {beneficioActivo?.primeraCita === 0 ?
+            <Stack>
+              <FormControlLabel
+                     value="end"
+                     control={<Checkbox value={aceptar}  onClick={aceptarTerminos}/>}
+                     label="Aceptar terminos y condiciones"
+                     sx={{color: 'black'}}
+                     // checked={isChecked} 
+                     // onChange={handleCheckboxChange}
+                     labelPlacement="end"
+                     />
+
+                <Button sx={{color: 'blue'}} onClick={verTerminos}>
+                  Ver terminos y condiciones
+                </Button>
+            </Stack>
+                      : ''
+                }
           </Stack>
         </Stack>
       </Grid>
+      <Dialog 
+        fullWidth
+        maxWidth="lg"
+        open={open}
+        
+      >
+        <ModalTerminos archivo={archivo} onClose={close}/>
+      </Dialog>
+      
     </Grid>
   );
 }
@@ -620,4 +674,7 @@ AppointmentSchedule.propTypes = {
   errorHorarioSeleccionado: PropTypes.bool,
   currentEvent: PropTypes.object,
   handleHorarioSeleccionado: PropTypes.func,
+  beneficioActivo: PropTypes.object,
+  aceptarTerminos: PropTypes.func,
+  aceptar: PropTypes.bool
 };

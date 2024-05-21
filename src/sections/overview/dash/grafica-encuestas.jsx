@@ -329,7 +329,7 @@ export default function GraficaEncuestas({
                                     <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
                                         <DatePicker
                                             label="Fecha fin"
-                                            minDate={fhI}
+                                            minDate={fhI.setDate(fhI.getDate() + 1)}
                                             value={datePikerF()}
                                             onChange={handleFilterEndDate}
                                             slotProps={{ textField: { fullWidth: true } }}

@@ -7,6 +7,10 @@ import IconButton from '@mui/material/IconButton';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
+import { horaCancun, horaTijuana, formatearDosFechaAUna } from 'src/utils/general';
+
+import { useAuthContext } from 'src/auth/hooks';
+
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 
@@ -15,6 +19,7 @@ import UserQuickEditForm from './modal-editar-citas';
 // ----------------------------------------------------------------------
 
 export default function FilasTabla({ row, selected, rol, rel }) {
+  const { user } = useAuthContext();
   const {
     idCita,
     idColab,
@@ -36,6 +41,24 @@ export default function FilasTabla({ row, selected, rol, rel }) {
     usuario
   } = row;
   const quickEdit = useBoolean();
+
+    // Dividir la cadena en dos partes
+    const partes = horario.split(' - ');
+    // Crear las fechas
+    const fechaHoraInicio = new Date(partes[0]); // El de las 9
+    const fechaHoraFin = new Date(
+      partes[1].replace(/(\d{2}:\d{2})$/, `${partes[0].slice(0, 11)}$1`)
+    ); // El de las 10
+
+    let horaDeTijuana = horaTijuana(fechaHoraInicio);
+    let horaDeCancun = horaCancun(fechaHoraInicio);
+    const fechaInicio = user?.idSede === 11 ? horaDeTijuana : horaDeCancun;
+
+    horaDeTijuana = horaTijuana(fechaHoraFin);
+    horaDeCancun = horaCancun(fechaHoraFin);
+    const fechaFin = user?.idSede === 11 ? horaDeTijuana : horaDeCancun;
+
+    formatearDosFechaAUna(fechaInicio, fechaFin);
 
   return (
     <>
@@ -89,7 +112,12 @@ export default function FilasTabla({ row, selected, rol, rel }) {
           </Label>
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{horario}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {(user?.idSede === 11 || user?.idSede === 9) && user?.idSede === idColab ? 
+            (formatearDosFechaAUna(fechaInicio, fechaFin)) :
+            horario
+          }
+        </TableCell>
 
         {estatusCita === 3 && (observaciones === null || observaciones === "") && rol === 4 ? (
           <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }} >

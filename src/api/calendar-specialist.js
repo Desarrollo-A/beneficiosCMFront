@@ -5,6 +5,14 @@ import { useMemo, useEffect } from 'react';
 import { enqueueSnackbar } from 'notistack';
 
 import { endpoints, fetcherPost } from 'src/utils/axios';
+import {
+  horaCancun,
+  horaTijuana,
+  toLocalISOString,
+  horaCancunAEstandar,
+  horaTijuanaAEstandar,
+  obtenerFechasConHoras,
+} from 'src/utils/general';
 
 // ----------------------------------------------------------------------
 
@@ -50,7 +58,7 @@ export async function reRender() {
 
 // ----------------------------------------------------------------------
 
-export function GetCustomEvents(current, idUsuario) {
+export function GetCustomEvents(current, idUsuario, idSede) {
   const year = current.getFullYear();
   const month = current.getMonth() + 1; // para obtener el mes que se debe se suma 1, ya que el default da 0
 
@@ -80,12 +88,39 @@ export function GetCustomEvents(current, idUsuario) {
   }
 
   const memoizedValue = useMemo(() => {
-    const events = data?.events?.map((event) => ({
-      ...event,
-      textColor: event?.tipoCita === 1 && event?.estatus === 1 ? 'yellow' : event?.color,
-      type: event?.type,
-      fechaInicio: event.start,
-    }));
+    const events = data?.events?.map((event) => {
+
+      let startConverted = idSede === 11 ? horaTijuana(event.start) : horaCancun(event.start);
+      startConverted = toLocalISOString(startConverted);
+      startConverted = startConverted.slice(0, 19).replace('T', ' ');
+      const inicioCita = idSede === 11 && event.idSedePaciente !== idSede ? startConverted : event.start;
+      let endConverted = idSede === 11 ? horaTijuana(event.end) : horaCancun(event.end);
+      endConverted = toLocalISOString(endConverted);
+      endConverted = endConverted.slice(0, 19).replace('T', ' ');
+      const finCita = ((idSede === 11 || idSede === 9) && event.idSedePaciente !== idSede) ? endConverted : event.end;
+      const fechasCitasReagendadas = obtenerFechasConHoras(event.fechasFolio);
+      let fechas = '';
+      fechasCitasReagendadas?.forEach((fecha) => {
+        const fechaInicioCita = idSede === 11 ? horaTijuana(fecha) : horaCancun(fecha);
+        fechas +=
+          fechas === ''
+            ? `${dayjs(fechaInicioCita).format('DD / MM / YYYY')} A las ${dayjs(
+                fechaInicioCita
+              ).format('HH:mm')} horas.`
+            : `,${dayjs(fechaInicioCita).format('DD / MM / YYYY')} A las ${dayjs(
+                fechaInicioCita
+              ).format('HH:mm')} horas.`;
+      });
+      return {
+        ...event,
+        textColor: event?.tipoCita === 1 && event?.estatus === 1 ? 'yellow' : event?.color,
+        type: event?.type,
+        fechaInicio: inicioCita,
+        start: inicioCita,
+        end: finCita,
+        fechasFolio: fechas || event.fechasFolio,
+      };
+    });
 
     return {
       events: events || [],
@@ -94,21 +129,93 @@ export function GetCustomEvents(current, idUsuario) {
       eventsValidating: isValidating,
       eventsEmpty: !isLoading && !data?.events?.length,
     };
-  }, [data?.events, error, isLoading, isValidating]);
+  }, [data?.events, error, isLoading, isValidating, idSede]);
 
   return memoizedValue;
 }
 
 // ----------------------------------------------------------------------
 
-export async function createCustom(eventData, idUsuario) {
+export async function createCustom(eventData, idUsuario, idSede) {
   let create = '';
-  const fechaInicio = dayjs(`${eventData.fechaInicio} ${eventData.hora_inicio}`).format(
+
+  let fechaInicioCita = eventData.fechaInicio;
+  let fechaFinCita = eventData.fechaFinal;
+  let horaInicioCita = eventData.hora_inicio;
+  let horaFinCita = eventData.hora_final;
+
+  if (idSede === 11) {
+    const partesInicio = eventData.hora_inicio.split(':');
+    const inicioCita = new Date(`${eventData.fechaInicio} ${eventData.hora_inicio}`);
+    inicioCita.setHours(partesInicio[0], partesInicio[1], partesInicio[2]);
+
+    const partesFinal = eventData.hora_final.split(':');
+    const finCita = new Date(`${eventData.fechaFinal} ${eventData.hora_final}`);
+    finCita.setHours(partesFinal[0], partesFinal[1], partesFinal[2]);
+
+    // Resultado en fecha tipo DATE
+    fechaInicioCita = horaTijuanaAEstandar(inicioCita);
+    fechaFinCita = horaTijuanaAEstandar(finCita);
+
+    let horasI = fechaInicioCita.getHours();
+    let minutosI = fechaInicioCita.getMinutes();
+    let segundosI = fechaInicioCita.getSeconds();
+
+    horasI = horasI < 10 ? `0${horasI}` : horasI;
+    minutosI = minutosI < 10 ? `0${minutosI}` : minutosI;
+    segundosI = segundosI < 10 ? `0${segundosI}` : segundosI;
+
+    let horasF = fechaFinCita.getHours();
+    let minutosF = fechaFinCita.getMinutes();
+    let segundosF = fechaFinCita.getSeconds();
+
+    horasF = horasF < 10 ? `0${horasF}` : horasF;
+    minutosF = minutosF < 10 ? `0${minutosF}` : minutosF;
+    segundosF = segundosF < 10 ? `0${segundosF}` : segundosF;
+
+    // Resultado en horas en string
+    horaInicioCita = `${horasI}:${minutosI}:${segundosI}`;
+    horaFinCita = `${horasF}:${minutosF}:${segundosF}`;
+  }
+
+  if (idSede === 9) {
+    const partesInicio = eventData.hora_inicio.split(':');
+    const inicioCita = new Date(`${eventData.fechaInicio} ${eventData.hora_inicio}`);
+    inicioCita.setHours(partesInicio[0], partesInicio[1], partesInicio[2]);
+
+    const partesFinal = eventData.hora_final.split(':');
+    const finCita = new Date(`${eventData.fechaFinal} ${eventData.hora_final}`);
+    finCita.setHours(partesFinal[0], partesFinal[1], partesFinal[2]);
+
+    // Resultado en fecha tipo DATE
+    fechaInicioCita = horaCancunAEstandar(inicioCita);
+    fechaFinCita = horaCancunAEstandar(finCita);
+
+    let horasI = fechaInicioCita.getHours();
+    let minutosI = fechaInicioCita.getMinutes();
+    let segundosI = fechaInicioCita.getSeconds();
+
+    horasI = horasI < 10 ? `0${horasI}` : horasI;
+    minutosI = minutosI < 10 ? `0${minutosI}` : minutosI;
+    segundosI = segundosI < 10 ? `0${segundosI}` : segundosI;
+
+    let horasF = fechaFinCita.getHours();
+    let minutosF = fechaFinCita.getMinutes();
+    let segundosF = fechaFinCita.getSeconds();
+
+    horasF = horasF < 10 ? `0${horasF}` : horasF;
+    minutosF = minutosF < 10 ? `0${minutosF}` : minutosF;
+    segundosF = segundosF < 10 ? `0${segundosF}` : segundosF;
+
+    // Resultado en horas en string
+    horaInicioCita = `${horasI}:${minutosI}:${segundosI}`;
+    horaFinCita = `${horasF}:${minutosF}:${segundosF}`;
+  }
+
+  const fechaInicio = dayjs(`${eventData.fechaInicio} ${horaInicioCita}`).format(
     'YYYY/MM/DD HH:mm:ss'
   );
-  const fechaFinal = dayjs(`${eventData.fechaFinal} ${eventData.hora_final}`).format(
-    'YYYY/MM/DD HH:mm:ss'
-  );
+  const fechaFinal = dayjs(`${eventData.fechaFinal} ${horaFinCita}`).format('YYYY/MM/DD HH:mm:ss');
 
   const dataValue = {
     titulo: eventData.title,
@@ -215,12 +322,82 @@ export async function createAppointment(eventData, modalitie, datosUser, default
         },
       ]; */
 
-  const fechaInicio = dayjs(`${eventData.fechaInicio} ${eventData.hora_inicio}`).format(
+  let fechaInicioCita = eventData.fechaInicio;
+  let fechaFinCita = eventData.fechaFinal;
+  let horaInicioCita = eventData.hora_inicio;
+  let horaFinCita = eventData.hora_final;
+
+  if (datosUser.idSede === 11) {
+    const partesInicio = eventData.hora_inicio.split(':');
+    const inicioCita = new Date(`${eventData.fechaInicio} ${eventData.hora_inicio}`);
+    inicioCita.setHours(partesInicio[0], partesInicio[1], partesInicio[2]);
+
+    const partesFinal = eventData.hora_final.split(':');
+    const finCita = new Date(`${eventData.fechaFinal} ${eventData.hora_final}`);
+    finCita.setHours(partesFinal[0], partesFinal[1], partesFinal[2]);
+
+    // Resultado en fecha tipo DATE
+    fechaInicioCita = horaTijuanaAEstandar(inicioCita);
+    fechaFinCita = horaTijuanaAEstandar(finCita);
+
+    let horasI = fechaInicioCita.getHours();
+    let minutosI = fechaInicioCita.getMinutes();
+    let segundosI = fechaInicioCita.getSeconds();
+
+    horasI = horasI < 10 ? `0${horasI}` : horasI;
+    minutosI = minutosI < 10 ? `0${minutosI}` : minutosI;
+    segundosI = segundosI < 10 ? `0${segundosI}` : segundosI;
+
+    let horasF = fechaFinCita.getHours();
+    let minutosF = fechaFinCita.getMinutes();
+    let segundosF = fechaFinCita.getSeconds();
+
+    horasF = horasF < 10 ? `0${horasF}` : horasF;
+    minutosF = minutosF < 10 ? `0${minutosF}` : minutosF;
+    segundosF = segundosF < 10 ? `0${segundosF}` : segundosF;
+
+    // Resultado en horas en string
+    horaInicioCita = `${horasI}:${minutosI}:${segundosI}`;
+    horaFinCita = `${horasF}:${minutosF}:${segundosF}`;
+  }
+  if (datosUser.idSede === 9) {
+    const partesInicio = eventData.hora_inicio.split(':');
+    const inicioCita = new Date(`${eventData.fechaInicio} ${eventData.hora_inicio}`);
+    inicioCita.setHours(partesInicio[0], partesInicio[1], partesInicio[2]);
+
+    const partesFinal = eventData.hora_final.split(':');
+    const finCita = new Date(`${eventData.fechaFinal} ${eventData.hora_final}`);
+    finCita.setHours(partesFinal[0], partesFinal[1], partesFinal[2]);
+
+    // Resultado en fecha tipo DATE
+    fechaInicioCita = horaCancunAEstandar(inicioCita);
+    fechaFinCita = horaCancunAEstandar(finCita);
+
+    let horasI = fechaInicioCita.getHours();
+    let minutosI = fechaInicioCita.getMinutes();
+    let segundosI = fechaInicioCita.getSeconds();
+
+    horasI = horasI < 10 ? `0${horasI}` : horasI;
+    minutosI = minutosI < 10 ? `0${minutosI}` : minutosI;
+    segundosI = segundosI < 10 ? `0${segundosI}` : segundosI;
+
+    let horasF = fechaFinCita.getHours();
+    let minutosF = fechaFinCita.getMinutes();
+    let segundosF = fechaFinCita.getSeconds();
+
+    horasF = horasF < 10 ? `0${horasF}` : horasF;
+    minutosF = minutosF < 10 ? `0${minutosF}` : minutosF;
+    segundosF = segundosF < 10 ? `0${segundosF}` : segundosF;
+
+    // Resultado en horas en string
+    horaInicioCita = `${horasI}:${minutosI}:${segundosI}`;
+    horaFinCita = `${horasF}:${minutosF}:${segundosF}`;
+  }
+
+  const fechaInicio = dayjs(`${eventData.fechaInicio} ${horaInicioCita}`).format(
     'YYYY/MM/DD HH:mm:ss'
   );
-  const fechaFinal = dayjs(`${eventData.fechaFinal} ${eventData.hora_final}`).format(
-    'YYYY/MM/DD HH:mm:ss'
-  );
+  const fechaFinal = dayjs(`${eventData.fechaFinal} ${horaFinCita}`).format('YYYY/MM/DD HH:mm:ss');
   const fundacion = eventData.paciente.externo;
 
   const start = dayjs(`${eventData.newDate} ${eventData.hora_inicio}`).format(
@@ -229,8 +406,8 @@ export async function createAppointment(eventData, modalitie, datosUser, default
   const now = dayjs(new Date()).format('YYYY/MM/DD HH:mm:ss');
 
   const fecha = dayjs(eventData.fechaInicio).format('DD/MM/YYYY');
-  const horaInicio = dayjs(fechaInicio).format('HH:mm a');
-  const horaFinal = dayjs(fechaFinal).format('HH:mm a');
+  const horaInicio = dayjs(eventData.fechaInicio).format('HH:mm a'); // Nadamas sirve para el mail
+  const horaFinal = dayjs(eventData.fechaFinal).format('HH:mm a'); // Nadamas sirve para el mail
 
   let bussinessHours = true;
 
@@ -265,6 +442,7 @@ export async function createAppointment(eventData, modalitie, datosUser, default
     oficina = 'Confirmado por especialista';
   }
 
+  // Compara las horas de la cita con el horario del especialista, ambas estan en formato tijuana.
   if (
     !(
       eventData.hora_inicio >= defaultHour.horaInicio &&
@@ -392,17 +570,83 @@ export async function createAppointment(eventData, modalitie, datosUser, default
 
 // ----------------------------------------------------------------------
 
-export async function updateAppointment(eventData, idUsuario) {
+export async function updateAppointment(eventData, idUsuario, idSede) {
   let update = '';
 
-  const start = dayjs(`${eventData.fechaInicio} ${eventData.hora_inicio}`).format(
-    'YYYY/MM/DD HH:mm:ss'
-  ); // fecha a la que se movera
-  const end = dayjs(`${eventData.fechaFinal} ${eventData.hora_final}`).format(
-    'YYYY/MM/DD HH:mm:ss'
-  ); // fecha a la que se movera
-  const now = dayjs(new Date()).format('YYYY/MM/DD HH:mm:ss');
+  let fechaInicioCita = eventData.fechaInicio; // todo tipo date
+  let fechaFinCita = eventData.fechaFinal; // todo tipo date
+  let horaInicioCita = eventData.hora_inicio;
+  let horaFinCita = eventData.hora_final;
 
+  if (idSede === 11) {
+    const partesInicio = eventData.hora_inicio.split(':');
+    const inicioCita = new Date(`${eventData.fechaInicio} ${eventData.hora_inicio}`);
+    inicioCita.setHours(partesInicio[0], partesInicio[1], partesInicio[2]);
+
+    const partesFinal = eventData.hora_final.split(':');
+    const finCita = new Date(`${eventData.fechaFinal} ${eventData.hora_final}`);
+    finCita.setHours(partesFinal[0], partesFinal[1], partesFinal[2]);
+
+    // Resultado en fecha tipo DATE
+    fechaInicioCita = horaTijuanaAEstandar(inicioCita);
+    fechaFinCita = horaTijuanaAEstandar(finCita);
+
+    let horasI = fechaInicioCita.getHours();
+    let minutosI = fechaInicioCita.getMinutes();
+    let segundosI = fechaInicioCita.getSeconds();
+
+    horasI = horasI < 10 ? `0${horasI}` : horasI;
+    minutosI = minutosI < 10 ? `0${minutosI}` : minutosI;
+    segundosI = segundosI < 10 ? `0${segundosI}` : segundosI;
+
+    let horasF = fechaFinCita.getHours();
+    let minutosF = fechaFinCita.getMinutes();
+    let segundosF = fechaFinCita.getSeconds();
+
+    horasF = horasF < 10 ? `0${horasF}` : horasF;
+    minutosF = minutosF < 10 ? `0${minutosF}` : minutosF;
+    segundosF = segundosF < 10 ? `0${segundosF}` : segundosF;
+
+    // Resultado en horas en string
+    horaInicioCita = `${horasI}:${minutosI}:${segundosI}`;
+    horaFinCita = `${horasF}:${minutosF}:${segundosF}`;
+  }
+  if (idSede === 9) {
+    const partesInicio = eventData.hora_inicio.split(':');
+    const inicioCita = new Date(`${eventData.fechaInicio} ${eventData.hora_inicio}`);
+    inicioCita.setHours(partesInicio[0], partesInicio[1], partesInicio[2]);
+
+    const partesFinal = eventData.hora_final.split(':');
+    const finCita = new Date(`${eventData.fechaFinal} ${eventData.hora_final}`);
+    finCita.setHours(partesFinal[0], partesFinal[1], partesFinal[2]);
+
+    // Resultado en fecha tipo DATE
+    fechaInicioCita = horaCancunAEstandar(inicioCita);
+    fechaFinCita = horaCancunAEstandar(finCita);
+
+    let horasI = fechaInicioCita.getHours();
+    let minutosI = fechaInicioCita.getMinutes();
+    let segundosI = fechaInicioCita.getSeconds();
+
+    horasI = horasI < 10 ? `0${horasI}` : horasI;
+    minutosI = minutosI < 10 ? `0${minutosI}` : minutosI;
+    segundosI = segundosI < 10 ? `0${segundosI}` : segundosI;
+
+    let horasF = fechaFinCita.getHours();
+    let minutosF = fechaFinCita.getMinutes();
+    let segundosF = fechaFinCita.getSeconds();
+
+    horasF = horasF < 10 ? `0${horasF}` : horasF;
+    minutosF = minutosF < 10 ? `0${minutosF}` : minutosF;
+    segundosF = segundosF < 10 ? `0${segundosF}` : segundosF;
+
+    // Resultado en horas en string
+    horaInicioCita = `${horasI}:${minutosI}:${segundosI}`;
+    horaFinCita = `${horasF}:${minutosF}:${segundosF}`;
+  }
+  const start = dayjs(`${eventData.fechaInicio} ${horaInicioCita}`).format('YYYY/MM/DD HH:mm:ss'); // fecha a la que se movera
+  const end = dayjs(`${eventData.fechaFinal} ${horaFinCita}`).format('YYYY/MM/DD HH:mm:ss'); // fecha a la que se movera
+  const now = dayjs(new Date()).format('YYYY/MM/DD HH:mm:ss');
   const dataValue = {
     titulo: eventData.title,
     id: eventData.id,
@@ -423,7 +667,7 @@ export async function updateAppointment(eventData, idUsuario) {
 
 // ----------------------------------------------------------------------
 
-export async function cancelAppointment(currentEvent, id, cancelType, idUsuario) {
+export async function cancelAppointment(currentEvent, id, cancelType, idUsuario, idSede) {
   const startStamp = dayjs(currentEvent.start).format('YYYY/MM/DD HH:mm:ss');
   let tituloEmail = '';
   let imagen = '';
@@ -450,9 +694,21 @@ export async function cancelAppointment(currentEvent, id, cancelType, idUsuario)
       break;
   }
 
+  // Modificar startStamp, currentEvent?.start, currentEvent?.end
+  let fechaInicioCita = currentEvent?.start;
+
+  if (idSede === 11) {
+    fechaInicioCita = horaTijuanaAEstandar(currentEvent?.start);
+    fechaInicioCita = dayjs(fechaInicioCita).format('YYYY/MM/DD HH:mm:ss');
+  }
+  if (idSede === 9) {
+    fechaInicioCita = horaCancunAEstandar(currentEvent?.start);
+    fechaInicioCita = dayjs(fechaInicioCita).format('YYYY/MM/DD HH:mm:ss');
+  }
+
   const data = {
     idCita: id,
-    start: startStamp,
+    start: idSede === 11 ? fechaInicioCita : startStamp,
     tipo: cancelType,
     modificadoPor: idUsuario,
   };
@@ -616,7 +872,7 @@ export function useGetEventReasons(idCita) {
 
 // ----------------------------------------------------------------------
 
-export async function reschedule(eventData, idDetalle, cancelType, datosUser, defaultHour) {
+export async function reschedulee(eventData, idDetalle, cancelType, datosUser, defaultHour) {
   let response = '';
   const { fundacion } = eventData; // para verificar si es fundacion Lamat
   let sede = eventData?.sede || 'virtual';
@@ -709,6 +965,215 @@ export async function reschedule(eventData, idDetalle, cancelType, datosUser, de
     horaFinalOld: dayjs(eventData.oldEventEnd).format('HH:mm: a'),
     view: 'email-reschedule',
     correo: [eventData?.correo], /* ['programador.analista36@ciudadmaderas.com'], */
+    idUsuario: datosUser?.idUsuario,
+  };
+
+  if (
+    !(
+      eventData.hora_inicio >= defaultHour.horaInicio &&
+      eventData.hora_final <= defaultHour.horaFinal &&
+      eventData.hora_final > eventData.hora_inicio
+    )
+  ) {
+    enqueueSnackbar('Horas seleccionadas fuera de horario', { variant: 'error' });
+  } else {
+    response = await fetcherPost(check_invoice, idDetalle);
+
+    if (response.result) {
+      response = await fetcherPost(create_appointment, data);
+
+      if (response.result) {
+        const del = await fetcherPost(cancel_appointment, cancelData);
+        if (del.result) {
+          if (eventData?.correo) {
+            fetcherPost(sendMail, mailReschedule);
+          }
+
+          const dataGoogle = {
+            start: dayjs(fechaInicio).format('YYYY-MM-DDTHH:mm:ss'),
+            end: dayjs(fechaFinal).format('YYYY-MM-DDTHH:mm:ss'),
+            id: eventData?.idEventoGoogle,
+            email: organizador,
+            attendees: correosNotificar,
+          };
+
+          fetcherPost(update_google_event, dataGoogle);
+        }
+      }
+    }
+  }
+
+  return response;
+}
+
+// ----------------------------------------------------------------------
+
+export async function reschedule(eventData, idDetalle, cancelType, datosUser, defaultHour) {
+  let response = '';
+  const { fundacion } = eventData; // para verificar si es fundacion Lamat
+  let sede = eventData?.sede || 'virtual';
+  let oficina = eventData?.oficina || 'virtual';
+
+  const organizador = eventData?.correo
+    ? 'programador.analista36@ciudadmaderas.com'
+    : 'programador.analista12@ciudadmaderas.com';
+
+  const correosNotificar = eventData?.correo
+    ? [
+        {
+          email: 'programador.analista32@ciudadmaderas.com', // eventData.paciente.correo Sustituir correo
+          responseStatus: 'accepted',
+        },
+        {
+          email: 'programador.analista12@ciudadmaderas.com', // eventData.paciente.correo Sustituir correo
+          responseStatus: 'accepted',
+        },
+      ]
+    : [
+        {
+          email: 'programador.analista36@ciudadmaderas.com', // eventData.paciente.correo Sustituir correo
+          responseStatus: 'accepted',
+        },
+        {
+          email: 'programador.analista12@ciudadmaderas.com', // eventData.paciente.correo Sustituir correo
+          responseStatus: 'accepted',
+        },
+      ];
+
+  let fechaInicioCita = eventData?.fechaInicio; // todo tipo date
+  let fechaFinCita = eventData?.hora_inicio; // todo tipo date
+  let horaInicioCita = eventData?.hora_inicio;
+  let horaFinCita = eventData?.hora_final;
+
+  if (datosUser?.idSede === 11) {
+    const partesInicio = eventData.hora_inicio.split(':');
+    const inicioCita = new Date(`${eventData.fechaInicio} ${eventData.hora_inicio}`);
+    inicioCita.setHours(partesInicio[0], partesInicio[1], partesInicio[2]);
+
+    const partesFinal = eventData.hora_final.split(':');
+    const finCita = new Date(`${eventData.fechaInicio} ${eventData.hora_final}`);
+    finCita.setHours(partesFinal[0], partesFinal[1], partesFinal[2]);
+
+    // Resultado en fecha tipo DATE
+    fechaInicioCita = horaTijuanaAEstandar(inicioCita);
+    fechaFinCita = horaTijuanaAEstandar(finCita);
+
+    let horasI = fechaInicioCita.getHours();
+    let minutosI = fechaInicioCita.getMinutes();
+    let segundosI = fechaInicioCita.getSeconds();
+
+    horasI = horasI < 10 ? `0${horasI}` : horasI;
+    minutosI = minutosI < 10 ? `0${minutosI}` : minutosI;
+    segundosI = segundosI < 10 ? `0${segundosI}` : segundosI;
+
+    let horasF = fechaFinCita.getHours();
+    let minutosF = fechaFinCita.getMinutes();
+    let segundosF = fechaFinCita.getSeconds();
+
+    horasF = horasF < 10 ? `0${horasF}` : horasF;
+    minutosF = minutosF < 10 ? `0${minutosF}` : minutosF;
+    segundosF = segundosF < 10 ? `0${segundosF}` : segundosF;
+
+    // Resultado en horas en string
+    horaInicioCita = `${horasI}:${minutosI}:${segundosI}`;
+    horaFinCita = `${horasF}:${minutosF}:${segundosF}`;
+  }
+
+  if (datosUser?.idSede === 9) {
+    const partesInicio = eventData.hora_inicio.split(':');
+    const inicioCita = new Date(`${eventData.fechaInicio} ${eventData.hora_inicio}`);
+    inicioCita.setHours(partesInicio[0], partesInicio[1], partesInicio[2]);
+
+    const partesFinal = eventData.hora_final.split(':');
+    const finCita = new Date(`${eventData.fechaInicio} ${eventData.hora_final}`);
+    finCita.setHours(partesFinal[0], partesFinal[1], partesFinal[2]);
+
+    // Resultado en fecha tipo DATE
+    fechaInicioCita = horaCancunAEstandar(inicioCita);
+    fechaFinCita = horaCancunAEstandar(finCita);
+
+    let horasI = fechaInicioCita.getHours();
+    let minutosI = fechaInicioCita.getMinutes();
+    let segundosI = fechaInicioCita.getSeconds();
+
+    horasI = horasI < 10 ? `0${horasI}` : horasI;
+    minutosI = minutosI < 10 ? `0${minutosI}` : minutosI;
+    segundosI = segundosI < 10 ? `0${segundosI}` : segundosI;
+
+    let horasF = fechaFinCita.getHours();
+    let minutosF = fechaFinCita.getMinutes();
+    let segundosF = fechaFinCita.getSeconds();
+
+    horasF = horasF < 10 ? `0${horasF}` : horasF;
+    minutosF = minutosF < 10 ? `0${minutosF}` : minutosF;
+    segundosF = segundosF < 10 ? `0${segundosF}` : segundosF;
+
+    // Resultado en horas en string
+    horaInicioCita = `${horasI}:${minutosI}:${segundosI}`;
+    horaFinCita = `${horasF}:${minutosF}:${segundosF}`;
+  }
+
+  const startStamp = dayjs(eventData.oldEventStart).format('YYYY/MM/DD HH:mm:ss');
+
+  const fechaInicio =
+    datosUser.idSede === 11
+      ? dayjs(`${eventData.fechaInicio} ${horaInicioCita}`).format('YYYY/MM/D HH:mm:ss')
+      : dayjs(`${eventData.fechaInicio} ${eventData.hora_inicio}`).format('YYYY/MM/D HH:mm:ss');
+  const fechaFinal =
+    datosUser.idSede === 11
+      ? dayjs(`${eventData.fechaInicio} ${horaFinCita}`).format('YYYY/MM/D HH:mm:ss')
+      : dayjs(`${eventData.fechaInicio} ${eventData.hora_final}`).format('YYYY/MM/D HH:mm:ss');
+
+  const fecha = dayjs(eventData.fechaInicio).format('DD/MM/YYYY');
+  const horaInicio = dayjs(fechaInicio).format('HH:mm:ss');
+  const horaFinal = dayjs(fechaFinal).format('HH:mm:ss');
+
+  if (fundacion === 1 || fundacion === '1') {
+    sede = 'Querétaro';
+    oficina = 'Confirmado por especialista';
+  }
+
+  const data = {
+    idUsuario: datosUser.idUsuario,
+    idPaciente: eventData.paciente,
+    fechaInicio,
+    fechaFinal,
+    fechaCreacion: eventData.fechaCreacion,
+    creadoPor: datosUser.idUsuario,
+    titulo: eventData.title,
+    modificadoPor: datosUser.idUsuario,
+    idCatalogo: eventData.idAtencionXSede,
+    fundacion,
+    idDetalle,
+    reagenda: 1,
+    tipoPuesto: eventData.tipoPuesto,
+    idEventoGoogle: eventData.idEventoGoogle,
+    oldEventTipo: eventData.oldEventTipo,
+    idSede: eventData.idSede,
+    modalidad: eventData.modalidad,
+  };
+
+  const cancelData = {
+    idCita: eventData?.idCancelar,
+    tipo: cancelType,
+    start: startStamp,
+    modificadoPor: datosUser.idUsuario,
+  };
+
+  const mailReschedule = {
+    titulo: 'REAGENDAMIENTO DE CITA',
+    beneficio: eventData.beneficio,
+    especialista: eventData.especialista,
+    sede,
+    oficina,
+    fecha,
+    horaInicio,
+    horaFinal,
+    fechaOld: dayjs(eventData.oldEventStart).format('DD/MM/YYYY'),
+    horaInicioOld: dayjs(eventData.oldEventStart).format('HH:mm: a'),
+    horaFinalOld: dayjs(eventData.oldEventEnd).format('HH:mm: a'),
+    view: 'email-reschedule',
+    correo: ['programador.analista36@ciudadmaderas.com'], // [eventData?.correo],
     idUsuario: datosUser?.idUsuario,
   };
 

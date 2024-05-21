@@ -73,7 +73,7 @@ export default function AppCurrentDownload({
   const [val, setVal] = useState({
     area: areas,
     espe: _es,
-    fhI: fechaI,
+    fhI: fhI.setDate(fhI.getDate() + 1),
     fhF: fechaF
   });
 

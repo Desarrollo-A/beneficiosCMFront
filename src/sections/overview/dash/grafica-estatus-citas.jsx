@@ -60,7 +60,7 @@ export default function GraficaEstatusCitas({
   const [val, setVal] = useState({
     area: areas,
     espe: _es,
-    fhI: fechaI,
+    fhI: fhI.setDate(fhI.getDate() + 1),
     fhF: fechaF,
     usuario: _usr
   });

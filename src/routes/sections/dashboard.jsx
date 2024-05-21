@@ -8,8 +8,8 @@ import { LoadingScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
 // CITAS
-const EvaluacionCitasPage = lazy(() => import ('src/pages/dashboard/evaluacion-citas-view'));
-const CitasPage = lazy(() => import ('src/pages/dashboard/citas'));
+const EvaluacionCitasPage = lazy(() => import('src/pages/dashboard/evaluacion-citas-view'));
+const CitasPage = lazy(() => import('src/pages/dashboard/citas'));
 // REPORTES
 const HistorialReportesPage = lazy(() => import('src/pages/dashboard/reportes/historial-reportes'));
 const ReportePacientesPage = lazy(() => import('src/pages/dashboard/reportes/reporte-pacientes'));
@@ -22,6 +22,7 @@ const VerEncuestasPage = lazy(() => import('src/pages/dashboard/encuestas/ver-vi
 const VerEncuestaDetallePage = lazy(() => import('src/pages/dashboard/encuestas/ver-detalle-view'));
 // GESTOR
 const AtencionXsedePage = lazy(() => import('src/pages/dashboard/gestor/atencionXsede-view'));
+const AtencionPorSedePage = lazy(() => import('src/pages/dashboard/gestor/atencion-por-sede'));
 const HorariosEspePage = lazy(() => import('src/pages/dashboard/gestor/horariosEspe-view'));
 const EstatusPuestosPage = lazy(() => import('src/pages/dashboard/gestor/estausPuestos-view'));
 const SedesPage = lazy(() => import('src/pages/dashboard/gestor/sedes-view'));
@@ -125,6 +126,7 @@ export const dashboardRoutes = [
         path: 'gestor',
         children: [
           { path: 'atencionxsede', element: <AtencionXsedePage /> },
+          { path: 'atencionporsede', element: <AtencionPorSedePage /> },
           { path: 'horariosEspecificos', element: <HorariosEspePage /> },
           { path: 'estatusPuestos', element: <EstatusPuestosPage /> },
           { path: 'sedes', element: <SedesPage /> },

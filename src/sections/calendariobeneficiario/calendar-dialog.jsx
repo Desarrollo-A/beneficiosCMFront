@@ -26,7 +26,13 @@ import FormHelperText from '@mui/material/FormHelperText';
 import InputAdornment from '@mui/material/InputAdornment';
 
 import { endpoints } from 'src/utils/axios';
-import { generarFechas, generarDiasFestivos } from 'src/utils/general';
+import {
+  horaTijuana,
+  generarFechas,
+  finHorarioVerano,
+  generarDiasFestivos,
+  inicioHorarioVerano,
+} from 'src/utils/general';
 
 import { getEncodedHash } from 'src/api/api';
 import { useAuthContext } from 'src/auth/hooks';
@@ -35,6 +41,7 @@ import {
   sendMail,
   crearCita,
   getHorario,
+  getSedeEsp,
   checkInvoice,
   getModalities,
   consultarCita,
@@ -47,6 +54,7 @@ import {
   cancelAppointment,
   getDiasDisponibles,
   getCitasSinEvaluar,
+  getBeneficioActivo,
   getCitasFinalizadas,
   updateDetailPacient,
   getHorariosOcupados,
@@ -109,6 +117,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const [pendiente, setPendiente] = useState({});
   const [sedesAtencionEspecialista, setSedesAtencionEspecialista] = useState({});
   const [diasPresenciales, setDiasPresenciales] = useState([]);
+  const [aceptar, setAceptar] = useState(false);
 
   const [btnNotificationDisabled, setBtnNotificationDisabled] = useState(false);
   const [email, setEmail] = useState('');
@@ -116,6 +125,18 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const [errorMessage, setErrorMessage] = useState('Formato de correo erróneo');
   const [errorEmail, setErrorEmail] = useState(false);
   const [sendEmails, setSendEmails] = useState(false);
+
+  const onAceptar = () => {
+    if(aceptar)
+      setAceptar(false);
+    else
+      setAceptar(true);
+  }
+
+  const [beneficioActivo, setBeneficioActivo] = useState({
+    beneficio: '',
+    primeraCita: ''
+  });
 
   const { user: datosUser } = useAuthContext();
 
@@ -149,6 +170,11 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     setBtnDisabled(true);
 
     const ahora = new Date();
+    const añoDate = ahora.getFullYear();
+    const horasARestar =
+      ahora >= inicioHorarioVerano(añoDate) && ahora <= finHorarioVerano(añoDate) ? 1 : 2;
+    ahora.setHours(ahora.getHours() - horasARestar);
+
     const fechaActual = dayjs(ahora).format('YYYY-MM-DD');
 
     const año = horarioSeleccionado.substring(0, 4);
@@ -450,7 +476,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     mutate(endpoints.dashboard.getCountEstatusCitas);
 
     /* *** PROCESO DE MUESTRA DE PREVIEW *** */
-    const scheduledAppointment = await consultarCita(agendar.data);
+    const scheduledAppointment = await consultarCita(agendar.data, datosUser.idSede);
     if (!scheduledAppointment.result) {
       enqueueSnackbar('¡Surgió un error al poder mostrar la previsualización de la cita!', {
         variant: 'danger',
@@ -955,8 +981,10 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
   const getHorariosDisponibles = async (beneficio, especialista) => {
     setIsLoading(true);
+    const sedeEsp = await getSedeEsp(especialista);
+
     // Consultamos el horario del especialista segun su beneficio.
-    const horarioACubrir = await getHorario(beneficio, especialista);
+    const horarioACubrir = await getHorario(beneficio, especialista, datosUser.idSede, sedeEsp.data[0].idsede);
 
     if (!horarioACubrir.result) return; // En caso de que no halla horario detenemos el proceso.
 
@@ -1047,6 +1075,30 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     const diasADeshabilitar = new Set([...diasOcupadosFiltro, ...diasFestivos]);
 
+    const activo = await getBeneficioActivo(datosUser?.idUsuario);
+
+    switch(beneficio){
+      case 537:
+        setBeneficioActivo({beneficio, primeraCita: activo[0].estatusNut}); 
+      break;
+
+      case 585:
+        setBeneficioActivo({beneficio, primeraCita: activo[0].estatusPsi});
+      break;
+
+      case 686:
+        setBeneficioActivo({beneficio, primeraCita: activo[0].estatusGE});
+      break;
+
+      case 158:
+        setBeneficioActivo({beneficio, primeraCita: activo[0].estatusQB});
+      break;
+
+      default:
+        enqueueSnackbar('Error en terminos y condiciones', { variant: 'error'});
+      break;
+    }
+
     setDiasOcupados([...diasADeshabilitar]);
     setIsLoading(false);
   };
@@ -1061,9 +1113,13 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     setBtnDisabled(false);
 
     // Bloque para obtener las horas del dia actual mas una cant de horas para validar registros del mismo dia actual.
-    const ahora = new Date();
-    const horaActual = ((ahora.getHours() + 3) % 24).toString().padStart(2, '0');
+    // 3 HORAS DE MARGEN PARA NO PENALIZARLOS.
+    let ahora = new Date();
+    if (datosUser.idSede === 11) {
+      ahora = horaTijuana(ahora);
+    }
 
+    const horaActual = ((ahora.getHours() + 3) % 24).toString().padStart(2, '0');
     const minutosActuales = ahora.getMinutes().toString().padStart(2, '0');
     const segundosActuales = ahora.getSeconds().toString().padStart(2, '0');
 
@@ -1112,16 +1168,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     }
   };
 
-  // const isWeekend = (date) => {
-  //   const day = date.day();
-
-  //   return day === 0
-  //   // Deshabilitar los sábados
-  // };
-
   const shouldDisableDate = (date) => {
     // Verificar si la fecha es un fin de semana
-    // const isWeekendDay = isWeekend(date);
 
     // Verificar si la fecha está en la lista de fechas deshabilitadas
     const formattedDate = date.format('YYYY-MM-DD');
@@ -1211,6 +1259,10 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     if (horarioSeleccionado === '') return setErrorHorarioSeleccionado(true);
 
     const ahora = new Date();
+    const añoDate = ahora.getFullYear();
+    const horasARestar =
+      ahora >= inicioHorarioVerano(añoDate) && ahora <= finHorarioVerano(añoDate) ? 1 : 2;
+    ahora.setHours(ahora.getHours() - horasARestar);
     const fechaActual = dayjs(ahora).format('YYYY-MM-DD');
 
     const año = horarioSeleccionado.substring(0, 4);
@@ -2188,8 +2240,12 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                     errorHorarioSeleccionado={errorHorarioSeleccionado}
                     btnDisabled={btnDisabled}
                     handleHorarioSeleccionado={handleHorarioSeleccionado}
+                    beneficioActivo={beneficioActivo}
+                    aceptarTerminos= {onAceptar}
+                    aceptar={aceptar}
                   />
-                )}
+                  
+                )}                
               </DialogContent>
               <DialogActions
                 sx={
@@ -2232,7 +2288,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                     type="submit"
                     variant="contained"
                     color="success"
-                    loading={btnDisabled}
+                    disabled={beneficioActivo.primeraCita === 0 && !aceptar}
+                    loading={btnDisabled} // para desactivar en caso de que tenga terminos sin aceptar
                   >
                     Agendar
                   </LoadingButton>

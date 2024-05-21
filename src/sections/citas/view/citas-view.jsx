@@ -14,6 +14,7 @@ import { useRouter } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import { endpoints } from 'src/utils/axios';
+import { horaTijuana, formatearDosFechaAUna } from 'src/utils/general';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetGeneral, usePostGeneral } from 'src/api/general';
@@ -61,6 +62,7 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 
 export default function CitasView() {
+  const { user: datosUser } = useAuthContext();
   const table = useTable();
 
   const settings = useSettingsContext();
@@ -161,8 +163,32 @@ export default function CitasView() {
   }, []);
 
   useEffect(() => {
-    setTableData(citasData);
-  }, [citasData]);
+    let datos = [];
+    if (datosUser.idSede === 11) {
+      datos = citasData.map((cita) => {
+        // Dividir la cadena en dos partes
+        const partes = cita.horario.split(' - ');
+        // Crear las fechas
+        const fechaHoraInicio = new Date(partes[0]); // El de las 9
+        const fechaHoraFin = new Date(
+          partes[1].replace(/(\d{2}:\d{2})$/, `${partes[0].slice(0, 11)}$1`)
+        ); // El de las 10
+
+        let horaDeTijuana = horaTijuana(fechaHoraInicio);
+        const fechaInicio = horaDeTijuana;
+
+        horaDeTijuana = horaTijuana(fechaHoraFin);
+        const fechaFin = horaDeTijuana;
+
+        return {
+          ...cita,
+          horario: formatearDosFechaAUna(fechaInicio, fechaFin),
+        };
+      });
+    }
+    setTableData(datosUser?.idSede !== 11 ? citasData : datos);
+    // setTableData(citasData);
+  }, [citasData, datosUser?.idSede]);
 
   const handleChangeId = (newAr) => {
     setArea(newAr);
