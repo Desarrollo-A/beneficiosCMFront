@@ -25,6 +25,8 @@ import GraficaModalidad from '../grafica-modalidad';
 import GraficaMetasArea from '../grafica-metas-area';
 import AppCurrentDownload from '../app-current-download';
 import GraficaEstatusCitas from '../grafica-estatus-citas'
+import GraficaDemandaDepartamento from '../grafica-demanda-departamento';
+import AnalyticsCurrentVisits from '../analytics-current-visits'
 
 // ----------------------------------------------------------------------
 
@@ -122,6 +124,25 @@ export default function DashView() {
 
         <Grid xs={12} md={4}>
           <AppFeatured />
+        </Grid>
+
+        <Grid xs={12} md={12} lg={12}>
+          <AnalyticsCurrentVisits
+            title="Demanda de beneficios"
+            chart={{
+              series: [
+                { label: 'America', value: 4344 },
+                { label: 'Asia', value: 5435 },
+                { label: 'Europe', value: 1443 },
+                { label: 'Africa', value: 4443 },
+                { label: 'Europe', value: 1443 },
+                { label: 'Africa', value: 4443 },
+                { label: 'Europe', value: 1443 },
+                { label: 'Africa', value: 4443 },
+              ],
+            }}
+            beneficios={especialistasData}
+          />
         </Grid>
 
         {rol === 4 || rol === 3 ? (
