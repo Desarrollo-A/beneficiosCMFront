@@ -1,15 +1,11 @@
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
-
-import { useState } from 'react';
-
 import axios from 'axios';
 import { isEmpty } from 'lodash';
-
 import PropTypes from 'prop-types';
 import utc from 'dayjs/plugin/utc';
+import { useState, useEffect } from 'react';
 import timezone from 'dayjs/plugin/timezone';
-import React, { useState, useEffect } from 'react';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import { Marker, GoogleMap, LoadScript, } from '@react-google-maps/api';
 
@@ -28,10 +24,10 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import FormHelperText from '@mui/material/FormHelperText';
 import LinearProgress from '@mui/material/LinearProgress';
+import { Checkbox, FormControlLabel } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Button, Dialog, Checkbox, FormControlLabel } from '@mui/material';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
@@ -125,8 +121,6 @@ export default function AppointmentSchedule({
     }
 
   }, [oficina]);
-
-  const [open, setOpen] = useState(false);
 
   const [openWindow, setOpenWindow] = useState(false);
 
