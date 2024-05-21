@@ -19,7 +19,7 @@ export default function EncuestasPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Encuestas</title>
+        <title> Beneficios CDM | Encuestas</title>
       </Helmet>
 
       < EncuestasView id={`${id}`}/>

@@ -8,7 +8,7 @@ export default function LoginPage() {
   return (
     <>
       <Helmet>
-        <title> Jwt: Login</title>
+        <title>Beneficios CDM | Login</title>
       </Helmet>
 
       <JwtLoginView />

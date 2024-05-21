@@ -88,8 +88,6 @@ export default function AppointmentSchedule({
     width: "100%"
   };
 
-  console.log(oficina)
-
   const [address, setAddress] = useState('');
 
   useEffect(() => {
@@ -104,12 +102,22 @@ export default function AppointmentSchedule({
 
   const [open, setOpen] = useState(false);
 
+  const [openWindow, setOpenWindow] = useState(false);
+
   const handleClickOpen = () => {
     setOpen(true);
   };
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleWindowActive = () => {
+    setOpenWindow(true);
+  };
+
+  const handleWindowClose = () => {
+    setOpenWindow(false);
   };
 
   const [coordinates, setCoordinates] = useState(null);
@@ -426,7 +434,34 @@ export default function AppointmentSchedule({
                 <Stack spacing={1} sx={{ p: { xs: 1, md: 1 } }}>
                   Es necesario habilitar las ventanas emergentes en el navegador para poder realizar
                   el pago de la cita.
+                  <Button variant="contained" color="primary" onClick={handleWindowActive}>
+                    Tutorial
+                  </Button>
                 </Stack>
+
+                <Dialog open={openWindow} onClose={handleWindowClose} fullWidth maxWidth="md">
+                  <DialogTitle><Box/></DialogTitle>
+                  <DialogContent>
+                  <Box
+                    component="img"
+                    alt="auth"
+                    src={`${import.meta.env.BASE_URL}assets/img/windowTuto.gif`}
+                    sx={{ 
+                      display: 'block', 
+                      margin: '0 auto',
+                      width: '100%', 
+                      maxWidth: '1200px',
+                      height: 'auto'
+                    }}
+                  />
+                  </DialogContent>
+                  <DialogActions>
+
+                    <Button onClick={handleWindowClose} variant="contained" color="error">
+                      Cerrar
+                    </Button>
+                  </DialogActions>
+                </Dialog>
               </>
             )}{' '}
             {selectedValues.modalidad === 2 && selectedValues.beneficio && (

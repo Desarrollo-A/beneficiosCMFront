@@ -69,7 +69,7 @@ function handleDownloadExcel(tableData) {
 
   const data = [
     {
-      sheet: "Horarios especificos",
+      sheet: "Horarios específicos",
       columns: [
         { label: "ID", value: "idHorario" },
         { label: "Beneficio", value: "beneficio" },
@@ -83,7 +83,7 @@ function handleDownloadExcel(tableData) {
   ];
 
   const settings = {
-    fileName: "Horarios especificos",
+    fileName: "Horarios específicos",
     extraLength: 3,
     writeMode: "writeFile",
     writeOptions: {},
@@ -104,7 +104,7 @@ function handleDownloadPDF(tableData, headerBase) {
     head: [headerBase],
     body: data,
   })
-  doc.save('Horarios especificos.pdf')
+  doc.save('Horarios específicos.pdf')
 }
 
 // ----------------------------------------------------------------------
@@ -232,10 +232,10 @@ export default function HorariosEspeView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="Horarios especificos"
+          heading="Horarios específicos"
           links={[
             { name: 'Gestor' },
-            { name: 'Horarios especificos' },
+            { name: 'Horarios específicos' },
           ]}
           sx={{
             mb: { xs: 3, md: 0 },
