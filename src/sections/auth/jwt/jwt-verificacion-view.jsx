@@ -133,20 +133,44 @@ export default function Verificacion({ email, formReg }) {
             sm: 'repeat(1, 1fr)',
           }}
         >
+          <div>
+            <Box
+              component="img"
+              alt="auth"
+              src={`${import.meta.env.BASE_URL}assets/img/logoBeneficios.svg`}
+              sx={{
+                maxWidth: { sm: 120, xs: 80, lg: 60, md: 70, xl: 80 },
+                position: 'relative',
+                left: { xs: '75%', md: '71%' },
+                top: { xs: '23%', md: '25%' }
+              }}
+            />
+            <Box
+              component="img"
+              alt="auth"
+              src={`${import.meta.env.BASE_URL}assets/img/beneficiosBrand.svg`}
+              sx={{
+                maxWidth: { sm: 800, xs: 480, md: 900, lg: 560, xl: 370 },
+                position: 'relative',
+                left: { xs: '2%', md: '1%' },
+                top: { xs: '15%', md: '15%' }
+              }}
+            />
+          </div>
           <DialogTitle style={{ paddingLeft: '0px', color: 'black' }}>Registro de usuario</DialogTitle>
 
           {countdown !== 0 ? (
             <>
-              <p style={{color: 'black'}}>
+              <p style={{ color: 'black' }}>
                 El código vence en <b>{formatTime(countdown)}</b>
               </p>
 
               <ThemeProvider theme={lightTheme}>
-              <RHFTextField name="codigo" label="Código" autoComplete="off" />
+                <RHFTextField name="codigo" label="Código" autoComplete="off" />
               </ThemeProvider>
             </>
           ) : (
-            <p style={{color: 'black'}}>El código de verificación expiró</p>
+            <p style={{ color: 'black' }}>El código de verificación expiró</p>
           )}
 
           <DialogActions>

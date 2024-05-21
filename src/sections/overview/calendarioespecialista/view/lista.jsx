@@ -74,9 +74,8 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
           setHrInicio(horario?.data[0]?.horaInicio);
           setHrFinal(horario?.data[0]?.horaFin);
         }
-
       } catch (error) {
-        console.error("Error al obtener el horario:", error);
+        console.error('Error al obtener el horario:', error);
         // Manejo de errores, si es necesario
       }
     };
@@ -231,7 +230,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
 
     switch (type) {
       case 'cancel':
-        save = await createCustom(eventDataCancel, user.idUsuario);
+        save = await createCustom(eventDataCancel, user.idUsuario, user.idSede);
         break;
 
       case 'date':
@@ -462,9 +461,9 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
                       if (dayOfWeek === 0) {
                         return true;
                       }
-                      if(dayOfWeek === 6){
-                        if(sabado === 0){
-                        return true; 
+                      if (dayOfWeek === 6) {
+                        if (sabado === 0) {
+                          return true;
                         }
                       }
                       return false;

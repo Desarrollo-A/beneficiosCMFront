@@ -35,7 +35,15 @@ import {
 
 import Iconify from 'src/components/iconify';
 
-export default function CancelEventDialog({ type, currentEvent, pastCheck, reasons, onClose, close, selectedDate }) {
+export default function CancelEventDialog({
+  type,
+  currentEvent,
+  pastCheck,
+  reasons,
+  onClose,
+  close,
+  selectedDate,
+}) {
   const { user } = useAuthContext(); // variable del la sesion del usuario
   dayjs.locale('es'); // valor para cambiar el idioma del dayjs
   const [assist, setAssist] = useState('');
@@ -70,9 +78,8 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
           setHrInicio(horario?.data[0]?.horaInicio);
           setHrFinal(horario?.data[0]?.horaFin);
         }
-
       } catch (error) {
-        console.error("Error al obtener el horario:", error);
+        console.error('Error al obtener el horario:', error);
         // Manejo de errores, si es necesario
       }
     };
@@ -87,10 +94,11 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
     horaFinal: hrFinal,
   };
 
-  const esp = { // idioma de los botones
-    okButtonLabel: "Seleccionar",
-    cancelButtonLabel: "Cancelar",
-    datePickerToolbarTitle: 'Selecciona una fecha'
+  const esp = {
+    // idioma de los botones
+    okButtonLabel: 'Seleccionar',
+    cancelButtonLabel: 'Cancelar',
+    datePickerToolbarTitle: 'Selecciona una fecha',
   };
 
   const handleAssist = (event) => {
@@ -154,7 +162,7 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
       idEventoGoogle: currentEvent?.idEventoGoogle,
       tipoPuesto: currentEvent?.tipoPuesto,
       idSede: currentEvent?.idSede,
-      modalidad: currentEvent?.modalidad
+      modalidad: currentEvent?.modalidad,
     };
     
     switch (cancelType) {
@@ -163,7 +171,13 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
         break;
 
       default:
-        resp = await cancelAppointment(currentEvent, currentEvent?.id, cancelType, user?.idUsuario);
+        resp = await cancelAppointment(
+          currentEvent,
+          currentEvent?.id,
+          cancelType,
+          user?.idUsuario,
+          user.idSede
+        );
         break;
     }
 
@@ -235,15 +249,14 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
               <Autocomplete
                 id="motivos"
                 name="motivos"
-                openText='Abrir'
+                openText="Abrir"
                 ListboxProps={{ style: { maxHeight: 200 } }}
-                clearText='Borrar'
-                noOptionsText='Sin opciones'
+                clearText="Borrar"
+                noOptionsText="Sin opciones"
                 multiple
-                getOptionDisabled={(option) => // deshabilita las opciones que ya hayan sido seleccionadas
-                  reason.some((selectedOption) => (selectedOption.value === option.value))
-                }
-
+                getOptionDisabled={(
+                  option // deshabilita las opciones que ya hayan sido seleccionadas
+                ) => reason.some((selectedOption) => selectedOption.value === option.value)}
                 onChange={(event, value) => {
                   setReason(value);
                 }}
@@ -251,30 +264,30 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
                 renderTags={(value, getTagProps) =>
                   value.map((option, index) => (
                     <Chip
-                    sx={{
-                      backgroundColor: '#e0e0e0',
-                      borderRadius: '20px',
-                      alignItems: 'center',
-                      alignContent: 'center',
-                      justifyContent: 'center',
-                    }}
-                    deleteIcon={
-                      <Stack
-                        style={{
-                          width: '30px',
-                          height: '20px',
-                          display: 'flex',
-                          alignItems: 'center',
-                        }}
-                      >
-                        <Iconify
-                          icon="typcn:delete-outline"
-                          sx={{
-                            color: 'black',
+                      sx={{
+                        backgroundColor: '#e0e0e0',
+                        borderRadius: '20px',
+                        alignItems: 'center',
+                        alignContent: 'center',
+                        justifyContent: 'center',
+                      }}
+                      deleteIcon={
+                        <Stack
+                          style={{
+                            width: '30px',
+                            height: '20px',
+                            display: 'flex',
+                            alignItems: 'center',
                           }}
-                        />
-                      </Stack>
-                    }
+                        >
+                          <Iconify
+                            icon="typcn:delete-outline"
+                            sx={{
+                              color: 'black',
+                            }}
+                          />
+                        </Stack>
+                      }
                       variant="outlined"
                       label={option.label}
                       {...getTagProps({ index })}
@@ -341,6 +354,7 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
                   if(dayOfWeek === 6){
                     if(sabado === 0){
                     return true; 
+
                     }
                   }
                   return false;
@@ -349,28 +363,28 @@ export default function CancelEventDialog({ type, currentEvent, pastCheck, reaso
             </LocalizationProvider>
 
             <Stack direction="row" justifyContent="space-between" spacing={2} sx={{ mt: 2 }}>
-            <LocalizationProvider  localeText={esp}>
-              <MobileTimePicker
-                sx={{ width: '100%' }}
-                label="Hora de inicio"
-                value={horaInicio}
-                onChange={(value) => {
-                  handleHourChange(value);
-                }}
-              />
+              <LocalizationProvider localeText={esp}>
+                <MobileTimePicker
+                  sx={{ width: '100%' }}
+                  label="Hora de inicio"
+                  value={horaInicio}
+                  onChange={(value) => {
+                    handleHourChange(value);
+                  }}
+                />
 
-              <MobileTimePicker
-                sx={{ width: '100%' }}
-                label="Hora de finalización"
-                value={horaFinal}
-                disabled={type === 'date'}
-                slotProps={{
-                  textField: {
-                    error: hourError.result,
-                    helperText: hourError.result && hourError.msg,
-                  },
-                }}
-              />
+                <MobileTimePicker
+                  sx={{ width: '100%' }}
+                  label="Hora de finalización"
+                  value={horaFinal}
+                  disabled={type === 'date'}
+                  slotProps={{
+                    textField: {
+                      error: hourError.result,
+                      helperText: hourError.result && hourError.msg,
+                    },
+                  }}
+                />
               </LocalizationProvider>
             </Stack>
           </Stack>

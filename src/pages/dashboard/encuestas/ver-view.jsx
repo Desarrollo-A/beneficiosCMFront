@@ -11,7 +11,7 @@ export default function CrearEncuestaPage() {
   return (
     <>
       <Helmet>
-        <title>Encuestas</title>
+        <title>Beneficios CDM | Encuestas</title>
       </Helmet>
 
       < VerEncuestasView />

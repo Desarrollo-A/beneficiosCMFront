@@ -12,6 +12,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import LinearProgress from '@mui/material/LinearProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import { endpoints } from 'src/utils/axios';
 
@@ -82,11 +83,15 @@ export default function AvisoPrivacidadGeneral() {
     propiedadesIFrame.visualize,
   ]);
 
+  const [loading, setLoading] = useState(false);
+
   const handle = async (event) => {
     setAcualizarView(false);
     setEspecialidadSelector(event);
     setDetalleEspecialidad({ id: event.idOpcion, nombre: event.nombre });
     try {
+
+      setLoading(true);
       const respuesta = await getAvisoPrivacidad(event.idOpcion);
       if (respuesta.length >= 1) {
         // Actualizar el estado con los datos obtenidos
@@ -114,6 +119,9 @@ export default function AvisoPrivacidadGeneral() {
       }
     } catch (error) {
       console.error('Error al obtener datos del servicio SQL', error);
+    } finally {
+      // Ocultar el componente de carga
+      setLoading(false);
     }
   };
 
@@ -231,8 +239,8 @@ export default function AvisoPrivacidadGeneral() {
           method: 'POST',
           body: formData,
           headers: {
-              Token: accessToken,
-            }
+            Token: accessToken,
+          }
         })
           .then((response) => response.json())
           .then((data) => {
@@ -351,31 +359,42 @@ export default function AvisoPrivacidadGeneral() {
                 defaultValue=""
               >
                 {!isEmpty(especialidadesDisponibles) ? (
-                especialidadesDisponibles.map((elemento, index) =>
-                  user?.idPuesto === elemento?.idPuesto || user?.idRol === 2 || user?.idRol === 4 ? (
-                    <MenuItem value={elemento} key={elemento.idOpcion}>
-                      {elemento.nombre}
-                    </MenuItem>
-                  ) : null
-                )
-              ) : (
-                <Grid style={{ paddingTop: '2%' }}>
-                  <LinearProgress />
-                  <Box mb={3} />
-                </Grid>
-              )}
+                  especialidadesDisponibles.map((elemento, index) =>
+                    user?.idPuesto === elemento?.idPuesto || user?.idRol === 2 || user?.idRol === 4 ? (
+                      <MenuItem value={elemento} key={elemento.idOpcion}>
+                        {elemento.nombre}
+                      </MenuItem>
+                    ) : null
+                  )
+                ) : (
+                  <Grid style={{ paddingTop: '2%' }}>
+                    <LinearProgress />
+                    <Box mb={3} />
+                  </Grid>
+                )}
               </Select>
             </FormControl>
           </Grid>
         </Grid>
+
+        <Grid container spacing={2}>
+          <Grid xs={12} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            {loading && <CircularProgress size={50} />}
+          </Grid>
+        </Grid>
       </Container>
 
-      {visorPdfFile}
+      {loading === false ? visorPdfFile : null }
+
+      {loading === false ? (
       <VisorPdf
         datos={propiedadesIFrame}
         enviarDatosAlPadre={manejarBanderaDesdeHijo}
         idPuesto={especialidadSelector.idPuesto}
-      />
+      /> 
+      ):(
+        null
+      )}
     </>
   );
 }

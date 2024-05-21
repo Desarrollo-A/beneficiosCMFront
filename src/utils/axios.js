@@ -57,15 +57,12 @@ export const fetcherGet = async (args) => {
 
   const accessToken = localStorage.getItem('accessToken');
 
-  const res = await instance.get(
-    url, 
-    {
+  const res = await instance.get(url, {
     headers: {
       Token: accessToken,
     },
     ...config,
   });
-
 
   return res.data;
 };
@@ -193,8 +190,8 @@ export const endpoints = {
     getLastAppointment: 'CalendarioController/getLastAppointment',
     updateAppointment: 'CalendarioController/updateAppointmentData',
     updateStatusAppointment: 'CalendarioController/updateStatusAppointmentData',
-    getPendientes: 'CalendarioController/getPendientes',
     updateDetail: 'CalendarioController/updateDetallePaciente',
+    getPendientes: 'CalendarioController/getPendientes',
     cancelAppointment: 'CalendarioController/cancelAppointmentUser',
     getCitaById: 'CalendarioController/getCitaById',
     insertGoogleEvent: 'CalendarioController/insertGoogleEvent',
@@ -203,6 +200,9 @@ export const endpoints = {
     deleteGoogleEvent: 'CalendarioController/deleteGoogleEvent',
     getSedesEspecialista: 'CalendarioController/getSedesDeAtencionEspecialista',
     getDisponibilidadEspecialista: 'CalendarioController/getDiasDisponiblesAtencionEspecialista',
+    getBeneficioActivo: 'CalendarioController/getBeneficioActivo',
+    getDocumento: 'CalendarioController/getDocumento',
+    getSedeEsp: 'CalendarioController/getSedeEsp',
   },
   reportes: {
     lista: '/ReportesController/citas',

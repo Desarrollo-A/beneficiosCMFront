@@ -11,7 +11,7 @@ export default function OficinasPage() {
   return (
     <>
       <Helmet>
-        <title> Gestor: Sedes</title>
+        <title> Beneficios CDM | Sedes</title>
       </Helmet>
 
       < SedesView />

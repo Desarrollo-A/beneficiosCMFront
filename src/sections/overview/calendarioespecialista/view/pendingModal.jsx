@@ -44,7 +44,7 @@ export default function PendingModal() {
   const [assist, setAssist] = useState('');
   const [reason, setReason] = useState([]);
   const [cancelType, setCancelType] = useState('');
-  const {data: reasons} = useGetMotivos(user?.idPuesto);
+  const { data: reasons } = useGetMotivos(user?.idPuesto);
   const [selectEvent, setSelectEvent] = useState('');
   const selectedReason = reason.length > 0 || cancelType;
   const [btnLoading, setBtnLoading] = useState(false);
@@ -83,13 +83,17 @@ export default function PendingModal() {
     let items = '';
     if (pendings) {
       items = pendings.map((pending, index) => (
-        <Stack key={index} sx={{p:1}}>
+        <Stack key={index} sx={{ p: 1 }}>
           <ListItem alignItems="flex-start" key={pending.idCita}>
-            <ListItemText primary={pending.titulo} sx={{ width: '45%' }}  primaryTypographyProps={{fontSize: '14px'}} />
+            <ListItemText
+              primary={pending.titulo}
+              sx={{ width: '45%' }}
+              primaryTypographyProps={{ fontSize: '14px' }}
+            />
             <ListItemText
               primary={dayjs(pending.start).format('dddd, DD/MMMM/YYYY - HH:mm')}
               sx={{ width: '50%', marginLeft: '1em' }}
-              primaryTypographyProps={{fontSize: '14px'}}
+              primaryTypographyProps={{ fontSize: '14px' }}
             />
             <IconButton
               onClick={() => handleEnd(pending)}
@@ -110,7 +114,13 @@ export default function PendingModal() {
     switch (assist) {
       case 0:
         try {
-          const resp = await cancelAppointment(selectEvent, selectEvent.id, cancelType, user.idUsuario);
+          const resp = await cancelAppointment(
+            selectEvent,
+            selectEvent.id,
+            cancelType,
+            user.idUsuario,
+            user.idSede
+          );
 
           if (resp.result) {
             enqueueSnackbar(resp.msg);
@@ -219,15 +229,15 @@ export default function PendingModal() {
                 <Autocomplete
                   id="motivos"
                   name="motivos"
-                  noOptionsText='Sin opciones'
+                  noOptionsText="Sin opciones"
                   multiple
                   ListboxProps={{ style: { maxHeight: 200 } }}
                   limitTags={2}
-                  openText='Abrir'
-                  clearText='Borrar'
-                  getOptionDisabled={(option) => // deshabilita las opciones que ya hayan sido seleccionadas
-                  reason.some((selectedOption) => (selectedOption.value === option.value ))
-                }
+                  openText="Abrir"
+                  clearText="Borrar"
+                  getOptionDisabled={(
+                    option // deshabilita las opciones que ya hayan sido seleccionadas
+                  ) => reason.some((selectedOption) => selectedOption.value === option.value)}
                   onChange={(event, value) => {
                     setReason(value);
                   }}
@@ -235,30 +245,30 @@ export default function PendingModal() {
                   renderTags={(value, getTagProps) =>
                     value.map((option, index) => (
                       <Chip
-                      sx={{
-                        backgroundColor: '#e0e0e0',
-                        borderRadius: '20px',
-                        alignItems: 'center',
-                        alignContent: 'center',
-                        justifyContent: 'center',
-                      }}
-                      deleteIcon={
-                        <Stack
-                          style={{
-                            width: '30px',
-                            height: '20px',
-                            display: 'flex',
-                            alignItems: 'center',
-                          }}
-                        >
-                          <Iconify
-                            icon="typcn:delete-outline"
-                            sx={{
-                              color: 'black',
+                        sx={{
+                          backgroundColor: '#e0e0e0',
+                          borderRadius: '20px',
+                          alignItems: 'center',
+                          alignContent: 'center',
+                          justifyContent: 'center',
+                        }}
+                        deleteIcon={
+                          <Stack
+                            style={{
+                              width: '30px',
+                              height: '20px',
+                              display: 'flex',
+                              alignItems: 'center',
                             }}
-                          />
-                        </Stack>
-                      }
+                          >
+                            <Iconify
+                              icon="typcn:delete-outline"
+                              sx={{
+                                color: 'black',
+                              }}
+                            />
+                          </Stack>
+                        }
                         variant="outlined"
                         label={option.label}
                         {...getTagProps({ index })}
@@ -306,7 +316,7 @@ export default function PendingModal() {
             variant="contained"
             disabled={!selectedReason}
             color="success"
-            loading={ btnLoading }
+            loading={btnLoading}
             onClick={endSubmit}
             autoFocus
           >

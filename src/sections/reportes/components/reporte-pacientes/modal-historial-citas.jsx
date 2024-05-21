@@ -17,11 +17,15 @@ import CircularProgress from '@mui/material/CircularProgress';
 import TimelineItem, { timelineItemClasses } from '@mui/lab/TimelineItem';
 
 import { endpoints } from 'src/utils/axios';
+import { horaCancun, horaTijuana, formatearDosFechaAUna } from 'src/utils/general';
 
+import { useAuthContext } from 'src/auth/hooks';
 import { usePostGeneral } from 'src/api/general';
+
 // ----------------------------------------------------------------------
 export default function HistorialCitas({ open, onClose, idUsuario, area, idUs, rol, typeusersData }) {
   let espe = '';
+  const { user } = useAuthContext();
   switch (area) {
     case 158:
       espe = 'Quantum Balance';
@@ -57,6 +61,7 @@ export default function HistorialCitas({ open, onClose, idUsuario, area, idUs, r
   }, [idUsuario, area, idUs, rol, typeusersData ]);
 
   const { citasData } = usePostGeneral(data, endpoints.reportes.citas, 'citasData');
+  
 
   return (
     <>
@@ -84,7 +89,7 @@ export default function HistorialCitas({ open, onClose, idUsuario, area, idUs, r
             }}
           >
             {citasData.map((item, index) => (
-              <OrderItem key={index} item={item} lastTimeline={index === citasData.length - 1} />
+              <OrderItem key={index} item={item} idPaciente={idUsuario} lastTimeline={index === citasData.length - 1} user={user}/>
             ))}
           </Timeline>
 
@@ -117,8 +122,24 @@ HistorialCitas.propTypes = {
   typeusersData: PropTypes.any
 };
 
-function OrderItem({ item, lastTimeline }) {
+function OrderItem({ item, lastTimeline, user, idPaciente }) {
   const { estatus, estatusCita, horario, especialista, motivoCita } = item; // tipoCita
+
+  // Dividir la cadena en dos partes
+  const partes = horario.split(' - ');
+  // Crear las fechas
+  const fechaHoraInicio = new Date(partes[0]); // El de las 9
+  const fechaHoraFin = new Date(
+    partes[1].replace(/(\d{2}:\d{2})$/, `${partes[0].slice(0, 11)}$1`)
+  ); // El de las 10
+
+  let horaDeTijuana = horaTijuana(fechaHoraInicio);
+  let horaDeCancun = horaCancun(fechaHoraInicio);
+  const fechaInicio = user?.idSede === 11 ? horaDeTijuana : horaDeCancun;
+
+  horaDeTijuana = horaTijuana(fechaHoraFin);
+  horaDeCancun = horaCancun(fechaHoraFin);
+  const fechaFin = user?.idSede === 11 ? horaDeTijuana : horaDeCancun;
 
   return (
     <TimelineItem>
@@ -144,7 +165,12 @@ function OrderItem({ item, lastTimeline }) {
       </TimelineSeparator>
 
       <TimelineContent>
-        <Typography variant="subtitle2">{horario}</Typography>
+        <Typography variant="subtitle2">
+        {(user?.idSede === 11 || user?.idSede === 9) && user?.idSede === idPaciente ? 
+            (formatearDosFechaAUna(fechaInicio, fechaFin)) :
+            horario
+          }
+        </Typography>
 
         <Typography variant="caption" sx={{ color: 'text.disabled' }}>
           {estatus}
@@ -167,4 +193,6 @@ function OrderItem({ item, lastTimeline }) {
 OrderItem.propTypes = {
   item: PropTypes.any,
   lastTimeline: PropTypes.any,
+  user: PropTypes.any,
+  idPaciente: PropTypes.any
 };

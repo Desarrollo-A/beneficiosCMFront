@@ -4,11 +4,17 @@ import Tooltip from '@mui/material/Tooltip';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 
+import { horaCancun, horaTijuana, formatearDosFechaAUna } from 'src/utils/general';
+
+import { useAuthContext } from 'src/auth/hooks';
+
 import Label from 'src/components/label';
 
 // ----------------------------------------------------------------------
 
 export default function RowResumenTerapias({ row, area, idUs, rol }) {
+  const { user } = useAuthContext();
+
   const {
     id,
     beneficio,
@@ -20,7 +26,26 @@ export default function RowResumenTerapias({ row, area, idUs, rol }) {
     metodoPago,
     horario,
     estatus,
-    color } = row;
+    color, 
+    idSedeEsp } = row;
+
+    // Dividir la cadena en dos partes
+    const partes = horario.split(' - ');
+    // Crear las fechas
+    const fechaHoraInicio = new Date(partes[0]); // El de las 9
+    const fechaHoraFin = new Date(
+      partes[1].replace(/(\d{2}:\d{2})$/, `${partes[0].slice(0, 11)}$1`)
+    ); // El de las 10
+
+    let horaDeTijuana = horaTijuana(fechaHoraInicio);
+    let horaDeCancun = horaCancun(fechaHoraInicio);
+    const fechaInicio = user?.idSede === 11 ? horaDeTijuana : horaDeCancun;
+
+    horaDeTijuana = horaTijuana(fechaHoraFin);
+    horaDeCancun = horaCancun(fechaHoraFin);
+    const fechaFin = user?.idSede === 11 ? horaDeTijuana : horaDeCancun;
+
+    formatearDosFechaAUna(fechaInicio, fechaFin);
 
   return (
       <TableRow>
@@ -49,7 +74,12 @@ export default function RowResumenTerapias({ row, area, idUs, rol }) {
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{metodoPago}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{horario}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+        {(user?.idSede === 11 || user?.idSede === 9) && user?.idSede === idSedeEsp ? 
+            (formatearDosFechaAUna(fechaInicio, fechaFin)) :
+            horario
+        }
+        </TableCell>
 
         <TableCell>
           <Label
