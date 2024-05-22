@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 
-import Tooltip from '@mui/material/Tooltip';
+/* import Tooltip from '@mui/material/Tooltip'; */
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 
@@ -17,9 +17,9 @@ export default function RowResumenTerapias({ row, area, idUs, rol }) {
 
   const {
     id,
-    beneficio,
+    /* beneficio, */
     especialista,
-    motivoCita,
+    /* motivoCita, */
     sede,
     oficina,
     pagoGenerado,
@@ -52,11 +52,9 @@ export default function RowResumenTerapias({ row, area, idUs, rol }) {
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{id}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{beneficio}</TableCell>
-
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{especialista}</TableCell>
 
-        <Tooltip title={motivoCita.length > 19 ? motivoCita : ''} placement="top" arrow>
+        {/* <Tooltip title={motivoCita.length > 19 ? motivoCita : ''} placement="top" arrow>
           <TableCell sx={{
             textOverflow: 'ellipsis',
             overflow: 'hidden',
@@ -64,7 +62,7 @@ export default function RowResumenTerapias({ row, area, idUs, rol }) {
             minWidth: '200px',
             maxWidth: '100px', 
           }}>{motivoCita}</TableCell>
-        </Tooltip>
+        </Tooltip> */}
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{sede}</TableCell>
 
