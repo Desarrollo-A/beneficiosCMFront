@@ -174,7 +174,7 @@ export default function PreRegisterUser({ currentUser }) {
                       sx={{
                         maxWidth: { sm: 120, xs: 80, lg: 60, md: 70, xl: 80 },
                         position: 'relative',
-                        left: { xs: '75%', md: '71%', lg: '80%' },
+                        left: { xs: '75%', md: '71%', lg: '78%' },
                         top: { xs: '23%', md: '25%' },
                       }}
                     />
