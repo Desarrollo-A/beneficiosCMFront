@@ -7,7 +7,7 @@ import utc from 'dayjs/plugin/utc';
 import { useState, useEffect } from 'react';
 import timezone from 'dayjs/plugin/timezone';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
-import { Marker, GoogleMap, LoadScript, } from '@react-google-maps/api';
+import { Marker, GoogleMap, LoadScript } from '@react-google-maps/api';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/system/Stack';
@@ -79,6 +79,8 @@ export default function AppointmentSchedule({
   errorModalidad,
   oficina,
   isLoading,
+  isLoadingEspecialidad,
+  isLoadingModalidad,
   handleDateChange,
   shouldDisableDate,
   horariosDisponibles,
@@ -88,10 +90,8 @@ export default function AppointmentSchedule({
   handleHorarioSeleccionado,
   beneficioActivo,
   aceptarTerminos,
-  aceptar
+  aceptar,
 }) {
-
-
   const [open, setOpen] = useState(false);
   const [openMap, setOpenMap] = useState(false);
   const [archivo, setArchivo] = useState(0);
@@ -99,28 +99,26 @@ export default function AppointmentSchedule({
     setOpen(true);
 
     const getDoc = await getDocumento(beneficioActivo.beneficio);
-    setArchivo(getDoc[0]?.expediente)
-  }
+    setArchivo(getDoc[0]?.expediente);
+  };
 
   const close = () => {
     setOpen(false);
-  }
+  };
 
   const mapStyles = {
-    height: "60vh",
-    width: "100%"
+    height: '60vh',
+    width: '100%',
   };
 
   const [address, setAddress] = useState('');
 
   useEffect(() => {
-
     if (!isEmpty(oficina)) {
-      if(oficina?.result !== false){
-      setAddress(oficina?.data[0]?.ubicación ? oficina?.data[0]?.ubicación : '');
+      if (oficina?.result !== false) {
+        setAddress(oficina?.data[0]?.ubicación ? oficina?.data[0]?.ubicación : '');
       }
     }
-
   }, [oficina]);
 
   const [openWindow, setOpenWindow] = useState(false);
@@ -133,7 +131,7 @@ export default function AppointmentSchedule({
     setOpenMap(false);
   };
 
-/*   const handleWindowActive = () => {
+  /*   const handleWindowActive = () => {
     setOpenWindow(true);
   }; */
 
@@ -144,17 +142,17 @@ export default function AppointmentSchedule({
   const [coordinates, setCoordinates] = useState(null);
 
   useEffect(() => {
-
     if (address !== '') {
       const fetchCoordinates = async () => {
         try {
           const response = await axios.get(`
-        https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
+        https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${
+          import.meta.env.VITE_GOOGLE_MAPS_API_KEY
+        }
         `);
 
           if (response.data.results[0]?.geometry) {
             setCoordinates(response.data.results[0]?.geometry.location);
-
           } else {
             console.log('No se encontraron coordenadas para esta dirección');
           }
@@ -165,7 +163,6 @@ export default function AppointmentSchedule({
       fetchCoordinates();
     }
   }, [address]);
-
 
   return (
     <Grid sx={{ display: { xs: 'block', sm: 'flex', md: 'flex' } }}>
@@ -181,8 +178,8 @@ export default function AppointmentSchedule({
             sx={
               selectedValues.modalidad
                 ? {
-                  color: 'white',
-                }
+                    color: 'white',
+                  }
                 : {}
             }
           >
@@ -195,7 +192,6 @@ export default function AppointmentSchedule({
                 {dayjs().locale('es').format('dddd, DD MMMM YYYY')}
               </Typography>
             )}
-
             {!currentEvent?.id && selectedValues?.modalidad ? (
               <ThemeProvider theme={darkTheme}>
                 <Stack direction="column" spacing={3} justifyContent="space-between">
@@ -210,7 +206,7 @@ export default function AppointmentSchedule({
                       value={selectedValues.beneficio || ''}
                       defaultValue=""
                       onChange={(e) => handleChange('beneficio', e.target.value)}
-                    /* disabled={!!(beneficios?.length === 0 || currentEvent?.id)} */
+                      /* disabled={!!(beneficios?.length === 0 || currentEvent?.id)} */
                     >
                       {!(beneficios?.length === 0 || currentEvent?.id) ? (
                         beneficios?.map((e) => (
@@ -241,7 +237,7 @@ export default function AppointmentSchedule({
                       value={selectedValues.especialista}
                       defaultValue=""
                       onChange={(e) => handleChange('especialista', e.target.value)}
-                    /* disabled={!!(especialistas?.length === 0 || currentEvent?.id)} */
+                      /* disabled={!!(especialistas?.length === 0 || currentEvent?.id)} */
                     >
                       {!(especialistas?.length === 0 || currentEvent?.id) ? (
                         especialistas?.map((e, index) => (
@@ -272,7 +268,7 @@ export default function AppointmentSchedule({
                       defaultValue=""
                       value={selectedValues.modalidad}
                       onChange={(e) => handleChange('modalidad', e.target.value)}
-                    /* disabled={!!(modalidades?.length === 0 || currentEvent?.id)} */
+                      /* disabled={!!(modalidades?.length === 0 || currentEvent?.id)} */
                     >
                       {!(modalidades?.length === 0 || currentEvent?.id) ? (
                         modalidades?.map((e, index) => (
@@ -340,6 +336,9 @@ export default function AppointmentSchedule({
                         </MenuItem>
                       ))}
                     </Select>
+                    {(especialistas?.length === 0 || currentEvent?.id) && isLoadingEspecialidad && (
+                      <LinearProgress />
+                    )}
                     {errorEspecialista && selectedValues.especialista === '' && (
                       <FormHelperText error={errorEspecialista}>
                         Seleccione un especialista
@@ -365,8 +364,13 @@ export default function AppointmentSchedule({
                         </MenuItem>
                       ))}
                     </Select>
+                    {(modalidades?.length === 0 || currentEvent?.id) && isLoadingModalidad && (
+                      <LinearProgress />
+                    )}
                     {errorModalidad && selectedValues.modalidad === '' && (
-                      <FormHelperText error={errorModalidad}>Seleccione una modalidad</FormHelperText>
+                      <FormHelperText error={errorModalidad}>
+                        Seleccione una modalidad
+                      </FormHelperText>
                     )}
                   </FormControl>
                 </>
@@ -392,7 +396,9 @@ export default function AppointmentSchedule({
                         </Stack>
                         <Stack sx={{ flexDirection: 'col' }}>
                           <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                            {oficina?.result !== false ? oficina?.data[0]?.ubicación : 'Sin dirección'}
+                            {oficina?.result !== false
+                              ? oficina?.data[0]?.ubicación
+                              : 'Sin dirección'}
                           </Typography>
                         </Stack>
                         <Button variant="contained" color="primary" onClick={handleClickOpen}>
@@ -402,30 +408,27 @@ export default function AppointmentSchedule({
 
                       {coordinates !== null ? (
                         <Dialog open={openMap} onClose={handleClose} fullWidth maxWidth="md">
-                          <DialogTitle>OFICINA: {oficina?.result !== false ? oficina?.data[0]?.oficina : ''}</DialogTitle>
+                          <DialogTitle>
+                            OFICINA: {oficina?.result !== false ? oficina?.data[0]?.oficina : ''}
+                          </DialogTitle>
                           <DialogContent>
-
-                            <LoadScript
-                              googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
+                            <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
                               <GoogleMap
                                 mapContainerStyle={mapStyles}
                                 zoom={15}
-                                center={coordinates}>
+                                center={coordinates}
+                              >
                                 <Marker position={coordinates} />
                               </GoogleMap>
                             </LoadScript>
                           </DialogContent>
                           <DialogActions>
-
                             <Button onClick={handleClose} variant="contained" color="error">
                               Cerrar
                             </Button>
                           </DialogActions>
                         </Dialog>
-                      ) :
-                        null
-                      }
-
+                      ) : null}
                     </>
                   ) : (
                     <LinearProgress />
@@ -462,23 +465,24 @@ export default function AppointmentSchedule({
                 </Stack> */}
 
                 <Dialog open={openWindow} onClose={handleWindowClose} fullWidth maxWidth="md">
-                  <DialogTitle><Box/></DialogTitle>
+                  <DialogTitle>
+                    <Box />
+                  </DialogTitle>
                   <DialogContent>
-                  <Box
-                    component="img"
-                    alt="auth"
-                    src={`${import.meta.env.BASE_URL}assets/img/windowTuto.gif`}
-                    sx={{ 
-                      display: 'block', 
-                      margin: '0 auto',
-                      width: '100%', 
-                      maxWidth: '1200px',
-                      height: 'auto'
-                    }}
-                  />
+                    <Box
+                      component="img"
+                      alt="auth"
+                      src={`${import.meta.env.BASE_URL}assets/img/windowTuto.gif`}
+                      sx={{
+                        display: 'block',
+                        margin: '0 auto',
+                        width: '100%',
+                        maxWidth: '1200px',
+                        height: 'auto',
+                      }}
+                    />
                   </DialogContent>
                   <DialogActions>
-
                     <Button onClick={handleWindowClose} variant="contained" color="error">
                       Cerrar
                     </Button>
@@ -532,8 +536,8 @@ export default function AppointmentSchedule({
                   </Stack>
                 </Stack>
                 <Stack spacing={1} sx={{ p: { xs: 1, md: 1 } }}>
-                    Es necesario habilitar las ventanas emergentes en el navegador para poder realizar
-                    el pago de la cita.
+                  Es necesario habilitar las ventanas emergentes en el navegador para poder realizar
+                  el pago de la cita.
                 </Stack>
               </>
             )}
@@ -617,36 +621,31 @@ export default function AppointmentSchedule({
             ) : (
               <>Fecha sin horarios disponibles</>
             )}
-            {beneficioActivo?.primeraCita === 0 ?
-            <Stack>
-              <FormControlLabel
-                     value="end"
-                     control={<Checkbox value={aceptar}  onClick={aceptarTerminos}/>}
-                     label="Aceptar terminos y condiciones"
-                     sx={{color: 'black'}}
-                     // checked={isChecked} 
-                     // onChange={handleCheckboxChange}
-                     labelPlacement="end"
-                     />
+            {beneficioActivo?.primeraCita === 0 ? (
+              <Stack>
+                <FormControlLabel
+                  value="end"
+                  control={<Checkbox value={aceptar} onClick={aceptarTerminos} />}
+                  label="Aceptar terminos y condiciones"
+                  sx={{ color: 'black' }}
+                  // checked={isChecked}
+                  // onChange={handleCheckboxChange}
+                  labelPlacement="end"
+                />
 
-                <Button sx={{color: 'blue'}} onClick={verTerminos}>
+                <Button sx={{ color: 'blue' }} onClick={verTerminos}>
                   Ver terminos y condiciones
                 </Button>
-            </Stack>
-                      : ''
-                }
+              </Stack>
+            ) : (
+              ''
+            )}
           </Stack>
         </Stack>
       </Grid>
-      <Dialog 
-        fullWidth
-        maxWidth="lg"
-        open={open}
-        
-      >
-        <ModalTerminos archivo={archivo} onClose={close}/>
+      <Dialog fullWidth maxWidth="lg" open={open}>
+        <ModalTerminos archivo={archivo} onClose={close} />
       </Dialog>
-      
     </Grid>
   );
 }
@@ -662,6 +661,8 @@ AppointmentSchedule.propTypes = {
   errorModalidad: PropTypes.bool,
   oficina: PropTypes.object,
   isLoading: PropTypes.bool,
+  isLoadingEspecialidad: PropTypes.bool,
+  isLoadingModalidad: PropTypes.bool,
   handleDateChange: PropTypes.func,
   shouldDisableDate: PropTypes.func,
   horariosDisponibles: PropTypes.array,
@@ -671,5 +672,5 @@ AppointmentSchedule.propTypes = {
   handleHorarioSeleccionado: PropTypes.func,
   beneficioActivo: PropTypes.object,
   aceptarTerminos: PropTypes.func,
-  aceptar: PropTypes.bool
+  aceptar: PropTypes.bool,
 };
