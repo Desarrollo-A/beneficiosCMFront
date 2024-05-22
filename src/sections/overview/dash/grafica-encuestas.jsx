@@ -20,14 +20,13 @@ import { endpoints } from 'src/utils/axios';
 
 import { usePostGeneral } from 'src/api/general';
 import { useGetCountRespuestas } from 'src/api/encuestas';
-import { MotivationIllustration } from 'src/assets/illustrations';
 import { useGetEspecialistasPorArea } from 'src/api/especialistas';
 
 import Iconify from 'src/components/iconify';
 import Chart, { useChart } from 'src/components/chart';
+import EmptyContent from 'src/components/empty-content/empty-content';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
-import GraficaNone from './grafica-none';
 
 // ----------------------------------------------------------------------
 
@@ -416,9 +415,12 @@ export default function GraficaEncuestas({
                                 ))}
                             </>
                         ) : (
-                            <GraficaNone
-                                title='No hay encuestas contestadas'
-                                img={<MotivationIllustration />}
+                            <EmptyContent
+                                filled
+                                title="No hay encuestas contestadas"
+                                sx={{
+                                py: 5,
+                                }}
                             />
                         )}
 
