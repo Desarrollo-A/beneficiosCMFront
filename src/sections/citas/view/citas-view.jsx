@@ -41,6 +41,7 @@ import UserTableFiltersResult from '../user-table-filters-result';
 
 const TABLE_HEAD = [
   { id: 'id', label: 'ID Cita' },
+  { id: 'beneficio', label: 'Beneficio', width: 100 },
   { id: 'especialista', label: 'Especialista', width: 220 },
   { id: 'sede', label: 'Sede', width: 100 },
   { id: 'oficina', label: 'Oficina', width: 100 },

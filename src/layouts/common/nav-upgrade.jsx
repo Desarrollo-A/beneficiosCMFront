@@ -15,8 +15,8 @@ export default function NavUpgrade() {
         px: 2,
         py: 0,
         textAlign: 'center',
-        position: 'absolute',
-        bottom : 0
+        /* position: 'absolute',
+        bottom : 0 */
       }}
     >
       <Stack alignItems="center">

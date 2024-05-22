@@ -17,7 +17,7 @@ export default function RowResumenTerapias({ row, area, idUs, rol }) {
 
   const {
     id,
-    /* beneficio, */
+    beneficio,
     especialista,
     /* motivoCita, */
     sede,
@@ -51,6 +51,16 @@ export default function RowResumenTerapias({ row, area, idUs, rol }) {
       <TableRow>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{id}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+            {
+              (beneficio === 537 && 'Nutrición') ||
+              (beneficio === 585 && 'Psicolgía') ||
+              (beneficio === 686 && 'Guía espiritual') ||
+              (beneficio === 158 && 'Quantum Balance') ||
+              'default'
+            }
+            </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{especialista}</TableCell>
 
