@@ -321,7 +321,7 @@ export default function BarraTareasTabla({
           <TextField
             fullWidth
             select
-            label="Tipo de Reporte"
+            label="Tipo de reporte"
             value={currentStatus}
             onChange={handleChangeStatus}
           >
@@ -379,7 +379,7 @@ export default function BarraTareasTabla({
             <FormControl
               sx={{
                 flexShrink: 0,
-                width: { xs: 1, md: 458 },
+                width: { xs: 1, md: 260 },
               }}
             >
               <InputLabel>Especialistas</InputLabel>

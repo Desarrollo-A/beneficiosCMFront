@@ -556,7 +556,29 @@ export function useGetAppointmentsByUser(current, id, idSede) {
         });
         break;
       default:
-        events = [];
+        events = data?.data?.map((event) => {
+          const inicioCita = event.start;
+          const finCita = event.end;
+          const fechasCitasReagendadas = obtenerFechasConHoras(event.fechasFolio);
+          let fechas = '';
+          fechasCitasReagendadas?.forEach((fecha) => {
+            fechas +=
+              fechas === ''
+                ? `${dayjs(fecha).format('DD / MM / YYYY')} A las ${dayjs(
+                  fecha
+                  ).format('HH:mm')} horas.`
+                : `,${dayjs(fecha).format('DD / MM / YYYY')} A las ${dayjs(
+                  fecha
+                  ).format('HH:mm')} horas.`;
+          });
+          return {
+            ...event,
+            start: inicioCita,
+            end: finCita,
+            textColor: event?.color ? event.color : 'black',
+            fechasFolio: fechas || event.fechasFolio,
+          };
+        });
     }
 
     return {

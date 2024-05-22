@@ -93,6 +93,7 @@ export default function AppointmentSchedule({
 
 
   const [open, setOpen] = useState(false);
+  const [openMap, setOpenMap] = useState(false);
   const [archivo, setArchivo] = useState(0);
   const verTerminos = async () => {
     setOpen(true);
@@ -125,16 +126,16 @@ export default function AppointmentSchedule({
   const [openWindow, setOpenWindow] = useState(false);
 
   const handleClickOpen = () => {
-    setOpen(true);
+    setOpenMap(true);
   };
 
   const handleClose = () => {
-    setOpen(false);
+    setOpenMap(false);
   };
 
-  const handleWindowActive = () => {
+/*   const handleWindowActive = () => {
     setOpenWindow(true);
-  };
+  }; */
 
   const handleWindowClose = () => {
     setOpenWindow(false);
@@ -172,11 +173,11 @@ export default function AppointmentSchedule({
         <Box
           sx={{
             width: { xs: '100%', md: '100%' },
-            p: { xs: 1, md: 2 },
+            p: { sm: 1, xs: 1, md: 2 },
           }}
         >
           <Stack
-            spacing={3}
+            spacing={1}
             sx={
               selectedValues.modalidad
                 ? {
@@ -400,7 +401,7 @@ export default function AppointmentSchedule({
                       </Stack>
 
                       {coordinates !== null ? (
-                        <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
+                        <Dialog open={openMap} onClose={handleClose} fullWidth maxWidth="md">
                           <DialogTitle>OFICINA: {oficina?.result !== false ? oficina?.data[0]?.oficina : ''}</DialogTitle>
                           <DialogContent>
 
@@ -452,13 +453,13 @@ export default function AppointmentSchedule({
                     </Typography>
                   </Stack>
                 </Stack>
-                <Stack spacing={1} sx={{ p: { xs: 1, md: 1 } }}>
+                {/* <Stack spacing={1} sx={{ p: { xs: 1, md: 1 } }}>
                   Es necesario habilitar las ventanas emergentes en el navegador para poder realizar
                   el pago de la cita.
                   <Button variant="contained" color="primary" onClick={handleWindowActive}>
                     Tutorial
                   </Button>
-                </Stack>
+                </Stack> */}
 
                 <Dialog open={openWindow} onClose={handleWindowClose} fullWidth maxWidth="md">
                   <DialogTitle><Box/></DialogTitle>
