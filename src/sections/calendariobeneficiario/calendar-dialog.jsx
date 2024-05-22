@@ -770,33 +770,37 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     setHorariosDisponibles([]);
 
     if (input === 'beneficio') {
-      setErrorBeneficio(false);
-      setIsLoadingEspecialidad(true);
+      setErrorBeneficio(false); // Por si tiene error lo limpia
+      setIsLoadingEspecialidad(true); // Marcamos que recibimos input
       setEspecialistas([]);
       setModalidades([]);
+      setSelectedValues({
+        beneficio: value,
+        especialista: '',
+        modalidad: '',
+      });
+
+      const especialistasRS = await getSpecialists(datosUser.idSede, datosUser.idArea, value);
+      if (!especialistasRS?.data) {
+        enqueueSnackbar('¡No hay especialistas atendiendo tu sede/área!', { variant: 'error' });
+        setEspecialistas([]);
+      } else {
+        setEspecialistas(especialistasRS?.data);
+      }
       // HACER PROCESO DE DETALLE PACIENTE
       const datosUltimaCita = await lastAppointment(datosUser.idUsuario, value);
       if (datosUltimaCita.result) {
-        const modalitiesData = await getModalities(
-          datosUser.idSede,
-          datosUltimaCita.data[0].idEspecialista,
-          datosUser.idArea
-        );
-        setModalidades(modalitiesData?.data);
         const data = await getOficinaByAtencion(
           datosUser.idSede,
           value,
           datosUltimaCita.data[0].idEspecialista,
           datosUltimaCita.data[0].tipoCita
         );
-        setOficina(data);
+        setOficina(data); // Asignamos la oficina donde va a ser.
+        // Traemos los horarios disponibles para citas
         getHorariosDisponibles(value, datosUltimaCita.data[0].idEspecialista);
-        setSelectedValues({
-          beneficio: value,
-          especialista: datosUltimaCita.data[0].idEspecialista,
-          modalidad: datosUltimaCita.data[0].tipoCita,
-        });
         /* ************************************* */
+        // Traemos cuantas sedes tiene el especialista
         const sedesEspecialista = await getSedesPresenciales(
           datosUltimaCita.data[0].idEspecialista
         );
@@ -807,24 +811,21 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         );
         setDiasPresenciales(diasDisponibles.result ? diasDisponibles.data : []);
         /* ************************************* */
-      } else {
-        // DEFAULT SELECTED VALUES
+        // Asignamos valores a los inputs
         setSelectedValues({
           beneficio: value,
-          especialista: '',
-          modalidad: '',
-        });
-      }
-      const data = await getSpecialists(datosUser.idSede, datosUser.idArea, value);
-      if (!data?.data) {
-        enqueueSnackbar('¡No hay especialistas atendiendo tu sede/área!', { variant: 'error' });
-        setEspecialistas([]);
-      } else {
-        setEspecialistas(data?.data);
+          especialista: datosUltimaCita.data[0].idEspecialista,
+          modalidad: datosUltimaCita.data[0].tipoCita,
+        }); // Asignamos valores
       }
     } else if (input === 'especialista') {
       setIsLoadingModalidad(true);
       setModalidades([]);
+      setSelectedValues({
+        ...selectedValues,
+        especialista: value,
+        modalidad: '',
+      });
       /* ************************************* */
       const sedesEspecialista = await getSedesPresenciales(value);
       setSedesAtencionEspecialista(sedesEspecialista.result ? sedesEspecialista.data : []);
@@ -832,8 +833,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       setDiasPresenciales(diasDisponibles.result ? diasDisponibles.data : []);
       /* ************************************* */
       setErrorEspecialista(false);
-      const modalitiesData = await getModalities(datosUser.idSede, value, datosUser.idArea);
-      setModalidades(modalitiesData?.data);
+      const modalitiesData = await getModalities(datosUser.idSede, value, datosUser.idArea); // Modalidades input
       if (modalitiesData.data.length > 0 && modalitiesData?.data.length === 1) {
         setSelectedValues({
           ...selectedValues,
@@ -848,14 +848,9 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
           modalitiesData.data[0].tipoCita
         );
         setOficina(data);
-      } else {
-        setSelectedValues({
-          ...selectedValues,
-          especialista: value,
-          modalidad: '',
-        });
       }
       getHorariosDisponibles(selectedValues.beneficio, value);
+      setModalidades(modalitiesData?.data);
     } else if (input === 'modalidad') {
       setSelectedValues({
         ...selectedValues,
