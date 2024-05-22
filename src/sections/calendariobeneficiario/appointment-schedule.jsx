@@ -192,6 +192,7 @@ export default function AppointmentSchedule({
                 {dayjs().locale('es').format('dddd, DD MMMM YYYY')}
               </Typography>
             )}
+            {/* El primero es reagendar. */}
             {!currentEvent?.id && selectedValues?.modalidad ? (
               <ThemeProvider theme={darkTheme}>
                 <Stack direction="column" spacing={3} justifyContent="space-between">
@@ -312,6 +313,7 @@ export default function AppointmentSchedule({
                       </MenuItem>
                     ))}
                   </Select>
+                  {beneficios?.length === 0 && <LinearProgress />}
                   {errorBeneficio && selectedValues.beneficio === '' && (
                     <FormHelperText error={errorBeneficio}>Seleccione un beneficio</FormHelperText>
                   )}
@@ -336,9 +338,7 @@ export default function AppointmentSchedule({
                         </MenuItem>
                       ))}
                     </Select>
-                    {(especialistas?.length === 0 || currentEvent?.id) && isLoadingEspecialidad && (
-                      <LinearProgress />
-                    )}
+                    {especialistas?.length === 0 && selectedValues.beneficio && <LinearProgress />}
                     {errorEspecialista && selectedValues.especialista === '' && (
                       <FormHelperText error={errorEspecialista}>
                         Seleccione un especialista
@@ -364,9 +364,7 @@ export default function AppointmentSchedule({
                         </MenuItem>
                       ))}
                     </Select>
-                    {(modalidades?.length === 0 || currentEvent?.id) && isLoadingModalidad && (
-                      <LinearProgress />
-                    )}
+                    {modalidades?.length === 0 && selectedValues.especialista && <LinearProgress />}
                     {errorModalidad && selectedValues.modalidad === '' && (
                       <FormHelperText error={errorModalidad}>
                         Seleccione una modalidad
