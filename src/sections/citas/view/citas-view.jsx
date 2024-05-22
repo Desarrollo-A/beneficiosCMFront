@@ -43,7 +43,6 @@ const TABLE_HEAD = [
   { id: 'id', label: 'ID Cita' },
   { id: 'beneficio', label: 'Beneficio', width: 100 },
   { id: 'especialista', label: 'Especialista', width: 220 },
-  { id: 'motivoCita', label: 'Motivo cita', width: 100 },
   { id: 'sede', label: 'Sede', width: 100 },
   { id: 'oficina', label: 'Oficina', width: 100 },
   { id: 'pagoGenerado', label: 'Pago generado', width: 100 },

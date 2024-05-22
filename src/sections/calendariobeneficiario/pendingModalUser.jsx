@@ -237,14 +237,15 @@ export default function PendingModalUser() {
       return false;
     }
 
-    const params = `width=${window.screen.width}, height=${window.screen.height}, top=0, left=0, fullscreen=yes, scrollbars=yes, directories=no`;
+    // const params = `width=${window.screen.width}, height=${window.screen.height}, top=0, left=0, fullscreen=yes, scrollbars=yes, directories=no`;
 
     /* ARMARDO DEL FORM PARA ENVIO DE PARAMETROS Y ABRIR POPUP A LA MISMA VEZ */
     const windowName = `w_${Date.now()}${Math.floor(Math.random() * 100000).toString()}`;
     const form = document.createElement('form');
     form.setAttribute('method', 'POST');
     form.setAttribute('action', 'https://multipagos.bb.com.mx/Estandar/index2.php');
-    form.setAttribute('target', windowName);
+    // form.setAttribute('target', windowName);
+    form.setAttribute('target', '_blank');
 
     const fields = [
       { name: 'cl_folio', value: folio },
@@ -265,7 +266,8 @@ export default function PendingModalUser() {
 
     document.body.appendChild(form);
 
-    const popupWindow = window.open('', windowName, params);
+    // const popupWindow = window.open('', windowName, params);
+    const popupWindow = window.open('', windowName);
     form.target = windowName;
     form.submit();
     document.body.removeChild(form);
