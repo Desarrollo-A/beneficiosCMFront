@@ -367,21 +367,21 @@ export default function AvisoPrivacidadGeneral() {
                     ) : null
                   )
                 ) : (
-                  <Grid style={{ paddingTop: '2%' }}>
-                    <LinearProgress />
-                    <Box mb={3} />
-                  </Grid>
+                      <Grid style={{ paddingTop: '2%' }}>
+                        <LinearProgress />
+                        <Box mb={3} />
+                      </Grid>
                 )}
               </Select>
             </FormControl>
           </Grid>
         </Grid>
 
-        <Grid container spacing={2}>
+        {loading && <Grid container spacing={2} style={{ height: '60vh' }}>
           <Grid xs={12} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            {loading && <CircularProgress size={50} />}
+            <CircularProgress size={50} />
           </Grid>
-        </Grid>
+        </Grid>}
       </Container>
 
       {loading === false ? visorPdfFile : null }

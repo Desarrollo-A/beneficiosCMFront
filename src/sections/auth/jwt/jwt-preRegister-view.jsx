@@ -152,7 +152,7 @@ export default function PreRegisterUser({ currentUser }) {
 
   return (
     <Grid container sx={styles}>
-      <Grid xs={12} sm={12} md={3}>
+      <Grid xs={12} sm={12} md={3} lg={3} xl={2.5}>
         <div style={{ height: '70%', backgroundColor: 'white', borderRadius: '25px' }}>
           {mail !== false && registroForm === false ? (
             <FormProvider methods={form}>
@@ -174,7 +174,7 @@ export default function PreRegisterUser({ currentUser }) {
                       sx={{
                         maxWidth: { sm: 120, xs: 80, lg: 60, md: 70, xl: 80 },
                         position: 'relative',
-                        left: { xs: '75%', md: '71%' },
+                        left: { xs: '75%', md: '71%', lg: '80%' },
                         top: { xs: '23%', md: '25%' },
                       }}
                     />
