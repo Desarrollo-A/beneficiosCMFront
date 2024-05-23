@@ -127,23 +127,59 @@ export default function DashView() {
         </Grid>
 
         <Grid xs={12} md={12} lg={12}>
+          <GraficaDemandaDepartamento
+          title="Demanda de beneficios"
+          chart={{
+            series: [
+              { label: 'America', value: 4344, color: '#0000FF' },
+              { label: 'Asia', value: 5435, color: '#70FF00' },
+              { label: 'Europe', value: 1443, color: '#FF6400' },
+              { label: 'Africa', value: 4443, color: '#93847B' },
+              { label: 'Europe', value: 1443, color: '#0000FF' },
+              { label: 'Africa', value: 4443, color: '#0000FF' },
+              { label: 'Europe', value: 1443, color: '#0000FF' },
+              { label: 'Africa', value: 4443, color: '#0000FF'},
+              { label: 'America', value: 4344, color: '#0000FF' },
+              { label: 'Asia', value: 5435, color: '#70FF00' },
+              { label: 'Europe', value: 1443, color: '#FF6400' },
+              { label: 'Africa', value: 4443, color: '#93847B' },
+              { label: 'Europe', value: 1443, color: '#0000FF' },
+              { label: 'Africa', value: 4443, color: '#0000FF' },
+              { label: 'Europe', value: 1443, color: '#0000FF' },
+              { label: 'Africa', value: 4443, color: '#0000FF'},
+              { label: 'America', value: 4344, color: '#0000FF' },
+              { label: 'Asia', value: 5435, color: '#70FF00' },
+              { label: 'Europe', value: 1443, color: '#FF6400' },
+              { label: 'Africa', value: 4443, color: '#93847B' },
+              { label: 'Europe', value: 1443, color: '#0000FF' },
+              { label: 'Africa', value: 4443, color: '#0000FF' },
+              { label: 'Europe', value: 1443, color: '#0000FF' },
+              { label: 'Africa', value: 4443, color: '#0000FF'},
+              { label: 'Europe', value: 1443, color: '#0000FF' },
+              { label: 'Africa', value: 4443, color: '#0000FF'},
+            ],
+          }}
+          beneficios={especialistasData}/>
+        </Grid>
+
+        {/* <Grid xs={12} md={12} lg={12}>
           <AnalyticsCurrentVisits
             title="Demanda de beneficios"
             chart={{
               series: [
-                { label: 'America', value: 4344 },
-                { label: 'Asia', value: 5435 },
-                { label: 'Europe', value: 1443 },
-                { label: 'Africa', value: 4443 },
-                { label: 'Europe', value: 1443 },
-                { label: 'Africa', value: 4443 },
-                { label: 'Europe', value: 1443 },
-                { label: 'Africa', value: 4443 },
+                { label: 'America', value: 4344, color: '#0000FF' },
+              { label: 'Asia', value: 5435, color: '#70FF00' },
+              { label: 'Europe', value: 1443, color: '#FF6400' },
+              { label: 'Africa', value: 4443, color: '#93847B' },
+              { label: 'Europe', value: 1443, color: '#0000FF' },
+              { label: 'Africa', value: 4443, color: '#0000FF' },
+              { label: 'Europe', value: 1443, color: '#0000FF' },
+              { label: 'Africa', value: 4443, color: '#0000FF'},
               ],
             }}
             beneficios={especialistasData}
           />
-        </Grid>
+        </Grid> */}
 
         {rol === 4 || rol === 3 ? (
           <>

@@ -95,7 +95,7 @@ export default function AnalyticsCurrentVisits({ title, subheader, chart, benefi
       },
     },
     colors,
-    labels: depaData.map((i) => i.departamento),
+    labels: series.map((i) => i.label),
     stroke: {
       colors: [theme.palette.background.paper],
     },
