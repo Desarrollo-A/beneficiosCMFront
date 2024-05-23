@@ -105,7 +105,7 @@ export default function FormularioEncuesta() {
       }
     } catch (error) {
       console.error("Error en handleSubmit:", error);
-      enqueueSnackbar(`¡No se pudó actualizar los datos!`, { variant: 'danger' });
+      enqueueSnackbar(`Error en actualizar los datos!`, { variant: 'danger' });
     }
 
   });

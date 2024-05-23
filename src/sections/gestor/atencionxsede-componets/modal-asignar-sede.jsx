@@ -125,7 +125,7 @@ export default function ModalAsignarSede({ idSede, idPuesto, open, onClose, moda
         setBtnLoad(false);
       }
     } else {
-      enqueueSnackbar('Faltan Datos', { variant: 'error' });
+      enqueueSnackbar('Faltan datos', { variant: 'error' });
       setBtnLoad(false);
     }
   });
