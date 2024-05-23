@@ -81,7 +81,7 @@ export default function UserListView() {
 
   const handleUpload = () => {
     if (!file) {
-      enqueueSnackbar('Seleccione un archivo!', { variant: 'warning' });
+      enqueueSnackbar('Selecciona un archivo!', { variant: 'warning' });
       return;
     }
 
@@ -132,7 +132,7 @@ export default function UserListView() {
           const cellValue = row[requiredData[index2].keyword];
 
           if (cellValue === undefined && requiredData[index2].mandatory) {
-            enqueueSnackbar(`Asegúrese de que contenga información en la celda ${cellLabel}`, {
+            enqueueSnackbar(`Asegúrate de que contenga información en la celda ${cellLabel}`, {
               variant: 'warning',
             });
             showError = true;

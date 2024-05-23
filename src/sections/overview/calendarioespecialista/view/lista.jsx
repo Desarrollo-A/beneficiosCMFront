@@ -203,7 +203,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
 
     if (dateError || !selectedUser || hourError.result || !endValidation || !selectedModalitie) {
       setBtnDisable(false);
-      return enqueueSnackbar('Faltan datos en el formulario', { variant: 'error' });
+      return enqueueSnackbar('No has llenado el formulario', { variant: 'error' });
     }
 
     if (type === 'date') {

@@ -80,7 +80,7 @@ export default function PendingModalUser() {
       return onClose();
     }
     if (cancel.result) {
-      enqueueSnackbar('¡Se ha cancelado la cita!', {
+      enqueueSnackbar('¡Has cancelado la cita!', {
         variant: 'success',
       });
 
@@ -217,7 +217,7 @@ export default function PendingModalUser() {
         currentEvent.id
       );
 
-      enqueueSnackbar('¡El pago de cita se ha realizado con exito!', {
+      enqueueSnackbar('¡Has pagado la cita con éxito!', {
         variant: 'success',
       });
     }

@@ -255,7 +255,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       selectedValues.modalidad
     );
     if (!idAtencionPorSede.result) {
-      enqueueSnackbar('¡Surgió un error al consultar los beneficios brindados a su sede!', {
+      enqueueSnackbar('¡Surgió un error al consultar los beneficios brindados en tu sede!', {
         variant: 'error',
       });
       onClose();
@@ -298,7 +298,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     // Evento de google
     let newGoogleEvent = null;
-    let organizador = 'programador.analista36@ciudadmaderas.com';
+    let organizador = datosUser.correo;
     let correosNotificar = [
       organizador, // datosUser.correo Sustituir correo de analista
       // 'programador.analista34@ciudadmaderas.com',
@@ -462,7 +462,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       );
     }
 
-    enqueueSnackbar('¡Se ha agendado la cita con éxito!', {
+    enqueueSnackbar('¡Se ha agendado tu cita con éxito!', {
       variant: 'success',
     });
     appointmentMutate();
@@ -600,7 +600,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       return onClose();
     }
 
-    enqueueSnackbar('¡Se ha cancelado la cita!', {
+    enqueueSnackbar('¡Has cancelado la cita!', {
       variant: 'success',
     });
 
@@ -1282,7 +1282,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const checkInvoiceDetail = await checkInvoice(currentEvent.idDetalle);
 
     if (!checkInvoiceDetail.result) {
-      enqueueSnackbar('¡La cita no se puede reagendar más veces!', {
+      enqueueSnackbar('¡No puedes reagendar más veces esta cita!', {
         variant: 'error',
       });
       return onClose();

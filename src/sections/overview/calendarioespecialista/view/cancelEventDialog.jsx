@@ -441,9 +441,9 @@ function checkHour(start, end, cancelType) {
         hour = Math.abs(startStamp - endStamp) / 36e5;
 
         if (startStamp >= endStamp) {
-          validation = { result: true, msg: 'Error: hora de inicio mayor a la hora final' };
+          validation = { result: true, msg: 'Error: has seleccionado la hora inicio mayor a la final' };
         } else if (hour !== 1) {
-          validation = { result: true, msg: 'Error: No se puede agendar mas de una hora' };
+          validation = { result: true, msg: 'Error: no puedes agendar mas de una hora' };
         }
       }
       break;
