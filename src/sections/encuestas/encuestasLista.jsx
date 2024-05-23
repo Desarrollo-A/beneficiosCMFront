@@ -114,13 +114,13 @@ export default function EncuestasLista({ encuestas, estatusCt }) {
         })
       );
       if (update.result) {
-        enqueueSnackbar(`¡Se ha actualizado el usuario exitosamente!`, { variant: 'success' });
+        enqueueSnackbar(`Usuario actualizado exitosamente`, { variant: 'success' });
       } else {
-        enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'success' });
+        enqueueSnackbar(`Error en actualizar los datos`, { variant: 'danger' });
       }
     } catch (error) {
       console.error('Error en handleDisableUser:', error);
-      enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'danger' });
+      enqueueSnackbar(`Error en actualizar los datos`, { variant: 'danger' });
     }
   };
 

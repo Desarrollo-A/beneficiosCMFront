@@ -52,11 +52,11 @@ export default function ModalEstatus({ open, onClose, id, estatus }) {
         }
 
       } else {
-        enqueueSnackbar(`¡No se selecciono alguna opción!`, { variant: 'danger' });
+        enqueueSnackbar(`No seleccionaste alguna opción`, { variant: 'danger' });
       }
 
     } catch (error) {
-      enqueueSnackbar(`¡No se pudieron actualizar el estatus!`, { variant: 'danger' });
+      enqueueSnackbar(`Error en actualizar el estatus`, { variant: 'danger' });
     }
   }
 
