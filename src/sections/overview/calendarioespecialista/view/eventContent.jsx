@@ -330,7 +330,7 @@ export default function EventContent({
                       slotProps={{
                         textField: {
                           error: hourError,
-                          helperText: hourError && 'Error en las horas seleccionadas',
+                          helperText: hourError && 'Has seleccionado un horario incorrecto',
                         },
                       }}
                       value={defaultEnd}
