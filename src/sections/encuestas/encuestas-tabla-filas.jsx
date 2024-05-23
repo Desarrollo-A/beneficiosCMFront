@@ -88,7 +88,7 @@ export default function EncuestasTablaFilas({ row, selected, puestos }) {
           onClick={quickEdit.onTrue}
           >
             <Iconify icon="mdi:eye" />
-            Ver
+            Ver encuesta
           </MenuItem>
 
       </CustomPopover>

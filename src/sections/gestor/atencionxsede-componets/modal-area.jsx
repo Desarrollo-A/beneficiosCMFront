@@ -59,12 +59,12 @@ export default function ModalArea({ id, onClose, idArea }) {
           onClose();
         }
       } else {
-        enqueueSnackbar(`¡No se selecciono alguna opción!`, { variant: 'error' });
+        enqueueSnackbar(`No seleccionaste alguna opción`, { variant: 'error' });
         onClose();
       }
       setLoadingBtn(false);
     } catch (error) {
-      enqueueSnackbar(`¡Error al actualizar el registro!`, { variant: 'error' });
+      enqueueSnackbar(`Error en actualizar el registro`, { variant: 'error' });
       onClose();
     }
 
