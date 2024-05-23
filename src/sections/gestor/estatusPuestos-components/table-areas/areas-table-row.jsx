@@ -92,11 +92,11 @@ export default function AreasTableRow({ row, selected, onViewRow, onFilters, onR
         }
 
       } else {
-        enqueueSnackbar(`¡Erro en enviar los datos!`, { variant: 'danger' });
+        enqueueSnackbar(`Error en enviar los datos`, { variant: 'danger' });
       }
 
     } catch (error) {
-      enqueueSnackbar(`¡No se pudieron actualizar los datos!`, { variant: 'danger' });
+      enqueueSnackbar(`Error en actualizar`, { variant: 'danger' });
     }
   }
 

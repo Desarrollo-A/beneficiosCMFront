@@ -66,7 +66,7 @@ export default function EditarEstatus({ open, onClose, id, est, estatusVal }) {
 
       } catch (error) {
         console.error("Error en handleEstatus:", error);
-        enqueueSnackbar(`¡No se pudieron actualizar los datos de usuario!`, { variant: 'danger' });
+        enqueueSnackbar(`¡No se han actualizado los datos de usuario!`, { variant: 'danger' });
       }
 
       setBtnLoad(false);

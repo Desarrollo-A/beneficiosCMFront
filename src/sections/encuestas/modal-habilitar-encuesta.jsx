@@ -57,7 +57,7 @@ export default function EncuestaHabilitar({ open, onClose, idEncuesta, puestos }
 
       } catch (error) {
         console.error("Error en handleEstatus:", error);
-        enqueueSnackbar(`¡No se pudieron actualizar los datos de usuario!`, { variant: 'danger' });
+        enqueueSnackbar(`Error en actualizar los datos`, { variant: 'danger' });
 
         setBtnLoad(false);
       }

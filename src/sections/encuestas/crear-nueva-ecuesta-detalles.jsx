@@ -106,7 +106,7 @@ export default function InvoiceNewEditDetails() {
           onClick={handleAdd}
           sx={{ flexShrink: 0 }}
         >
-          Agregar Pregunta
+          Agregar pregunta
         </Button>
 
       </Stack>

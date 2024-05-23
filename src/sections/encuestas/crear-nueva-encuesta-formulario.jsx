@@ -124,7 +124,7 @@ export default function InvoiceNewEditForm() {
       }
 
     } else {
-      enqueueSnackbar("Faltan Datos", { variant: 'error' });
+      enqueueSnackbar("Faltan datos", { variant: 'error' });
 
       setBtnLoad(false);
     }
@@ -186,12 +186,13 @@ export default function InvoiceNewEditForm() {
         <LoadingButton
           size="large"
           variant="contained"
+          color="success"
           loading={loadingSend.value && isSubmitting}
           onClick={() => {
             confirm.onTrue();
           }}
         >
-          Crear
+          Crear encuesta
         </LoadingButton>
       </Stack>
 

@@ -115,7 +115,7 @@ export default function CalendarioView() {
       const now = dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss');
 
       if (fechaInicio < now || (estatus !== 1 && estatus !== 6)) {
-        enqueueSnackbar('No se puede mover el evento', { variant: 'error' });
+        enqueueSnackbar('No puedes mover el evento', { variant: 'error' });
         arg.revert();
       } else {
         onDropEvent({ arg, idUsuario: user?.idUsuario }, dropUpdate);

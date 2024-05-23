@@ -624,7 +624,7 @@ export default function AppointmentSchedule({
                 <FormControlLabel
                   value="end"
                   control={<Checkbox value={aceptar} onClick={aceptarTerminos} />}
-                  label="Aceptar terminos y condiciones"
+                  label="Acepto términos y condiciones"
                   sx={{ color: 'black' }}
                   // checked={isChecked}
                   // onChange={handleCheckboxChange}
@@ -632,7 +632,7 @@ export default function AppointmentSchedule({
                 />
 
                 <Button sx={{ color: 'blue' }} onClick={verTerminos}>
-                  Ver terminos y condiciones
+                  Ver términos y condiciones 
                 </Button>
               </Stack>
             ) : (
