@@ -373,8 +373,27 @@ export function useGetPendientes() {
         });
         break;
       default:
-        pagos = [];
-        evaluaciones = [];
+        pagos = data?.data?.pago?.map((i) => {
+          const inicioCita = i.start;
+          const finCita = i.end;
+          return {
+            ...i,
+            start: inicioCita,
+            end: finCita,
+            textColor: i?.color ? i.color : 'black',
+          }
+        });
+
+        evaluaciones = data?.data?.evaluacion?.map((i) => {
+          const inicioCita = i.start;
+          const finCita = i.end;
+          return {
+            ...i,
+            start: inicioCita,
+            end: finCita,
+            textColor: i?.color ? i.color : 'black',
+          }
+        });
     }
 
     const citas = {

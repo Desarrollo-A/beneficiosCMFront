@@ -39,7 +39,7 @@ import CalendarPreview from 'src/sections/calendariobeneficiario/calendar-previe
 import EvaluateDialog from './evaluate-dialog';
 
 export default function PendingModalUser() {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   const [open2, setOpen2] = useState(false);
   // const [open3, setOpen3] = useState(false);
   const [event, setEvent] = useState({});
