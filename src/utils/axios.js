@@ -234,6 +234,10 @@ export const endpoints = {
     getCountPacientes: '/DashboardController/getCountPacientes',
     getCtDisponibles: '/DashboardController/getCtDisponibles',
     getCarrusel: '/DashboardController/getCarrusel',
+    getDemandaBeneficio: '/DashboardController/getDemandaBeneficio',
+    getPuestos: '/DashboardController/getPuestos',
+    getAreas: '/DashboardController/getAreas',
+    getDepartamentos: '/DashboardController/getDepartamentos',
   },
   encuestas: {
     encuestaInsert: '/EncuestasController/encuestaInsert',

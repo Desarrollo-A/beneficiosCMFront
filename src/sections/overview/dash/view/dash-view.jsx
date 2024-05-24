@@ -25,6 +25,7 @@ import GraficaModalidad from '../grafica-modalidad';
 import GraficaMetasArea from '../grafica-metas-area';
 import AppCurrentDownload from '../app-current-download';
 import GraficaEstatusCitas from '../grafica-estatus-citas'
+import GraficaDemandaDepartamento from '../grafica-demanda-departamento';
 
 // ----------------------------------------------------------------------
 
@@ -123,6 +124,16 @@ export default function DashView() {
         <Grid xs={12} md={4}>
           <AppFeatured />
         </Grid>
+
+        {rol === 4 ? (
+        <Grid xs={12} md={12} lg={12}>
+          <GraficaDemandaDepartamento
+          title="Demanda de beneficios"
+          beneficios={especialistasData}/>
+        </Grid>
+        ):(
+          null
+        )}
 
         {rol === 4 || rol === 3 ? (
           <>
