@@ -1014,31 +1014,14 @@ export async function reschedule(eventData, idDetalle, cancelType, datosUser, de
   let sede = eventData?.sede || 'virtual';
   let oficina = eventData?.oficina || 'virtual';
 
-  const organizador = eventData?.correo
-    ? 'programador.analista36@ciudadmaderas.com'
-    : 'programador.analista12@ciudadmaderas.com';
+  const organizador = eventData?.correo;
 
-  const correosNotificar = eventData?.correo
-    ? [
-        {
-          email: 'programador.analista32@ciudadmaderas.com', // eventData.paciente.correo Sustituir correo
-          responseStatus: 'accepted',
-        },
-        {
-          email: 'programador.analista12@ciudadmaderas.com', // eventData.paciente.correo Sustituir correo
-          responseStatus: 'accepted',
-        },
-      ]
-    : [
-        {
-          email: 'programador.analista36@ciudadmaderas.com', // eventData.paciente.correo Sustituir correo
-          responseStatus: 'accepted',
-        },
-        {
-          email: 'programador.analista12@ciudadmaderas.com', // eventData.paciente.correo Sustituir correo
-          responseStatus: 'accepted',
-        },
-      ];
+  const correosNotificar = [
+    {
+      email: datosUser.correo, // eventData.paciente.correo Sustituir correo
+      responseStatus: 'accepted',
+    }
+  ]
 
   let fechaInicioCita = eventData?.fechaInicio; // todo tipo date
   let fechaFinCita = eventData?.hora_inicio; // todo tipo date
