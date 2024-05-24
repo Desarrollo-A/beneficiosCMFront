@@ -13,6 +13,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import InputAdornment from '@mui/material/InputAdornment';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
@@ -34,6 +35,22 @@ import Verificacion from './jwt-verificacion-view';
 // ----------------------------------------------------------------------
 
 export default function PreRegisterUser({ currentUser }) {
+  const lightTheme = createTheme({
+    palette: {
+      mode: 'light',
+    },
+    components: {
+      MuiPickersDay: {
+        // Sobrescribe los estilos del día del calendario
+        styleOverrides: {
+          root: {
+            color: 'black', // Establece el color del día a negro
+          },
+        },
+      },
+    },
+  });
+
   const { enqueueSnackbar } = useSnackbar();
   const { login } = useAuthContext();
   const password = useBoolean();
@@ -53,31 +70,41 @@ export default function PreRegisterUser({ currentUser }) {
 
   const form = useForm({});
 
-  const email = location.state.data[0]?.mail_emp;
+  const email = location.state.data[0]?.correo;
+
+  const [mailForm, setMailForm] = useState(location.state.data[0]?.correo);
 
   const handleChange = async (data) => {
-    try {
-      const insert = await insertData(data);
 
-      if (insert.estatus === true) {
-        enqueueSnackbar(insert.msj, { variant: 'success' });
+    const regex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/;
 
-        /* mutate(endpoints.gestor.getOfi); */
-
-        setBtnLoad(false);
-        setValida(true);
-        setMail(false);
-      } else {
-        enqueueSnackbar(insert.msj, { variant: 'error' });
-
-        setBtnLoad(false);
-        setValida(false);
-        setMail(true);
-      }
-    } catch (error) {
+    if (!regex.test(data)) {
       setBtnLoad(false);
-      console.error('Error en handleEstatus:', error);
-      enqueueSnackbar(`¡No se pudo enviar el código!`, { variant: 'danger' });
+      enqueueSnackbar('Correo no valido', { variant: 'error' });
+    } else {
+      try {
+        const insert = await insertData(data);
+
+        if (insert.estatus === true) {
+          enqueueSnackbar(insert.msj, { variant: 'success' });
+
+          /* mutate(endpoints.gestor.getOfi); */
+
+          setBtnLoad(false);
+          setValida(true);
+          setMail(false);
+        } else {
+          enqueueSnackbar(insert.msj, { variant: 'error' });
+
+          setBtnLoad(false);
+          setValida(false);
+          setMail(true);
+        }
+      } catch (error) {
+        setBtnLoad(false);
+        console.error('Error en handleEstatus:', error);
+        enqueueSnackbar(`¡No se pudo enviar el código!`, { variant: 'danger' });
+      }
     }
   };
 
@@ -110,7 +137,7 @@ export default function PreRegisterUser({ currentUser }) {
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
-    const temDatos = { ...location.state.data[0], password: data.confirmNewPassword };
+    const temDatos = { ...location.state.data[0], password: data.confirmNewPassword, mailForm };
 
     const registro = await registrarColaborador(temDatos);
     if (!registro.result) {
@@ -193,27 +220,53 @@ export default function PreRegisterUser({ currentUser }) {
 
                   <DialogTitle style={{ paddingLeft: '0px' }}>Registro de usuario</DialogTitle>
 
-                  <RHFTextField name="correo" label="Correo" value={email} disabled />
+                  {email !== null? (
+                    <>
+                      <ThemeProvider theme={lightTheme}>
+                        <RHFTextField name="correo" label="Correo" value={email} disabled />
+                      </ThemeProvider>
 
-                  <DialogActions>
-                    <LoadingButton
-                      variant="contained"
-                      loading={btnLoad}
-                      onClick={() => {
-                        setBtnLoad(true);
-                        handleChange(email);
-                      }}
-                    >
-                      Enviar código de verificación
-                    </LoadingButton>
-                  </DialogActions>
+                      <DialogActions>
+                        <LoadingButton
+                          variant="contained"
+                          loading={btnLoad}
+                          onClick={() => {
+                            setBtnLoad(true);
+                            handleChange(email);
+                          }}
+                        >
+                          Enviar código de verificación
+                        </LoadingButton>
+                      </DialogActions>
+                    </>
+                  ) : (
+                      <>
+                        <ThemeProvider theme={lightTheme}>
+                          <RHFTextField name="correo" label="Correo" />
+                        </ThemeProvider>
+                        <DialogActions>
+                          <LoadingButton
+                            variant="contained"
+                            loading={btnLoad}
+                            onClick={() => {
+                              setBtnLoad(true);
+                              const dataMail = document.querySelector('[name="correo"]');
+                              handleChange(dataMail.value);
+                              setMailForm(dataMail.value);
+                            }}
+                          >
+                            Enviar código de verificación
+                          </LoadingButton>
+                        </DialogActions>
+                      </>
+                  )}
                 </Box>
               </DialogContent>
             </FormProvider>
           ) : null}
 
           {valida !== false && registroForm === false ? (
-            <Verificacion email={email} formReg={formReg} />
+            <Verificacion email={mailForm} formReg={formReg} />
           ) : null}
 
           {registroForm !== false ? (

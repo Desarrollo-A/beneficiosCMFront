@@ -87,7 +87,7 @@ export default function JwtRegisterView() {
   const validarNumEmpleado = async () => {
     const response = await getColaborador(numEmpleado);
     if (!response.result) {
-      enqueueSnackbar('Número de empleado no encontrado o inactivo', { variant: 'error' });
+      enqueueSnackbar(response.msg, { variant: 'error' });
       return false;
     }
     navigate(PATH_AFTER_REGISTRO, { state: response });
