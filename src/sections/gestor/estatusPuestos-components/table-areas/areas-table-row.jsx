@@ -1,12 +1,8 @@
 import { mutate } from 'swr';
 import PropTypes from 'prop-types';
-import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Collapse from '@mui/material/Collapse';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
@@ -25,21 +21,10 @@ import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-
-import PuestosTable from '../table-puestos/puestos-table';
-
-
 // ----------------------------------------------------------------------
 
 export default function AreasTableRow({ row, selected, onViewRow, onFilters, onResetFilters }) {
   const { id, area, estatus } = row;
-
-  const handleFilterName = useCallback(
-    (event) => {
-      onFilters('name', event);
-    },
-    [onFilters]
-  );
 
   const confirm = useBoolean();
 
@@ -49,20 +34,11 @@ export default function AreasTableRow({ row, selected, onViewRow, onFilters, onR
 
   const idUser = {idUser : user?.idUsuario};
 
-  const collapse = useBoolean();
-
   const { enqueueSnackbar } = useSnackbar();
 
   const popover = usePopover();
 
   const updateEstatus = useUpdate(endpoints.gestor.updateEstatusAreas);
-
-  const [idArea, setIdArea] = useState(0);
-
-  const [nomArea, setNomArea] = useState('');
-
-  useEffect(() => {
-  }, [idArea]);
 
   const handleEstatus = async (i) => {
 
@@ -104,15 +80,7 @@ export default function AreasTableRow({ row, selected, onViewRow, onFilters, onR
     <TableRow hover selected={selected}>
 
       <TableCell>
-        <Box
-          onClick={onViewRow}
-          sx={{
-            cursor: 'pointer',
-            '&:hover': {
-              textDecoration: 'underline',
-            },
-          }}
-        >
+        <Box>
           {id}
         </Box>
       </TableCell>
@@ -142,29 +110,6 @@ export default function AreasTableRow({ row, selected, onViewRow, onFilters, onR
       </TableCell>
 
       <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-        {estatus === 1 ? (
-          <IconButton
-            color={collapse.value ? 'inherit' : 'default'}
-            // onClick={collapse.onToggle}
-            onClick={() => {
-              setIdArea(id);
-              setNomArea(area);
-              collapse.onToggle();
-              handleFilterName(area)
-              if (collapse.value === true) {
-                onResetFilters();
-              }
-            }}
-            sx={{
-              ...(collapse.value && {
-                bgcolor: 'action.hover',
-              }),
-            }}
-          >
-            <Iconify icon="eva:arrow-ios-downward-fill" />
-          </IconButton>
-        ) : null
-        }
 
         <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
           <Iconify icon="eva:more-vertical-fill" />
@@ -173,30 +118,9 @@ export default function AreasTableRow({ row, selected, onViewRow, onFilters, onR
     </TableRow>
   );
 
-  const renderSecondary = (
-    <TableRow>
-      <TableCell sx={{ p: 0, border: 'none' }} colSpan={8} >
-        <Collapse
-          in={collapse.value}
-          timeout="auto"
-          unmountOnExit
-          sx={{ backgroundColor: '#e4e4e4a8' }}
-        >
-          <Stack component={Paper} sx={{ m: 1.5 }}>
-
-            <PuestosTable idArea={idArea} nomArea={nomArea} />
-
-          </Stack>
-        </Collapse>
-      </TableCell>
-    </TableRow>
-  );
-
   return (
     <>
       {renderPrimary}
-
-      {renderSecondary}
 
       <CustomPopover
         open={popover.open}
@@ -254,7 +178,7 @@ export default function AreasTableRow({ row, selected, onViewRow, onFilters, onR
         open={active.value}
         onClose={active.onFalse}
         title="Habilitar"
-        content="¿Estás seguro de habilitar el puesto?"
+        content="¿Estás seguro de habilitar el puesto? Esto implica que todos sus puestos quedarán habilitados."
         action={
           <>
             <Button variant="contained" color="error" onClick={() => { active.onFalse() }}>

@@ -1,13 +1,19 @@
+import JsPDF from 'jspdf';
+import Xlsx from 'json-as-xlsx';
+import autoTable from 'jspdf-autotable';
 import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import Card from '@mui/material/Card';
 import TabList from '@mui/lab/TabList';
+import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import TabPanel from '@mui/lab/TabPanel';
+import Tooltip from '@mui/material/Tooltip';
 import { alpha } from '@mui/material/styles';
 import TabContext from '@mui/lab/TabContext';
+import MenuItem from '@mui/material/MenuItem';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import TextField from '@mui/material/TextField';
@@ -21,6 +27,7 @@ import { endpoints } from 'src/utils/axios';
 
 import { useGetGeneral } from 'src/api/general';
 
+import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
@@ -34,18 +41,17 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-import AreasTable from '../estatusPuestos-components/table-areas/areas-table';
-import PuestosTable from '../estatusPuestos-components/table-puestos/puestos-table';
-import TableDepartamentos from '../estatusPuestos-components/table-departamentos/departamentos-table-row';
-import DepartamentosTableToolbar from '../estatusPuestos-components/table-departamentos/order-table-toolbar';
-import DepartamentosTableFiltersResult from '../estatusPuestos-components/table-departamentos/departamentos-table-filters-result';
-
+import AreasTable from '../components/demanda-beneficios/table-areas/areas-table';
+import PuestosTable from '../components/demanda-beneficios/table-puestos/puestos-table';
+import TableDepartamentos from '../components/demanda-beneficios/table-departamentos/departamentos-table-row';
+import DepartamentosTableToolbar from '../components/demanda-beneficios/table-departamentos/order-table-toolbar';
+import DepartamentosTableFiltersResult from '../components/demanda-beneficios/table-departamentos/departamentos-table-filters-result';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: 'id', label: 'ID', width: 400 },
   { id: 'nombre', label: 'Departamento' },
-  { id: 'status', label: 'Estatus', width: 200 },
+  { id: 'demanda', label: 'Demanda', width: 200 },
   { id: '', width: 88 },
 ];
 
@@ -58,8 +64,51 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function EstatusPuestosView() {
+function handleDownloadExcel(dataFiltered) {
+
+  const data = [
+    {
+      sheet: "Demanda beneficios",
+      columns: [
+        { label: "ID", value: "id" },
+        { label: "Departamento", value: "label" },
+        { label: "Demanda", value: "value" },
+      ],
+      content: dataFiltered,
+    },
+  ];
+
+  const settings = {
+    fileName: "Demanda beneficios",
+    extraLength: 3,
+    writeMode: "writeFile",
+    writeOptions: {},
+    RTL: false,
+  }
+  Xlsx(data, settings)
+}
+
+const doc = new JsPDF();
+
+function handleDownloadPDF(dataFiltered, headerBase) {
+
+  let data = [];
+
+  data = dataFiltered.map(item => ([item.id, item.label, item.value]))
+
+  autoTable(doc, {
+    head: [headerBase],
+    body: data,
+  })
+  doc.save('Demanda beneficios.pdf')
+}
+
+// ----------------------------------------------------------------------
+
+export default function DemandaBeneficiosView() {
   const table = useTable({});
+
+  const headerBase = ["ID", "Departamento", "Demanda"];
 
   const [valueDt, setValueDt] = useState('1');
 
@@ -67,9 +116,9 @@ export default function EstatusPuestosView() {
     setValueDt(newValue);
   };
 
-  const { depaData } = useGetGeneral(endpoints.gestor.getDepartamentos, "depaData");
+  const { depaData } = useGetGeneral(endpoints.reportes.demandaDepartamentos, "depaData");
 
-  const { arData } = useGetGeneral(endpoints.gestor.getAllAreas, "arData");
+  const { arData } = useGetGeneral(endpoints.reportes.allDemandaAreas, "arData");
 
   const settings = useSettingsContext();
 
@@ -124,16 +173,16 @@ export default function EstatusPuestosView() {
     [dataInPage.length, table, tableData]
   );
 
-/*   const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
-    setTableData(deleteRows);
-
-    table.onUpdatePageDeleteRows({
-      totalRows: tableData.length,
-      totalRowsInPage: dataInPage.length,
-      totalRowsFiltered: dataFiltered.length,
-    });
-  }, [dataFiltered.length, dataInPage.length, table, tableData]); */
+  /*   const handleDeleteRows = useCallback(() => {
+      const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
+      setTableData(deleteRows);
+  
+      table.onUpdatePageDeleteRows({
+        totalRows: tableData.length,
+        totalRowsInPage: dataInPage.length,
+        totalRowsFiltered: dataFiltered.length,
+      });
+    }, [dataFiltered.length, dataInPage.length, table, tableData]); */
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
@@ -155,7 +204,7 @@ export default function EstatusPuestosView() {
     ...depaData.map((i) => ({
       key: i.id,
       value: i.id,
-      label: i.departamento,
+      label: i.label,
     }))
   ];
 
@@ -163,7 +212,7 @@ export default function EstatusPuestosView() {
     ...arData.map((i) => ({
       key: i.id,
       value: i.id,
-      label: i.area,
+      label: i.label,
     }))
   ];
 
@@ -191,15 +240,30 @@ export default function EstatusPuestosView() {
     []
   );
 
+  const handlePdf = async e => {
+    e.preventDefault();
+    handleDownloadPDF(
+      dataFiltered,
+      headerBase
+    );
+  }
+
+  const handleExcel = async e => {
+    e.preventDefault();
+    handleDownloadExcel(
+      dataFiltered
+    );
+  }
+
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Gozo de beneficios"
+        heading="Demanda beneficios"
         links={[
           {
             name: 'Gestor',
           },
-          { name: 'Gozo de beneficios' },
+          { name: 'Demanda beneficios' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
@@ -207,6 +271,7 @@ export default function EstatusPuestosView() {
       />
 
       <Card>
+
         <TabContext value={valueDt}>
           <Box sx={{
             px: 2.5,
@@ -242,6 +307,38 @@ export default function EstatusPuestosView() {
                 sx={{ p: 2.5, pt: 0 }}
               />
             )}
+
+            <Stack
+              spacing={1}
+              alignItems={{ xs: 'flex-start', md: 'flex-start' }}
+              direction={{
+                xs: 'column',
+                md: 'row',
+              }}
+              sx={{
+                p: 1,
+                pr: { xs: 1, md: 1 },
+              }}
+            >
+              <Tooltip title="Exportar a XLS" placement="top" arrow>
+                <MenuItem
+                  sx={{ width: 50, p: 1 }}
+                  onClick={handleExcel}
+                >
+                  <Iconify icon="teenyicons:xls-outline" />
+                </MenuItem>
+              </Tooltip>
+
+              <Tooltip title="Exportar a PDF" placement="top" arrow>
+                <MenuItem
+                  sx={{ width: 50, p: 1 }}
+                  onClick={handlePdf}
+                >
+                  <Iconify icon="teenyicons:pdf-outline" />
+                </MenuItem>
+              </Tooltip>
+
+            </Stack>
 
             <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
 

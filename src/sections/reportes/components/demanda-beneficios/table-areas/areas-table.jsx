@@ -1,10 +1,14 @@
+import JsPDF from 'jspdf';
+import Xlsx from 'json-as-xlsx';
 import PropTypes from 'prop-types';
+import autoTable from 'jspdf-autotable';
 import { useState, useEffect, useCallback } from 'react';
 
 import { Box } from '@mui/system';
 import Table from '@mui/material/Table';
-import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
+import MenuItem from '@mui/material/MenuItem';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
@@ -21,7 +25,6 @@ import { usePostGeneral } from 'src/api/general';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
-import { ConfirmDialog } from 'src/components/custom-dialog';
 import {
   useTable,
   emptyRows,
@@ -33,15 +36,15 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-import PuestosTableRow from './puestos-table-row';
-import PuestosTableToolbar from './puestos-table-toolbar';
-import PuestosTableFiltersResult from './puestos-table-filters-result';
+import AreasTableRow from './areas-table-row';
+import AreasTableToolbar from './areas-table-toolbar';
+import AreasTableFiltersResult from './areas-table-filters-result';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: 'id', label: 'ID', width: 400 },
-  { id: 'nombre', label: 'Puestos' },
+  { id: 'nombre', label: 'Área' },
   { id: 'status', label: 'Estatus', width: 200 },
   { id: '', width: 88 },
 ];
@@ -55,10 +58,53 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function PuestosTable({ idArea }) {
+function handleDownloadExcel(dataFiltered) {
+
+  const data = [
+    {
+      sheet: "Demanda de beneficios",
+      columns: [
+        { label: "ID", value: "id" },
+        { label: "Área", value: "label" },
+        { label: "Demanda", value: "value" },
+      ],
+      content: dataFiltered,
+    },
+  ];
+
+  const settings = {
+    fileName: "Demanda de beneficios",
+    extraLength: 3,
+    writeMode: "writeFile",
+    writeOptions: {},
+    RTL: false,
+  }
+  Xlsx(data, settings)
+}
+
+const doc = new JsPDF();
+
+function handleDownloadPDF(dataFiltered, headerBase) {
+
+  let data = [];
+
+  data = dataFiltered.map(item => ([item.id, item.label, item.value]))
+
+  autoTable(doc, {
+    head: [headerBase],
+    body: data,
+  })
+  doc.save('Demanda de beneficios.pdf')
+}
+
+// ----------------------------------------------------------------------
+
+export default function AreasTable({ idDepa }) {
   const table = useTable({});
 
-  const { puestosData } = usePostGeneral(idArea, endpoints.gestor.getPuestos, "puestosData");
+  const headerBase = ["ID", "Área", "Demanda"];
+
+  const { areaData } = usePostGeneral(idDepa, endpoints.reportes.demandaAreas, "areaData");
 
   const router = useRouter();
 
@@ -113,17 +159,6 @@ export default function PuestosTable({ idArea }) {
     [dataInPage.length, table, tableData]
   );
 
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
-    setTableData(deleteRows);
-
-    table.onUpdatePageDeleteRows({
-      totalRows: tableData.length,
-      totalRowsInPage: dataInPage.length,
-      totalRowsFiltered: dataFiltered.length,
-    });
-  }, [dataFiltered.length, dataInPage.length, table, tableData]);
-
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
@@ -136,16 +171,30 @@ export default function PuestosTable({ idArea }) {
   );
 
   useEffect(() => {
-    setTableData(puestosData);
-  }, [puestosData]);
+    setTableData(areaData);
+  }, [areaData]);
+
+  const handlePdf = async e => {
+    e.preventDefault();
+    handleDownloadPDF(
+      dataFiltered,
+      headerBase
+    );
+  }
+
+  const handleExcel = async e => {
+    e.preventDefault();
+    handleDownloadExcel(
+      dataFiltered
+    );
+  }
 
   return (
-    <>
 
       <Container>
         <Box mb={2} />
 
-        <PuestosTableToolbar
+        <AreasTableToolbar
           filters={filters}
           onFilters={handleFilters}
           //
@@ -154,7 +203,7 @@ export default function PuestosTable({ idArea }) {
         />
 
         {canReset && (
-          <PuestosTableFiltersResult
+          <AreasTableFiltersResult
             filters={filters}
             onFilters={handleFilters}
             //
@@ -165,6 +214,37 @@ export default function PuestosTable({ idArea }) {
           />
         )}
 
+            <Stack
+              spacing={1}
+              alignItems={{ xs: 'flex-start', md: 'flex-start' }}
+              direction={{
+                xs: 'column',
+                md: 'row',
+              }}
+              sx={{
+                p: 1,
+                pr: { xs: 1, md: 1 },
+              }}
+            >
+              <Tooltip title="Exportar a XLS" placement="top" arrow>
+                <MenuItem
+                  sx={{ width: 50, p: 1 }}
+                  onClick={handleExcel}
+                >
+                  <Iconify icon="teenyicons:xls-outline" />
+                </MenuItem>
+              </Tooltip>
+
+              <Tooltip title="Exportar a PDF" placement="top" arrow>
+                <MenuItem
+                  sx={{ width: 50, p: 1 }}
+                  onClick={handlePdf}
+                >
+                  <Iconify icon="teenyicons:pdf-outline" />
+                </MenuItem>
+              </Tooltip>
+
+            </Stack>
 
         <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
           <TableSelectedAction
@@ -210,13 +290,15 @@ export default function PuestosTable({ idArea }) {
                     table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   .map((row) => (
-                    <PuestosTableRow
+                    <AreasTableRow
                       key={row.id}
                       row={row}
                       selected={table.selected.includes(row.id)}
                       onSelectRow={() => table.onSelectRow(row.id)}
                       onDeleteRow={() => handleDeleteRow(row.id)}
                       onViewRow={() => handleViewRow(row.id)}
+                      onFilters={handleFilters}
+                      onResetFilters={handleResetFilters}
                     />
                   ))}
 
@@ -243,30 +325,6 @@ export default function PuestosTable({ idArea }) {
         />
 
       </Container>
-
-      <ConfirmDialog
-        open={confirm.value}
-        onClose={confirm.onFalse}
-        title="Delete"
-        content={
-          <>
-            Are you sure want to delete <strong> {table.selected.length} </strong> items?
-          </>
-        }
-        action={
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => {
-              handleDeleteRows();
-              confirm.onFalse();
-            }}
-          >
-            Delete
-          </Button>
-        }
-      />
-    </>
   );
 }
 
@@ -288,13 +346,13 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   if (name) {
     inputData = inputData.filter(
       (order) =>
-        order.puesto.toLowerCase().indexOf(name.toLowerCase()) !== -1
+        order.area.toLowerCase().indexOf(name.toLowerCase()) !== -1
     );
   }
 
   return inputData;
 }
 
-PuestosTable.propTypes = {
-  idArea: PropTypes.any
+AreasTable.propTypes = {
+  idDepa: PropTypes.any
 };

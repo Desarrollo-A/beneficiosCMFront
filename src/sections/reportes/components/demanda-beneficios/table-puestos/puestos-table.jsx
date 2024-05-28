@@ -1,10 +1,15 @@
+import JsPDF from 'jspdf';
+import Xlsx from 'json-as-xlsx';
 import PropTypes from 'prop-types';
+import autoTable from 'jspdf-autotable';
 import { useState, useEffect, useCallback } from 'react';
 
 import { Box } from '@mui/system';
+import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
+import MenuItem from '@mui/material/MenuItem';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
@@ -55,10 +60,53 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
+function handleDownloadExcel(dataFiltered) {
+
+  const data = [
+    {
+      sheet: "Demanda de beneficios",
+      columns: [
+        { label: "ID", value: "id" },
+        { label: "Área", value: "label" },
+        { label: "Demanda", value: "value" },
+      ],
+      content: dataFiltered,
+    },
+  ];
+
+  const settings = {
+    fileName: "Demanda de beneficios",
+    extraLength: 3,
+    writeMode: "writeFile",
+    writeOptions: {},
+    RTL: false,
+  }
+  Xlsx(data, settings)
+}
+
+const doc = new JsPDF();
+
+function handleDownloadPDF(dataFiltered, headerBase) {
+
+  let data = [];
+
+  data = dataFiltered.map(item => ([item.id, item.label, item.value]))
+
+  autoTable(doc, {
+    head: [headerBase],
+    body: data,
+  })
+  doc.save('Demanda de beneficios.pdf')
+}
+
+// ----------------------------------------------------------------------
+
 export default function PuestosTable({ idArea }) {
   const table = useTable({});
 
-  const { puestosData } = usePostGeneral(idArea, endpoints.gestor.getPuestos, "puestosData");
+  const headerBase = ["ID", "Puesto", "Demanda"];
+
+  const { puestosData } = usePostGeneral(idArea, endpoints.reportes.demandaPuestos, "puestosData");
 
   const router = useRouter();
 
@@ -139,6 +187,21 @@ export default function PuestosTable({ idArea }) {
     setTableData(puestosData);
   }, [puestosData]);
 
+  const handlePdf = async e => {
+    e.preventDefault();
+    handleDownloadPDF(
+      dataFiltered,
+      headerBase
+    );
+  }
+
+  const handleExcel = async e => {
+    e.preventDefault();
+    handleDownloadExcel(
+      dataFiltered
+    );
+  }
+
   return (
     <>
 
@@ -165,6 +228,37 @@ export default function PuestosTable({ idArea }) {
           />
         )}
 
+<Stack
+              spacing={1}
+              alignItems={{ xs: 'flex-start', md: 'flex-start' }}
+              direction={{
+                xs: 'column',
+                md: 'row',
+              }}
+              sx={{
+                p: 1,
+                pr: { xs: 1, md: 1 },
+              }}
+            >
+              <Tooltip title="Exportar a XLS" placement="top" arrow>
+                <MenuItem
+                  sx={{ width: 50, p: 1 }}
+                  onClick={handleExcel}
+                >
+                  <Iconify icon="teenyicons:xls-outline" />
+                </MenuItem>
+              </Tooltip>
+
+              <Tooltip title="Exportar a PDF" placement="top" arrow>
+                <MenuItem
+                  sx={{ width: 50, p: 1 }}
+                  onClick={handlePdf}
+                >
+                  <Iconify icon="teenyicons:pdf-outline" />
+                </MenuItem>
+              </Tooltip>
+
+            </Stack>
 
         <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
           <TableSelectedAction
