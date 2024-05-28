@@ -11,7 +11,7 @@ export default function EstatusPuestosPage() {
   return (
     <>
       <Helmet>
-        <title> Beneficios CDM | Estatus puestos</title>
+        <title> Beneficios CDM | Gozo beneficios</title>
       </Helmet>
 
       < EstatusPuestosView />
