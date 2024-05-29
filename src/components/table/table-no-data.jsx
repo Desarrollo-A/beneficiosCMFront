@@ -9,11 +9,11 @@ import EmptyContent from '../empty-content';
 
 export default function TableNoData({ notFound, sx }) {
   return (
-    <TableRow>
+    <TableRow >
       {notFound ? (
-        <TableCell colSpan={12}>
+        <TableCell colSpan={20} >
           <EmptyContent
-            filled
+            /* filled */
             title="Sin Datos"
             sx={{
               py: 10,
