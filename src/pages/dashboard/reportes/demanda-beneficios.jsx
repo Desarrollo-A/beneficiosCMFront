@@ -2,19 +2,22 @@ import { Helmet } from 'react-helmet-async';
 
 import { useSession } from 'src/hooks/use-session';
 
-import { AtencionPorSede } from 'src/sections/gestor/view';
+import { DemandaBeneficiosView } from 'src/sections/reportes/view';
+
 
 // ----------------------------------------------------------------------
 
-export default function AtencionPorSedePage() {
+export default function DemandaBeneficiosPage() {
+
   useSession();
+
   return (
     <>
       <Helmet>
-        <title> Gestor: Atención por sede</title>
+        <title>Beneficios CDM | Demanda beneficios</title>
       </Helmet>
 
-      <AtencionPorSede />
+      < DemandaBeneficiosView />
     </>
   );
 }

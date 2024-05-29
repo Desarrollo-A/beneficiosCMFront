@@ -13,6 +13,7 @@ const CitasPage = lazy(() => import('src/pages/dashboard/citas'));
 // REPORTES
 const HistorialReportesPage = lazy(() => import('src/pages/dashboard/reportes/historial-reportes'));
 const ReportePacientesPage = lazy(() => import('src/pages/dashboard/reportes/reporte-pacientes'));
+const DemandaBeneficiosPage = lazy(() => import('src/pages/dashboard/reportes/demanda-beneficios'));
 // OVERVIEW
 const DashPage = lazy(() => import('src/pages/dashboard/dash'));
 // ENCUESTAS
@@ -111,6 +112,7 @@ export const dashboardRoutes = [
         children: [
           { path: 'historial', element: <HistorialReportesPage /> },
           { path: 'pacientes', element: <ReportePacientesPage /> },
+          { path: 'demandaBeneficios', element: <DemandaBeneficiosPage /> },
         ],
       },
       {

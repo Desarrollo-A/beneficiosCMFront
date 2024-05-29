@@ -75,15 +75,20 @@ function handleDownloadExcel(dataFiltered, rol) {
         { label: "ID", value: "idColab" },
         { label: "Usuario", value: "usuario" },
         { label: "Especialista", value: "especialista" },
+        { label: "Número de empleado", value: "numEmpleado" },
         { label: "Paciente", value: "paciente" },
         { label: "Oficina", value: "oficina" },
         { label: "Departamento", value: "depto" },
+        { label: "Área", value: "narea" },
+        { label: "Puesto", value: "npuesto" },
         { label: "Sede", value: "sede" },
         { label: "Modalidad", value: "modalidad" },
         { label: "Sexo", value: "sexo" },
         { label: "Motivo consulta", value: "motivoCita" },
         { label: "Pago generado", value: "pagoGenerado" },
         { label: "Método de pago", value: "metodoPago" },
+        { label: "Monto", value: "monto" },
+        { label: "Tipo cita", value: "tipoCita" },
         { label: "Estatus", value: "estatus" },
         { label: "Horario cita", value: "horario" },
       ],
@@ -122,11 +127,11 @@ function handleDownloadPDF(dataFiltered, header, rol) {
   let data = [];
 
   if(rol === 3){
-    data = dataFiltered.map(item => ([item.idColab, item.usuario, item.paciente,
-      item.oficina, item.depto, item.sede, item.modalidad, item.sexo, item.motivoCita, item.pagoGenerado, item.metodoPago !== null ? item.metodoPago : 'Pendiente de pago', item.estatus, item.horario,]))
+    data = dataFiltered.map(item => ([item.idColab, item.usuario, item.numEmpleado, item.paciente,
+      item.oficina, item.depto, item.narea, item.npuesto, item.sede, item.modalidad, item.sexo, item.motivoCita, item.pagoGenerado, item.metodoPago !== null ? item.metodoPago : 'Pendiente de pago', item.monto, item.tipoCita, item.estatus, item.horario,]))
   }else{
-    data = dataFiltered.map(item => ([item.idColab, item.usuario, item.especialista, item.paciente,
-    item.oficina, item.depto, item.sede, item.modalidad, item.sexo, item.motivoCita, item.pagoGenerado, item.metodoPago !== null ? item.metodoPago : 'Pendiente de pago', item.estatus, item.horario,]))
+    data = dataFiltered.map(item => ([item.idColab, item.usuario, item.especialista, item.numEmpleado, item.paciente,
+    item.oficina, item.depto, item.narea, item.npuesto, item.sede, item.modalidad, item.sexo, item.motivoCita, item.pagoGenerado, item.metodoPago !== null ? item.metodoPago : 'Pendiente de pago', item.monto, item.tipoCita, item.estatus, item.horario,]))
   }
   
   autoTable(doc, {
@@ -150,8 +155,8 @@ export default function HistorialReportesView() {
 
   let header = [];
 
-  const headerBase = ["ID", "Usuario", "Especialista", "Paciente", "Oficina", "Departamento", "Sede",
-    "Modalidad", "Sexo", "Motivo consulta", "Pago Generado", "Método de pago", "Estatus", "Horario cita"];
+  const headerBase = ["ID", "Usuario", "Especialista", "Número de empleado", "Paciente", "Oficina", "Departamento", "Área", "Puesto", "Sede",
+    "Modalidad", "Sexo", "Motivo consulta", "Pago Generado", "Método de pago", "Monto", "Tipo cita", "Estatus", "Horario cita"];
 
   const [dataValue, setReportData] = useState(0);
 
@@ -216,18 +221,23 @@ export default function HistorialReportesView() {
     { id: '', label: 'ID' },
     { id: '', label: 'Usuario' },
     { id: '', label: 'Especialista' },
+    { id: '', label: 'Número de empleado' },
     { id: '', label: 'Paciente' },
     { id: '', label: 'Oficina' },
     { id: '', label: 'Departamento' },
+    { id: '', label: 'Área' },
+    { id: '', label: 'Puesto' },
     { id: '', label: 'Sede' },
     { id: '', label: 'Modalidad' },
     { id: '', label: 'Sexo' },
     { id: '', label: 'Motivo Consulta' },
     { id: '', label: 'Pago generado' },
     { id: '', label: 'Método de pago' },
+    { id: '', label: 'Monto' },
+    { id: '', label: 'Tipo cita' },
     { id: '', label: 'Estatus' },
     { id: '', label: 'Horario cita' },
-    { id: '', width: 88 },
+    { id: '' },
     /* { id: '', width: 88 }, */
   ];
 
@@ -457,7 +467,7 @@ export default function HistorialReportesView() {
                     emptyRows={emptyRows(table.page, table.rowsPerPage, datosTabla.length)}
                   />
 
-                  <TableNoData notFound={notFound} />
+                  <TableNoData notFound={notFound}/>
                 </TableBody>
               </Table>
             </Scrollbar>

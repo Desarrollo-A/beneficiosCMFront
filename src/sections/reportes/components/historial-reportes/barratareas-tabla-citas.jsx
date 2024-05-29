@@ -13,7 +13,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import OutlinedInput from '@mui/material/OutlinedInput';
-import InputAdornment from '@mui/material/InputAdornment';
+/* import InputAdornment from '@mui/material/InputAdornment'; */
 import LinearProgress from '@mui/material/LinearProgress';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -160,12 +160,12 @@ export default function BarraTareasTabla({
 
   const { espData } = usePostSelect(dt, endpoints.reportes.getSelectEspe, "espData");
 
-  const handleFilterName = useCallback(
+  /* const handleFilterName = useCallback(
     (event) => {
       onFilters('name', event.target.value);
     },
     [onFilters]
-  );
+  ); */
 
   const handleFilterRole = useCallback(
     (event) => {
@@ -287,12 +287,10 @@ export default function BarraTareasTabla({
         }}
       >
 
-        <FormControl
-          sx={{
-            flexShrink: 0,
-            width: { xs: 1, md: 200 },
-          }}
-        >
+        <FormControl sx={{
+          width: "100%",
+          pr: { xs: 1, md: 1 },
+        }}>
           <TextField
             fullWidth
             select
@@ -312,12 +310,10 @@ export default function BarraTareasTabla({
           </TextField>
         </FormControl>
 
-        <FormControl
-          sx={{
-            flexShrink: 0,
-            width: { xs: 1, md: 200 },
-          }}
-        >
+        <FormControl sx={{
+          width: "100%",
+          pr: { xs: 1, md: 1 },
+        }}>
           <TextField
             fullWidth
             select
@@ -340,12 +336,10 @@ export default function BarraTareasTabla({
         {rol === 4 ? (
 
           <>
-            <FormControl
-              sx={{
-                flexShrink: 0,
-                width: { xs: 1, md: 200 },
-              }}
-            >
+            <FormControl sx={{
+              width: "100%",
+              pr: { xs: 1, md: 1 },
+            }}>
               <InputLabel>Beneficio</InputLabel>
 
               <Select
@@ -376,12 +370,10 @@ export default function BarraTareasTabla({
               </Select>
             </FormControl>
 
-            <FormControl
-              sx={{
-                flexShrink: 0,
-                width: { xs: 1, md: 260 },
-              }}
-            >
+            <FormControl sx={{
+              width: "100%",
+              pr: { xs: 1, md: 1 },
+            }}>
               <InputLabel>Especialistas</InputLabel>
 
               <Select
@@ -419,12 +411,10 @@ export default function BarraTareasTabla({
           null
         )}
 
-        <FormControl
-          sx={{
-            flexShrink: 0,
-            width: { xs: 1, md: 200 },
-          }}
-        >
+         <FormControl sx={{
+            width: "100%",
+            pr: { xs: 1, md: 1 },
+          }}>
           <InputLabel>Modalidad</InputLabel>
 
           <Select
@@ -467,9 +457,6 @@ export default function BarraTareasTabla({
                     fullWidth: true,
                   },
                 }}
-                sx={{
-                  maxWidth: { md: 300 },
-                }}
               />
             </LocalizationProvider>
 
@@ -479,9 +466,6 @@ export default function BarraTareasTabla({
                 value={filters.endDate}
                 onChange={handleFilterEndDate}
                 slotProps={{ textField: { fullWidth: true } }}
-                sx={{
-                  maxWidth: { md: 300 },
-                }}
               />
             </LocalizationProvider>
           </>
@@ -515,9 +499,6 @@ export default function BarraTareasTabla({
                     fullWidth: true,
                   },
                 }}
-                sx={{
-                  maxWidth: { md: 200 },
-                }}
               />
             </LocalizationProvider>
 
@@ -527,9 +508,6 @@ export default function BarraTareasTabla({
                 value={filters.endDate}
                 onChange={handleFilterEndDate}
                 slotProps={{ textField: { fullWidth: true } }}
-                sx={{
-                  maxWidth: { md: 200 },
-                }}
               />
             </LocalizationProvider>
           </>
@@ -537,7 +515,7 @@ export default function BarraTareasTabla({
           null
         )}
 
-        <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
+        {/* <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
             fullWidth
             value={filters.name}
@@ -552,7 +530,7 @@ export default function BarraTareasTabla({
             }}
           />
 
-        </Stack>
+        </Stack> */}
       </Stack>
 
       <CustomPopover
