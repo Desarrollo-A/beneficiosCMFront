@@ -407,7 +407,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     /* VALIDAR SI ES GRATUITA LA CITA */
     let precio = 50.0;
-    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') precio = 0.01;
+    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') precio = 0.00;
 
     /* PAGO  */
     const DATOS_PAGO = Object.freeze({
@@ -506,7 +506,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   });
 
   const bbPago = async (folio, referencia, monto, concepto, servicio) => {
-    const bbString = `${folio}|${referencia}|${0.01}|${concepto}|${servicio}|`;
+    const bbString = `${folio}|${referencia}|${monto}|${concepto}|${servicio}|`;
     const hash = await getEncodedHash(bbString);
 
     const regex = /^U\d+-[A-Z]{4}-E\d+-C\d+$/;
@@ -530,7 +530,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const fields = [
       { name: 'cl_folio', value: folio },
       { name: 'cl_referencia', value: referencia },
-      { name: 'dl_monto', value: 0.01 },
+      { name: 'dl_monto', value: monto },
       { name: 'cl_concepto', value: concepto },
       { name: 'servicio', value: servicio },
       { name: 'hash', value: hash.data.trim() },
@@ -658,7 +658,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const pagarCitaPendiente = async () => {
     setBtnPayDisabled(true);
     /* VALIDAR SI ES GRATUITA LA CITA */
-    let precio = 0.02;
+    let precio = 50;
     if (datosUser.tipoPuesto.toLowerCase() === 'operativa') precio = 0.0;
 
     let nombreBeneficio = '';
