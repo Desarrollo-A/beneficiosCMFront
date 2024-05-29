@@ -1,4 +1,4 @@
-import { Helmet } from 'react-helmet-async';
+/* import { Helmet } from 'react-helmet-async';
 
 import { useSession } from 'src/hooks/use-session';
 
@@ -20,4 +20,4 @@ export default function DemandaBeneficiosPage() {
       < DemandaBeneficiosView />
     </>
   );
-}
+} */
