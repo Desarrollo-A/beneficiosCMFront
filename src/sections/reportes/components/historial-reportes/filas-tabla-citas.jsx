@@ -26,8 +26,11 @@ export default function FilasTabla({ row, selected, rol, rel }) {
     especialista,
     oficina,
     depto,
+    narea,
+    npuesto,
     sede,
     modalidad,
+    numEmpleado,
     paciente,
     estatus,
     horario,
@@ -35,6 +38,8 @@ export default function FilasTabla({ row, selected, rol, rel }) {
     sexo,
     motivoCita,
     metodoPago,
+    tipoCita,
+    monto,
     estatusCita,
     pagoGenerado,
     color,
@@ -77,11 +82,17 @@ export default function FilasTabla({ row, selected, rol, rel }) {
           null
         )}
 
+        <TableCell sx={{ whiteSpace: 'nowrap' }} >{numEmpleado}</TableCell>
+
         <TableCell sx={{ whiteSpace: 'nowrap' }} >{paciente}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{oficina}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{depto}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{narea}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{npuesto}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{sede}</TableCell>
 
@@ -102,6 +113,10 @@ export default function FilasTabla({ row, selected, rol, rel }) {
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{pagoGenerado}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{metodoPago}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{monto}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{tipoCita}</TableCell>
 
         <TableCell>
           <Label
