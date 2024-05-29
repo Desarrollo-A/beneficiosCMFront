@@ -3,7 +3,6 @@ import { useState, useEffect, useCallback } from 'react';
 
 import { Box } from '@mui/system';
 import Table from '@mui/material/Table';
-import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
@@ -21,8 +20,6 @@ import { usePostGeneral } from 'src/api/general';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
-import { ConfirmDialog } from 'src/components/custom-dialog';
-import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
   useTable,
   emptyRows,
@@ -56,7 +53,7 @@ const defaultFilters = {
 
 // ----------------------------------------------------------------------
 
-export default function AreasTable({ idDepa, nomDepa }) {
+export default function AreasTable({ idDepa }) {
   const table = useTable({});
 
   const { areaData } = usePostGeneral(idDepa, endpoints.gestor.getAreasPs, "areaData");
@@ -114,17 +111,6 @@ export default function AreasTable({ idDepa, nomDepa }) {
     [dataInPage.length, table, tableData]
   );
 
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
-    setTableData(deleteRows);
-
-    table.onUpdatePageDeleteRows({
-      totalRows: tableData.length,
-      totalRowsInPage: dataInPage.length,
-      totalRowsFiltered: dataFiltered.length,
-    });
-  }, [dataFiltered.length, dataInPage.length, table, tableData]);
-
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
@@ -136,28 +122,14 @@ export default function AreasTable({ idDepa, nomDepa }) {
     [router]
   );
 
-  /* const handleFilterStatus = useCallback(
-    (event, newValue) => {
-      handleFilters('status', newValue);
-    },
-    [handleFilters]
-  ); */
-
   useEffect(() => {
     setTableData(areaData);
   }, [areaData]);
 
   return (
-    <>
+
       <Container>
         <Box mb={2} />
-        <CustomBreadcrumbs
-          links={[
-            {
-              name: `Departamento: ${nomDepa}`,
-            },
-          ]}
-        />
 
         <AreasTableToolbar
           filters={filters}
@@ -259,30 +231,6 @@ export default function AreasTable({ idDepa, nomDepa }) {
         />
 
       </Container>
-
-      <ConfirmDialog
-        open={confirm.value}
-        onClose={confirm.onFalse}
-        title="Delete"
-        content={
-          <>
-            Are you sure want to delete <strong> {table.selected.length} </strong> items?
-          </>
-        }
-        action={
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => {
-              handleDeleteRows();
-              confirm.onFalse();
-            }}
-          >
-            Delete
-          </Button>
-        }
-      />
-    </>
   );
 }
 
@@ -312,6 +260,5 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
 }
 
 AreasTable.propTypes = {
-  idDepa: PropTypes.any,
-  nomDepa: PropTypes.any
+  idDepa: PropTypes.any
 };

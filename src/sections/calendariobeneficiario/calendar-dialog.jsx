@@ -2294,7 +2294,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                     type="submit"
                     variant="contained"
                     color="success"
-                    disabled={beneficioActivo.primeraCita === 0 && !aceptar}
+                    disabled={(beneficioActivo.primeraCita === 0 || beneficioActivo.primeraCita === null) && !aceptar}
                     loading={btnDisabled} // para desactivar en caso de que tenga terminos sin aceptar
                   >
                     Agendar

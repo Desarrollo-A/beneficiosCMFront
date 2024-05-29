@@ -1,12 +1,8 @@
 import { mutate } from 'swr';
 import PropTypes from 'prop-types';
-import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Collapse from '@mui/material/Collapse';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
@@ -26,20 +22,10 @@ import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
-import AreasTable from '../table-areas/areas-table';
-
-
 // ----------------------------------------------------------------------
 
-export default function TableDepartamentos({ row, selected, onViewRow, onDeleteRow, onFilters, onResetFilters }) {
+export default function TableDepartamentos({ row, selected, onViewRow }) {
   const { id, departamento, estatus } = row;
-
-  const handleFilterName = useCallback(
-    (event) => {
-      onFilters('name', event);
-    },
-    [onFilters]
-  );
 
   const confirm = useBoolean();
 
@@ -53,16 +39,7 @@ export default function TableDepartamentos({ row, selected, onViewRow, onDeleteR
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const collapse = useBoolean();
-
   const popover = usePopover();
-
-  const [idDepa, setIdDepa] = useState(0);
-
-  const [nomDepa, setNomDepa] = useState('');
-
-  useEffect(() => {
-  }, [idDepa]);
 
   const handleEstatus = async (i) => {
 
@@ -105,13 +82,6 @@ export default function TableDepartamentos({ row, selected, onViewRow, onDeleteR
 
         <TableCell>
           <Box
-            onClick={onViewRow}
-            sx={{
-              cursor: 'pointer',
-              '&:hover': {
-                textDecoration: 'underline',
-              },
-            }}
           >
             {id}
           </Box>
@@ -144,30 +114,6 @@ export default function TableDepartamentos({ row, selected, onViewRow, onDeleteR
 
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
 
-          {estatus === 1 ? (
-            <IconButton
-              color={collapse.value ? 'inherit' : 'default'}
-              // onClick={collapse.onToggle}
-              onClick={() => {
-                setIdDepa(id);
-                setNomDepa(departamento);
-                handleFilterName(departamento)
-                collapse.onToggle();
-                if (collapse.value === true) {
-                  onResetFilters();
-                }
-              }}
-              sx={{
-                ...(collapse.value && {
-                  bgcolor: 'action.hover',
-                }),
-              }}
-            >
-              <Iconify icon="eva:arrow-ios-downward-fill" />
-            </IconButton>
-          ) : null
-          }
-
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
@@ -175,30 +121,9 @@ export default function TableDepartamentos({ row, selected, onViewRow, onDeleteR
       </TableRow>
   );
 
-  const renderSecondary = (
-    <TableRow>
-      <TableCell sx={{ p: 0, border: 'none' }} colSpan={8} >
-        <Collapse
-          in={collapse.value}
-          timeout="auto"
-          unmountOnExit
-          sx={{ backgroundColor: '#e4e4e4a8' }}
-        >
-          <Stack component={Paper} sx={{ m: 1.5 }}>
-
-            <AreasTable idDepa={idDepa} nomDepa={nomDepa} />
-
-          </Stack>
-        </Collapse>
-      </TableCell>
-    </TableRow>
-  );
-
   return (
     <>
       {renderPrimary}
-
-      {renderSecondary}
 
       <CustomPopover
         open={popover.open}
@@ -236,24 +161,7 @@ export default function TableDepartamentos({ row, selected, onViewRow, onDeleteR
         open={confirm.value}
         onClose={confirm.onFalse}
         title="Inhabilitar"
-        content="¿Estás seguro de inhabilitar el departamento? Esto implica que todas sus áreas y puestos quedarán inhabilitados."
-        action={
-          <>
-            <Button variant="contained" color="success" /* onClick={onDeleteRow} */>
-              Aceptar
-            </Button>
-            <Button variant="contained" color="error" onClick={onDeleteRow}>
-              Cancelar
-            </Button>
-          </>
-        }
-      />
-
-      <ConfirmDialog
-        open={confirm.value}
-        onClose={confirm.onFalse}
-        title="Inhabilitar"
-        content="¿Estás seguro de inhabilitar el departamento? Esto implica que todos sus puestos quedarán inhabilitados."
+        content="¿Estás seguro de inhabilitar el departamento? Esto implica que todas sus áreas quedarán inhabilitadas y por ende sus puestos."
         action={
           <>
             <Button variant="contained" color="error" onClick={() => { confirm.onFalse() }}>
@@ -273,7 +181,7 @@ export default function TableDepartamentos({ row, selected, onViewRow, onDeleteR
         open={active.value}
         onClose={active.onFalse}
         title="Habilitar"
-        content="¿Estás seguro de habilitar el puesto?"
+        content="¿Estás seguro de habilitar el puesto? Esto implica que todas sus áreas quedarán habilitadas y por ende sus puestos."
         action={
           <>
             <Button variant="contained" color="success" onClick={() => {
@@ -285,8 +193,6 @@ export default function TableDepartamentos({ row, selected, onViewRow, onDeleteR
             <Button variant="contained" color="error" onClick={() => { active.onFalse() }}>
               Cancelar
             </Button>
-            
-
           </>
         }
       />
@@ -296,10 +202,7 @@ export default function TableDepartamentos({ row, selected, onViewRow, onDeleteR
 }
 
 TableDepartamentos.propTypes = {
-  onDeleteRow: PropTypes.func,
   onViewRow: PropTypes.func,
   row: PropTypes.object,
   selected: PropTypes.bool,
-  onFilters: PropTypes.any,
-  onResetFilters: PropTypes.func,
 };

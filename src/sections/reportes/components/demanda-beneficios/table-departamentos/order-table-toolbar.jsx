@@ -1,15 +1,15 @@
 import PropTypes from 'prop-types';
-/* import { useCallback } from 'react'; */
+import { useCallback } from 'react';
 
 import Stack from '@mui/material/Stack';
-/* import TextField from '@mui/material/TextField';
+import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 
-import Iconify from 'src/components/iconify'; */
+import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function PuestosTableToolbar({
+export default function DepartamentosTableToolbar({
   filters,
   onFilters,
   //
@@ -17,12 +17,12 @@ export default function PuestosTableToolbar({
   onResetFilters,
 }) {
 
-/*   const handleFilterName = useCallback(
+  const handleFilterName = useCallback(
     (event) => {
       onFilters('name', event.target.value);
     },
     [onFilters]
-  ); */
+  );
 
   return (
       <Stack
@@ -38,12 +38,12 @@ export default function PuestosTableToolbar({
         }}
       >
 
-        {/* <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
+        <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
             fullWidth
             value={filters.name}
             onChange={handleFilterName}
-            placeholder="Buscar puesto..."
+            placeholder="Buscar departamento..."
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -53,7 +53,7 @@ export default function PuestosTableToolbar({
             }}
           />
 
-        </Stack> */}
+        </Stack>
 
         {/* {canReset && (
           <Button
@@ -69,7 +69,7 @@ export default function PuestosTableToolbar({
   );
 }
 
-PuestosTableToolbar.propTypes = {
+DepartamentosTableToolbar.propTypes = {
   canReset: PropTypes.bool,
   filters: PropTypes.object,
   onFilters: PropTypes.func,

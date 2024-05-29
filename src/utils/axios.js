@@ -216,6 +216,10 @@ export const endpoints = {
     getCierreIngresos: '/ReportesController/getCierreIngresos',
     getSelectEspe: '/ReportesController/getSelectEspe',
     getEspeUser: '/ReportesController/getEspeUser',
+    demandaDepartamentos: '/ReportesController/demandaDepartamentos',
+    allDemandaAreas: '/ReportesController/allDemandaAreas',
+    demandaAreas: '/ReportesController/demandaAreas',
+    demandaPuestos: '/ReportesController/demandaPuestos'
   },
   dashboard: {
     citasAnual: '/DashboardController/citasAnual',
@@ -285,6 +289,7 @@ export const endpoints = {
     insertHorario: '/GestorController/insertHorario',
     especialistas: '/GestorController/especialistas',
     getDepartamentos: '/GestorController/getDepartamentos',
+    getAllAreas: '/GeneralController/getAllAreas',
     getAreasPs: '/GestorController/getAreasPs',
     getPuestos: '/GestorController/getPuestos',
     updateEstatusPuestos: '/GestorController/updateEstatusPuestos',

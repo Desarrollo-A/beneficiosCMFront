@@ -4,14 +4,13 @@ import { DialogActions, DialogContent } from '@material-ui/core';
 
 import { Grid, Stack, Button, CircularProgress } from '@mui/material';
 
-
+import { HOST } from 'src/config-global';
 
 // ----------------------------------------------------------------------
 
 export default function ModalTerminos({ onClose, archivo }) {
 
-    const src = `http://localhost/beneficiosCMBack/dist/documentos/avisos-privacidad/${archivo}`;
-
+  const src = `${HOST}/dist/documentos/avisos-privacidad/${archivo}`;
 
   return (<>
   { archivo !== 0 ? (
