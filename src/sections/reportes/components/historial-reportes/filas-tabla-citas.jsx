@@ -43,7 +43,7 @@ export default function FilasTabla({ row, selected, rol, rel }) {
     estatusCita,
     pagoGenerado,
     color,
-    usuario
+    usuario, 
   } = row;
   const quickEdit = useBoolean();
 

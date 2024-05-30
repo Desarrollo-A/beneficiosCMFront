@@ -546,12 +546,16 @@ function applyFilter({ inputData, comparator, filters, dateError, rol }) {
     inputData = inputData.filter((cita) => area.includes(cita.area));
   }
 
+  const endDateC = new Date(endDate);
+  endDateC.setTime(endDateC.getTime() + 86400000);
+  const endDateF = endDateC.toISOString();
+
   if (!dateError) {
     if (startDate && endDate) {
       inputData = inputData.filter(
         (order) =>
           fTimestamp(order.fechaInicio) >= fTimestamp(startDate) &&
-          fTimestamp(order.fechaInicio) <= fTimestamp(endDate)
+          fTimestamp(order.fechaFinal) <= fTimestamp(endDateF)
       );
     }
   }
