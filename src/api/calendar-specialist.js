@@ -1156,7 +1156,7 @@ export async function reschedule(eventData, idDetalle, cancelType, datosUser, de
     horaInicioOld: dayjs(eventData.oldEventStart).format('HH:mm: a'),
     horaFinalOld: dayjs(eventData.oldEventEnd).format('HH:mm: a'),
     view: 'email-reschedule',
-    correo: ['programador.analista36@ciudadmaderas.com'], // [eventData?.correo],
+    correo: [organizador],
     idUsuario: datosUser?.idUsuario,
   };
 
