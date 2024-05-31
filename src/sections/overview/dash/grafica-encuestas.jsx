@@ -6,6 +6,7 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import { useTheme } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';
 import ButtonBase from '@mui/material/ButtonBase';
 import CardHeader from '@mui/material/CardHeader';
@@ -68,6 +69,8 @@ export default function GraficaEncuestas({
     id,
     ...other
 }) {
+
+    const theme = useTheme();
 
     const [seriesData, setSeriesData] = useState('data');
 
@@ -243,7 +246,8 @@ export default function GraficaEncuestas({
                 {preguntaData.length > 0 ? (
                     <>
 
-                        <Grid container spacing={2} sx={{ p: 6.5 }}>
+                        <Grid container spacing={2} sx={{ p: 6.5, backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f7f7f7',
+        borderRadius: '20px', margin: '20px' }}>
 
                             {rol !== 3 ? (
                                 <>

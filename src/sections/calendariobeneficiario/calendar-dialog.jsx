@@ -1652,9 +1652,23 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                           display: 'flex',
                         }}
                       >
-                        {currentEvent?.estatus === 1 ? (
+                        {currentEvent?.estatus === 1 && currentEvent?.tipoCita === 1 ? (
                           <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                            Cita en {`${currentEvent?.beneficio} (por asistir)`}
+                            Cita en {`${currentEvent?.beneficio} (por asistir - primera cita)`}
+                          </Typography>
+                        ) : (
+                          ''
+                        )}
+                        {currentEvent?.estatus === 1 && currentEvent?.tipoCita === 2 ? (
+                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                            Cita en {`${currentEvent?.beneficio} (por asistir - cita en línea)`}
+                          </Typography>
+                        ) : (
+                          ''
+                        )}
+                        {currentEvent?.estatus === 1 && currentEvent?.tipoCita === 3 ? (
+                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                            Cita en {`${currentEvent?.beneficio} (por asistir - cita normal)`}
                           </Typography>
                         ) : (
                           ''

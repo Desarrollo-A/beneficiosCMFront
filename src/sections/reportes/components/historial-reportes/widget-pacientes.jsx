@@ -2,11 +2,14 @@ import PropTypes from 'prop-types';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+import { useTheme } from '@mui/material/styles';
 import CircularProgress from '@mui/material/CircularProgress';
 
 // ----------------------------------------------------------------------
 
 export default function BookingWidgetSummary({ title, total, icon, sx, length, ...other }) {
+
+  const theme = useTheme();
 
   return (
     <Card
@@ -14,6 +17,7 @@ export default function BookingWidgetSummary({ title, total, icon, sx, length, .
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
+        backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f4f6f8',
         p: 2,
         pl: 3,
         ...sx,

@@ -397,7 +397,6 @@ export default function ModalPoliticas({ open, onClose }) {
             nuestro sistema de beneficios maderas donde te permitirá realizar el pago a través de tarjeta bancaria.
           </DialogContent>
 
-
         </Stack>
 
         <DialogContent style={{ textAlign: 'center' }}>
