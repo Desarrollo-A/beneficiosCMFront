@@ -1,7 +1,7 @@
 import useSWR, { mutate } from 'swr';
 import { useMemo, useEffect } from 'react';
 
-import { endpoints, fetcherGet, fetcherPost } from 'src/utils/axios';
+import axios, { endpoints, fetcherGet, fetcherPost } from 'src/utils/axios';
 
 const options = {
   revalidateIfStale: false,
@@ -43,6 +43,32 @@ export function useUpdate(rt){
 
   return updateData;
 
+}
+
+export const updateObservaciones = async(data) => {
+  const url = endpoints.reportes.observacion;
+  const accessToken = localStorage.getItem('accessToken');
+
+  const form = new FormData()
+  form.append('archivo', data.archivo)
+  form.append('descripcion', data.descripcion)
+  form.append('idCita', data.idCita)
+  form.append('estatus', data.estatus)
+  form.append('modificadoPor', data.modificadoPor)
+  form.append('ests', data.ests)
+
+  const res = await axios.post(
+    url,
+    form,
+    {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Token: accessToken,
+      },
+    }
+  );
+
+  return res.data;
 }
 
 export function usePostPacientes(dataValue, URL, nameData) {

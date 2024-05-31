@@ -1,13 +1,14 @@
 import * as Yup from 'yup';
 import { mutate } from 'swr';
-import { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
+import { useMemo, useCallback } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 
-import Stack from '@mui/material/Stack';
+import { Box } from '@mui/system';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
+import Grid from '@mui/material/Unstable_Grid2';
 import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
@@ -15,11 +16,11 @@ import DialogContent from '@mui/material/DialogContent';
 
 import { endpoints } from 'src/utils/axios';
 
-import { useUpdate } from 'src/api/reportes';
 import { useAuthContext } from 'src/auth/hooks';
+import { updateObservaciones } from 'src/api/reportes';
 
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, { RHFTextField } from 'src/components/hook-form';
+import FormProvider, { RHFUpload, RHFTextField  } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 
@@ -28,13 +29,14 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
 
   const { user } = useAuthContext();
   
-  const updateObservacion = useUpdate(endpoints.reportes.observacion);
+  // const updateObservacion = useUpdate(endpoints.reportes.observacion); 
 
   const idUsr = user?.idUsuario;
 
   const NewUserSchema = Yup.object().shape({
     descripcion: Yup.string().required('El campo es requerido'),
     idCita: Yup.string().required('El campo es requerido'),
+    archivo: Yup.mixed().nullable()
   });
 
   const defaultValues = useMemo(
@@ -44,6 +46,8 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
       estatus: currentUser?.estatus || '',
       modificadoPor: currentUser?.modificadoPor || idUsr,
       ests: currentUser?.modificadoPor || 5,
+      archivo:  null,
+      
     }),
     [currentUser, idUsr]
   );
@@ -56,6 +60,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
   const {
     reset,
     handleSubmit,
+    setValue,
     formState: { isSubmitting },
   } = methods;
 
@@ -66,7 +71,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
       reset();
       onClose();
 
-      const update = await updateObservacion(data);
+      const update = await updateObservaciones(data);
 
       if (update.estatus === true) {
         enqueueSnackbar(update.msj, { variant: 'success' });
@@ -82,6 +87,25 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
     }
   });
 
+  const handleDrop = useCallback(
+    (acceptedFiles) => {
+      const file = acceptedFiles[0];
+
+      const newFile = Object.assign(file, {
+        preview: URL.createObjectURL(file),
+      });
+
+      if (file) {
+        setValue('archivo', newFile, { shouldValidate: true });
+      }
+    },
+    [setValue]
+  );
+
+  const handleRemoveFile = useCallback(() => {
+    setValue('archivo', null);
+  }, [setValue]);
+
   return (
     <Dialog
       fullWidth
@@ -92,6 +116,8 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
         sx: { maxWidth: 720 },
       }}
     >
+
+
       <FormProvider methods={methods} onSubmit={onSubmit}>
 
         <DialogTitle>Justificación de penalización</DialogTitle>
@@ -99,25 +125,34 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
         <DialogContent>
 
           ¿Estás seguro que deseas justificar la cita seleccionada?
-
-        <Stack spacing={3} sx={{ p: 3 }}>
-        <RHFTextField name="descripcion" label="Observaciones" multiline rows={4} />
-        </Stack>
+          <Box mb={2} />
+          <Grid xs={12} md={6}>
+            <RHFTextField name="descripcion" label="Observaciones" multiline rows={4} />
+          </Grid>
 
         </DialogContent>
 
         <RHFTextField name="idCita" value={idCita} style={{ display: 'none' }} />
 
+        <Grid xs={12} md={6} sx={{p:3}}>
+          <RHFUpload
+            name='archivo'
+            onDrop={handleDrop}
+            onDelete={handleRemoveFile}
+            accept={{ '*': [] }}
+          />
+        </Grid>
+
         <DialogActions>
-          <Button variant="outlined" onClick={onClose}>
+          <Button variant="contained" color="error" onClick={onClose}>
             Cerrar
           </Button>
 
-          <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+          <LoadingButton type="submit" variant="contained" color="success" loading={isSubmitting}>
             Guardar
           </LoadingButton>
         </DialogActions>
-        
+
       </FormProvider>
     </Dialog>
 

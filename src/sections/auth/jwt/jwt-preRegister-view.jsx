@@ -318,6 +318,7 @@ export default function PreRegisterUser({ currentUser }) {
                     label="Nombre completo"
                     disabled
                   />
+                  <ThemeProvider theme={lightTheme}>
                   <RHFTextField
                     name="newPassword"
                     label="Contraseña"
@@ -352,6 +353,7 @@ export default function PreRegisterUser({ currentUser }) {
                       ),
                     }}
                   />
+                  </ThemeProvider>
                 </Box>
               </DialogContent>
 

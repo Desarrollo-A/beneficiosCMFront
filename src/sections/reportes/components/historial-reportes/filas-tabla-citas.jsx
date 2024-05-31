@@ -15,6 +15,7 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 
 import UserQuickEditForm from './modal-editar-citas';
+import ModalJustificacion from './modal-justificacion';
 
 // ----------------------------------------------------------------------
 
@@ -44,8 +45,10 @@ export default function FilasTabla({ row, selected, rol, rel }) {
     pagoGenerado,
     color,
     usuario, 
+    archivo,
   } = row;
-  const quickEdit = useBoolean();
+    const quickEdit = useBoolean();
+    const modalJust = useBoolean();
 
     // Dividir la cadena en dos partes
     const partes = horario.split(' - ');
@@ -144,27 +147,27 @@ export default function FilasTabla({ row, selected, rol, rel }) {
 
           </TableCell>
         ) : (
-
-          <TableCell>
-            ㅤ
-          </TableCell>
+          null
         )}
 
-        {/* {result === false && (estatusCita === 2 || estatusCita === 7) ? (
-
-          <TableCell sx={{ whiteSpace: 'nowrap' }}>
-            <Tooltip title="Hay saldo a favor" placement="top" arrow>
-              <Iconify icon="tabler:alert-circle" sx={{color:"blue"}}/>
+        {estatusCita === 5 && archivo !== null && rol === 4 ? (
+          <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }} >
+            <Tooltip title="Ver justificación" placement="top" arrow>
+              <IconButton color={modalJust.value ? 'inherit' : 'default'} onClick={modalJust.onTrue}>
+                <Iconify icon="solar:eye-bold-duotone"/>
+              </IconButton>
             </Tooltip>
-          </TableCell>
 
+          </TableCell>
         ) : (
           null
-        )} */}
+        )}
 
       </TableRow>
 
       <UserQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} idCita={idCita} row={row} rel={rel} />
+
+      <ModalJustificacion open={modalJust.value} onClose={modalJust.onFalse} idCita={idCita} observacion={observaciones} archivo={archivo}/>
 
     </>
   );
