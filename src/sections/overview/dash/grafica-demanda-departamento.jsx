@@ -193,7 +193,10 @@ export default function AnalyticsConversionRates({ title, subheader, beneficios,
     <Card {...other}>
       <CardHeader title={title} subheader={subheader} />
 
-      <Grid container spacing={2} sx={{ p: 3 }}>
+      <Grid container spacing={2} sx={{
+        p: 3, backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f7f7f7',
+        borderRadius: '20px', margin: '20px'
+      }}>
         <Grid md={6} xs={12}>
           <FormControl sx={{
             width: "100%",

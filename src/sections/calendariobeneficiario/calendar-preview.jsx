@@ -63,7 +63,14 @@ export default function CalendarPreview({ event, open, handleClose }) {
               display: 'flex',
             }}
           >
-            {event?.estatus === 1 ? (
+            {event?.estatus === 1 && event?.modalidad === 1 ? (
+              <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                Cita en {`${event?.beneficio} (por asistir - primera cita)`}
+              </Typography>
+            ) : (
+              ''
+            )}
+            {event?.estatus === 1 && event?.modalidad !== 1 ? (
               <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
                 Cita en {`${event?.beneficio} (por asistir)`}
               </Typography>
