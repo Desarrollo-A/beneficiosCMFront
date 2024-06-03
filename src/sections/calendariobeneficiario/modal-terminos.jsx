@@ -10,7 +10,7 @@ import { HOST } from 'src/config-global';
 
 export default function ModalTerminos({ onClose, archivo }) {
 
-  const src = `${HOST}/dist/documentos/avisos-privacidad/${archivo}`;
+  const src = `${HOST}/documentos/archivo/${archivo}`;
 
   return (<>
   { archivo !== 0 ? (
