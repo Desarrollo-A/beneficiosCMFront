@@ -103,7 +103,7 @@ export default function AvisoPrivacidadGeneral() {
         });
         setPropiedadesIFrame({
           visualize: 'block',
-          rutaArchivo: `${HOST}/documentos/archivo/${respuesta[0].expediente}`,
+          rutaArchivo: `${HOST}/dist/documentos/avisos-privacidad/${respuesta[0].expediente}`, // `${HOST}/documentos/archivo/${respuesta[0].expediente}`,
           tituloEspecialidad: respuesta[0].nombreEspecialidad,
           idDocumento: respuesta[0].idDocumento,
           setFuncion: manejarBanderaDesdeHijo,
@@ -143,7 +143,7 @@ export default function AvisoPrivacidadGeneral() {
           });
           setPropiedadesIFrame({
             visualize: 'block',
-            rutaArchivo: `${HOST}/documentos/archivo/${respuesta[0].expediente}`,
+            rutaArchivo: `${HOST}/dist/documentos/avisos-privacidad/${respuesta[0].expediente}`, // `${HOST}/documentos/archivo/${respuesta[0].expediente}`,
             tituloEspecialidad: respuesta[0].nombreEspecialidad,
             idDocumento: respuesta[0].idDocumento,
             setFuncion: manejarBanderaDesdeHijo,
@@ -189,7 +189,7 @@ export default function AvisoPrivacidadGeneral() {
           });
           setPropiedadesIFrame({
             visualize: 'block',
-            rutaArchivo: `${HOST}/documentos/archivo/${respuesta[0].expediente}`,
+            rutaArchivo: `${HOST}/dist/documentos/avisos-privacidad/${respuesta[0].expediente}`,  // `${HOST}/documentos/archivo/${respuesta[0].expediente}`,
             tituloEspecialidad: respuesta[0].nombreEspecialidad,
             idDocumento: respuesta[0].idDocumento,
           });

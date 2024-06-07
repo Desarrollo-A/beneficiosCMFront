@@ -76,11 +76,11 @@ export default function PreRegisterUser({ currentUser }) {
 
   const handleChange = async (data) => {
 
-    const regex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/;
+    const regex =  /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
     if (!regex.test(data)) {
       setBtnLoad(false);
-      enqueueSnackbar('Correo no valido', { variant: 'error' });
+      enqueueSnackbar('Correo inválido', { variant: 'error' });
     } else {
       try {
         const insert = await insertData(data);
