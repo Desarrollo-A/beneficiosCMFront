@@ -70,7 +70,7 @@ export default function PreRegisterUser({ currentUser }) {
 
   const form = useForm({});
 
-  const email = 'programador.analista32@ciudadmaderas.com'; // location.state.data[0]?.correo; 
+  const email = location.state.data[0]?.correo; 
 
   const [mailForm, setMailForm] = useState(location.state.data[0]?.correo);
 
