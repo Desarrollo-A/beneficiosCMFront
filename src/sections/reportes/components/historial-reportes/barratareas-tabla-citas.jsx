@@ -138,6 +138,10 @@ export default function BarraTareasTabla({
 
   const [condi, setCondi] = useState(true);
 
+  const fhI = new Date(fechaI);
+
+  const fhF = new Date(fechaF);
+
   useEffect(() => {
 
     if (rol !== 1) {
@@ -450,6 +454,7 @@ export default function BarraTareasTabla({
             <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
               <DatePicker
                 label="Fecha inicio"
+                maxDate={fhF.setDate(fhF.getDate() + 1)}
                 value={filters.startDate}
                 onChange={handleFilterStartDate}
                 slotProps={{
@@ -463,6 +468,7 @@ export default function BarraTareasTabla({
             <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
               <DatePicker
                 label="Fecha fin"
+                minDate={fhI.setDate(fhI.getDate() + 1)}
                 value={filters.endDate}
                 onChange={handleFilterEndDate}
                 slotProps={{ textField: { fullWidth: true } }}
@@ -492,6 +498,7 @@ export default function BarraTareasTabla({
             <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
               <DatePicker
                 label="Fecha inicio"
+                maxDate={fhF.setDate(fhF.getDate() + 1)}
                 value={filters.startDate}
                 onChange={handleFilterStartDate}
                 slotProps={{
@@ -505,6 +512,7 @@ export default function BarraTareasTabla({
             <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
               <DatePicker
                 label="Fecha fin"
+                minDate={fhI.setDate(fhI.getDate() + 1)}
                 value={filters.endDate}
                 onChange={handleFilterEndDate}
                 slotProps={{ textField: { fullWidth: true } }}

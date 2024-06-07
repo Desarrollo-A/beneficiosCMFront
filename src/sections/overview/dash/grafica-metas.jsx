@@ -95,7 +95,8 @@ export default function GraficaMetas({ id }) {
       <Card>
         <CardHeader title='Meta de citas' sx={{ mb: 1.8 }} />
 
-        <Grid container spacing={2} sx={{ p: 4 }}>
+        <Grid container spacing={2} sx={{ p: 4, backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f7f7f7',
+        borderRadius: '20px', margin: '20px' }}>
 
           <Grid md={12} xs={12}>
             <FormControl sx={{

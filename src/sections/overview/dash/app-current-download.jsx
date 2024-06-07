@@ -178,7 +178,8 @@ export default function AppCurrentDownload({
       {pacientesData.length > 0 ? (
         <>
 
-          <Grid container spacing={2} sx={{ p: 3 }}>
+          <Grid container spacing={2} sx={{ p: 3, backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f7f7f7',
+        borderRadius: '20px', margin: '20px' }}>
 
             {rol !== 3 ? (
               <>

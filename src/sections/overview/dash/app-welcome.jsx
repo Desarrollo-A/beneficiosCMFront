@@ -23,8 +23,8 @@ export default function AppWelcome({ title, description, action, img, ...other }
         height: { md: 1 },
         borderRadius: 2,
         position: 'relative',
-        color: 'primary.darker',
-        backgroundColor: 'common.white',
+        color: theme.palette.mode === 'dark' ? 'white' : 'primary.darker',
+        backgroundColor: theme.palette.mode === 'dark' ? '#0b0e10' : 'common.white'
       }}
       {...other}
     >

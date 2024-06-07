@@ -4,12 +4,12 @@ import { useState, useEffect, useCallback } from 'react';
 
 import Card from '@mui/material/Card';
 import Select from '@mui/material/Select';
-import { styled } from '@mui/material/styles';
 import MenuItem from '@mui/material/MenuItem';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
+import { styled, useTheme } from '@mui/material/styles';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import CircularProgress from '@mui/material/CircularProgress';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -56,6 +56,8 @@ export default function GraficaModalidad({
   puesto,
   id,
   ...other }) {
+
+  const theme = useTheme();
 
   const [areas, setAreas] = useState(rol === 3 ? puesto : 158);
 
@@ -214,7 +216,8 @@ export default function GraficaModalidad({
 
       {modalidadData.length > 0 ? (
         <>
-          <Grid container spacing={2} sx={{ p: 3 }}>
+          <Grid container spacing={2} sx={{ p: 3, backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f7f7f7',
+        borderRadius: '20px', margin: '20px' }}>
 
           <Grid md={12} xs={12}>
               <FormControl sx={{
