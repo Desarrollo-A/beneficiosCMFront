@@ -137,7 +137,7 @@ export default function FilasTabla({ row, selected, rol, rel }) {
           }
         </TableCell>
 
-        {estatusCita === 3 && (observaciones === null || observaciones === "") && rol === 4 ? (
+        {/* {estatusCita === 3 && (observaciones === null || observaciones === "") && rol === 4 ? (
           <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }} >
             <Tooltip title="Justificar" placement="top" arrow>
               <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>
@@ -148,9 +148,9 @@ export default function FilasTabla({ row, selected, rol, rel }) {
           </TableCell>
         ) : (
           null
-        )}
+        )} */}
 
-        {estatusCita === 5 && archivo !== null && rol === 4 ? (
+        {/* {estatusCita === 5 && archivo !== null && rol === 4 ? (
           <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }} >
             <Tooltip title="Ver justificación" placement="top" arrow>
               <IconButton color={modalJust.value ? 'inherit' : 'default'} onClick={modalJust.onTrue}>
@@ -161,7 +161,7 @@ export default function FilasTabla({ row, selected, rol, rel }) {
           </TableCell>
         ) : (
           null
-        )}
+        )} */}
 
       </TableRow>
 
