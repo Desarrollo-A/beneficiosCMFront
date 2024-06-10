@@ -621,6 +621,7 @@ export default function AppointmentSchedule({
             )}
             {beneficioActivo?.primeraCita === 0 ||  beneficioActivo?.primeraCita === null ? (
               null
+              /* Sí, he leído y acepto los términos y condiciones conforme a lo dispuesto en la Política de (beneficio) */
             ) : (
               ''
             )}
