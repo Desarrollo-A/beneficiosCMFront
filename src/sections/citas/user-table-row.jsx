@@ -57,7 +57,6 @@ export default function RowResumenTerapias({ row, area, idUs, rol }) {
               (beneficio === 537 && 'Nutrición') ||
               (beneficio === 585 && 'Psicolgía') ||
               (beneficio === 686 && 'Guía espiritual') ||
-              (beneficio === 158 && 'Quantum Balance') ||
               'default'
             }
             </TableCell>

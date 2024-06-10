@@ -79,7 +79,7 @@ export default function CitasView() {
   let puestos = 0;
 
   if (rol === '4' || rol === 4) {
-    puestos = 158;
+    puestos = 585;
   } else {
     puestos = user?.idPuesto;
   }

@@ -620,21 +620,25 @@ export default function AppointmentSchedule({
               <>Fecha sin horarios disponibles</>
             )}
             {beneficioActivo?.primeraCita === 0 ||  beneficioActivo?.primeraCita === null ? (
+              null
+              
+              /*
               <Stack>
                 <FormControlLabel
                   value="end"
                   control={<Checkbox value={aceptar} onClick={aceptarTerminos} />}
-                  label="Acepto términos y condiciones"
+                  label={`Sí, he leído y acepto los términos y condiciones conforme a lo dispuesto en la Política de ${selectedValues.beneficio}`}
                   sx={{ color: 'black' }}
                   // checked={isChecked}
                   // onChange={handleCheckboxChange}
                   labelPlacement="end"
                 />
-
                 <Button sx={{ color: 'blue' }} onClick={verTerminos}>
                   Ver términos y condiciones 
                 </Button>
               </Stack>
+              */
+             
             ) : (
               ''
             )}
