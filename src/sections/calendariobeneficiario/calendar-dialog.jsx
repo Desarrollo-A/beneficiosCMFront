@@ -117,7 +117,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const [pendiente, setPendiente] = useState({});
   const [sedesAtencionEspecialista, setSedesAtencionEspecialista] = useState({});
   const [diasPresenciales, setDiasPresenciales] = useState([]);
-  const [aceptar, setAceptar] = useState(false);
+  const [aceptar, setAceptar] = useState(true);
 
   const [btnNotificationDisabled, setBtnNotificationDisabled] = useState(false);
   const [email, setEmail] = useState('');

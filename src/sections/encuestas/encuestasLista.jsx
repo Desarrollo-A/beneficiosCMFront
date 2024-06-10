@@ -54,7 +54,7 @@ export default function EncuestasLista({ encuestas, estatusCt }) {
   let puestos = 0;
 
   if (user?.idRol === "4" || user?.idRol === 4) {
-    puestos = 158;
+    puestos = 585;
   } else {
     puestos = user?.idPuesto;
   }
