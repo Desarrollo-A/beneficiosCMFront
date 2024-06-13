@@ -407,7 +407,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     /* VALIDAR SI ES GRATUITA LA CITA */
     let precio = 50.0;
-    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') precio = 0.00;
+    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') precio = 0.0;
 
     /* PAGO  */
     const DATOS_PAGO = Object.freeze({
@@ -2282,17 +2282,18 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                 <Button variant="contained" color="error" onClick={onClose}>
                   Cerrar
                 </Button>
-                {currentEvent?.id && currentEvent?.estatus === 6 && (
-                  <LoadingButton
-                    variant="contained"
-                    color="success"
-                    disabled={currentEvent?.estatus !== 6}
-                    loading={btnPayDisabled}
-                    onClick={pagarCitaPendiente}
-                  >
-                    Pagar
-                  </LoadingButton>
-                )}
+                {(currentEvent?.id && currentEvent?.estatus === 6) ||
+                  (currentEvent?.id && currentEvent?.estatus === 10 && (
+                    <LoadingButton
+                      variant="contained"
+                      color="success"
+                      disabled={currentEvent?.estatus !== 6 && currentEvent?.estatus !== 10}
+                      loading={btnPayDisabled}
+                      onClick={pagarCitaPendiente}
+                    >
+                      Pagar
+                    </LoadingButton>
+                  ))}
                 {currentEvent?.id && currentEvent?.estatus === 1 && (
                   <LoadingButton
                     variant="contained"
@@ -2308,7 +2309,10 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                     type="submit"
                     variant="contained"
                     color="success"
-                    disabled={(beneficioActivo.primeraCita === 0 || beneficioActivo.primeraCita === null) && !aceptar}
+                    disabled={
+                      (beneficioActivo.primeraCita === 0 || beneficioActivo.primeraCita === null) &&
+                      !aceptar
+                    }
                     loading={btnDisabled} // para desactivar en caso de que tenga terminos sin aceptar
                   >
                     Agendar
