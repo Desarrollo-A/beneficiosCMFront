@@ -93,7 +93,7 @@ export function GetCustomEvents(current, idUsuario, idSede) {
       let startConverted = idSede === 11 ? horaTijuana(event.start) : horaCancun(event.start);
       startConverted = toLocalISOString(startConverted);
       startConverted = startConverted.slice(0, 19).replace('T', ' ');
-      const inicioCita = idSede === 11 && event.idSedePaciente !== idSede ? startConverted : event.start;
+      const inicioCita = ((idSede === 11 || idSede === 9) && event.idSedePaciente !== idSede) ? startConverted : event.start;
       let endConverted = idSede === 11 ? horaTijuana(event.end) : horaCancun(event.end);
       endConverted = toLocalISOString(endConverted);
       endConverted = endConverted.slice(0, 19).replace('T', ' ');
