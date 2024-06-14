@@ -52,6 +52,7 @@ import {
   getCitasSinPagar,
   getAtencionXSede,
   cancelAppointment,
+  getModalitiesBene,
   getDiasDisponibles,
   getCitasSinEvaluar,
   getBeneficioActivo,
@@ -98,6 +99,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const [beneficios, setBeneficios] = useState([]);
   const [especialistas, setEspecialistas] = useState([]);
   const [modalidades, setModalidades] = useState([]);
+  const [modalidadesBene, setModalidadesBene] = useState([]);
   const [errorBeneficio, setErrorBeneficio] = useState(false);
   const [errorEspecialista, setErrorEspecialista] = useState(false);
   const [errorModalidad, setErrorModalidad] = useState(false);
@@ -774,6 +776,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       setIsLoadingEspecialidad(true); // Marcamos que recibimos input
       setEspecialistas([]);
       setModalidades([]);
+      setModalidadesBene([]);
       setSelectedValues({
         beneficio: value,
         especialista: '',
@@ -821,6 +824,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     } else if (input === 'especialista') {
       setIsLoadingModalidad(true);
       setModalidades([]);
+      setModalidadesBene([]);
       setSelectedValues({
         ...selectedValues,
         especialista: value,
@@ -834,6 +838,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       /* ************************************* */
       setErrorEspecialista(false);
       const modalitiesData = await getModalities(datosUser.idSede, value, datosUser.idArea); // Modalidades input
+      const modalitiesBeneData = await getModalitiesBene(datosUser.idSede, value, datosUser.idArea);
       if (modalitiesData.data.length > 0 && modalitiesData?.data.length === 1) {
         setSelectedValues({
           ...selectedValues,
@@ -851,6 +856,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       }
       getHorariosDisponibles(selectedValues.beneficio, value);
       setModalidades(modalitiesData?.data);
+      setModalidadesBene(modalitiesBeneData?.data);
     } else if (input === 'modalidad') {
       setSelectedValues({
         ...selectedValues,
@@ -2248,7 +2254,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                     errorBeneficio={errorBeneficio}
                     especialistas={especialistas}
                     errorEspecialista={errorEspecialista}
-                    modalidades={modalidades}
+                    modalidades={modalidadesBene}
                     errorModalidad={errorModalidad}
                     oficina={oficina}
                     isLoading={isLoading}
@@ -2362,7 +2368,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
             errorBeneficio={errorBeneficio}
             especialistas={especialistas}
             errorEspecialista={errorEspecialista}
-            modalidades={modalidades}
+            modalidades={modalidadesBene}
             errorModalidad={errorModalidad}
             oficina={oficina}
             isLoading={isLoading}

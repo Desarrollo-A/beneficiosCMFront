@@ -61,6 +61,14 @@ export function getModalities(sede, especialista, area) {
   return modalities;
 }
 
+// Trae las modalidades de los datos seleccionados (presencial o en linea)
+export function getModalitiesBene(sede, especialista, area) {
+  const URL = [endpoints.especialistas.modalitiesBene];
+  const modalities = fetcherPost(URL, { sede, especialista, area });
+
+  return modalities;
+}
+
 // Trae el horario de un beneficio
 export async function getHorario(beneficio, especialista, idSede, idSedeEsp) {
   const URL = [endpoints.calendarioColaborador.getHorarioBeneficio];

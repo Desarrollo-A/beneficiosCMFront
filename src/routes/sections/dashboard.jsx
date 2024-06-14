@@ -27,6 +27,7 @@ const AtencionXsedePage = lazy(() => import('src/pages/dashboard/gestor/atencion
 const HorariosEspePage = lazy(() => import('src/pages/dashboard/gestor/horariosEspe-view'));
 const EstatusPuestosPage = lazy(() => import('src/pages/dashboard/gestor/estausPuestos-view'));
 const SedesPage = lazy(() => import('src/pages/dashboard/gestor/sedes-view'));
+const UsuariosPage = lazy(() => import('src/pages/dashboard/gestor/usuarios-view'));
 // ----------------------------------------------------------------------
 
 // AVISOS DE PRIVACIDAD
@@ -132,6 +133,7 @@ export const dashboardRoutes = [
           { path: 'horariosEspecificos', element: <HorariosEspePage /> },
           { path: 'estatusPuestos', element: <EstatusPuestosPage /> },
           { path: 'sedes', element: <SedesPage /> },
+          { path: 'usuarios', element: <UsuariosPage /> },
         ],
       },
       {

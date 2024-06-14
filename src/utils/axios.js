@@ -130,6 +130,7 @@ export const endpoints = {
     batch: 'Usuario/insertBatchUsers',
     names: 'Usuario/getNameUser',
     decodePass: '/Usuario/decodePass',
+    decodePassAdmin: '/Usuario/decodePassAdmin',
     updatePass: '/Usuario/updatePass',
     menu: 'Usuario/menu',
     verificacion: 'Usuario/sendMail',
@@ -141,6 +142,7 @@ export const endpoints = {
   especialistas: {
     list: 'CalendarioController/getEspecialistaPorBeneficioYSede',
     modalities: 'CalendarioController/getModalidadesEspecialista',
+    modalitiesBene: 'CalendarioController/getModalidadesEspecialistaBene',
     sedes: 'Especialistas/sedes',
     horario: 'Especialistas/horario',
     horarios: 'Especialistas/horarios',
@@ -278,6 +280,7 @@ export const endpoints = {
     getEsp: '/GestorController/getEsp',
     getAtencionXsedeEsp: '/GestorController/getAtencionXsedeEsp',
     getHorariosEspecificos: '/GestorController/getHorariosEspecificos',
+    getUsuarios: '/GestorController/getUsuarios',
     updateOficina: '/GestorController/updateOficina',
     insertOficinas: '/GestorController/insertOficinas',
     updateSede: '/GestorController/updateSede',
