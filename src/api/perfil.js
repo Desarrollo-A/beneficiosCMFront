@@ -21,3 +21,20 @@ export async function getDecodedPass() {
   
     return response.data;
 }
+
+export async function getDecodedPassAdmin() {
+    const URL = endpoints.user.decodePassAdmin;
+
+    const accessToken = localStorage.getItem('accessToken');
+
+    const instance = axios.create({
+        baseURL: HOST,
+        headers: {
+            Token: accessToken
+        }
+    })
+
+    const response = await instance.get(URL);
+  
+    return response.data;
+}

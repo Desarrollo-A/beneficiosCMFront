@@ -52,6 +52,7 @@ import {
   getCitasSinPagar,
   getAtencionXSede,
   cancelAppointment,
+  getModalitiesBene,
   getDiasDisponibles,
   getCitasSinEvaluar,
   getBeneficioActivo,
@@ -98,6 +99,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const [beneficios, setBeneficios] = useState([]);
   const [especialistas, setEspecialistas] = useState([]);
   const [modalidades, setModalidades] = useState([]);
+  const [modalidadesBene, setModalidadesBene] = useState([]);
   const [errorBeneficio, setErrorBeneficio] = useState(false);
   const [errorEspecialista, setErrorEspecialista] = useState(false);
   const [errorModalidad, setErrorModalidad] = useState(false);
@@ -407,7 +409,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     /* VALIDAR SI ES GRATUITA LA CITA */
     let precio = 50.0;
-    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') precio = 0.00;
+    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') precio = 0.0;
 
     /* PAGO  */
     const DATOS_PAGO = Object.freeze({
@@ -774,6 +776,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       setIsLoadingEspecialidad(true); // Marcamos que recibimos input
       setEspecialistas([]);
       setModalidades([]);
+      setModalidadesBene([]);
       setSelectedValues({
         beneficio: value,
         especialista: '',
@@ -821,6 +824,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     } else if (input === 'especialista') {
       setIsLoadingModalidad(true);
       setModalidades([]);
+      setModalidadesBene([]);
       setSelectedValues({
         ...selectedValues,
         especialista: value,
@@ -834,6 +838,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       /* ************************************* */
       setErrorEspecialista(false);
       const modalitiesData = await getModalities(datosUser.idSede, value, datosUser.idArea); // Modalidades input
+      const modalitiesBeneData = await getModalitiesBene(datosUser.idSede, value, datosUser.idArea);
       if (modalitiesData.data.length > 0 && modalitiesData?.data.length === 1) {
         setSelectedValues({
           ...selectedValues,
@@ -851,6 +856,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       }
       getHorariosDisponibles(selectedValues.beneficio, value);
       setModalidades(modalitiesData?.data);
+      setModalidadesBene(modalitiesBeneData?.data);
     } else if (input === 'modalidad') {
       setSelectedValues({
         ...selectedValues,
@@ -2248,7 +2254,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                     errorBeneficio={errorBeneficio}
                     especialistas={especialistas}
                     errorEspecialista={errorEspecialista}
-                    modalidades={modalidades}
+                    modalidades={modalidadesBene}
                     errorModalidad={errorModalidad}
                     oficina={oficina}
                     isLoading={isLoading}
@@ -2282,17 +2288,18 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                 <Button variant="contained" color="error" onClick={onClose}>
                   Cerrar
                 </Button>
-                {currentEvent?.id && currentEvent?.estatus === 6 && (
-                  <LoadingButton
-                    variant="contained"
-                    color="success"
-                    disabled={currentEvent?.estatus !== 6}
-                    loading={btnPayDisabled}
-                    onClick={pagarCitaPendiente}
-                  >
-                    Pagar
-                  </LoadingButton>
-                )}
+                {(currentEvent?.id && currentEvent?.estatus === 6) ||
+                  (currentEvent?.id && currentEvent?.estatus === 10 && (
+                    <LoadingButton
+                      variant="contained"
+                      color="success"
+                      disabled={currentEvent?.estatus !== 6 && currentEvent?.estatus !== 10}
+                      loading={btnPayDisabled}
+                      onClick={pagarCitaPendiente}
+                    >
+                      Pagar
+                    </LoadingButton>
+                  ))}
                 {currentEvent?.id && currentEvent?.estatus === 1 && (
                   <LoadingButton
                     variant="contained"
@@ -2308,7 +2315,10 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                     type="submit"
                     variant="contained"
                     color="success"
-                    disabled={(beneficioActivo.primeraCita === 0 || beneficioActivo.primeraCita === null) && !aceptar}
+                    disabled={
+                      (beneficioActivo.primeraCita === 0 || beneficioActivo.primeraCita === null) &&
+                      !aceptar
+                    }
                     loading={btnDisabled} // para desactivar en caso de que tenga terminos sin aceptar
                   >
                     Agendar
@@ -2362,7 +2372,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
             errorBeneficio={errorBeneficio}
             especialistas={especialistas}
             errorEspecialista={errorEspecialista}
-            modalidades={modalidades}
+            modalidades={modalidadesBene}
             errorModalidad={errorModalidad}
             oficina={oficina}
             isLoading={isLoading}
