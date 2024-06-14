@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import Tooltip from '@mui/material/Tooltip';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
-import IconButton from '@mui/material/IconButton';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
@@ -12,7 +11,6 @@ import { horaCancun, horaTijuana, formatearDosFechaAUna } from 'src/utils/genera
 import { useAuthContext } from 'src/auth/hooks';
 
 import Label from 'src/components/label';
-import Iconify from 'src/components/iconify';
 
 import UserQuickEditForm from './modal-editar-citas';
 import ModalJustificacion from './modal-justificacion';
@@ -41,7 +39,6 @@ export default function FilasTabla({ row, selected, rol, rel }) {
     metodoPago,
     tipoCita,
     monto,
-    estatusCita,
     pagoGenerado,
     color,
     usuario, 
