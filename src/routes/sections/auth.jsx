@@ -20,6 +20,9 @@ const JwtLoginPage = lazy(() => import('src/pages/auth/jwt/login'));
 const JwtRegisterPage = lazy(() => import('src/pages/auth/jwt/register'));
 const JwtpreRegisterPage = lazy(() => import('src/pages/auth/jwt/preRegister'));
 const JwtVerificacionPage = lazy(() => import('src/pages/auth/jwt/verificacion'));
+const JwtNewPasswordPage = lazy(() => import('src/pages/auth/jwt/new-password'));
+const JwtForgotPasswordPage = lazy(() => import('src/pages/auth/jwt/forgot-password'));
+
 // FIREBASE
 const FirebaseLoginPage = lazy(() => import('src/pages/auth/firebase/login'));
 const FirebaseRegisterPage = lazy(() => import('src/pages/auth/firebase/register'));
@@ -89,6 +92,22 @@ const authJwt = {
       element: (
         <AuthClassicLayout>
           <JwtLoginPage />
+        </AuthClassicLayout>
+      ),
+    },
+    {
+      path: 'forgot-password',
+      element: (
+        <AuthClassicLayout>
+          <JwtForgotPasswordPage />
+        </AuthClassicLayout>
+      ),
+    },
+    {
+      path: 'new-password',
+      element: (
+        <AuthClassicLayout>
+          <JwtNewPasswordPage />
         </AuthClassicLayout>
       ),
     },

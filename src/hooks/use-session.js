@@ -17,7 +17,9 @@ export function useSession() {
         const except = [
             paths.auth.jwt.login,
             paths.auth.jwt.register,
-            paths.auth.jwt.preRegister
+            paths.auth.jwt.preRegister,
+            paths.auth.jwt.forgotPassword,
+            paths.auth.jwt.newPassword
         ]
 
         if(!loading && !authenticated){
