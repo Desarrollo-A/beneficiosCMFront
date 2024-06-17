@@ -1,14 +1,16 @@
 import * as Yup from 'yup';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { enqueueSnackbar } from 'notistack';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import { Button } from '@mui/material';
-import Alert from '@mui/material/Alert';
+// import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
+import { useTheme } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -31,12 +33,13 @@ import ModalPoliticas from './modal-politicas';
 
 export default function JwtLoginView() {
   const { login } = useAuthContext();
+  const theme = useTheme();
 
   const router = useRouter();
 
   const quickEdit = useBoolean();
 
-  const [errorMsg, setErrorMsg] = useState('');
+  // const [errorMsg] = useState('');
   const [numEmpleado, setnumEmpleado] = useState('');
   const [passwd, setPasswd] = useState('');
   const searchParams = useSearchParams();
@@ -72,13 +75,19 @@ export default function JwtLoginView() {
         if (response === undefined) {
           router.push(returnTo || PATH_AFTER_LOGIN);
         }
-        else if (response !== undefined && response.result === 0) {
-          setErrorMsg(response.message);
+        else if (response !== undefined && response.result === 0 ) {
+            enqueueSnackbar(response.message, {variant: "error"});
         }
       })
   }
 
   const isMobile = useMediaQuery('(max-width: 960px)');
+
+  let colorDist = '#25303d'; // colores sobre el tema que tenga
+
+  if(!isMobile && theme.palette.mode === 'dark'){
+    colorDist = '#f7f7f7';
+  }
 
   const renderHead = (
     <Stack spacing={1} sx={{ mb: 0 }}>
@@ -111,12 +120,12 @@ export default function JwtLoginView() {
       <Typography variant="h4">Iniciar sesión</Typography>
 
       <Stack direction="row" spacing={1}>
-        <Typography variant="body2">¿Aún no tienes una cuenta? Puedas crearla &nbsp;
+          <Typography variant="body2" sx={{color: colorDist}}>¿Aún no tienes una cuenta? Puedas crearla &nbsp;
 
-        <Link component={RouterLink} href={paths.auth.jwt.register} variant="subtitle2">
-          aquí
-        </Link>
-        </Typography>
+          <Link component={RouterLink} href={paths.auth.jwt.register} variant="subtitle2">
+            aquí
+          </Link>
+          </Typography>
         <Box mb={7} />
       </Stack>
     </Stack>
@@ -125,14 +134,15 @@ export default function JwtLoginView() {
 
   const renderForm = (
     <Stack spacing={2.5}>
-      {!!errorMsg && <Alert severity="error">{errorMsg}</Alert>}
+      {/* {!!errorMsg && <Alert severity="error">{errorMsg}</Alert>} */}
 
-      <RHFTextField name="numEmpleado" value={numEmpleado} onChange={(e) => setnumEmpleado(e.target.value)} label="Número de empleado"  autoComplete="off"/>
+      <RHFTextField name="numEmpleado" value={numEmpleado} onChange={(e) => setnumEmpleado(e.target.value)} label="Número de empleado"  autoComplete="off" color={colorDist}/>
 
       <RHFTextField
         name="password"
         label="Contraseña"
         autoComplete="off"
+        color={colorDist}
         type={password.value ? 'text' : 'password'}
         value={passwd} onChange={(e) => setPasswd(e.target.value)}
         InputProps={{
@@ -171,7 +181,7 @@ export default function JwtLoginView() {
               position: 'absolute',
               width: { xs: '50%', md: '21%' },
               left: { xs: '25%', md: '40%'},
-              top: { xs: '65%', md: '87%'}
+              top: { xs: '68%', md: '87%'}
             }}
           />
         )}
@@ -184,7 +194,7 @@ export default function JwtLoginView() {
               position: 'absolute',
               left: '37%',
               width: { xs: '55%', md: '26%' },
-              top: { md: '87%', lg: '95%', xl:'102%' }
+              top: { md: '90%', lg: '95%', xl:'102%' }
             }}
           />
         )}
@@ -192,23 +202,54 @@ export default function JwtLoginView() {
   );
 
   const renderTerms = (
-    <Typography
-      component="div"
-      sx={{
-        color: 'text.secondary',
-        mt: 2.5,
-        typography: 'caption',
-        textAlign: 'center',
-      }}
-    >
+    <Stack sx={{ mt: 3 }}>
+      <Stack direction="row" spacing={1}>
+          <Typography variant="body2" sx={{color: colorDist}}>¿Has olvidado tu contraseña?, Recupérala &nbsp;
+
+          <Link component={RouterLink} href={paths.auth.jwt.forgotPassword} variant="subtitle2">
+            aquí
+          </Link>
+          </Typography>
+        <Box mb={7} />
+      </Stack>
+
+      {isMobile && (
+      <Typography
+        component="div"
+        sx={{
+          color: 'text.secondary',
+          typography: 'caption',
+          textAlign: 'center',
+          mt: -3
+        }}
+      >
       <ModalPoliticas open={quickEdit.value} onClose={quickEdit.onFalse} />
       
       {'Al registrarme, acepto '}
       {' las '}
-      <Button variant="outlined" color="primary" sx={{height:"20px"}} onClick={quickEdit.onTrue}>
-        Políticas de privacidad
-      </Button>
-    </Typography>
+        <Button variant="outlined" color="primary" sx={{height:"20px"}} onClick={quickEdit.onTrue}>
+          Políticas de privacidad
+        </Button>
+      </Typography>)}
+
+      {!isMobile && (
+      <Typography
+        component="div"
+        sx={{
+          color: 'text.secondary',
+          typography: 'caption',
+          textAlign: 'center',
+        }}
+      >
+      <ModalPoliticas open={quickEdit.value} onClose={quickEdit.onFalse} />
+      
+      {'Al registrarme, acepto '}
+      {' las '}
+        <Button variant="outlined" color="primary" sx={{height:"20px"}} onClick={quickEdit.onTrue}>
+          Políticas de privacidad
+        </Button>
+      </Typography>)}
+    </Stack>    
   );
 
   const space = (

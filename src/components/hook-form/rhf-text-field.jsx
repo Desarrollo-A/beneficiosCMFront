@@ -5,7 +5,7 @@ import TextField from '@mui/material/TextField';
 
 // ----------------------------------------------------------------------
 
-export default function RHFTextField({ name, helperText, type, ...other }) {
+export default function RHFTextField({ name, helperText, type, color=null, ...other }) {
   const { control } = useFormContext();
 
   return (
@@ -16,6 +16,9 @@ export default function RHFTextField({ name, helperText, type, ...other }) {
       render={({ field, fieldState: { error } }) => (
         <TextField
           {...field}
+          inputProps={{
+            style: {color: color && color}
+          }}
           fullWidth
           type={type}
           value={type === 'number' && field.value === 0 ? '' : field.value}
@@ -29,6 +32,36 @@ export default function RHFTextField({ name, helperText, type, ...other }) {
           error={!!error}
           helperText={error ? error?.message : helperText}
           {...other}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              borderRadius: '7px',
+              
+              border: '1px solid #909090',
+              ':hover': {
+                border: `0.5px solid ${color} !important`,
+                // boxShadow: '-1px 1px 4px 4px #EEE'
+              },
+              ':focus-within': { border: `0.5px solid ${color} !important` }
+            },
+            '& .MuiOutlinedInput-root.Mui-disabled': {
+              ':hover': {
+                border: '1px solid #909090 !important',
+                boxShadow: 'none'
+              }
+            },
+            '& .MuiOutlinedInput-notchedOutline': {
+              border: 'none'
+            },
+            '.input-group:focus-within label': {
+              color: 'red'
+            },
+              '.css-s5pem-MuiFormLabel-root-MuiInputLabel-root.MuiInputLabel-shrink': {
+                backgroundColor: 'white',
+                color: 'black',
+                paddingLeft: 1,
+                paddingRight: 1
+              }
+          }}
         />
       )}
     />
@@ -39,4 +72,5 @@ RHFTextField.propTypes = {
   helperText: PropTypes.object,
   name: PropTypes.string,
   type: PropTypes.string,
+  color: PropTypes.string,
 };
