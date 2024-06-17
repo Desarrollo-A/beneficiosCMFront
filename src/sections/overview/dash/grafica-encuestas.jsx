@@ -19,8 +19,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 import { endpoints } from 'src/utils/axios';
 
-import { usePostGeneral } from 'src/api/general';
 import { useGetCountRespuestas } from 'src/api/encuestas';
+import { useGetGeneral, usePostGeneral } from 'src/api/general';
 import { useGetEspecialistasPorArea } from 'src/api/especialistas';
 
 import Iconify from 'src/components/iconify';
@@ -82,7 +82,7 @@ export default function GraficaEncuestas({
 
     const fhF = new Date(fechaF);
 
-    const [areas, setAreas] = useState(rol === 3 ? puesto : 158);
+    const [areas, setAreas] = useState(rol === 3 ? puesto : 585);
 
     const [_es, set_es] = useState(rol === 3 ? id : '0');
 
@@ -94,11 +94,17 @@ export default function GraficaEncuestas({
 
     const [respPreg, setRespPreg] = useState([]);
 
-    const { preguntaData } = usePostGeneral(areas, endpoints.dashboard.getPregunta, "preguntaData");
+    const [pgGet, setPgGet] = useState([]);
+
+    const { preguntaData } = usePostGeneral(pgGet, endpoints.dashboard.getPregunta, "preguntaData");
+
+    const { tipoEncData } = useGetGeneral(endpoints.encuestas.tipoEncuesta, "tipoEncData");
 
     const { especialistas } = useGetEspecialistasPorArea({ areas });
 
     const [pregunta, setPregunta] = useState(0);
+
+    const [tipoEnc, setTipoEnc] = useState(0);
 
     useEffect(() => {
         if (preguntaData[0]?.idPregunta !== undefined) {
@@ -126,8 +132,14 @@ export default function GraficaEncuestas({
 
     const handleChangeSct = useCallback(
         (e) => {
-
             setPregunta(e.target.value);
+        },
+        []
+    );
+
+    const handleChangeTypeEnc = useCallback(
+        (e) => {
+            setTipoEnc(e.target.value);
         },
         []
     );
@@ -140,10 +152,11 @@ export default function GraficaEncuestas({
                 { idPregunta: pregunta },
                 { idEncuesta: preguntaData[0]?.idEncuesta },
                 { idArea: areas },
-                { idRol: rol }
+                { idRol: rol },
+                { tipoEnc }
             ]);
         }
-    }, [preguntaData, rol, pregunta, areas]);
+    }, [preguntaData, rol, pregunta, areas, tipoEnc]);
 
     useEffect(() => {
         if (preguntaData.length > 0) {
@@ -154,10 +167,19 @@ export default function GraficaEncuestas({
                 { idRol: rol },
                 { fhI: fechaI },
                 { fhF: fechaF },
-                { idArea: areas }
+                { idArea: areas },
+                { tipoEnc }
             ]);
         }
-    }, [preguntaData, rol, pregunta, areas, fechaI, fechaF, _es, id]);
+    }, [preguntaData, rol, pregunta, areas, fechaI, fechaF, _es, id, tipoEnc]);
+
+    useEffect(() => {
+        if( tipoEnc !== 0 )
+            setPgGet([
+                { idArea: areas },
+                { tipoEnc }
+            ]);
+    }, [preguntaData, areas, tipoEnc]);
 
     const handleChangeArea = useCallback(
         (event) => {
@@ -243,9 +265,8 @@ export default function GraficaEncuestas({
 
                 <CardHeader title={title} />
 
-                {preguntaData.length > 0 ? (
+               
                     <>
-
                         <Grid container spacing={2} sx={{ p: 6.5, backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f7f7f7',
         borderRadius: '20px', margin: '20px' }}>
 
@@ -341,7 +362,29 @@ export default function GraficaEncuestas({
                                 </FormControl>
                             </Grid>
 
-                            <Grid md={12} xs={12}>
+                            <Grid md={6} xs={12}>
+                                <FormControl sx={{
+                                    width: "100%",
+                                    pr: { xs: 1, md: 1 },
+                                }}>
+                                    <InputLabel id="demo-simple-select-label">Tipo de encuesta</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        label="Tipo de encuesta"
+                                        value={tipoEnc}
+                                        onChange={(e) => handleChangeTypeEnc(e)}
+                                    >
+                                        {tipoEncData.map((i) => (
+                                            <MenuItem key={i.id} value={i.id}>
+                                                {i.nombre}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+
+                            <Grid md={6} xs={12}>
                                 <FormControl sx={{
                                     width: "100%",
                                     pr: { xs: 1, md: 1 },
@@ -429,12 +472,6 @@ export default function GraficaEncuestas({
                         )}
 
                     </>
-
-                ) : (
-                    <Grid container spacing={1} sx={{ p: 5 }} justifyContent="center" alignItems="center">
-                        <CircularProgress />
-                    </Grid>
-                )}
 
             </Card>
 

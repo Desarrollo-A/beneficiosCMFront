@@ -33,6 +33,7 @@ import UserTableFiltersResult from './encuestas-tabla-filtros';
 
 const TABLE_HEAD = [
   { id: '', label: 'ID' },
+  { id: '', label: 'TIPO DE ENCUESTA' },
   { id: '', label: 'FECHA CREACIÓN' },
   { id: '', label: 'ESTATUS' },
   { id: '', label: '' },
@@ -234,6 +235,7 @@ const applyFilter = ({ inputData, comparator, filters }) => {
       const nameLower = name.toLowerCase();
       return (
         user?.idEncuesta.toString().toLowerCase().includes(nameLower) ||
+        (user.tipoEncuesta && user.tipoEncuesta.toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
         user?.fechaCreacion.toLowerCase().includes(nameLower)
       );
     });

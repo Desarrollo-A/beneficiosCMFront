@@ -27,7 +27,7 @@ export default function GraficaMetasArea() {
 
   const [selectedMonth, setSelectedMonth] = useState(currentMonth);
 
-  const [areas, setAreas] = useState(158);
+  const [areas, setAreas] = useState(585);
 
   const handleChangeArea = useCallback(
     (event) => {

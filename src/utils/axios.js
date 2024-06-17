@@ -261,6 +261,7 @@ export const endpoints = {
     getEstatusUno: '/EncuestasController/getEstatusUno',
     getValidEncContestada: '/EncuestasController/getValidEncContestada',
     sendMail: '/EncuestasController/sendMail',
+    tipoEncuesta: '/EncuestasController/getTipoEncuesta',
   },
   gestor: {
     getAtencionXsede: '/GeneralController/getAtencionXsede',

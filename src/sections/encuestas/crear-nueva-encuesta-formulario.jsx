@@ -12,6 +12,7 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
+import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 
@@ -43,6 +44,8 @@ export default function InvoiceNewEditForm() {
   const insertData = useInsert(endpoints.encuestas.encuestaCreate);
 
   const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
+
+  const { tipoEncData } = useGetGeneral(endpoints.encuestas.tipoEncuesta, "tipoEncData");
 
   const [btnLoad, setBtnLoad] = useState(false);
 
@@ -144,36 +147,67 @@ export default function InvoiceNewEditForm() {
             Preguntas:
           </Typography>
 
-          <Stack divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3}>
+          <Stack
+            sx={{
+              p: 2.5,
+              pr: { xs: 2.5, md: 2.5 },
+            }} divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3}>
 
-            {rol === 4 ? (
-              <RHFSelect
-                name="area"
-                size="small"
-                label="Área"
-                InputLabelProps={{ shrink: true }}
-                sx={{
-                  maxWidth: { md: 160 },
-                }}
-              >
-                <Divider sx={{ borderStyle: 'dashed' }} />
+            <Grid container spacing={3} disableEqualOverflow>
 
-                {especialistasData.map((res) => (
-                  <MenuItem
-                    key={res.idPuesto}
-                    value={res.idPuesto}
+              <Grid xs={12} md={6}>
+                {rol === 4 ? (
+                  <RHFSelect
+                    name="area"
+                    size="small"
+                    label="Área"
+                    InputLabelProps={{ shrink: true }}
                   >
-                    {res.nombre}
-                  </MenuItem>
-                ))}
-              </RHFSelect>
-            ) : (
-              null
-            )}
 
+                    {especialistasData.map((res) => (
+                      <MenuItem
+                        key={res.idPuesto}
+                        value={res.idPuesto}
+                      >
+                        {res.nombre}
+                      </MenuItem>
+                    ))}
+                  </RHFSelect>
+                ) : (
+                  null
+                )}
+              </Grid>
+
+              <Grid xs={12} md={6}>
+                
+                {rol === 4 ? (
+                  <RHFSelect
+                    name="tipoEncuesta"
+                    size="small"
+                    label="Tipo de encuesta"
+                    InputLabelProps={{ shrink: true }}
+                  >
+
+                    {tipoEncData.map((res) => (
+                      <MenuItem
+                        key={res.id}
+                        value={res.id}
+                      >
+                        {res.nombre}
+                      </MenuItem>
+                    ))}
+                  </RHFSelect>
+                ) : (
+                  null
+                )}
+              </Grid>
+
+              <Grid xs={12}>
+                <Divider sx={{ my: 1, borderStyle: 'dashed' }} />
+              </Grid>
+
+            </Grid>
           </Stack>
-
-          <Divider sx={{ my: 3, borderStyle: 'dashed' }} />
 
         </Box>
 

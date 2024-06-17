@@ -17,7 +17,7 @@ import EncuestaHabilitar from './modal-habilitar-encuesta';
 // ----------------------------------------------------------------------
 
 export default function EncuestasTablaFilas({ row, selected, puestos }) {
-  const { idEncuesta, fechaCreacion, estatus } = row;
+  const { idEncuesta, idTipoEnc, tipoEncuesta, fechaCreacion, estatus } = row;
 
   const popover = usePopover();
 
@@ -35,6 +35,8 @@ export default function EncuestasTablaFilas({ row, selected, puestos }) {
       <TableRow hover selected={selected}>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{idEncuesta}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{tipoEncuesta}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fechaForm}</TableCell>
 
@@ -65,7 +67,7 @@ export default function EncuestasTablaFilas({ row, selected, puestos }) {
         sx={{ width: 140 }}
       >
 
-      <EncuestaHabilitar idEncuesta={row.idEncuesta} puestos={puestos} open={enctHabilitar.value} onClose={enctHabilitar.onFalse} />
+      <EncuestaHabilitar idEncuesta={row.idEncuesta} puestos={puestos} open={enctHabilitar.value} idTipoEnc={idTipoEnc} onClose={enctHabilitar.onFalse} />
 
         {estatus === 0 ? (
 
