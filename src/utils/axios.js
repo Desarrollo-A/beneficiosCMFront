@@ -104,6 +104,9 @@ export const endpoints = {
     register: '/api/auth/register',
     logout: '/LoginController/logout',
     registerUser: 'LoginController/addRegistroEmpleado',
+    recuperarPassword: 'LoginController/recuperarPassword',
+    guardarNuevaPassword: 'LoginController/guardarNuevaPassword',
+    validarNumEmp: 'LoginController/validarNumEmp'
   },
   mail: {
     list: '/api/mail/list',

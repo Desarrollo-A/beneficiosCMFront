@@ -15,3 +15,24 @@ export function registrarColaborador(params) {
 
   return register;
 }
+
+export function recuperarPassword(noEmp){
+  const URL = [endpoints.auth.recuperarPassword];
+  const recover = fetcherPost(URL, {noEmp});
+
+  return recover;
+}
+
+export function guardarNuevaPassword(noEmp, code, password, mailEmp, idEmp){
+  const URL = [endpoints.auth.guardarNuevaPassword];
+  const recover = fetcherPost(URL, {noEmp, code, password, mailEmp, idEmp});
+
+  return recover;
+}
+
+export function validarNumEmp(noEmp){
+  const URL = [endpoints.auth.validarNumEmp];
+  const validate = fetcherPost(URL, {noEmp});
+
+  return validate;
+}

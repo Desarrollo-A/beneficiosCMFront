@@ -185,33 +185,18 @@ export default function JwtRegisterView() {
 
   const logoMd = (
     <Stack>
-      {isMobile && (
-          <Box
-            component="img"
-            alt="auth"
-            src={`${import.meta.env.BASE_URL}assets/img/logoMaderas.svg`}
-            sx={{
-              maxWidth: { xs: 480, lg: 560, xl: 720 },
-              position: 'absolute',
-              width: { xs: '50%', md: '21%' },
-              left: { xs: '25%', md: '40%'},
-              top: { xs: '85%', md: '87%'}
-            }}
-          />
-        )}
-        {!isMobile && (
-          <Box
-            component="img"
-            alt="auth"
-            src={`${import.meta.env.BASE_URL}assets/img/logoMaderas.svg`}
-            sx={{
-              position: 'absolute',
-              left: '37%',
-              width: { xs: '55%', md: '26%' },
-              top: { md: '87%', lg: '95%', xl:'102%' }
-            }}
-          />
-        )}
+      <Box
+        component="img"
+        alt="auth"
+        src={`${import.meta.env.BASE_URL}assets/img/logoMaderas.svg`}
+        sx={{
+          maxWidth: { xs: 480, lg: 560, xl: 720 },
+          position: 'absolute',
+          width: { xs: '50%', md: '35%' },
+          left: { xs: '25%', md: '30%'},
+          top: { xs: '90%', md: '105%'}
+        }}
+      />
     </Stack>
   );
 
@@ -220,40 +205,10 @@ export default function JwtRegisterView() {
       {renderHead}
 
       {renderForm}
-
+      {logoMd}
       {renderTerms}
 
-      {logoMd}
-
-      {/* <Dialog
-        open={open}
-        onClose={handleClose}
-        scroll={scroll}
-        aria-labelledby="scroll-dialog-title"
-        aria-describedby="scroll-dialog-description"
-      >
-        <DialogTitle id="scroll-dialog-title">Subscribe</DialogTitle>
-        <DialogContent dividers={scroll === 'paper'}>
-          <DialogContentText
-            id="scroll-dialog-description"
-            ref={descriptionElementRef}
-            tabIndex={-1}
-          >
-            {[...new Array(50)]
-              .map(
-                () => `Cras mattis consectetur purus sit amet fermentum.
-Cras justo odio, dapibus ac facilisis in, egestas eget quam.
-Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
-Praesent commodo cursus magna, vel scelerisque nisl consectetur et.`,
-              )
-              .join('\n')}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleClose}>Subscribe</Button>
-        </DialogActions>
-      </Dialog> */}
+      
     </>
   );
 }
