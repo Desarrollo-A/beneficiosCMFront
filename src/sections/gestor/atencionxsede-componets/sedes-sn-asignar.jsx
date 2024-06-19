@@ -13,11 +13,16 @@ import SedeItem from './sede-item';
 import BankingContacts from './banking-contacts';
 import ModalAsignarSede from './modal-asignar-sede';
 
-
 // ----------------------------------------------------------------------
 
-export default function SedeSnAsignar({ onDelete, sx, modalidadesData, puestosData, sedesData, ...other }) {
-
+export default function SedeSnAsignar({
+  onDelete,
+  sx,
+  modalidadesData,
+  puestosData,
+  sedesData,
+  ...other
+}) {
   const { user } = useAuthContext();
 
   const modal = useBoolean();
@@ -31,28 +36,15 @@ export default function SedeSnAsignar({ onDelete, sx, modalidadesData, puestosDa
   const handleOpen = (idSede) => {
     setOpen2(true);
     setSd(idSede);
-  }
+  };
 
   const handleClose = () => {
     setOpen2(false);
-  }
+  };
 
   return (
     <>
-
-      {user?.idRol === "4" || user?.idRol === 4 ? (
-        <BankingContacts
-          list={puestosData}
-          modalidadesData={modalidadesData}
-          sedesData={sedesData}
-        />
-      ) : (
-        <>
-          {sedesData.map((e, index) => (
-            <SedeItem key={index} sx={sx} value={e} handleOpen={handleOpen} />
-          ))}
-        </>
-      )}
+      <BankingContacts list={puestosData} modalidadesData={modalidadesData} sedesData={sedesData} />
 
       <Dialog
         fullWidth
@@ -71,7 +63,6 @@ export default function SedeSnAsignar({ onDelete, sx, modalidadesData, puestosDa
           modalidadesData={modalidadesData}
         />
       </Dialog>
-
     </>
   );
 }

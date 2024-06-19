@@ -319,59 +319,55 @@ export default function AppointmentSchedule({
                   )}
                 </FormControl>
 
-                <>
-                  <FormControl error={!!errorEspecialista} fullWidth>
-                    <InputLabel id="especialista-input">Especialista</InputLabel>
-                    <Select
-                      labelId="especialista-input"
-                      id="select-especialista"
-                      label="Especialista"
-                      name="especialista"
-                      value={selectedValues.especialista}
-                      defaultValue=""
-                      onChange={(e) => handleChange('especialista', e.target.value)}
-                      disabled={!!(especialistas?.length === 0 || currentEvent?.id)}
-                    >
-                      {especialistas?.map((e, index) => (
-                        <MenuItem key={e.id} value={e.id}>
-                          {e.especialista.toUpperCase()}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                    {especialistas?.length === 0 && selectedValues.beneficio && <LinearProgress />}
-                    {errorEspecialista && selectedValues.especialista === '' && (
-                      <FormHelperText error={errorEspecialista}>
-                        Seleccione un especialista
-                      </FormHelperText>
-                    )}
-                  </FormControl>
+                <FormControl error={!!errorEspecialista} fullWidth>
+                  <InputLabel id="especialista-input">Especialista</InputLabel>
+                  <Select
+                    labelId="especialista-input"
+                    id="select-especialista"
+                    label="Especialista"
+                    name="especialista"
+                    value={selectedValues.especialista}
+                    defaultValue=""
+                    onChange={(e) => handleChange('especialista', e.target.value)}
+                    disabled={!!(especialistas?.length === 0 || currentEvent?.id)}
+                  >
+                    {especialistas?.map((e, index) => (
+                      <MenuItem key={e.id} value={e.id}>
+                        {e.especialista.toUpperCase()}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {especialistas?.length === 0 && selectedValues.beneficio && <LinearProgress />}
+                  {errorEspecialista && selectedValues.especialista === '' && (
+                    <FormHelperText error={errorEspecialista}>
+                      Seleccione un especialista
+                    </FormHelperText>
+                  )}
+                </FormControl>
 
-                  <FormControl error={!!errorModalidad} fullWidth>
-                    <InputLabel id="modalidad-input">Modalidad</InputLabel>
-                    <Select
-                      labelId="Modalidad"
-                      id="select-modalidad"
-                      label="Modalidad"
-                      name="Modalidad"
-                      defaultValue=""
-                      value={selectedValues.modalidad}
-                      onChange={(e) => handleChange('modalidad', e.target.value)}
-                      disabled={!!(modalidades?.length === 0 || currentEvent?.id)}
-                    >
-                      {modalidades?.map((e, index) => (
-                        <MenuItem key={e.tipoCita} value={e.tipoCita}>
-                          {e.modalidad.toUpperCase()}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                    {modalidades?.length === 0 && selectedValues.especialista && <LinearProgress />}
-                    {errorModalidad && selectedValues.modalidad === '' && (
-                      <FormHelperText error={errorModalidad}>
-                        Seleccione una modalidad
-                      </FormHelperText>
-                    )}
-                  </FormControl>
-                </>
+                <FormControl error={!!errorModalidad} fullWidth>
+                  <InputLabel id="modalidad-input">Modalidad</InputLabel>
+                  <Select
+                    labelId="Modalidad"
+                    id="select-modalidad"
+                    label="Modalidad"
+                    name="Modalidad"
+                    defaultValue=""
+                    value={selectedValues.modalidad}
+                    onChange={(e) => handleChange('modalidad', e.target.value)}
+                    disabled={!!(modalidades?.length === 0 || currentEvent?.id)}
+                  >
+                    {modalidades?.map((e, index) => (
+                      <MenuItem key={e.tipoCita} value={e.tipoCita}>
+                        {e.modalidad.toUpperCase()}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {modalidades?.length === 0 && selectedValues.especialista && <LinearProgress />}
+                  {errorModalidad && selectedValues.modalidad === '' && (
+                    <FormHelperText error={errorModalidad}>Seleccione una modalidad</FormHelperText>
+                  )}
+                </FormControl>
               </Stack>
             )}
             {selectedValues.modalidad === 1 && selectedValues.beneficio && (
@@ -619,10 +615,9 @@ export default function AppointmentSchedule({
             ) : (
               <>Fecha sin horarios disponibles</>
             )}
-            {beneficioActivo?.primeraCita === 0 ||  beneficioActivo?.primeraCita === null ? (
-              null
-              
-              /*
+            {beneficioActivo?.primeraCita === 0 || beneficioActivo?.primeraCita === null
+              ? null
+              : /*
               <Stack>
                 <FormControlLabel
                   value="end"
@@ -638,10 +633,8 @@ export default function AppointmentSchedule({
                 </Button>
               </Stack>
               */
-             
-            ) : (
-              ''
-            )}
+
+                ''}
           </Stack>
         </Stack>
       </Grid>
