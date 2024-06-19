@@ -140,6 +140,7 @@ export default function PreRegisterUser({ currentUser }) {
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
+    
     const temDatos = { ...location.state.data[0], password: data.confirmNewPassword, mailForm };
 
     const registro = await registrarColaborador(temDatos);
@@ -194,6 +195,11 @@ export default function PreRegisterUser({ currentUser }) {
                   gridTemplateColumns={{
                     xs: 'repeat(1, 1fr)',
                     sm: 'repeat(1, 1fr)',
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                    }
                   }}
                 >
                   <div>
