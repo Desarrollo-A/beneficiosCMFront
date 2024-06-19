@@ -76,11 +76,16 @@ export default function PreRegisterUser({ currentUser }) {
 
   const handleChange = async (data) => {
 
-    const regex =  /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const generalRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const domainRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|ciudadmaderas\.com)$/;
 
-    if (!regex.test(data)) {
+    if (!generalRegex.test(data)) {
       setBtnLoad(false);
       enqueueSnackbar('Correo inválido', { variant: 'error' });
+    } else if (!domainRegex.test(data)) {
+      setBtnLoad(false);
+      enqueueSnackbar('Dominio no permitido. Solo se aceptan correos con dominio (@ciudadmaderas.com o @gmail.com)',
+         { variant: 'warning', autoHideDuration:7000  });
     } else {
       try {
         const insert = await insertData(data);
@@ -219,27 +224,6 @@ export default function PreRegisterUser({ currentUser }) {
                   </div>
 
                   <DialogTitle style={{ paddingLeft: '0px' }}>Registro de usuario</DialogTitle>
-
-                  {email !== null? (
-                    <>
-                      <ThemeProvider theme={lightTheme}>
-                        <RHFTextField name="correo" label="Correo" value={email} disabled />
-                      </ThemeProvider>
-
-                      <DialogActions>
-                        <LoadingButton
-                          variant="contained"
-                          loading={btnLoad}
-                          onClick={() => {
-                            setBtnLoad(true);
-                            handleChange(email);
-                          }}
-                        >
-                          Enviar código de verificación
-                        </LoadingButton>
-                      </DialogActions>
-                    </>
-                  ) : (
                       <>
                         <ThemeProvider theme={lightTheme}>
                           <RHFTextField name="correo" label="Correo" />
@@ -259,7 +243,6 @@ export default function PreRegisterUser({ currentUser }) {
                           </LoadingButton>
                         </DialogActions>
                       </>
-                  )}
                 </Box>
               </DialogContent>
             </FormProvider>

@@ -32,7 +32,7 @@ export default function RHFTextField({ name, helperText, type, color=null, ...ot
           error={!!error}
           helperText={error ? error?.message : helperText}
           {...other}
-          sx={{
+          /* sx={{
             '& .MuiOutlinedInput-root': {
               borderRadius: '7px',
               
@@ -61,7 +61,7 @@ export default function RHFTextField({ name, helperText, type, color=null, ...ot
                 paddingLeft: 1,
                 paddingRight: 1
               }
-          }}
+          }} */
         />
       )}
     />
