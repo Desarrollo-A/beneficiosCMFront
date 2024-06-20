@@ -7,13 +7,14 @@ import { yupResolver } from '@hookform/resolvers/yup';
 
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Unstable_Grid2';
+import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import InputAdornment from '@mui/material/InputAdornment';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
@@ -50,6 +51,8 @@ export default function PreRegisterUser({ currentUser }) {
       },
     },
   });
+
+  const theme = useTheme();
 
   const { enqueueSnackbar } = useSnackbar();
   const { login } = useAuthContext();
@@ -142,6 +145,7 @@ export default function PreRegisterUser({ currentUser }) {
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
+    
     const temDatos = { ...location.state.data[0], password: data.confirmNewPassword, mailForm };
 
     const registro = await registrarColaborador(temDatos);
@@ -184,7 +188,7 @@ export default function PreRegisterUser({ currentUser }) {
 
   return (
     <Grid container sx={styles}>
-      <Grid xs={12} sm={12} md={3} lg={3} xl={2.5}>
+      <Grid xs={12} sm={12} md={3} lg={3} xl={2.5} sx={{ color: theme.palette.mode === 'dark' ? '#25303d' : '#f7f7f7'}}>
         <div style={{ height: '70%', backgroundColor: 'white', borderRadius: '25px' }}>
           {mail !== false && registroForm === false ? (
             <FormProvider methods={form}>
@@ -196,6 +200,11 @@ export default function PreRegisterUser({ currentUser }) {
                   gridTemplateColumns={{
                     xs: 'repeat(1, 1fr)',
                     sm: 'repeat(1, 1fr)',
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                    }
                   }}
                 >
                   <div>
@@ -226,6 +235,11 @@ export default function PreRegisterUser({ currentUser }) {
                   <DialogTitle style={{ paddingLeft: '0px' }}>Registro de usuario</DialogTitle>
                       <>
                         <ThemeProvider theme={lightTheme}>
+                          
+                          <Box sx={{ fontSize: 12 }}>
+                          Ingresa el correo con el cual deseas registrarte (dominios aceptados @ciudadmaderas.com o @gmail.com).
+                          </Box>
+                       
                           <RHFTextField name="correo" label="Correo" />
                         </ThemeProvider>
                         <DialogActions>
