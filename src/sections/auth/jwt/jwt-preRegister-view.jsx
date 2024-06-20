@@ -232,11 +232,11 @@ export default function PreRegisterUser({ currentUser }) {
                     />
                   </div>
 
-                  <DialogTitle style={{ paddingLeft: '0px' }}>Registro de usuario</DialogTitle>
+                  <DialogTitle style={{ paddingLeft: '0px', color: 'black' }}>Registro de usuario</DialogTitle>
                       <>
                         <ThemeProvider theme={lightTheme}>
                           
-                          <Box sx={{ fontSize: 12 }}>
+                          <Box sx={{ fontSize: 12, color: 'black' }}>
                           Ingresa el correo con el cual deseas registrarte (dominios aceptados @ciudadmaderas.com o @gmail.com).
                           </Box>
                        
@@ -302,7 +302,7 @@ export default function PreRegisterUser({ currentUser }) {
                       }}
                     />
                   </div>
-                  <DialogTitle style={{ paddingLeft: '0px' }}>Registro de usuario</DialogTitle>
+                  <DialogTitle style={{ paddingLeft: '0px', color: 'black' }}>Registro de usuario</DialogTitle>
                   <RHFTextField
                     name="numEmpleado"
                     value={location.state.data[0].num_empleado}

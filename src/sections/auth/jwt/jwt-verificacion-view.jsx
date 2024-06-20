@@ -40,6 +40,8 @@ export default function Verificacion({ email, formReg }) {
 
   const [btnLoad, setBtnLoad] = useState(false);
 
+  const [codigo, setCodigo] = useState('');
+
   const insertData = useInsert(endpoints.user.token);
 
   const insertReenvio = useInsert(endpoints.user.verificacion);
@@ -69,10 +71,41 @@ export default function Verificacion({ email, formReg }) {
     return () => clearTimeout(timer);
   }, [countdown]);
 
-  const onSubmit = async (data) => {
+  const handleCodigo = () => {
+    setCodigo('');
+  };
+
+/*   const onSubmit = async (data) => {
     const dataValue = {
       correo: email,
-      token: data,
+      token: data
+    };
+
+    try {
+      const insert = await insertData(dataValue);
+
+      if (insert.estatus === true) {
+        enqueueSnackbar(insert.msj, { variant: 'success' });
+
+        setBtnLoad(false);
+        formReg(true);
+      } else {
+        enqueueSnackbar(insert.msj, { variant: 'error' });
+
+        setBtnLoad(false);
+        formReg(false);
+      }
+    } catch (error) {
+      setBtnLoad(false);
+      console.error('Error en handleEstatus:', error);
+      enqueueSnackbar(`¡No se pudo enviar el código!`, { variant: 'danger' });
+    }
+  }; */
+
+  const handleSend = async (data) => {
+    const dataValue = {
+      correo: email,
+      token: data
     };
 
     try {
@@ -166,7 +199,8 @@ export default function Verificacion({ email, formReg }) {
               </p>
 
               <ThemeProvider theme={lightTheme}>
-                <RHFTextField name="codigo" label="Código" autoComplete="off" />
+                <RHFTextField id='codigo' value={codigo}
+                onChange={(e) => setCodigo(e.target.value)} name="codigo" label="Código" autoComplete="off" />
               </ThemeProvider>
             </>
           ) : (
@@ -180,6 +214,7 @@ export default function Verificacion({ email, formReg }) {
                 onClick={() => {
                   setBtnLoad(true);
                   handleChange(email);
+                  handleCodigo();
                 }}
               >
                 Reenviar código
@@ -188,7 +223,7 @@ export default function Verificacion({ email, formReg }) {
               <LoadingButton
                 variant="contained"
                 loading={btnLoad}
-                onClick={methods.handleSubmit(onSubmit)}
+                onClick={() => {handleSend(codigo)}}
               >
                 Verificar
               </LoadingButton>
