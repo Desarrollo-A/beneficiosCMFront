@@ -598,6 +598,7 @@ export function useGetAppointmentsByUser(current, id, idSede) {
                   fecha
                   ).format('HH:mm')} horas.`;
           });
+          
           return {
             ...event,
             start: inicioCita,
@@ -617,6 +618,7 @@ export function useGetAppointmentsByUser(current, id, idSede) {
       appointmentMutate: revalidate,
     };
   }, [data?.data, error, isLoading, isValidating, revalidate, idSede]);
+  
 
   return memoizedValue;
 }
@@ -673,7 +675,7 @@ export async function consultarCita(idCita, idSede) {
     default:
       startConverted = [];
       endConverted = [];
-      startConverted = cita.data[0].start;
+      inicioCita = cita.data[0].start;
       finCita = cita.data[0].end;
   }
 
