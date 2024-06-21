@@ -104,8 +104,8 @@ export default function PendingModalUser() {
       onClose();
       return false;
     }
-
     if (datosUser.correo) {
+      console.log('object: ', scheduledAppointment.data[0])
       const email = await sendMail(
         scheduledAppointment.data[0],
         2,
