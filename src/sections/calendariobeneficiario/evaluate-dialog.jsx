@@ -1,19 +1,22 @@
-import { useState } from 'react';
-import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
-import { useForm } from 'react-hook-form';
 import { enqueueSnackbar } from 'notistack';
+import { useState, useCallback } from 'react';
 import Dialog from '@material-ui/core/Dialog';
+import { useForm, Controller } from 'react-hook-form';
 
 import Box from '@mui/material/Box';
+import { Button } from '@mui/material';
+import Radio from '@mui/material/Radio';
 import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
+import RadioGroup from '@mui/material/RadioGroup';
 import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import CircularProgress from '@mui/material/CircularProgress';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import { paths } from 'src/routes/paths';
@@ -23,16 +26,33 @@ import { endpoints } from 'src/utils/axios';
 
 import { useInsert } from 'src/api/encuestas';
 import { useAuthContext } from 'src/auth/hooks';
+import { updateEvaluacion } from 'src/api/evaluacion';
 import { useGetGeneral, usePostGeneral } from 'src/api/general';
-import { updateAppointment } from 'src/api/calendar-colaborador';
 
 import FormProvider, {
   RHFTextField,
-  RHFRadioGroup,
 } from 'src/components/hook-form';
 
-export default function EvaluateDialog({ open, pendiente, mutate, cerrar }) {
-  const { especialista, beneficio, idEspecialista, idEncuesta, id, estatus, idDetalle, idEventoGoogle } = pendiente;
+export default function EvaluateDialog({ open, encuestas, mutate, cerrar }) {
+
+  const [tipoEvaluacion, setTipoEvaluacion] = useState(0);
+
+  const [paramsEnc, setParamsEnc] = useState(0);
+
+  const { encuestaData } = usePostGeneral(tipoEvaluacion, endpoints.encuestas.getEncuestaContestar, "encuestaData");
+
+  const { Resp1Data } = useGetGeneral(endpoints.encuestas.getResp1, "Resp1Data");
+
+  const handleEvaluacion = useCallback((e) => () => {
+    setParamsEnc(e);
+    setTipoEvaluacion(e.encuesta);
+  }, []);
+
+  // console.log(encuestas)
+
+  function formatText(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+  }
 
   const lightTheme = createTheme({
     palette: {
@@ -50,89 +70,78 @@ export default function EvaluateDialog({ open, pendiente, mutate, cerrar }) {
     },
   });
 
-  const { user: datosUser } = useAuthContext();
-
   const router = useRouter();
 
   const { user } = useAuthContext();
 
-  const { encuestaData } = usePostGeneral(idEncuesta, endpoints.encuestas.getEncuesta, "encuestaData");
-
-  const { Resp1Data } = useGetGeneral(endpoints.encuestas.getResp1, "Resp1Data");
-
-  const { Resp2Data } = useGetGeneral(endpoints.encuestas.getResp2, "Resp2Data");
-
-  const { Resp3Data } = useGetGeneral(endpoints.encuestas.getResp3, "Resp3Data");
-
-  const { Resp4Data } = useGetGeneral(endpoints.encuestas.getResp4, "Resp4Data");
-
   const insertData = useInsert(endpoints.encuestas.encuestaInsert);
 
 
-  const methods = useForm({
+  const methods = useForm({});
+
+const {
+  reset,
+  handleSubmit,
+  formState: { isSubmitting },
+} = methods;
+
+const [formKey, setFormKey] = useState(0);
+
+const resetForm = () => {
+  reset();
+  setFormKey((prevKey) => prevKey + 1);
+};
+
+const onSubmit = handleSubmit(async (data) => {
+  console.log("Form Data:", data);
+
+  const newData = encuestaData.map((item, index) => {
+    const respKey = `resp_${index}`;
+
+    return {
+      ...item,
+      idUsuario: user?.idUsuario,
+      idEnc: encuestaData[0]?.idEncuesta,
+      idArea: paramsEnc.beneficio,
+      idEsp: paramsEnc.especialista,
+      resp: data[respKey]
+    };
   });
 
-  const {
-    reset,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = methods;
+  try {
+    await new Promise((resolve) => setTimeout(resolve));
 
-  const [formKey, setFormKey] = useState(0);
+    const insert = await insertData(newData);
 
-  const resetForm = () => {
-    reset();
-    setFormKey((prevKey) => prevKey + 1);
-  };
+    if (insert.estatus === true) {
+      const update =  await updateEvaluacion(
+        paramsEnc.idCita,
+        paramsEnc.encuesta,
+        user?.idUsuario,
+      );
 
-  const onSubmit = handleSubmit(async (data) => {
+      if (update.result === true) {
 
-    const newData = encuestaData.map((item, index) => {
-      const respKey = `resp_${index}`;
+      enqueueSnackbar(insert.msj, { variant: 'success' });
+      resetForm();
+      mutate(endpoints.encuestas.getEcuestaValidacion);
+      router.replace(paths.dashboard.root);
 
-      return {
-        ...item,
-        idUsuario: user?.idUsuario,
-        idEnc: idEncuesta,
-        idArea: encuestaData[0]?.idArea,
-        idEsp: idEspecialista,
-        resp: data[respKey]
-      };
-    });
+      mutate();
+      cerrar();
 
-    try {
-      await new Promise((resolve) => setTimeout(resolve));
-
-      const insert = await insertData(newData);
-
-      if (insert.estatus === true /* && update.result */) {
-
-        await updateAppointment(
-          datosUser.idUsuario,
-          id,
-          estatus,
-          idDetalle,
-          idEncuesta,
-          idEventoGoogle
-        );
-
-        enqueueSnackbar(insert.msj, { variant: 'success' });
-        resetForm();
-        mutate(endpoints.encuestas.getEcuestaValidacion);
-        router.replace(paths.dashboard.root);
-
-        if (mutate) mutate();
-        if (cerrar) cerrar();
-
-      } else {
-        enqueueSnackbar(insert.msj, { variant: 'error' });
+      }else{
+        enqueueSnackbar(`¡No se pudó actualizar los datos!`, { variant: 'danger' });
       }
-    } catch (error) {
-      console.error("Error en handleSubmit:", error);
-      enqueueSnackbar(`¡No se pudó actualizar los datos!`, { variant: 'danger' });
-    }
 
-  });
+    } else {
+      enqueueSnackbar(insert.msj, { variant: 'error' });
+    }
+  } catch (error) {
+    console.error("Error en handleSubmit:", error);
+    // enqueueSnackbar(`¡No se pudó actualizar los datos!`, { variant: 'danger' });
+  }
+});
 
   return (
     <Dialog
@@ -149,98 +158,139 @@ export default function EvaluateDialog({ open, pendiente, mutate, cerrar }) {
       padding={0}
     >
 
-      <DialogTitle sx={{ m: 0, p: 2, margin: '25px', textAlign: 'center' }} id="customized-dialog-title">
-        ENCUESTA DE SATISFACCIÓN {beneficio.toUpperCase()}
-        <Typography variant="subtitle2" >
-           ESPECIALISTA: {especialista}
-        </Typography>
-      </DialogTitle>
+      {tipoEvaluacion === 0 ? (
+        <>
+          <DialogTitle sx={{ m: 0, p: 2, margin: '25px', textAlign: 'center' }} id="customized-dialog-title">
+            Encuestas por contestar
+          </DialogTitle>
 
-      {!isEmpty(encuestaData) ? (
+          <Stack sx={{ mt: 0 }}>
+            <DialogContent dividers sx={{ margin: '25px' }}>
+              {encuestas.map((item, index) => (
+                <>
+                  <Typography variant="subtitle2" >
+                    {item.primeraSesion === 0 ? (
+                      <Box display="flex" justifyContent="space-between" alignItems="center">
+                        Encuesta de primera sesión ({formatText(item.especialidad)} - {item.fecha})
+                        <Button variant="contained" color="primary" key={item.idCita}
+                          onClick={handleEvaluacion(
+                            { idCita: item.idCita, especialista: item.idEspecialista, beneficio: item.idpuesto, encuesta: 1 }
+                          )}>Contestar</Button>
+                      </Box>
+                    ) : null}
+                  </Typography>
+                  <Box mb={2} />
+                  <Typography variant="subtitle2" >
+                    {item.satisfaccion === 0 ? (
+                      <Box display="flex" justifyContent="space-between" alignItems="center">
+                        Encuesta de satisfacción ({formatText(item.especialidad)} - {item.fecha})
+                        <Button variant="contained" color="primary"
+                          onClick={handleEvaluacion(
+                            { idCita: item.idCita, especialista: item.idEspecialista, beneficio: item.idpuesto, encuesta: 4 }
+                          )}>Contestar</Button>
+                      </Box>
+                    ) : null}
+                  </Typography>
+                  <Box mb={2} />
+                  <Typography variant="subtitle2" >
+                    {item.reagenda === 0 ? (
+                      <Box display="flex" justifyContent="space-between" alignItems="center">
+                        Encuesta de reagenda ({formatText(item.especialidad)} - {item.fecha})
+                        <Button variant="contained" color="primary"
+                          onClick={handleEvaluacion(
+                            { idCita: item.idCita, especialista: item.idEspecialista, beneficio: item.idpuesto, encuesta: 3 }
+                          )}>Contestar</Button>
+                      </Box>
+                    ) : null}
+                  </Typography>
+                  <Box mb={2} />
+                  <Typography variant="subtitle2" >
+                    {item.cancelacion === 0 ? (
+                      <Box display="flex" justifyContent="space-between" alignItems="center">
+                        Encuesta de cancelación ({formatText(item.especialidad)} - {item.fecha})
+                        <Button variant="contained" color="primary"
+                          onClick={handleEvaluacion(
+                            { idCita: item.idCita, especialista: item.idEspecialista, beneficio: item.idpuesto, encuesta: 2 }
+                          )}>Contestar</Button>
+                      </Box>
+                    ) : null}
+                  </Typography>
+                  <Box mb={2} />
+                </>
+              ))}
+            </DialogContent>
+          </Stack>
+        </>
+
+      ) : (
 
         <Stack sx={{ mt: 0 }}>
-          <DialogContent dividers sx={{margin: '25px'}}>
+          <DialogContent dividers >
 
             <FormProvider methods={methods} onSubmit={onSubmit} key={formKey}>
-              <Grid container spacing={3}>
 
-                <Grid xs={12} md={12}>
-                  <Box
-                    rowGap={3}
-                    columnGap={1}
-                    display="grid"
-                    gridTemplateColumns={{
-                      xs: 'repeat(1, 1fr)',
-                      sm: 'repeat(1, 1fr)',
-                    }}
-                  >
+              <DialogTitle sx={{ m: 0, p: 2, margin: '25px', textAlign: 'center' }} id="customized-dialog-title">
+                Encuesta
+              </DialogTitle>
 
+              {encuestaData.length > 0 ? (
+                <>
+                  <Stack sx={{ mt: 0 }} >
                     {encuestaData.map((item, index) => (
-
-                      <Stack spacing={1} key={item.pregunta}>
-
-                        <Typography variant="subtitle2" >
+                      <>
+                        <DialogContent style={{ fontWeight: 'bold', margin: '15px' }}>
                           {item.pregunta}
-                        </Typography>
+                        </DialogContent>
 
-                        {item.respuestas === "1" || item.respuestas === 1 && (
-                          <RHFRadioGroup row sx={{
-                            display: 'grid',
-                            columnGap: 1,
-                            rowGap: 1,
-                            m: 1,
-                            gridTemplateColumns: 'repeat(3, 1fr)',
-                          }} name={`resp_${index}`} options={Resp1Data} />
-                        )}
-                        
-                        {item.respuestas === "2" || item.respuestas === 2 && (
-                          <RHFRadioGroup row spacing={4} name={`resp_${index}`} options={Resp2Data} />
-                        )}
+                        <DialogContent sx={{ margin: '15px' }}>
+                        <ThemeProvider theme={lightTheme}>
+                        <Controller
+                          name={`resp_${index}`}
+                          control={methods.control}
+                          render={({ field }) => (
+                            <RadioGroup {...field} key={item.idPregunta}>
+                              {Resp1Data.map((r1) =>
+                                r1.grupo === item.respuestas ? (
+                                  <li key={r1.id} style={{ marginBottom: '0px', listStyleType: 'none' }}>
+                                    <FormControlLabel value={r1.value} control={<Radio />} label={r1.label} />
+                                  </li>
+                                ) : null
+                              )}
+                            </RadioGroup>
+                          )}
+                        />
+                        </ThemeProvider>
 
-                        {item.respuestas === "3" || item.respuestas === 3 && (
-                          <RHFRadioGroup row sx={{ m: 2 }} spacing={4} name={`resp_${index}`} options={Resp3Data} />
-                        )}
+                          {item.respuestas === "5" || item.respuestas === 5 && (
+                            <ThemeProvider theme={lightTheme}>
+                            <RHFTextField name={`resp_${index}`} multiline rows={3} />
+                            </ThemeProvider>
+                          )}
 
-                        {item.respuestas === "4" || item.respuestas === 4 && (
-                          <RHFRadioGroup row sx={{ m: 1 }} name={`resp_${index}`} options={Resp4Data} />
-                        )}
-
-                        {item.respuestas === "5" || item.respuestas === 5 && (
-                          <ThemeProvider theme={lightTheme}>
-                          <RHFTextField name={`resp_${index}`} multiline rows={3} />
-                          </ThemeProvider>
-                        )}
-
-                      </Stack>
+                        </DialogContent>
+                      </>
                     ))}
-                  </Box>
+
+                  </Stack>
 
                   <DialogActions justifycontent="center" sx={{ justifyContent: 'center' }}>
                     <LoadingButton type="submit" variant="contained" color="success" loading={isSubmitting}>
                       Enviar
                     </LoadingButton>
                   </DialogActions>
+                </>
+              ) : (
 
-                </Grid>
-              </Grid>
+                <Stack spacing={1} >
+                  <Grid container sx={{ p: 5 }} justifyContent="center" alignItems="center">
+                    <CircularProgress />
+                  </Grid>
+                </Stack>
+
+              )}
             </FormProvider>
-
-            {/* <DialogActions justifycontent="center" sx={{ justifyContent: 'center' }}>
-          <LoadingButton variant="contained" color="success" onClick={() => handleRate(pendiente)}>
-            Enviar
-          </LoadingButton>
-        </DialogActions> */}
           </DialogContent>
         </Stack>
-
-      ) : (
-
-        <Stack sx={{ mt: 3 }}>
-          <DialogActions justifycontent="center" sx={{ justifyContent: 'center' }}>
-            <CircularProgress />
-          </DialogActions>
-        </Stack>
-
       )}
     </Dialog>
   );
@@ -248,7 +298,7 @@ export default function EvaluateDialog({ open, pendiente, mutate, cerrar }) {
 
 EvaluateDialog.propTypes = {
   open: PropTypes.bool,
-  pendiente: PropTypes.object,
+  encuestas: PropTypes.array,
   mutate: PropTypes.func,
   cerrar: PropTypes.func,
 };

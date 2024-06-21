@@ -37,6 +37,7 @@ import {
 import { getEncodedHash } from 'src/api/api';
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetEventReasons } from 'src/api/calendar-specialist';
+import { creaEvaluaciones, evaluacionReagenda, evaluacionCancelacion } from 'src/api/evaluacion';
 import {
   sendMail,
   crearCita,
@@ -219,13 +220,13 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     // *** VALIDAMOS SI TIENE CITAS SIN EVALUAR ***
     const citasSinEvaluar = await getCitasSinEvaluar(datosUser.idUsuario);
     // Si tiene citas en proceso no lo tengo que dejar agendar citas
-    if (citasSinEvaluar.result) {
+    /* if (citasSinEvaluar.result) {
       enqueueSnackbar('Evalúa tus citas previas para poder agendar otra cita', {
         variant: 'danger',
       });
       onClose();
       return false;
-    }
+    } */
 
     // *** VALIDAMOS SI TIENE CITAS SIN PAGAR ***
     const citasSinPagar = await getCitasSinPagar(datosUser.idUsuario);
@@ -602,10 +603,15 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       return onClose();
     }
 
+    await evaluacionCancelacion(
+      currentEvent.id
+    );
+
     enqueueSnackbar('¡Has cancelado la cita!', {
       variant: 'success',
     });
 
+    mutate(endpoints.encuestas.evaluacionEncuesta);
     mutate(endpoints.reportes.citas);
     mutate(endpoints.dashboard.getCountEstatusCitas);
     mutate(endpoints.dashboard.getCtCanceladas);
@@ -1379,11 +1385,19 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       1
     );
 
-    if (!agendar.result) {
+    /* if (!agendar.result) {
       return enqueueSnackbar(agendar.msg, {
-        variant: 'error',
+        variant: 'error',getCitasSinEvaluarUsuario
       });
-    }
+    } */
+
+    await creaEvaluaciones(
+        agendar.data
+    );
+
+    await evaluacionReagenda(
+      agendar.data
+    );
 
     const startDate = dayjs(horarioSeleccionado);
     const endDate = startDate.add(1, 'hour');
@@ -1435,6 +1449,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     });
     appointmentMutate();
     onClose();
+    mutate(endpoints.encuestas.evaluacionEncuesta);
     return setReschedule(false);
   };
 
