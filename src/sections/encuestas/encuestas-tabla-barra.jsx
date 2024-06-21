@@ -58,36 +58,6 @@ export default function UserTableToolbar({
           pr: { xs: 2.5, md: 1 },
         }}
       >
-        {rol === 4 ? (
-        <FormControl
-          sx={{
-            flexShrink: 0,
-            width: { xs: 1, md: 200 },
-          }}
-        >
-          <InputLabel>Área</InputLabel>
-
-          <Select
-            value={area}
-            onChange={handleFilterRole}
-            input={<OutlinedInput label="Área" />}
-            MenuProps={{
-              PaperProps: {
-                sx: { maxHeight: 240 },
-              },
-            }}
-          >
-            {roleOptions.map((option, index) => (
-              <MenuItem key={index} value={option.idPuesto}>
-                {option.nombre}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        ):(
-          null
-        )}
 
         <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField

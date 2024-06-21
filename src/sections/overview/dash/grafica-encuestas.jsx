@@ -13,7 +13,6 @@ import CardHeader from '@mui/material/CardHeader';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import CircularProgress from '@mui/material/CircularProgress';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
@@ -27,33 +26,6 @@ import Iconify from 'src/components/iconify';
 import Chart, { useChart } from 'src/components/chart';
 import EmptyContent from 'src/components/empty-content/empty-content';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-
-
-// ----------------------------------------------------------------------
-
-/* function handleDownloadExcel(chart, title) {
-
-    const respuestas = chart.categories
-
-    const resultados = chart.series[0].data[0].data;
-
-    const data = [
-        {
-            sheet: "",
-            columns: respuestas.map((label, index) => ({ label, value: index.toString() })),
-            content: [resultados.reduce((obj, value, index) => ({ ...obj, [index.toString()]: value.toString() }), {})]
-        }
-    ];
-
-    const settings = {
-        fileName: title,
-        extraLength: 3,
-        writeMode: "writeFile",
-        writeOptions: {},
-        RTL: false,
-    }
-    Xlsx(data, settings)
-} */
 
 // ----------------------------------------------------------------------
 
@@ -197,14 +169,20 @@ export default function GraficaEncuestas({
 
     const { respCountData } = useGetCountRespuestas(paramResCount, endpoints.dashboard.getCountRespuestas, "respCountData");
 
-    const respArray = respDt.flatMap((i) => (
-        JSON.parse(`[${i.respuestas.split(', ').flatMap(value => `"${value}"`).join(', ')}]`
-        )));
+    function splitResponses(input) {
+        const regex = /([^,()]+(?:\([^()]*\))?)/g;
+        const matches = input.match(regex);
+        return matches ? matches.map(match => match.trim()) : [];
+    }
+
+    const respArray = respDt.flatMap((i) => splitResponses(i.respuestas));
 
     const resultArray = respArray.map((respuesta) => {
         const matchingObj = respPreg.find((obj) => obj.respuesta.toString() === respuesta);
         return matchingObj ? matchingObj.cantidad : 0;
     });
+
+    console.log(respDt)
 
     useEffect(() => {
         setRespPreg(respCountData);

@@ -155,30 +155,7 @@ export default function InvoiceNewEditForm() {
 
             <Grid container spacing={3} disableEqualOverflow>
 
-              <Grid xs={12} md={6}>
-                {rol === 4 ? (
-                  <RHFSelect
-                    name="area"
-                    size="small"
-                    label="Área"
-                    InputLabelProps={{ shrink: true }}
-                  >
-
-                    {especialistasData.map((res) => (
-                      <MenuItem
-                        key={res.idPuesto}
-                        value={res.idPuesto}
-                      >
-                        {res.nombre}
-                      </MenuItem>
-                    ))}
-                  </RHFSelect>
-                ) : (
-                  null
-                )}
-              </Grid>
-
-              <Grid xs={12} md={6}>
+              <Grid xs={12} md={12}>
                 
                 {rol === 4 ? (
                   <RHFSelect

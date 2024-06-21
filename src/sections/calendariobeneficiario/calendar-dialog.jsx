@@ -75,7 +75,7 @@ import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider from 'src/components/hook-form/form-provider';
 
-import EvaluateDialog from './evaluate-dialog';
+/* import EvaluateDialog from './evaluate-dialog'; */
 import CalendarPreview from './calendar-preview';
 import AppointmentSchedule from './appointment-schedule';
 
@@ -2463,7 +2463,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       </Dialog>
 
       <CalendarPreview event={event} open={open2} handleClose={handleClose} />
-      {pendiente && openEvaluateDialog && (
+      {/* {pendiente && openEvaluateDialog && (
         <EvaluateDialog
           open={openEvaluateDialog}
           pendiente={pendiente}
@@ -2474,7 +2474,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
           }}
           cerrar={() => setOpenEvaluateDialog(false)}
         />
-      )}
+      )} */}
     </>
   );
 }
