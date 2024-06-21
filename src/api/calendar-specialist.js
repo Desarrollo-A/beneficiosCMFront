@@ -668,13 +668,11 @@ export async function updateAppointment(eventData, idUsuario, idSede) {
 // ----------------------------------------------------------------------
 
 export async function cancelAppointment(currentEvent, id, cancelType, idUsuario, idSede) {
+  
   const startStamp = dayjs(currentEvent.start).format('YYYY/MM/DD HH:mm:ss');
   let tituloEmail = '';
   let imagen = '';
 
-  /* const organizador = currentEvent?.correo
-    ? 'programador.analista36@ciudadmaderas.com'
-    : 'programador.analista12@ciudadmaderas.com'; */
   const organizador = currentEvent?.correo; // Variable correcta // colaborador
 
   switch (cancelType) {
@@ -741,7 +739,7 @@ export async function cancelAppointment(currentEvent, id, cancelType, idUsuario,
     fetcherPost(delete_google_event, eventGoogleData);
   }
 
-  return delDate;
+  return delDate; 
 }
 
 // ----------------------------------------------------------------------
