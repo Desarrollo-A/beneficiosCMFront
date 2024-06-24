@@ -620,9 +620,7 @@ export default function AppointmentSchedule({
               <>Fecha sin horarios disponibles</>
             )}
             {beneficioActivo?.primeraCita === 0 ||  beneficioActivo?.primeraCita === null ? (
-              null
               
-              /*
               <Stack>
                 <FormControlLabel
                   value="end"
@@ -637,7 +635,7 @@ export default function AppointmentSchedule({
                   Ver términos y condiciones 
                 </Button>
               </Stack>
-              */
+             
              
             ) : (
               ''
