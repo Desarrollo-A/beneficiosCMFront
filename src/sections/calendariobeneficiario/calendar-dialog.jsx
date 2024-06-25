@@ -219,13 +219,13 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     // *** VALIDAMOS SI TIENE CITAS SIN EVALUAR ***
     const citasSinEvaluar = await getCitasSinEvaluar(datosUser.idUsuario);
     // Si tiene citas en proceso no lo tengo que dejar agendar citas
-    if (citasSinEvaluar.result) {
+    /* if (citasSinEvaluar.result) {
       enqueueSnackbar('Evalúa tus citas previas para poder agendar otra cita', {
         variant: 'danger',
       });
       onClose();
       return false;
-    }
+    } */
 
     // *** VALIDAMOS SI TIENE CITAS SIN PAGAR ***
     const citasSinPagar = await getCitasSinPagar(datosUser.idUsuario);
@@ -2288,8 +2288,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                 <Button variant="contained" color="error" onClick={onClose}>
                   Cerrar
                 </Button>
-                {(currentEvent?.id && currentEvent?.estatus === 6) ||
-                  (currentEvent?.id && currentEvent?.estatus === 10 && (
+                {currentEvent?.id && currentEvent?.estatus === 6 ? (
                     <LoadingButton
                       variant="contained"
                       color="success"
@@ -2299,7 +2298,9 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                     >
                       Pagar
                     </LoadingButton>
-                  ))}
+                  ):(
+                    null
+                  )}
                 {currentEvent?.id && currentEvent?.estatus === 1 && (
                   <LoadingButton
                     variant="contained"
