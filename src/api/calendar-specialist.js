@@ -83,43 +83,91 @@ export function GetCustomEvents(current, idUsuario, idSede) {
     reRender();
   }, [month]);
 
-  if (data?.events?.length > 0) {
-    data.events = data.events.map((item) => ({ ...item, id: item.id.toString() }));
-  }
-
   const memoizedValue = useMemo(() => {
     const events = data?.events?.map((event) => {
-
+      if(event.type === 'date'){
+        let startConverted = idSede === 11 ? horaTijuana(event.start) : horaCancun(event.start);
+        startConverted = toLocalISOString(startConverted);
+        startConverted = startConverted.slice(0, 19).replace('T', ' ');
+        const inicioCita = ((idSede === 11 || idSede === 9) && event.idSedePaciente !== idSede) ? startConverted : event.start;
+        let endConverted = idSede === 11 ? horaTijuana(event.end) : horaCancun(event.end);
+        endConverted = toLocalISOString(endConverted);
+        endConverted = endConverted.slice(0, 19).replace('T', ' ');
+        const finCita = ((idSede === 11 || idSede === 9) && event.idSedePaciente !== idSede) ? endConverted : event.end;
+        const fechasCitasReagendadas = obtenerFechasConHoras(event.fechasFolio);
+        let fechas = '';
+        fechasCitasReagendadas?.forEach((fecha) => {
+          const fechaInicioCita = idSede === 11 ? horaTijuana(fecha) : horaCancun(fecha);
+          fechas +=
+            fechas === ''
+              ? `${dayjs(fechaInicioCita).format('DD / MM / YYYY')} A las ${dayjs(
+                  fechaInicioCita
+                ).format('HH:mm')} horas.`
+              : `,${dayjs(fechaInicioCita).format('DD / MM / YYYY')} A las ${dayjs(
+                  fechaInicioCita
+                ).format('HH:mm')} horas.`;
+        });
+        return {
+          ...event,
+          textColor: event?.tipoCita === 1 && event?.estatus === 1 ? 'yellow' : event?.color,
+          type: event?.type,
+          fechaInicio: inicioCita,
+          start: inicioCita,
+          end: finCita,
+          fechasFolio: fechas || event.fechasFolio,
+        };
+      }
+      
       let startConverted = idSede === 11 ? horaTijuana(event.start) : horaCancun(event.start);
-      startConverted = toLocalISOString(startConverted);
-      startConverted = startConverted.slice(0, 19).replace('T', ' ');
-      const inicioCita = ((idSede === 11 || idSede === 9) && event.idSedePaciente !== idSede) ? startConverted : event.start;
-      let endConverted = idSede === 11 ? horaTijuana(event.end) : horaCancun(event.end);
-      endConverted = toLocalISOString(endConverted);
-      endConverted = endConverted.slice(0, 19).replace('T', ' ');
-      const finCita = ((idSede === 11 || idSede === 9) && event.idSedePaciente !== idSede) ? endConverted : event.end;
-      const fechasCitasReagendadas = obtenerFechasConHoras(event.fechasFolio);
-      let fechas = '';
-      fechasCitasReagendadas?.forEach((fecha) => {
-        const fechaInicioCita = idSede === 11 ? horaTijuana(fecha) : horaCancun(fecha);
-        fechas +=
-          fechas === ''
-            ? `${dayjs(fechaInicioCita).format('DD / MM / YYYY')} A las ${dayjs(
-                fechaInicioCita
-              ).format('HH:mm')} horas.`
-            : `,${dayjs(fechaInicioCita).format('DD / MM / YYYY')} A las ${dayjs(
-                fechaInicioCita
-              ).format('HH:mm')} horas.`;
-      });
-      return {
-        ...event,
-        textColor: event?.tipoCita === 1 && event?.estatus === 1 ? 'yellow' : event?.color,
-        type: event?.type,
-        fechaInicio: inicioCita,
-        start: inicioCita,
-        end: finCita,
-        fechasFolio: fechas || event.fechasFolio,
-      };
+        startConverted = toLocalISOString(startConverted);
+        startConverted = startConverted.slice(0, 19).replace('T', ' ');
+        const inicioCita = ((idSede === 11 || idSede === 9)) ? startConverted : event.start;
+
+        
+        function sumarRestarHora(fecha) {
+          // Convertir la fecha a un objeto Date
+          const fechaObjeto = new Date(fecha);
+        
+          if (idSede === 9) {
+            fechaObjeto.setUTCHours(fechaObjeto.getUTCHours() + 1);
+          } else if (idSede === 11) {
+            fechaObjeto.setUTCHours(fechaObjeto.getUTCHours() - 1);
+          }
+        
+           // Función auxiliar para formatear con ceros a la izquierda
+          const pad = (num, size) => String(num).padStart(size, '0');
+
+          // Obtener y formatear los componentes de la fecha y la hora
+          const fechaFormateada = `${fechaObjeto.getFullYear()}-${pad(fechaObjeto.getMonth() + 1, 2)}-${pad(fechaObjeto.getDate(), 2)} ${pad(fechaObjeto.getHours(), 2)}:${pad(fechaObjeto.getMinutes(), 2)}:${pad(fechaObjeto.getSeconds(), 2)}.${pad(fechaObjeto.getMilliseconds(), 3)}`;
+
+          return fechaFormateada;
+        }
+
+        const finCita = sumarRestarHora(event.end);
+
+        const fechasCitasReagendadas = obtenerFechasConHoras(event.fechasFolio);
+        let fechas = '';
+        fechasCitasReagendadas?.forEach((fecha) => {
+          const fechaInicioCita = idSede === 11 ? horaTijuana(fecha) : horaCancun(fecha);
+          fechas +=
+            fechas === ''
+              ? `${dayjs(fechaInicioCita).format('DD / MM / YYYY')} A las ${dayjs(
+                  fechaInicioCita
+                ).format('HH:mm')} horas.`
+              : `,${dayjs(fechaInicioCita).format('DD / MM / YYYY')} A las ${dayjs(
+                  fechaInicioCita
+                ).format('HH:mm')} horas.`;
+        });
+        return {
+          ...event,
+          textColor: event?.tipoCita === 1 && event?.estatus === 1 ? 'yellow' : event?.color,
+          type: event?.type,
+          fechaInicio: inicioCita,
+          start: inicioCita,
+          end: finCita,
+          fechasFolio: fechas || event.fechasFolio,
+        };
+    
     });
 
     return {
