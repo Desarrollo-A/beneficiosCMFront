@@ -113,7 +113,7 @@ export function AuthProvider({ children }) {
     const response = await instance.post(url, data);
 
     if (response.data.result !== 1) {
-      return { result: 0, message: 'El usuario y/o contraseña no son correctos' };
+      return { result: 0, message: response.data.message };
     }
     const { accessToken, user } = response.data;
     setSession(accessToken);

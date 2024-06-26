@@ -75,6 +75,9 @@ export default function JwtLoginView() {
         if (response === undefined) {
           router.push(returnTo || PATH_AFTER_LOGIN);
         }
+        else if (response.result === 2 ) {
+          enqueueSnackbar(response.message, {variant: "error"});
+      }
         else if (response !== undefined && response.result === 0 ) {
             enqueueSnackbar(response.message, {variant: "error"});
         }
