@@ -1,0 +1,61 @@
+.ButtonCita {
+  --black: #000000;
+  --ch-black: #ffffff;
+  --eer-black: #0152d3;
+  --night-rider: #e8d17d;
+  --white: #dedede;
+  --af-white: #f3f3f3;
+  --ch-white: #e1e1e1;
+  border-radius: 8px;
+  width: 200px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0px 15px;
+  border: none;
+  color: black;
+  position: relative;
+  cursor: pointer;
+  font-weight: 700;
+  transition-duration: .2s;
+  background-color: var(--ch-black);
+}
+
+.ButtonCita:before,
+.ButtonCita:after {
+  content: '';
+  position: absolute;
+  left: -2px;
+  top: -2px;
+  border-radius: 10px;
+  background: linear-gradient(45deg,
+      var(--ch-black), var(--eer-black),
+      var(--night-rider), var(--ch-white), var(--night-rider),
+      var(--eer-black), var(--ch-black), var(--ch-black));
+  background-size: 700%;
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  z-index: -1;
+  animation: steam 60s linear infinite;
+
+}
+
+.ButtonCita:hover{
+  filter: invert(100%);
+}
+
+@keyframes steam {
+  0% {
+    background-position: 0 0;
+  }
+
+  50% {
+    background-position: 400% 0;
+  }
+
+  100% {
+    background-position: 0 0;
+  }
+}

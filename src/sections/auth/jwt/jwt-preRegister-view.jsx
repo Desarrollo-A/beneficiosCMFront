@@ -8,6 +8,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -80,14 +81,14 @@ export default function PreRegisterUser({ currentUser }) {
   const handleChange = async (data) => {
 
     const generalRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    const domainRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|ciudadmaderas\.com)$/;
+    const domainRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|ciudadmaderas\.com|fundacionlamat\.com.mx|fundacionlamat\.com|gph\.com.mx|ooam\.com.mx|nyssa\.lat|seguromaderas\.com)$/;
 
     if (!generalRegex.test(data)) {
       setBtnLoad(false);
       enqueueSnackbar('Correo inválido', { variant: 'error' });
     } else if (!domainRegex.test(data)) {
       setBtnLoad(false);
-      enqueueSnackbar('Dominio no permitido. Solo se aceptan correos con dominio (@ciudadmaderas.com o @gmail.com)',
+      enqueueSnackbar('Dominio no permitido',
          { variant: 'warning', autoHideDuration:7000  });
     } else {
       try {
@@ -237,10 +238,19 @@ export default function PreRegisterUser({ currentUser }) {
                         <ThemeProvider theme={lightTheme}>
                           
                           <Box sx={{ fontSize: 12, color: 'black' }}>
-                          Ingresa el correo con el cual deseas registrarte (dominios aceptados @ciudadmaderas.com o @gmail.com).
+                          Ingresa el correo con el cual deseas registrarte
                           </Box>
                        
+                          <Tooltip 
+                          title={
+                            <>
+                              <Typography color="inherit">Dominios aceptados:</Typography>
+                              <em>@ciudadmaderas.com, @gmail.com, @fundacionlamat.com.mx, @fundacionlamat.com,
+                              @gph.com.mx, @ooam.com.mx, @nyssa.lat, @seguromaderas.com</em>
+                            </>}  
+                          placement="right" arrow>
                           <RHFTextField name="correo" label="Correo" />
+                          </Tooltip>
                         </ThemeProvider>
                         <DialogActions>
                           <LoadingButton
