@@ -295,7 +295,7 @@ export const endpoints = {
     insertHorario: '/GestorController/insertHorario',
     especialistas: '/GestorController/especialistas',
     getDepartamentos: '/GestorController/getDepartamentos',
-    getAllAreas: '/GeneralController/getAllAreas',
+    getAllAreas: '/GestorController/getAllAreas',
     getAreasPs: '/GestorController/getAreasPs',
     getPuestos: '/GestorController/getPuestos',
     updateEstatusPuestos: '/GestorController/updateEstatusPuestos',
