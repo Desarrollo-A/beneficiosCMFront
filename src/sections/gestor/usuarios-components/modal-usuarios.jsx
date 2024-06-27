@@ -91,14 +91,17 @@ export default function ModalUsuarios({
               }}
             >
               <Grid container spacing={3} disableEqualOverflow>
-                <Grid xs={4} md={4}>
+                <Grid xs={3} md={3}>
                   <RHFTextField name="id" label="Id" value={id} disabled />
                 </Grid>
-                <Grid xs={4} md={4}>
+                <Grid xs={3} md={3}>
                   <RHFTextField name="numEmpleado" label="Número de empleado" value={numEmpleado} disabled />
                 </Grid>
-                <Grid xs={4} md={4}>
+                <Grid xs={3} md={3}>
                   <RHFTextField name="contrato" label="Contrato" value={contrato} disabled />
+                </Grid>
+                <Grid xs={3} md={3}>
+                  <RHFTextField name="rol" label="Rol" value={rol} disabled />
                 </Grid>
                 <Grid xs={6} md={6}>
                   <RHFTextField name="correo" label="Correo" value={correo} disabled />
@@ -126,21 +129,6 @@ export default function ModalUsuarios({
                     <LinearProgress />
                   </Grid>
                 )}
-                </Grid>
-                <Grid xs={4} md={4}>
-                  <RHFTextField name="departamento" label="Departamento" value={departamento} disabled />
-                </Grid>
-                <Grid xs={4} md={4}>
-                  <RHFTextField name="area" label="Area" value={area} disabled />
-                </Grid>
-                <Grid xs={4} md={4}>
-                  <RHFTextField name="puesto" label="Puesto" value={puesto} disabled />
-                </Grid>
-                <Grid xs={6} md={6}>
-                  <RHFTextField name="sede" label="Sede" value={sede} disabled />
-                </Grid>
-                <Grid xs={6} md={6}>
-                  <RHFTextField name="rol" label="Rol" value={rol} disabled />
                 </Grid>
                 
               </Grid>

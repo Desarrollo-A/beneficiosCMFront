@@ -23,8 +23,10 @@ import { fTimestamp } from 'src/utils/format-time';
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetAppointmentsByUser } from 'src/api/calendar-colaborador';
 
+import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
 
+import '../style.css';
 import { StyledCalendar } from '../styles';
 import CalendarDialog from '../calendar-dialog';
 import { useEvent, useCalendar } from '../hooks';
@@ -100,10 +102,11 @@ export default function CalendarView() {
           }}
         >
           <Typography variant="h4"> </Typography>
-          <Button color="inherit" variant="outlined" onClick={dialog.onTrue}>
-            Agendar nueva cita
+          <Button className="ButtonCita" onClick={dialog.onTrue}>
+            <span>Agendar nueva cita</span>
+            <Iconify icon="carbon:add-filled"/>
           </Button>
-        </Stack>
+          </Stack>
 
         {/* Calendario */}
         <Card>
@@ -120,7 +123,7 @@ export default function CalendarView() {
             <Calendar
               weekends
               editable={false} // en false para prevenir un drag del evento
-              selectable
+              // selectable
               locales={allLocales}
               locale="es"
               rerenderDelay={10}
