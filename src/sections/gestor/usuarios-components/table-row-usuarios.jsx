@@ -19,15 +19,19 @@ export default function TableRowUsuarios({ row, close }) {
     id, 
     numEmpleado,
     nombre, 
-    correo, 
-    estatus, 
-    rol, 
-    contrato,
-    password,
     sede,
     departamento,
     area,
     puesto, 
+    correo, 
+    fechaCreacion,
+    servicios,
+
+    estatus, 
+    rol, 
+    contrato,
+    password,
+    
   } = row;
 
   const quickEditar = useBoolean();
@@ -46,7 +50,19 @@ export default function TableRowUsuarios({ row, close }) {
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{nombre}</TableCell>
 
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{sede}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{departamento}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{area}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{puesto}</TableCell>
+
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{correo}</TableCell>
+        
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fechaCreacion}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{servicios}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{rol}</TableCell>
 
