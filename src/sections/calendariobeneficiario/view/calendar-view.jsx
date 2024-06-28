@@ -1,5 +1,5 @@
 import Calendar from '@fullcalendar/react';
-import { useState, useEffect } from 'react'; // => request placed at the top
+import { useState, useEffect, useCallback } from 'react'; // => request placed at the top
 import listPlugin from '@fullcalendar/list';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -90,6 +90,20 @@ export default function CalendarView() {
     appointmentMutate();
   }, [appointmentMutate]);
 
+  const [animate, setAnimate] = useState(false);
+
+  const handleClick = useCallback(
+    () => {
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+      setAnimate(true);
+      setTimeout(() => {
+      setAnimate(false);
+    }, 500); // Duración de la animación en milisegundos
+    },
+    []
+  );
+
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'xl'}>
@@ -102,7 +116,7 @@ export default function CalendarView() {
           }}
         >
           <Typography variant="h4"> </Typography>
-          <Button className="ButtonCita" onClick={dialog.onTrue}>
+          <Button className={`ButtonCita ${animate ? 'animate' : ''}`}  onClick={dialog.onTrue} id="animateElement" >
             <span>Agendar nueva cita</span>
             <Iconify icon="carbon:add-filled"/>
           </Button>
@@ -110,7 +124,7 @@ export default function CalendarView() {
 
         {/* Calendario */}
         <Card>
-          <StyledCalendar>
+          <StyledCalendar  >
             <CalendarToolbar
               date={date}
               view={view}
@@ -121,9 +135,10 @@ export default function CalendarView() {
               onChangeView={onChangeView}
             />
             <Calendar
+              id="clickableElement" 
               weekends
               editable={false} // en false para prevenir un drag del evento
-              // selectable
+              selectable
               locales={allLocales}
               locale="es"
               rerenderDelay={10}
@@ -134,8 +149,8 @@ export default function CalendarView() {
               eventDisplay="block"
               events={dataFiltered}
               headerToolbar={false}
-              select={dialog.onTrue}
-              eventClick={onClickEvent}
+              select={handleClick}
+              eventClick={ onClickEvent}
               height={smUp ? 720 : 'auto'}
               plugins={[
                 listPlugin,
