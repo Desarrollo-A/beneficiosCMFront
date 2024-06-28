@@ -11,7 +11,7 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-import useMediaQuery from '@mui/material/useMediaQuery';
+// import useMediaQuery from '@mui/material/useMediaQuery';
 
 import { RouterLink } from 'src/routes/components';
 import { useRouter, useSearchParams } from 'src/routes/hooks';
@@ -37,7 +37,7 @@ export default function JwtRegisterView() {
 
   const quickEdit = useBoolean();
 
-  const isMobile = useMediaQuery('(max-width: 960px)');
+  // const isMobile = useMediaQuery('(max-width: 960px)');
 
   const router = useRouter();
   const navigate = useNavigate();
