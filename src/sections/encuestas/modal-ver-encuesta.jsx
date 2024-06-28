@@ -62,7 +62,7 @@ export default function UserQuickEditForm({ open, onClose, idEncuesta }) {
         {encuestaData.length > 0 ? (
 
           <Stack sx={{ mt: 0 }} >
-            {encuestaData.map((item, index) => (
+            {encuestaData.map((item) => (
 
               <FormProvider methods={methods} >
 
@@ -71,8 +71,8 @@ export default function UserQuickEditForm({ open, onClose, idEncuesta }) {
                 </DialogContent>
 
                 <DialogContent spacing={1} sx={{margin: '25px'}}>
-                  {item.respuestas === "1" || item.respuestas === 1 && (
                     <RadioGroup
+                      key={item.idPregnta}
                       name="radio-buttons-group"
                       sx={{
                         display: 'grid',
@@ -83,55 +83,11 @@ export default function UserQuickEditForm({ open, onClose, idEncuesta }) {
                       }}
                     >
                       {Resp1Data.map((r1) => (
-                        <FormControlLabel key={r1.value} value={r1.value} control={<Radio />} label={r1.label} disabled />
+                        r1.grupo === item.respuestas ?
+                        <FormControlLabel key={r1.id} value={r1.value} control={<Radio />} label={r1.label} disabled />
+                        : null
                       ))}
                     </RadioGroup>
-                  )}
-
-                  {item.respuestas === "2" || item.respuestas === 2 && (
-                    <RadioGroup
-                      name="radio-buttons-group"
-                      sx={{
-                        display: 'grid',
-                        columnGap: 1,
-                        rowGap: 1,
-                        m: 1,
-                        gridTemplateColumns: 'repeat(3, 1fr)',
-                      }}
-                    >
-                      {Resp2Data.map((r2) => (
-                        <FormControlLabel key={r2.value} value={r2.value} control={<Radio />} label={r2.label} disabled />
-                      ))}
-                    </RadioGroup>
-                  )}
-
-                  {item.respuestas === "3" || item.respuestas === 3 && (
-                    <RadioGroup
-                      name="radio-buttons-group"
-                      sx={{
-                        display: 'grid',
-                        columnGap: 1,
-                        rowGap: 1,
-                        m: 1,
-                        gridTemplateColumns: 'repeat(3, 1fr)',
-                      }}
-                    >
-                      {Resp3Data.map((r3) => (
-                        <FormControlLabel key={r3.value} value={r3.value} control={<Radio />} label={r3.label} disabled />
-                      ))}
-                    </RadioGroup>
-                  )}
-
-                  {item.respuestas === "4" || item.respuestas === 4 && (
-                    <RadioGroup
-                      name="radio-buttons-group"
-                      row
-                    >
-                      {Resp4Data.map((r4) => (
-                        <FormControlLabel key={r4.value} value={r4.value} control={<Radio />} label={r4.label} disabled />
-                      ))}
-                    </RadioGroup>
-                  )}
 
                   {item.respuestas === "5" || item.respuestas === 5 && (
                     <RHFTextField name='abierta' multiline rows={3} disabled />
@@ -142,8 +98,6 @@ export default function UserQuickEditForm({ open, onClose, idEncuesta }) {
             ))}
 
           </Stack>
-
-
 
         ) : (
 

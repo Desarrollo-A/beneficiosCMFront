@@ -33,6 +33,7 @@ import UserTableFiltersResult from './encuestas-tabla-filtros';
 
 const TABLE_HEAD = [
   { id: '', label: 'ID' },
+  { id: '', label: 'TIPO DE ENCUESTA' },
   { id: '', label: 'FECHA CREACIÓN' },
   { id: '', label: 'ESTATUS' },
   { id: '', label: '' },
@@ -62,8 +63,6 @@ export default function EncuestasLista({ encuestas, estatusCt }) {
   const [area, setArea] = useState(puestos);
 
   const { getData } = usePostGeneral(area, endpoints.encuestas.getEncuestasCreadas, "getData");
-
-  const { EstatusData } = usePostGeneral(area, endpoints.encuestas.getEstatusUno, "EstatusData");
 
   const targetRef = useRef();
 
@@ -184,7 +183,6 @@ export default function EncuestasLista({ encuestas, estatusCt }) {
                       selected={table.selected.includes(usuario.id)}
                       onSelectRow={() => table.onSelectRow(usuario.id)}
                       onDeleteRow={() => handleDisableUser(usuario.id)}
-                      est={EstatusData}
                       puestos={area}
                     />
                   ))}
@@ -234,6 +232,7 @@ const applyFilter = ({ inputData, comparator, filters }) => {
       const nameLower = name.toLowerCase();
       return (
         user?.idEncuesta.toString().toLowerCase().includes(nameLower) ||
+        (user.tipoEncuesta && user.tipoEncuesta.toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
         user?.fechaCreacion.toLowerCase().includes(nameLower)
       );
     });

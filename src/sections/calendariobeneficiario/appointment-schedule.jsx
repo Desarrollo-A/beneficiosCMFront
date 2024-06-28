@@ -37,6 +37,8 @@ import Iconify from 'src/components/iconify';
 
 import ModalTerminos from './modal-terminos';
 
+import './style.css';
+
 dayjs.locale('es');
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -146,9 +148,8 @@ export default function AppointmentSchedule({
       const fetchCoordinates = async () => {
         try {
           const response = await axios.get(`
-        https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${
-          import.meta.env.VITE_GOOGLE_MAPS_API_KEY
-        }
+        https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY
+            }
         `);
 
           if (response.data.results[0]?.geometry) {
@@ -178,8 +179,8 @@ export default function AppointmentSchedule({
             sx={
               selectedValues.modalidad
                 ? {
-                    color: 'white',
-                  }
+                  color: 'white',
+                }
                 : {}
             }
           >
@@ -207,7 +208,7 @@ export default function AppointmentSchedule({
                       value={selectedValues.beneficio || ''}
                       defaultValue=""
                       onChange={(e) => handleChange('beneficio', e.target.value)}
-                      /* disabled={!!(beneficios?.length === 0 || currentEvent?.id)} */
+                    /* disabled={!!(beneficios?.length === 0 || currentEvent?.id)} */
                     >
                       {!(beneficios?.length === 0 || currentEvent?.id) ? (
                         beneficios?.map((e) => (
@@ -238,7 +239,7 @@ export default function AppointmentSchedule({
                       value={selectedValues.especialista}
                       defaultValue=""
                       onChange={(e) => handleChange('especialista', e.target.value)}
-                      /* disabled={!!(especialistas?.length === 0 || currentEvent?.id)} */
+                    /* disabled={!!(especialistas?.length === 0 || currentEvent?.id)} */
                     >
                       {!(especialistas?.length === 0 || currentEvent?.id) ? (
                         especialistas?.map((e, index) => (
@@ -269,7 +270,7 @@ export default function AppointmentSchedule({
                       defaultValue=""
                       value={selectedValues.modalidad}
                       onChange={(e) => handleChange('modalidad', e.target.value)}
-                      /* disabled={!!(modalidades?.length === 0 || currentEvent?.id)} */
+                    /* disabled={!!(modalidades?.length === 0 || currentEvent?.id)} */
                     >
                       {!(modalidades?.length === 0 || currentEvent?.id) ? (
                         modalidades?.map((e, index) => (
@@ -449,18 +450,36 @@ export default function AppointmentSchedule({
                   <Stack sx={{ flexDirection: 'col' }}>
                     <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
                       {selectedValues.beneficio === 158
-                        ? 'Se consideran 5 minutos de tolerancia.'
-                        : 'Se consideran 10 minutos de tolerancia.'}
+                        ? 'Se consideran 5 minutos de tolerancia para asistir.'
+                        : 'Se consideran 10 minutos de tolerancia para asistir.'}
                     </Typography>
                   </Stack>
                 </Stack>
-                {/* <Stack spacing={1} sx={{ p: { xs: 1, md: 1 } }}>
-                  Es necesario habilitar las ventanas emergentes en el navegador para poder realizar
-                  el pago de la cita.
-                  <Button variant="contained" color="primary" onClick={handleWindowActive}>
-                    Tutorial
-                  </Button>
-                </Stack> */}
+
+                <div className="card example-4">
+                  <div className="inner">
+                    <Stack
+                      sx={{
+                        flexDirection: 'row',
+                        p: { xs: 1, md: 1 },
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Stack>
+                        <Iconify
+                          icon="line-md:alert-twotone"
+                          width={30}
+                          sx={{ color: 'yellow' }}
+                        />
+                      </Stack>
+                      <Stack sx={{ flexDirection: 'col' }}>
+                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                          Una vez que agendes tu cita, tendrás 10 minutos para hacer el pago, de lo contrario se cancelará.
+                        </Typography>
+                      </Stack>
+                    </Stack>
+                  </div>
+                </div>
 
                 <Dialog open={openWindow} onClose={handleWindowClose} fullWidth maxWidth="md">
                   <DialogTitle>
@@ -528,14 +547,30 @@ export default function AppointmentSchedule({
                   <Stack sx={{ flexDirection: 'col' }}>
                     <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
                       {selectedValues.beneficio === 158
-                        ? 'Se consideran 5 minutos de tolerancia.'
-                        : 'Se consideran 10 minutos de tolerancia.'}
+                        ? 'Se consideran 5 minutos de tolerancia para asistir.'
+                        : 'Se consideran 10 minutos de tolerancia para asistir.'}
                     </Typography>
                   </Stack>
                 </Stack>
-                <Stack spacing={1} sx={{ p: { xs: 1, md: 1 } }}>
-                  Es necesario habilitar las ventanas emergentes en el navegador para poder realizar
-                  el pago de la cita.
+                <Stack
+                  sx={{
+                    flexDirection: 'row',
+                    p: { xs: 1, md: 1 },
+                    alignItems: 'center',
+                  }}
+                >
+                  <Stack>
+                    <Iconify
+                      icon="line-md:alert-twotone"
+                      width={30}
+                      sx={{ color: 'text.disabled' }}
+                    />
+                  </Stack>
+                  <Stack sx={{ flexDirection: 'col' }}>
+                    <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                      Una vez que agendes tu cita, tendrás 10 minutos para hacer el pago, de lo contrario se cancelará.
+                    </Typography>
+                  </Stack>
                 </Stack>
               </>
             )}
@@ -619,8 +654,8 @@ export default function AppointmentSchedule({
             ) : (
               <>Fecha sin horarios disponibles</>
             )}
-            {beneficioActivo?.primeraCita === 0 ||  beneficioActivo?.primeraCita === null ? (
-              
+            {beneficioActivo?.primeraCita === 0 || beneficioActivo?.primeraCita === null ? (
+
               <Stack>
                 <FormControlLabel
                   value="end"
@@ -632,11 +667,11 @@ export default function AppointmentSchedule({
                   labelPlacement="end"
                 />
                 <Button sx={{ color: 'blue' }} onClick={verTerminos}>
-                  Ver términos y condiciones 
+                  Ver términos y condiciones
                 </Button>
               </Stack>
-             
-             
+
+
             ) : (
               ''
             )}

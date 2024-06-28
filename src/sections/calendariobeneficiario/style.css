@@ -59,3 +59,59 @@
     background-position: 0 0;
   }
 }
+
+
+.card .inner {
+  padding: 0px;
+  background: #222;
+  color: #fff;
+  border-radius: 8px;
+}
+
+.example-4 {
+  outline-width: 1px;
+  outline-offset: 0;
+  outline-color: rgba(0, 160, 252, 0.75);
+  outline-style: solid;
+  animation: animateOutline 2.5s ease infinite;
+  border-radius: 8px;
+}
+
+@keyframes animateOutline {
+  0% {
+    outline-width: 1px;
+    outline-offset: 0;
+    outline-color: rgba(0, 130, 206, 0);
+  }
+
+  10% {
+    outline-color: rgba(0, 130, 206, 0.75);
+  }
+
+  50% {
+    outline-width: 7px;
+    outline-offset: 4px;
+    outline-color: rgba(0, 130, 206, 0);
+  }
+
+  100% {
+    outline-width: 7px;
+    outline-offset: 4px;
+    outline-color: rgba(102, 102, 102, 0);
+  }
+  
+}
+
+@keyframes glow {
+  0% {
+    background-position: 0 0;
+  }
+
+  50% {
+    background-position: 100% 0;
+  }
+
+  100% {
+    background-position: 0 0;
+  }
+}

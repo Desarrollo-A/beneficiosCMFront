@@ -17,7 +17,7 @@ import { useUpdate } from 'src/api/reportes';
 import { useSnackbar } from 'src/components/snackbar';
 // ----------------------------------------------------------------------
 
-export default function EncuestaHabilitar({ open, onClose, idEncuesta, puestos }) {
+export default function EncuestaHabilitar({ open, onClose, idEncuesta, puestos, idTipoEnc }) {
 
   const confirm = useBoolean();
 
@@ -34,7 +34,8 @@ export default function EncuestaHabilitar({ open, onClose, idEncuesta, puestos }
         const data = {
           'idEncuesta': idEncuesta,
           'estatus': 1,
-          'area': puestos
+          'area': puestos,
+          'tipoEncuesta': idTipoEnc
         };
 
         onClose();
@@ -106,4 +107,5 @@ EncuestaHabilitar.propTypes = {
   open: PropTypes.bool,
   idEncuesta: PropTypes.number,
   puestos: PropTypes.any,
+  idTipoEnc: PropTypes.any
 };
