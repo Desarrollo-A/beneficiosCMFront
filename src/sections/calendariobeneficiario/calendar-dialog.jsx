@@ -55,7 +55,7 @@ import {
   cancelAppointment,
   getModalitiesBene,
   getDiasDisponibles,
-  getCitasSinEvaluar,
+  // getCitasSinEvaluar,
   getBeneficioActivo,
   getCitasFinalizadas,
   updateDetailPacient,
@@ -218,7 +218,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     }
 
     // *** VALIDAMOS SI TIENE CITAS SIN EVALUAR ***
-    const citasSinEvaluar = await getCitasSinEvaluar(datosUser.idUsuario);
+    // const citasSinEvaluar = await getCitasSinEvaluar(datosUser.idUsuario);
     // Si tiene citas en proceso no lo tengo que dejar agendar citas
     /* if (citasSinEvaluar.result) {
       enqueueSnackbar('Evalúa tus citas previas para poder agendar otra cita', {
