@@ -1,6 +1,7 @@
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 import { enqueueSnackbar } from 'notistack';
 import localeData from 'dayjs/plugin/localeData';
 import { Dialog, DialogContent } from '@material-ui/core';
@@ -17,10 +18,11 @@ import {
   DialogActions,
 } from '@mui/material';
 
-// import uuidv4 from 'src/utils/uuidv4';
+import { endpoints } from 'src/utils/axios';
 
 import { getEncodedHash } from 'src/api/api';
 import { useAuthContext } from 'src/auth/hooks';
+import { usePostGeneral } from 'src/api/general';
 import {
   sendMail,
   consultarCita,
@@ -38,7 +40,7 @@ import CalendarPreview from 'src/sections/calendariobeneficiario/calendar-previe
 
 import EvaluateDialog from './evaluate-dialog';
 
-export default function PendingModalUser() {
+export default function PendingModalUser({ idUsuario }) {
   const [open, setOpen] = useState(true); // En true para abrir el modal
   const [open2, setOpen2] = useState(false);
   // const [open3, setOpen3] = useState(false);
@@ -47,6 +49,10 @@ export default function PendingModalUser() {
   const [confirmCancel, setConfirmCancel] = useState(false);
   const [datosCita, setDatosCita] = useState({});
   const [btnConfirmAction, setBtnConfirmAction] = useState(false);
+
+  const { encuestaData } = usePostGeneral(idUsuario, endpoints.encuestas.evaluacionEncuesta, "encuestaData");
+
+  const encDisponible = encuestaData.some(objeto => Object.values(objeto).includes(0));
 
   dayjs.locale('es');
   dayjs.extend(localeData);
@@ -80,6 +86,7 @@ export default function PendingModalUser() {
       return onClose();
     }
     if (cancel.result) {
+
       enqueueSnackbar('¡Has cancelado la cita!', {
         variant: 'success',
       });
@@ -393,7 +400,7 @@ export default function PendingModalUser() {
           </Stack>
         </DialogContent>
       </Dialog> */}
-      {pendientes?.data?.pago?.length === 0 &&
+      {/* {pendientes?.data?.pago?.length === 0 &&
         !open2 &&
         pendientes?.data?.evaluacion?.length > 0 && (
           <EvaluateDialog
@@ -402,7 +409,18 @@ export default function PendingModalUser() {
             mutate={pendingsMutate}
             cerrar={onClose}
           />
-        )}
+        )} */}
+
+      {encDisponible ? (
+        <EvaluateDialog
+          open={open}
+          encuestas={encuestaData}
+          mutate={pendingsMutate}
+          cerrar={onClose}
+        />
+      ) : (
+        null
+      )}
       <Dialog open={confirmCancel} maxWidth="sm">
         <DialogContent>
           <Stack
@@ -437,3 +455,7 @@ export default function PendingModalUser() {
     </>
   );
 }
+
+PendingModalUser.propTypes = {
+  idUsuario: PropTypes.any
+};
