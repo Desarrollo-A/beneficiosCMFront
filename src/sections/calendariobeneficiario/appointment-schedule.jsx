@@ -37,6 +37,8 @@ import Iconify from 'src/components/iconify';
 
 import ModalTerminos from './modal-terminos';
 
+import './style.css';
+
 dayjs.locale('es');
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -454,26 +456,30 @@ export default function AppointmentSchedule({
                   </Stack>
                 </Stack>
 
-                <Stack
-                  sx={{
-                    flexDirection: 'row',
-                    p: { xs: 1, md: 1 },
-                    alignItems: 'center',
-                  }}
-                >
-                  <Stack>
-                    <Iconify
-                      icon="fluent:warning-48-filled"
-                      width={30}
-                      sx={{ color: 'text.disabled' }}
-                    />
-                  </Stack>
-                  <Stack sx={{ flexDirection: 'col' }}>
-                    <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                      Una vez que agendes tu cita, tendrás 10 minutos para hacer el pago, de lo contrario se cancelará.
-                    </Typography>
-                  </Stack>
-                </Stack>
+                <div className="card example-4">
+                  <div className="inner">
+                    <Stack
+                      sx={{
+                        flexDirection: 'row',
+                        p: { xs: 1, md: 1 },
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Stack>
+                        <Iconify
+                          icon="line-md:alert-twotone"
+                          width={30}
+                          sx={{ color: 'yellow' }}
+                        />
+                      </Stack>
+                      <Stack sx={{ flexDirection: 'col' }}>
+                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                          Una vez que agendes tu cita, tendrás 10 minutos para hacer el pago, de lo contrario se cancelará.
+                        </Typography>
+                      </Stack>
+                    </Stack>
+                  </div>
+                </div>
 
                 <Dialog open={openWindow} onClose={handleWindowClose} fullWidth maxWidth="md">
                   <DialogTitle>
@@ -555,7 +561,7 @@ export default function AppointmentSchedule({
                 >
                   <Stack>
                     <Iconify
-                      icon="fluent:warning-48-filled"
+                      icon="line-md:alert-twotone"
                       width={30}
                       sx={{ color: 'text.disabled' }}
                     />
