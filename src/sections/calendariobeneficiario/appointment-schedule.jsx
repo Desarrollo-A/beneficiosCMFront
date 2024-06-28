@@ -35,9 +35,8 @@ import { getDocumento } from 'src/api/calendar-colaborador';
 
 import Iconify from 'src/components/iconify';
 
-import ModalTerminos from './modal-terminos';
-
 import './style.css';
+import ModalTerminos from './modal-terminos';
 
 dayjs.locale('es');
 dayjs.extend(utc);
@@ -184,15 +183,10 @@ export default function AppointmentSchedule({
                 : {}
             }
           >
-            {currentEvent?.estatus === 1 ? (
-              <Typography variant="subtitle1">
-                {dayjs(currentEvent?.start).locale('es').format('dddd, DD MMMM YYYY HH:mm ')}
-              </Typography>
-            ) : (
-              <Typography variant="subtitle1">
-                {dayjs().locale('es').format('dddd, DD MMMM YYYY')}
-              </Typography>
-            )}
+            <Typography variant="subtitle1">
+                Agendamiento de cita
+            </Typography>
+            <Box mb={1}/>
             {/* El primero es reagendar. */}
             {!currentEvent?.id && selectedValues?.modalidad ? (
               <ThemeProvider theme={darkTheme}>

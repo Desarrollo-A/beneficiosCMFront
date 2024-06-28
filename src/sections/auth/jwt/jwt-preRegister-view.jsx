@@ -6,9 +6,9 @@ import { useLocation } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import Box from '@mui/material/Box';
+import Tooltip from '@mui/material/Tooltip';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
-import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -74,7 +74,7 @@ export default function PreRegisterUser({ currentUser }) {
 
   const form = useForm({});
 
-  const email = location.state.data[0]?.correo; 
+  // const email = location.state.data[0]?.correo; 
 
   const [mailForm, setMailForm] = useState(location.state.data[0]?.correo);
 
