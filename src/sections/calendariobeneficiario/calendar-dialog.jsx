@@ -1402,7 +1402,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     } */
 
     await creaEvaluaciones(
-        agendar.data
+      agendar.data
     );
 
     await evaluacionReagenda(
@@ -1561,23 +1561,21 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     if (eventReasons?.length > 0) {
       items = eventReasons.map((er) => (
         <Tooltip title={er.nombre} key={er.idOpcion}>
-          <Chip
-            label={er.nombre}
-            variant="outlined"
-            size="small"
-            style={{ backgroundColor: '#e0e0e0', borderRadius: '20px' }}
-          />
+          <Typography variant="body2" sx={{
+            color: 'text.disabled',
+            whiteSpace: 'normal',
+            wordBreak: 'break-word',
+          }} mb={3}>{er.nombre}</Typography>
         </Tooltip>
       ));
     } else {
       items = (
         <Tooltip title="Motivos por agregar por especialista">
-          <Chip
-            label="Motivos por agregar por especialista"
-            variant="outlined"
-            size="small"
-            style={{ backgroundColor: '#e0e0e0', borderRadius: '20px' }}
-          />
+          <Typography variant="body2" sx={{
+            color: 'text.disabled',
+            whiteSpace: 'normal',
+            wordBreak: 'break-word', 
+          }} mb={3}>Motivos por agregar por especialista</Typography>
         </Tooltip>
       );
     }
@@ -1692,84 +1690,84 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                                 <Typography variant="subtitle1">Cita</Typography>
 
                                 {currentEvent?.estatus === 1 && currentEvent?.tipoCita === 1 ? (
-                                  <Typography variant="body2">
+                                  <Typography variant="body2" sx={{color: 'text.disabled'}}>
                                     {`${currentEvent?.beneficio} (por asistir - primera cita)`}
                                   </Typography>
                                 ) : (
                                   ''
                                 )}
                                 {currentEvent?.estatus === 1 && currentEvent?.tipoCita === 2 ? (
-                                  <Typography variant="body2">
+                                   <Typography variant="body2" sx={{color: 'text.disabled'}}>
                                     {`${currentEvent?.beneficio} (por asistir - cita en línea)`}
                                   </Typography>
                                 ) : (
                                   ''
                                 )}
                                 {currentEvent?.estatus === 1 && currentEvent?.tipoCita === 3 ? (
-                                  <Typography variant="body2">
+                                   <Typography variant="body2" sx={{color: 'text.disabled'}}>
                                     {`${currentEvent?.beneficio} (por asistir - cita normal)`}
                                   </Typography>
                                 ) : (
                                   ''
                                 )}
                                 {currentEvent?.estatus === 2 ? (
-                                  <Typography variant="body2">
+                                   <Typography variant="body2" sx={{color: 'text.disabled'}}>
                                     {`${currentEvent?.beneficio} (cancelado)`}
                                   </Typography>
                                 ) : (
                                   ''
                                 )}
                                 {currentEvent?.estatus === 3 ? (
-                                  <Typography variant="body2">
+                                   <Typography variant="body2" sx={{color: 'text.disabled'}}>
                                     {`${currentEvent?.beneficio} (penalizado)`}
                                   </Typography>
                                 ) : (
                                   ''
                                 )}
                                 {currentEvent?.estatus === 4 ? (
-                                  <Typography variant="body2">
+                                   <Typography variant="body2" sx={{color: 'text.disabled'}}>
                                     {`${currentEvent?.beneficio} (finalizada)`}
                                   </Typography>
                                 ) : (
                                   ''
                                 )}
                                 {currentEvent?.estatus === 5 ? (
-                                  <Typography variant="body2">
+                                   <Typography variant="body2" sx={{color: 'text.disabled'}}>
                                     {`${currentEvent?.beneficio} (justificado)`}
                                   </Typography>
                                 ) : (
                                   ''
                                 )}
                                 {currentEvent?.estatus === 6 ? (
-                                  <Typography variant="body2">
+                                   <Typography variant="body2" sx={{color: 'text.disabled'}}>
                                     {`${currentEvent?.beneficio} (pendiente de pago)`}
                                   </Typography>
                                 ) : (
                                   ''
                                 )}
                                 {currentEvent?.estatus === 7 ? (
-                                  <Typography variant="body2">
+                                   <Typography variant="body2" sx={{color: 'text.disabled'}}>
                                     {`${currentEvent?.beneficio} (cancelado por especialista)`}
                                   </Typography>
                                 ) : (
                                   ''
                                 )}
                                 {currentEvent?.estatus === 8 ? (
-                                  <Typography variant="body2">
+                                   <Typography variant="body2" sx={{color: 'text.disabled'}}>
                                     {`${currentEvent?.beneficio} (reagendado)`}
                                   </Typography>
                                 ) : (
                                   ''
                                 )}
                                 {currentEvent?.estatus === 9 ? (
-                                  <Typography variant="body2">
+                                   <Typography variant="body2" sx={{color: 'text.disabled'}}>
                                     Cita en {`${currentEvent?.beneficio} (cita expirada)`}
                                   </Typography>
                                 ) : (
                                   ''
                                 )}
                                 {currentEvent?.estatus === 10 ? (
-                                  <Typography variant="body2">
+                                   <Typography variant="body2" sx={{color: 'text.disabled'}}>
                                     Cita en {`${currentEvent?.beneficio} (proceso de pago)`}
                                   </Typography>
                                 ) : (
@@ -1903,6 +1901,35 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
                             <TimelineItem  >
                               <TimelineSeparator >
+                                <TimelineDot
+                                  className='icons'
+                                >
+                                  <Iconify
+                                    icon="ic:outline-email"
+                                    width={30}
+                                    sx={{ color: 'gray' }}
+                                  />
+                                </TimelineDot>
+                                <TimelineConnector />
+                              </TimelineSeparator>
+
+                              <TimelineContent>
+                                <Typography variant="subtitle1">Correo</Typography>
+
+                                <Typography variant="body2" sx={{
+                                  color: 'text.disabled',
+                                  whiteSpace: 'normal',
+                                  wordBreak: 'break-word', // Esto permitirá que las palabras largas se dividan y se envuelvan a la siguiente línea
+                                }} mb={3}>
+                                  {currentEvent?.correoEspecialista
+                                    ? currentEvent?.correoEspecialista
+                                    : 'correo-demo@ciudadmaderas.com.mx'}
+                                </Typography>
+                              </TimelineContent>
+                            </TimelineItem>
+
+                            <TimelineItem  >
+                              <TimelineSeparator >
                                 <TimelineDot className='icons'
                                 >
                                   <Iconify
@@ -1968,8 +1995,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                               i > 0 && '',
                               <Typography
                                 key={i}
-                                style={{ textDecoration: 'line-through' }}
-                                fontSize="90%"
+                                variant="body2"
+                                style={{ color: 'text.disabled', textDecoration: 'line-through'}}
                               >
                                 {fecha}
                               </Typography>,

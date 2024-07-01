@@ -7,18 +7,26 @@ import { useState, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
-import { Chip } from '@mui/material';
+import { Grid } from '@mui/material';
 import Stack from '@mui/system/Stack';
+import Timeline from '@mui/lab/Timeline';
 import Dialog from '@mui/material/Dialog';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
+import TimelineDot from '@mui/lab/TimelineDot';
+import { useTheme } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
+import DialogTitle from '@mui/material/DialogTitle';
+import TimelineContent from '@mui/lab/TimelineContent';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
+import TimelineSeparator from '@mui/lab/TimelineSeparator';
+import TimelineConnector from '@mui/lab/TimelineConnector';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { MobileDatePicker, MobileTimePicker } from '@mui/x-date-pickers';
+import TimelineItem, { timelineItemClasses } from '@mui/lab/TimelineItem';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 import uuidv4 from 'src/utils/uuidv4';
@@ -38,6 +46,7 @@ import { useSnackbar } from 'src/components/snackbar';
 import { RHFTextField } from 'src/components/hook-form';
 import FormProvider from 'src/components/hook-form/form-provider';
 
+import '../style.css';
 import CancelEventDialog from './cancelEventDialog';
 
 export default function EventContent({
@@ -49,6 +58,8 @@ export default function EventContent({
 }) {
   const { user } = useAuthContext(); // variable del la sesion del usuario
   dayjs.locale('es'); // valor para cambiar el idioma del dayjs
+
+  const theme = useTheme();
 
   const { enqueueSnackbar } = useSnackbar();
   const [open, setOpen] = useState(false);
@@ -93,23 +104,21 @@ export default function EventContent({
     if (eventReasons?.length > 0) {
       items = eventReasons.map((er) => (
         <Tooltip title={er.nombre} key={er.idOpcion}>
-          <Chip
-            label={er.nombre}
-            variant="outlined"
-            size="small"
-            style={{ backgroundColor: '#e0e0e0', borderRadius: '20px' }}
-          />
+           <Typography variant="body2" sx={{
+            color: 'text.disabled',
+            whiteSpace: 'normal',
+            wordBreak: 'break-word',
+          }} mb={3}>{er.nombre}</Typography>
         </Tooltip>
       ));
     } else {
       items = (
         <Tooltip title="Sin motivos de cita">
-          <Chip
-            label="Sin motivos de cita"
-            variant="outlined"
-            size="small"
-            style={{ backgroundColor: '#e0e0e0', borderRadius: '20px' }}
-          />
+           <Typography variant="body2" sx={{
+            color: 'text.disabled',
+            whiteSpace: 'normal',
+            wordBreak: 'break-word',
+          }} mb={3}>Sin motivos de cita</Typography>
         </Tooltip>
       );
     }
@@ -224,42 +233,53 @@ export default function EventContent({
   return (
     <>
       <FormProvider methods={methods} onSubmit={onSubmit}>
-        <DialogContent sx={{ p: { xs: 1, md: 2 } }}>
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            useFlexGap
-            flexWrap="wrap"
-            sx={{ p: { xs: 1, md: 2 } }}
-          >
-            <Typography variant="h5" sx={{ display: 'flex', alignItems: 'center' }}>
-              {dialogTitle(currentEvent?.estatus, type)}
-            </Typography>
-            <Stack direction="row">
-              {(currentEvent?.estatus === 1 || currentEvent?.estatus === 6) && type === 'date' && (
-                <Tooltip title="Finalizar cita">
-                  <IconButton onClick={handleOpen}>
-                    <Iconify icon="solar:archive-minimalistic-bold" />
-                  </IconButton>
-                </Tooltip>
-              )}
-              {type === 'cancel' && !pastCheck && (
-                <Tooltip
-                  title={currentEvent?.type === 'date' ? 'Cancelar cita' : 'Eliminar horario'}
-                >
-                  <IconButton onClick={handleClickOpen}>
-                    <Iconify icon="solar:trash-bin-trash-bold" />
-                  </IconButton>
-                </Tooltip>
+
+        <DialogTitle sx={{ p: { xs: 1, md: 1 } }}>
+          <Stack spacing={1} sx={{ p: { xs: 1, md: 2 } }}>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Typography variant="h5">
+                {dialogTitle(currentEvent?.estatus, type)}
+              </Typography>
+              {currentEvent?.id && (currentEvent?.estatus === 1 || currentEvent?.estatus === 6) && (
+                <Stack direction="row" spacing={1}>
+                  {(currentEvent?.estatus === 1 || currentEvent?.estatus === 6) && type === 'date' && (
+                    <Tooltip title="Finalizar cita">
+                      <IconButton className="buttonActions" onClick={handleOpen}>
+                        <Iconify icon="solar:archive-minimalistic-bold" />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                  {type === 'cancel' && !pastCheck && (
+                    <Tooltip
+                      title={currentEvent?.type === 'date' ? 'Cancelar cita' : 'Eliminar horario'}
+                    >
+                      <IconButton onClick={handleClickOpen}>
+                        <Iconify icon="solar:trash-bin-trash-bold" />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                </Stack>
               )}
             </Stack>
+
+            <Typography variant="subtitle1">{dateTitle}</Typography>
+
+            {type === 'cancel' && (
+              <Stack spacing={3} sx={{ p: { xs: 1, md: 2 } }}>
+                <Typography variant="subtitle1">{dateTitle}</Typography>
+                <RHFTextField disabled={disableInputs} name="title" label="Título" />
+              </Stack>
+            )}
           </Stack>
-          {type === 'cancel' && (
-            <Stack spacing={3} sx={{ p: { xs: 1, md: 2 } }}>
-              <Typography variant="subtitle1">{dateTitle}</Typography>
-              <RHFTextField disabled={disableInputs} name="title" label="Título" />
-            </Stack>
-          )}
+        </DialogTitle>
+
+        <DialogContent
+          style={{ maxHeight: currentEvent?.id ? '400px' : '600px', overflowY: currentEvent?.id ? 'auto' : 'hidden' }}
+          sx={{ p: { xs: 1, md: 2 }, backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f6f7f8' }}>
 
           {type === 'cancel' ? (
             <>
@@ -345,283 +365,223 @@ export default function EventContent({
           )}
 
           {type === 'date' && (
-            <Stack>
-              <Stack
+            <Grid
+              container
+              direction="column"
+              justifyContent="space-between"
+            >
+              <Grid
+                item
+                container
                 direction="row"
-                alignItems="center"
-                justifyContent="space-between"
                 spacing={1}
-                sx={{ px: { xs: 1, md: 2 }, py: 1 }}
+                sx={{ width: '100%' }}
               >
-                <Typography variant="h6">{dateTitle}</Typography>
-              </Stack>
+                <Grid xs={12}>
 
-              <Stack
-                sx={{
-                  flexDirection: 'row',
-                  px: { xs: 1, md: 2 },
-                  py: 1,
-                  alignItems: 'center',
-                }}
-              >
-                <Stack
-                  alignItems="center"
-                  sx={{
-                    alignItems: 'center',
-                    display: 'flex',
-                  }}
-                >
-                  <Iconify icon="mdi:account-circle" width={30} sx={{ color: 'text.disabled' }} />
-                </Stack>
+                  <Timeline
+                    sx={{
+                      m: 0,
+                      p: 3,
+                      [`& .${timelineItemClasses.root}:before`]: {
+                        flex: 0,
+                        padding: 0,
+                      },
+                    }}
+                  >
 
-                <Stack
-                  alignItems="center"
-                  sx={{
-                    alignItems: 'center',
-                    display: 'flex',
-                  }}
-                >
-                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                    {currentEvent?.title}
-                  </Typography>
-                </Stack>
-              </Stack>
+                    <TimelineItem  >
+                      <TimelineSeparator >
+                        <TimelineDot
+                          className='icons'
+                        >
+                          <Iconify
+                            icon="mdi:account-circle"
+                            width={30}
+                            sx={{ color: '#c9a61d' }}
+                          />
+                        </TimelineDot>
+                        <TimelineConnector />
+                      </TimelineSeparator>
 
-              <Stack
-                sx={{
-                  flexDirection: 'row',
-                  px: { xs: 1, md: 2 },
-                  py: 1,
-                  alignItems: 'center',
-                }}
-              >
-                <Stack
-                  alignItems="center"
-                  sx={{
-                    alignItems: 'center',
-                    display: 'flex',
-                  }}
-                >
-                  <Iconify icon="solar:user-id-broken" width={30} sx={{ color: 'text.disabled' }} />
-                </Stack>
+                      <TimelineContent>
+                        <Typography variant="subtitle1">Paciente</Typography>
 
-                <Stack
-                  alignItems="center"
-                  sx={{
-                    alignItems: 'center',
-                    display: 'flex',
-                  }}
-                >
-                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                    {currentEvent?.nombre}
-                  </Typography>
-                </Stack>
-              </Stack>
+                        <Typography variant="body2" sx={{ color: 'text.disabled' }} mb={3}>
+                          {currentEvent?.nombre}
+                        </Typography>
+                      </TimelineContent>
+                    </TimelineItem>
 
-              <Stack
-                sx={{
-                  flexDirection: 'row',
-                  px: { xs: 1, md: 2 },
-                  py: 1,
-                  alignItems: 'center',
-                }}
-              >
-                <Stack
-                  alignItems="center"
-                  sx={{
-                    alignItems: 'center',
-                    display: 'flex',
-                  }}
-                >
-                  <Iconify icon="mdi:phone" width={30} sx={{ color: 'text.disabled' }} />
-                </Stack>
+                    <TimelineItem  >
+                      <TimelineSeparator >
+                        <TimelineDot
+                          className='icons'
+                        >
+                          <Iconify
+                            icon="mdi:phone"
+                            width={30}
+                            sx={{ color: '#3399ff' }}
+                          />
+                        </TimelineDot>
+                        <TimelineConnector />
+                      </TimelineSeparator>
 
-                <Stack
-                  alignItems="center"
-                  sx={{
-                    alignItems: 'center',
-                    display: 'flex',
-                  }}
-                >
-                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                    {currentEvent?.telPersonal}
-                  </Typography>
-                </Stack>
-              </Stack>
+                      <TimelineContent>
+                        <Typography variant="subtitle1">Teléfono</Typography>
 
-              <Stack
-                sx={{
-                  flexDirection: 'row',
-                  px: { xs: 1, md: 2 },
-                  py: 1,
-                  alignItems: 'center',
-                }}
-              >
-                <Stack
-                  alignItems="center"
-                  sx={{
-                    alignItems: 'center',
-                    display: 'flex',
-                  }}
-                >
-                  <Iconify icon="mdi:calendar-clock" width={30} sx={{ color: 'text.disabled' }} />
-                </Stack>
+                        <Typography variant="body2" sx={{ color: 'text.disabled' }} mb={3}>
+                          {currentEvent?.telPersonal}
+                        </Typography>
+                      </TimelineContent>
+                    </TimelineItem>
 
-                <Stack
-                  alignItems="center"
-                  sx={{
-                    alignItems: 'center',
-                    display: 'flex',
-                  }}
-                >
-                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                    {dayjs(currentEvent?.start).format('HH:mm a')} -{' '}
-                    {dayjs(currentEvent?.end).format('HH:mm a')}
-                  </Typography>
-                </Stack>
-              </Stack>
+                    <TimelineItem  >
+                      <TimelineSeparator >
+                        <TimelineDot
+                          className='icons'
+                        >
+                          <Iconify
+                            className='icons'
+                            icon="mdi:calendar-clock"
+                            width={30}
+                            sx={{ color: 'orange' }}
+                          />
+                        </TimelineDot>
+                        <TimelineConnector />
+                      </TimelineSeparator>
 
-              <Stack
-                sx={{
-                  flexDirection: 'row',
-                  px: { xs: 1, md: 2 },
-                  py: 1,
-                  alignItems: 'center',
-                }}
-              >
-                <Stack
-                  alignItems="center"
-                  sx={{
-                    alignItems: 'center',
-                    display: 'flex',
-                  }}
-                >
-                  <Iconify icon="mdi:world" width={30} sx={{ color: 'text.disabled' }} />
-                </Stack>
+                      <TimelineContent>
+                        <Typography variant="subtitle1">Horario</Typography>
 
-                <Stack
-                  alignItems="center"
-                  sx={{
-                    alignItems: 'center',
-                    display: 'flex',
-                  }}
-                >
-                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                    {sede}
-                  </Typography>
-                </Stack>
-              </Stack>
+                        <Typography variant="body2" sx={{ color: 'text.disabled' }} mb={3}>
+                          {dayjs(currentEvent?.start).format('HH:mm a')} -{' '}
+                          {dayjs(currentEvent?.end).format('HH:mm a')}
+                        </Typography>
+                      </TimelineContent>
+                    </TimelineItem>
 
-              <Stack
-                sx={{
-                  flexDirection: 'row',
-                  px: { xs: 1, md: 2 },
-                  py: 1,
-                  alignItems: 'center',
-                }}
-              >
-                <Stack
-                  alignItems="center"
-                  sx={{
-                    alignItems: 'center',
-                    display: 'flex',
-                  }}
-                >
-                  <Iconify icon="ic:outline-place" width={30} sx={{ color: 'text.disabled' }} />
-                </Stack>
+                    <TimelineItem  >
+                      <TimelineSeparator >
+                        <TimelineDot
+                          className='icons'
+                        >
+                          <Iconify
+                            icon="mdi:earth"
+                            width={30}
+                            sx={{ color: '#1ac949' }}
+                          />
+                        </TimelineDot>
+                        <TimelineConnector />
+                      </TimelineSeparator>
 
-                <Stack
-                  alignItems="center"
-                  sx={{
-                    alignItems: 'center',
-                    display: 'flex',
-                  }}
-                >
-                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                    {oficina}
-                  </Typography>
-                </Stack>
-              </Stack>
+                      <TimelineContent>
+                        <Typography variant="subtitle1">Sede</Typography>
 
-              <Stack
-                sx={{
-                  flexDirection: 'row',
-                  px: { xs: 1, md: 2 },
-                  py: 1,
-                  alignItems: 'center',
-                }}
-              >
-                <Stack
-                  alignItems="center"
-                  sx={{
-                    alignItems: 'center',
-                    display: 'flex',
-                  }}
-                >
-                  <Iconify icon="ic:outline-email" width={30} sx={{ color: 'text.disabled' }} />
-                </Stack>
+                        <Typography variant="body2" sx={{ color: 'text.disabled' }} mb={3}>
+                          {sede}
+                        </Typography>
+                      </TimelineContent>
+                    </TimelineItem>
 
-                <Stack
-                  alignItems="center"
-                  sx={{
-                    alignItems: 'center',
-                    display: 'flex',
-                  }}
-                >
-                  <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                    {currentEvent?.correo
-                      ? currentEvent?.correo.toLowerCase()
-                      : 'correo-demo@ciudadmaderas.com.mx'}
-                  </Typography>
-                </Stack>
-              </Stack>
+                    <TimelineItem  >
+                      <TimelineSeparator >
+                        <TimelineDot
+                          className='icons'
+                        >
+                          <Iconify
+                            icon="ic:outline-place"
+                            width={30}
+                            sx={{ color: '#084a73' }}
+                          />
+                        </TimelineDot>
+                        <TimelineConnector />
+                      </TimelineSeparator>
 
-              {currentEvent?.fechasFolio && (
-                <Stack
-                  flexDirection="row"
-                  flexWrap="wrap"
-                  flex={1}
-                  spacing={2}
-                  sx={{ px: { xs: 1, md: 2 }, py: 1 }}
-                >
-                  <Stack spacing={2} direction="row">
-                    <Iconify
-                      icon="mdi:clock-remove-outline"
-                      width={30}
-                      sx={{ color: 'text.disabled' }}
-                    />
-                  </Stack>
-                  <Stack>
-                    {fechasFolio.map((fecha, i) => [
-                      i > 0 && '',
-                      <Typography key={i} style={{ textDecoration: 'line-through' }} fontSize="90%">
-                        {fecha}
-                      </Typography>,
-                    ])}
-                  </Stack>
-                </Stack>
-              )}
+                      <TimelineContent>
+                        <Typography variant="subtitle1">Ubicación</Typography>
 
-              <Stack spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1 }}>
-                <Stack spacing={2} direction="row">
-                  <Iconify
-                    icon="solar:chat-round-line-outline"
-                    width={30}
-                    sx={{ color: 'text.disabled' }}
-                  />
-                  <Typography>Motivos</Typography>
-                </Stack>
-                <Stack
-                  flexDirection="row"
-                  flexWrap="wrap"
-                  flex={1}
-                  spacing={2}
-                  sx={{ px: { xs: 1, md: 3 }, py: 1 }}
-                >
-                  <Items />
-                </Stack>
-              </Stack>
-            </Stack>
+                        <Typography variant="body2" sx={{ color: 'text.disabled' }} mb={3}>
+                          {oficina}
+                        </Typography>
+                      </TimelineContent>
+                    </TimelineItem>
+
+                    <TimelineItem  >
+                      <TimelineSeparator >
+                        <TimelineDot
+                          className='icons'
+                        >
+                          <Iconify
+                            icon="ic:outline-email"
+                            width={30}
+                            sx={{ color: 'gray' }}
+                          />
+                        </TimelineDot>
+                        <TimelineConnector />
+                      </TimelineSeparator>
+
+                      <TimelineContent>
+                        <Typography variant="subtitle1">Correo</Typography>
+
+                        <Typography variant="body2" sx={{ color: 'text.disabled' }} mb={3}>
+                          {currentEvent?.correo
+                            ? currentEvent?.correo.toLowerCase()
+                            : 'correo-demo@ciudadmaderas.com.mx'}
+                        </Typography>
+                      </TimelineContent>
+                    </TimelineItem>
+
+                    <TimelineItem  >
+                      <TimelineSeparator >
+                        <TimelineDot
+                          className='icons'
+                        >
+                          <Iconify
+                            icon="mdi:clock-remove-outline"
+                            width={30}
+                            sx={{ color: 'red' }}
+                          />
+                        </TimelineDot>
+                        <TimelineConnector />
+                      </TimelineSeparator>
+
+                      <TimelineContent>
+                        <Typography variant="subtitle1">Cancelación</Typography>
+
+                        {fechasFolio.map((fecha, i) => [
+                          i > 0 && '',
+                          <Typography key={i} style={{ textDecoration: 'line-through' }} fontSize="90%">
+                            {fecha}
+                          </Typography>,
+                        ])}
+                      </TimelineContent>
+                    </TimelineItem>
+
+                    <TimelineItem  >
+                      <TimelineSeparator >
+                        <TimelineDot
+                          className='icons'
+                        >
+                          <Iconify
+                            icon="solar:chat-round-line-outline"
+                            width={30}
+                            sx={{ color: '#1a00a3' }}
+                          />
+                        </TimelineDot>
+                        <TimelineConnector />
+                      </TimelineSeparator>
+
+                      <TimelineContent>
+                        <Typography variant="subtitle1">Motivos</Typography>
+                        <Items />
+                      </TimelineContent>
+                    </TimelineItem>
+                  </Timeline>
+
+                </Grid>
+              </Grid>
+            </Grid>
           )}
         </DialogContent>
 
