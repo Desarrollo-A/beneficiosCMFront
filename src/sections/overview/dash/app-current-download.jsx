@@ -66,7 +66,7 @@ export default function AppCurrentDownload({
 
   const fhF = new Date(fechaF);
 
-  const [areas, setAreas] = useState(rol === 3 ? puesto : 158);
+  const [areas, setAreas] = useState(rol === 3 ? puesto : 585);
 
   const [_es, set_es] = useState(rol === 3 ? id : '0');
 

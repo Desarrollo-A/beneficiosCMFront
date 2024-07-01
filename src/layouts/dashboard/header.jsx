@@ -51,7 +51,7 @@ export default function Header({ onOpenNav }) {
         </IconButton>
       )}
 
-      {datosUser?.idRol === 2 && <PendingModalUser />}
+      {datosUser?.idRol === 2 && <PendingModalUser idUsuario={datosUser?.idUsuario}/>}
       {datosUser?.idRol === 3 && <PendingModal />}
 
       <Stack

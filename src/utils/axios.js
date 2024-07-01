@@ -264,6 +264,13 @@ export const endpoints = {
     getEstatusUno: '/EncuestasController/getEstatusUno',
     getValidEncContestada: '/EncuestasController/getValidEncContestada',
     sendMail: '/EncuestasController/sendMail',
+    tipoEncuesta: '/EncuestasController/getTipoEncuesta',
+    evaluacionEncuesta: '/EncuestasController/evaluacionEncuesta',
+    getEncuestaContestar: '/EncuestasController/getEncuestaContestar',
+    updateEvaluacion: 'EncuestasController/updateEvaluacion',
+    evaluacionReagenda: 'EncuestasController/evaluacionReagenda',
+    creaEvaluaciones: 'EncuestasController/creaEvaluaciones',
+    evaluacionCancelacion: 'EncuestasController/evaluacionCancelacion',
   },
   gestor: {
     getAtencionXsede: '/GeneralController/getAtencionXsede',
