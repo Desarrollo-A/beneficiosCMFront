@@ -532,6 +532,7 @@ export default function EventContent({
                       </TimelineContent>
                     </TimelineItem>
 
+                    {currentEvent?.fechasFolio && (
                     <TimelineItem  >
                       <TimelineSeparator >
                         <TimelineDot
@@ -557,6 +558,7 @@ export default function EventContent({
                         ])}
                       </TimelineContent>
                     </TimelineItem>
+                    )}
 
                     <TimelineItem  >
                       <TimelineSeparator >
