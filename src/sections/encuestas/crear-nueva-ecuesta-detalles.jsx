@@ -5,6 +5,7 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
+import Grid from '@mui/material/Unstable_Grid2';
 
 import { endpoints } from 'src/utils/axios';
 
@@ -21,7 +22,7 @@ export default function InvoiceNewEditDetails() {
 
   const { minEncuestaData } = useGetGeneral(endpoints.encuestas.encuestaMinima, "minEncuestaData");
 
-  const minEnc = parseInt(minEncuestaData.map((u) => (u.minIdEncuesta)), 10)+1;
+  const minEnc = parseInt(minEncuestaData.map((u) => (u.minIdEncuesta)), 10) + 1;
 
   const { control } = useFormContext();
 
@@ -44,50 +45,62 @@ export default function InvoiceNewEditDetails() {
 
   return (
     <Box sx={{ p: 3 }}>
+      <Stack
+        sx={{
+          p: 2.5,
+          pr: { xs: 2.5, md: 2.5 },
+        }} divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3}>
 
-      <Stack divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3}>
         {fields.map((item, index) => (
-          <Stack key={item.id} alignItems="flex-end" spacing={1.5}>
-            <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ width: 1 }}>
-              <RHFTextField
-                size="small"
-                name={`items[${index}].pregunta`}
-                label="Pregunta"
-                InputLabelProps={{ shrink: true }}
-              />
+          <Stack key={item.id} >
+            <Grid container spacing={3} disableEqualOverflow>
+              <Grid xs={9} md={9}>
+                <RHFTextField
+                  size="small"
+                  name={`items[${index}].pregunta`}
+                  label="Pregunta"
+                  InputLabelProps={{ shrink: true }}
+                />
+              </Grid>
 
-              <RHFSelect
-                name={`items[${index}].respuesta`}
+              <Grid xs={3} md={3}>
+                <RHFSelect
+                  name={`items[${index}].respuesta`}
+                  size="small"
+                  label="Respuestas"
+                  InputLabelProps={{ shrink: true }}
+                >
+
+                  <Divider sx={{ borderStyle: 'dashed' }} />
+
+                  {respuestasData.map((res) => (
+                    <MenuItem
+                      key={res.idOpcion}
+                      value={res.idOpcion}
+                    >
+                      {res.nombre}
+                    </MenuItem>
+                  ))}
+                </RHFSelect>
+
+              </Grid></Grid>
+
+            <Grid xs={3} md={3}>
+              <Button
                 size="small"
-                label="Respuestas"
-                InputLabelProps={{ shrink: true }}
+                color="error"
+                variant="contained"
+                startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
+                onClick={() => handleRemove(index)}
                 sx={{
-                  maxWidth: { md: 160 },
+                  p: 1,
+                  my: 1
                 }}
               >
+                Remover
+              </Button>
+            </Grid>
 
-                <Divider sx={{ borderStyle: 'dashed' }} />
-
-                {respuestasData.map((res) => (
-                  <MenuItem
-                    key={res.idOpcion}
-                    value={res.idOpcion}
-                  >
-                    {res.nombre}
-                  </MenuItem>
-                ))}
-              </RHFSelect>
-
-            </Stack>
-
-            <Button
-              size="small"
-              color="error"
-              startIcon={<Iconify icon="solar:trash-bin-trash-bold" />}
-              onClick={() => handleRemove(index)}
-            >
-              Remover
-            </Button>
           </Stack>
         ))}
       </Stack>
@@ -101,6 +114,7 @@ export default function InvoiceNewEditDetails() {
       >
         <Button
           size="small"
+          variant="contained"
           color="primary"
           startIcon={<Iconify icon="mingcute:add-line" />}
           onClick={handleAdd}

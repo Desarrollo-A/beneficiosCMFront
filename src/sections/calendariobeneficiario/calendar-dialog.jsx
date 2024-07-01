@@ -45,6 +45,7 @@ import {
 import { getEncodedHash } from 'src/api/api';
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetEventReasons } from 'src/api/calendar-specialist';
+import { creaEvaluaciones, evaluacionReagenda, evaluacionCancelacion } from 'src/api/evaluacion';
 import {
   sendMail,
   crearCita,
@@ -83,7 +84,6 @@ import { useSnackbar } from 'src/components/snackbar';
 import FormProvider from 'src/components/hook-form/form-provider';
 
 import './style.css';
-import EvaluateDialog from './evaluate-dialog';
 import CalendarPreview from './calendar-preview';
 import AppointmentSchedule from './appointment-schedule';
 
@@ -613,10 +613,15 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       return onClose();
     }
 
+    await evaluacionCancelacion(
+      currentEvent.id
+    );
+
     enqueueSnackbar('¡Has cancelado la cita!', {
       variant: 'success',
     });
 
+    mutate(endpoints.encuestas.evaluacionEncuesta);
     mutate(endpoints.reportes.citas);
     mutate(endpoints.dashboard.getCountEstatusCitas);
     mutate(endpoints.dashboard.getCtCanceladas);
@@ -1390,11 +1395,19 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       1
     );
 
-    if (!agendar.result) {
+    /* if (!agendar.result) {
       return enqueueSnackbar(agendar.msg, {
-        variant: 'error',
+        variant: 'error',getCitasSinEvaluarUsuario
       });
-    }
+    } */
+
+    await creaEvaluaciones(
+        agendar.data
+    );
+
+    await evaluacionReagenda(
+      agendar.data
+    );
 
     const startDate = dayjs(horarioSeleccionado);
     const endDate = startDate.add(1, 'hour');
@@ -1446,6 +1459,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     });
     appointmentMutate();
     onClose();
+    mutate(endpoints.encuestas.evaluacionEncuesta);
     return setReschedule(false);
   };
 
@@ -2321,7 +2335,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       </Dialog>
 
       <CalendarPreview event={event} open={open2} handleClose={handleClose} />
-      {pendiente && openEvaluateDialog && (
+      {/* {pendiente && openEvaluateDialog && (
         <EvaluateDialog
           open={openEvaluateDialog}
           pendiente={pendiente}
@@ -2332,7 +2346,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
           }}
           cerrar={() => setOpenEvaluateDialog(false)}
         />
-      )}
+      )} */}
     </>
   );
 }
