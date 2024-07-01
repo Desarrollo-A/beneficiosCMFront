@@ -1923,34 +1923,34 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
                     {currentEvent?.fechasFolio && (
 
-                        <Timeline
-                          sx={{
-                            m: 0,
-                            p: 2,
-                            [`& .${timelineItemClasses.root}:before`]: {
-                              flex: 0,
-                              padding: 0,
-                            },
-                          }}
-                        >
-                          <TimelineItem  >
-                            <TimelineSeparator >
-                              <TimelineDot
-                                className='icons'
-                              >
-                                <Iconify
-                                  icon="mdi:clock-remove-outline"
-                                  width={30}
-                                  sx={{ color: 'red' }}
-                                />
-                              </TimelineDot>
-                              <TimelineConnector />
-                            </TimelineSeparator>
+                      <Timeline
+                        sx={{
+                          m: 0,
+                          p: 2,
+                          [`& .${timelineItemClasses.root}:before`]: {
+                            flex: 0,
+                            padding: 0,
+                          },
+                        }}
+                      >
+                        <TimelineItem  >
+                          <TimelineSeparator >
+                            <TimelineDot
+                              className='icons'
+                            >
+                              <Iconify
+                                icon="mdi:clock-remove-outline"
+                                width={30}
+                                sx={{ color: 'red' }}
+                              />
+                            </TimelineDot>
+                            <TimelineConnector />
+                          </TimelineSeparator>
 
-                            <TimelineContent>
-                              <Typography variant="subtitle1">Cancelación</Typography>
+                          <TimelineContent>
+                            <Typography variant="subtitle1">Cancelación</Typography>
 
-                              {fechasFolio.map((fecha, i) => [
+                            {fechasFolio.map((fecha, i) => [
                               i > 0 && '',
                               <Typography
                                 key={i}
@@ -1960,38 +1960,49 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                                 {fecha}
                               </Typography>,
                             ])}
-                            </TimelineContent>
-                          </TimelineItem>
-                        </Timeline>
+                          </TimelineContent>
+                        </TimelineItem>
+                      </Timeline>
                     )}
                     {currentEvent?.estatus === 4 ? (
-                      <Stack spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1 }}>
-                        <Stack direction="row" sx={{ alignItems: 'center' }}>
-                          <Iconify
-                            icon="solar:chat-round-line-outline"
-                            width={30}
-                            sx={{ color: 'text.disabled' }}
-                          />
-                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                            Motivos
-                          </Typography>
-                        </Stack>
-                        <Stack
-                          flexDirection="row"
-                          flexWrap="wrap"
-                          flex={1}
-                          spacing={2}
-                          sx={{ px: { xs: 1, md: 3 }, py: 1 }}
-                        >
-                          <Items />
-                        </Stack>
-                      </Stack>
+
+                      <Timeline
+                        sx={{
+                          m: 0,
+                          p: 2,
+                          [`& .${timelineItemClasses.root}:before`]: {
+                            flex: 0,
+                            padding: 0,
+                          },
+                        }}
+                      >
+                        <TimelineItem  >
+                          <TimelineSeparator >
+                            <TimelineDot
+                              className='icons'
+                            >
+                              <Iconify
+                                icon="solar:chat-round-line-outline"
+                                width={30}
+                                sx={{ color: '#1a00a3' }}
+                              />
+                            </TimelineDot>
+                            <TimelineConnector />
+                          </TimelineSeparator>
+
+                          <TimelineContent>
+                            <Typography variant="subtitle1">Motivos</Typography>
+
+                            <Items />
+                          </TimelineContent>
+                        </TimelineItem>
+                      </Timeline>
                     ) : (
                       ''
                     )}
                     {currentEvent?.estatus === 1 ? (
                       <>
-                      
+
                         <Stack
                           sx={{
                             flexDirection: 'row',
@@ -2001,14 +2012,14 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                           }}
                           spacing={2}
                         >
-                         
-                          <Typography className='notificar' variant="subtitle1" sx={{ py: { xs: 1, md: 1, cursor: 'pointer' } }}  onClick={() => handleSendEmails()}>
+
+                          <Typography className='notificar' variant="subtitle1" sx={{ py: { xs: 1, md: 1, cursor: 'pointer' } }} onClick={() => handleSendEmails()}>
                             Notificar a externos
                             {!sendEmails ? (
                               <Iconify
                                 icon="icons8:plus"
                                 width={24}
-                                sx={{  color: 'text.disabled' }}
+                                sx={{ color: 'text.disabled' }}
                                 className='notificarIcon'
                               />
                             ) : (
@@ -2023,7 +2034,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
                         {sendEmails === true && (
                           <>
-                          
+
                             <Stack
                               sx={{
                                 px: { xs: 1, md: 2 },
@@ -2186,7 +2197,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                     Agendar
                   </LoadingButton>
                 )}
-                {currentEvent?.estatus === 4 && currentEvent?.evaluacion === null && (
+                {/* {currentEvent?.estatus === 4 && currentEvent?.evaluacion === null && (
                   <LoadingButton
                     onClick={onEvaluate}
                     variant="contained"
@@ -2195,7 +2206,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                   >
                     Evaluar
                   </LoadingButton>
-                )}
+                )} */}
               </DialogActions>
             </>
           )}
