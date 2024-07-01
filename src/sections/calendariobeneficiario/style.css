@@ -120,3 +120,106 @@
   transform: scale(1.1);
   transition: transform 0.1s ease-in-out;
 }
+
+
+.icons {
+  background-color: #ffffffdf;
+}
+
+.buttonActions {
+  
+  transition-duration: .3s;
+}
+
+
+.buttonActions:hover .bell {
+  animation: bellRing 0.9s both;
+}
+
+/* bell ringing animation keyframes*/
+@keyframes bellRing {
+  0%,
+  100% {
+    transform-origin: top;
+  }
+
+  15% {
+    transform: rotateZ(10deg);
+  }
+
+  30% {
+    transform: rotateZ(-10deg);
+  }
+
+  45% {
+    transform: rotateZ(5deg);
+  }
+
+  60% {
+    transform: rotateZ(-5deg);
+  }
+
+  75% {
+    transform: rotateZ(2deg);
+  }
+}
+
+.buttonActions:active {
+  transform: scale(0.8);
+}
+
+
+.notificar {
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.notificar {
+  --primary-color: #111;
+  --hovered-color: #c84747;
+  position: relative;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.notificar p {
+  margin: 0;
+  position: relative;
+  font-size: 20px;
+  color: var(--primary-color);
+}
+
+.notificar::after {
+  position: absolute;
+  content: "";
+  width: 0;
+  left: 0;
+  bottom: -7px;
+  background: var(--hovered-color);
+  height: 2px;
+  transition: 0.3s ease-out;
+}
+
+.notificar p::before {
+  position: absolute;
+  /*   box-sizing: border-box; */
+  content: "Subscribe";
+  width: 0%;
+  inset: 0;
+  color: var(--hovered-color);
+  overflow: hidden;
+  transition: 0.3s ease-out;
+}
+
+.notificar:hover::after {
+  width: 100%;
+}
+
+.notificar:hover p::before {
+  width: 100%;
+}
+

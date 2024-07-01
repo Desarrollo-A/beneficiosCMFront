@@ -10,20 +10,28 @@ import timezone from 'dayjs/plugin/timezone';
 import { yupResolver } from '@hookform/resolvers/yup';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 
-import Stack from '@mui/system/Stack';
+import { Grid } from '@mui/material';
 import Chip from '@mui/material/Chip';
-import Button from '@mui/material/Button';
+import Stack from '@mui/system/Stack';
+import Timeline from '@mui/lab/Timeline';
 import Dialog from '@mui/material/Dialog';
+import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
+import TimelineDot from '@mui/lab/TimelineDot';
 import TextField from '@mui/material/TextField';
-import IconButton from '@mui/material/IconButton';
+import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
 import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
+import TimelineContent from '@mui/lab/TimelineContent';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import FormHelperText from '@mui/material/FormHelperText';
 import InputAdornment from '@mui/material/InputAdornment';
+import FormHelperText from '@mui/material/FormHelperText';
+import TimelineSeparator from '@mui/lab/TimelineSeparator';
+import TimelineConnector from '@mui/lab/TimelineConnector';
+import TimelineItem, { timelineItemClasses } from '@mui/lab/TimelineItem';
 
 import { endpoints } from 'src/utils/axios';
 import {
@@ -74,6 +82,7 @@ import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider from 'src/components/hook-form/form-provider';
 
+import './style.css';
 import EvaluateDialog from './evaluate-dialog';
 import CalendarPreview from './calendar-preview';
 import AppointmentSchedule from './appointment-schedule';
@@ -127,6 +136,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const [errorMessage, setErrorMessage] = useState('Formato de correo erróneo');
   const [errorEmail, setErrorEmail] = useState(false);
   const [sendEmails, setSendEmails] = useState(false);
+
+  const theme = useTheme();
 
   const onAceptar = () => {
     if (aceptar) setAceptar(false);
@@ -1570,38 +1581,38 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       {open2 === false && (
         <FormProvider methods={methods} onSubmit={onSubmit}>
           {currentEvent?.id && (
-            <DialogTitle sx={{ p: { xs: 1, md: 2 } }}>
-              <Stack
-                direction="row"
-                justifyContent="space-between"
-                useFlexGap
-                flexWrap="wrap"
-                sx={{ p: { xs: 1, md: 2 } }}
-              >
-                <Typography variant="h5" sx={{ display: 'flex', alignItems: 'end' }}>
-                  {currentEvent?.id ? 'DATOS DE CITA' : 'AGENDAR CITA'}
-                </Typography>
-                {currentEvent?.id &&
-                  (currentEvent?.estatus === 1 || currentEvent?.estatus === 6) && (
-                    <Stack sx={{ flexDirection: 'row' }}>
+            <DialogTitle sx={{ p: { xs: 1, md: 1 } }}>
+              <Stack spacing={1} sx={{ p: { xs: 1, md: 2 } }}>
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center"
+                >
+                  <Typography variant="h5">
+                    {currentEvent?.id ? 'DATOS DE CITA' : 'AGENDAR CITA'}
+                  </Typography>
+                  {currentEvent?.id && (currentEvent?.estatus === 1 || currentEvent?.estatus === 6) && (
+                    <Stack direction="row" spacing={1}>
                       {dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss') <
                         dayjs(currentEvent.start)
                           .subtract(3, 'hour')
                           .format('YYYY-MM-DD HH:mm:ss') &&
                         currentEvent?.estatus === 1 && (
                           <Tooltip title="Reagendar cita">
-                            <IconButton onClick={() => rescheduleAppointment()}>
-                              <Iconify icon="fluent-mdl2:date-time-12" width={22} />
+                            <IconButton className="buttonActions" onClick={() => rescheduleAppointment()}>
+                              <Iconify icon="fluent-mdl2:date-time-12" className="bell" />
                             </IconButton>
                           </Tooltip>
                         )}
                       <Tooltip title="Cancelar cita">
-                        <IconButton onClick={() => setConfirmCancel(true)}>
-                          <Iconify icon="solar:trash-bin-trash-bold" width={22} />
+                        <IconButton className="buttonActions" onClick={() => setConfirmCancel(true)}>
+                          <Iconify icon="solar:trash-bin-trash-bold" className="bell" />
                         </IconButton>
                       </Tooltip>
                     </Stack>
                   )}
+                </Stack>
+                <Typography variant="subtitle1">{selectedDateTittle}</Typography>
               </Stack>
             </DialogTitle>
           )}
@@ -1609,496 +1620,349 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
             <>
               <DialogContent
                 // sx={{ p: { xs: 1, md: 2 } }}
+                style={{ maxHeight: currentEvent?.id ? '400px' : '600px', overflowY: currentEvent?.id ? 'auto' : 'hidden' }}
                 sx={
                   !currentEvent?.id && selectedValues.modalidad
                     ? {
-                        p: { xs: 1, md: 2 },
-                        background: {
-                          xs: 'linear-gradient(180deg, #2c3239 54%, white 46%)',
-                          md: 'linear-gradient(90deg, #2c3239 50%, white 50%)',
-                        },
-                      }
-                    : { p: { xs: 1, md: 2 } }
+                      p: { xs: 1, md: 2 },
+                      background: {
+                        xs: 'linear-gradient(180deg, #2c3239 54%, white 46%)',
+                        md: 'linear-gradient(90deg, #2c3239 50%, white 50%)',
+                      },
+                      backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f6f7f8'
+                    }
+                    : { p: { xs: 1, md: 2 }, backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f6f7f8' }
                 }
                 direction="row"
                 justifycontent="space-between"
               >
                 {currentEvent?.id ? (
                   <>
-                    <Stack sx={{ p: { xs: 1, md: 2 } }}>
-                      <Typography variant="subtitle1">{selectedDateTittle}</Typography>
-                    </Stack>
 
-                    <Stack
-                      alignItems="center"
-                      sx={{
-                        flexDirection: 'row',
-                        px: { xs: 1, md: 2 },
-                        py: 1,
-                        alignItems: 'center',
-                      }}
+                    <Grid
+                      container
+                      direction="column"
+                      justifyContent="space-between"
                     >
-                      <Stack
-                        alignItems="center"
-                        sx={{
-                          alignItems: 'center',
-                          display: 'flex',
-                        }}
+                      <Grid
+                        item
+                        container
+                        direction="row"
+                        spacing={1}
+                        sx={{ width: '100%' }}
                       >
-                        <Iconify
-                          icon="mdi:account-circle"
-                          width={30}
-                          sx={{ color: 'text.disabled' }}
-                        />
-                      </Stack>
-                      <Stack
-                        alignItems="center"
-                        sx={{
-                          alignItems: 'center',
-                          display: 'flex',
-                        }}
-                      >
-                        {currentEvent?.estatus === 1 && currentEvent?.tipoCita === 1 ? (
-                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                            Cita en {`${currentEvent?.beneficio} (por asistir - primera cita)`}
-                          </Typography>
-                        ) : (
-                          ''
-                        )}
-                        {currentEvent?.estatus === 1 && currentEvent?.tipoCita === 2 ? (
-                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                            Cita en {`${currentEvent?.beneficio} (por asistir - cita en línea)`}
-                          </Typography>
-                        ) : (
-                          ''
-                        )}
-                        {currentEvent?.estatus === 1 && currentEvent?.tipoCita === 3 ? (
-                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                            Cita en {`${currentEvent?.beneficio} (por asistir - cita normal)`}
-                          </Typography>
-                        ) : (
-                          ''
-                        )}
-                        {currentEvent?.estatus === 2 ? (
-                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                            Cita en {`${currentEvent?.beneficio} (cancelado)`}
-                          </Typography>
-                        ) : (
-                          ''
-                        )}
-                        {currentEvent?.estatus === 3 ? (
-                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                            Cita en {`${currentEvent?.beneficio} (penalizado)`}
-                          </Typography>
-                        ) : (
-                          ''
-                        )}
-                        {currentEvent?.estatus === 4 ? (
-                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                            Cita en {`${currentEvent?.beneficio} (finalizada)`}
-                          </Typography>
-                        ) : (
-                          ''
-                        )}
-                        {currentEvent?.estatus === 5 ? (
-                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                            Cita en {`${currentEvent?.beneficio} (justificado)`}
-                          </Typography>
-                        ) : (
-                          ''
-                        )}
-                        {currentEvent?.estatus === 6 ? (
-                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                            Cita en {`${currentEvent?.beneficio} (pendiente de pago)`}
-                          </Typography>
-                        ) : (
-                          ''
-                        )}
-                        {currentEvent?.estatus === 7 ? (
-                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                            Cita en {`${currentEvent?.beneficio} (cancelado por especialista)`}
-                          </Typography>
-                        ) : (
-                          ''
-                        )}
-                        {currentEvent?.estatus === 8 ? (
-                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                            Cita en {`${currentEvent?.beneficio} (reagendado)`}
-                          </Typography>
-                        ) : (
-                          ''
-                        )}
-                        {currentEvent?.estatus === 9 ? (
-                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                            Cita en {`${currentEvent?.beneficio} (cita expirada)`}
-                          </Typography>
-                        ) : (
-                          ''
-                        )}
-                        {currentEvent?.estatus === 10 ? (
-                          <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                            Cita en {`${currentEvent?.beneficio} (proceso de pago)`}
-                          </Typography>
-                        ) : (
-                          ''
-                        )}
-                      </Stack>
-                    </Stack>
-                    <Stack
-                      alignItems="center"
-                      sx={{
-                        flexDirection: 'row',
-                        px: { xs: 1, md: 2 },
-                        py: 1,
-                        alignItems: 'center',
-                      }}
-                    >
-                      <Stack
-                        alignItems="center"
-                        sx={{
-                          alignItems: 'center',
-                          display: 'flex',
-                        }}
-                      >
-                        <Iconify
-                          icon="solar:user-id-broken"
-                          width={30}
-                          sx={{ color: 'text.disabled' }}
-                        />
-                      </Stack>
-                      <Stack
-                        alignItems="center"
-                        sx={{
-                          alignItems: 'center',
-                          display: 'flex',
-                        }}
-                      >
-                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                          {currentEvent?.especialista ? currentEvent?.especialista : 'Especialista'}
-                        </Typography>
-                      </Stack>
-                    </Stack>
-                    <Stack
-                      alignItems="center"
-                      sx={{
-                        flexDirection: 'row',
-                        px: { xs: 1, md: 2 },
-                        py: 1,
-                        alignItems: 'center',
-                      }}
-                    >
-                      <Stack
-                        alignItems="center"
-                        sx={{
-                          alignItems: 'center',
-                          display: 'flex',
-                        }}
-                      >
-                        <Iconify icon="mdi:phone" width={30} sx={{ color: 'text.disabled' }} />
-                      </Stack>
-                      <Stack
-                        alignItems="center"
-                        sx={{
-                          alignItems: 'center',
-                          display: 'flex',
-                        }}
-                      >
-                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                          {currentEvent?.telefonoEspecialista
-                            ? currentEvent?.telefonoEspecialista
-                            : 'n/a'}
-                        </Typography>
-                      </Stack>
-                    </Stack>
-                    <Stack
-                      alignItems="center"
-                      sx={{
-                        flexDirection: 'row',
-                        px: { xs: 1, md: 2 },
-                        py: 1,
-                        alignItems: 'center',
-                      }}
-                    >
-                      <Stack
-                        alignItems="center"
-                        sx={{
-                          alignItems: 'center',
-                          display: 'flex',
-                        }}
-                      >
-                        <Iconify
-                          icon="mdi:calendar-clock"
-                          width={30}
-                          sx={{ color: 'text.disabled' }}
-                        />
-                      </Stack>
-                      <Stack
-                        alignItems="center"
-                        sx={{
-                          alignItems: 'center',
-                          display: 'flex',
-                        }}
-                      >
-                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                          {currentEvent?.id
-                            ? `${dayjs(currentEvent?.start).format('HH:mm a')} - ${dayjs(
-                                currentEvent?.end
-                              ).format('HH:mm a')}`
-                            : 'Fecha'}
-                        </Typography>
-                      </Stack>
-                    </Stack>
-                    <Stack
-                      alignItems="center"
-                      sx={{
-                        flexDirection: 'row',
-                        px: { xs: 1, md: 2 },
-                        py: 1,
-                        alignItems: 'center',
-                      }}
-                    >
-                      {currentEvent?.modalidad === 1 ? (
-                        <>
-                          <Stack
-                            alignItems="center"
+                        <Grid xs={12}>
+                          <Timeline
                             sx={{
-                              alignItems: 'center',
-                              display: 'flex',
+                              m: 0,
+                              p: 3,
+                              [`& .${timelineItemClasses.root}:before`]: {
+                                flex: 0,
+                                padding: 0,
+                              },
                             }}
                           >
-                            <Iconify icon="mdi:earth" width={30} sx={{ color: 'text.disabled' }} />
-                          </Stack>
-                          <Stack
-                            alignItems="center"
-                            sx={{
-                              alignItems: 'center',
-                              display: 'flex',
-                            }}
-                          >
-                            <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                              {currentEvent?.sede ? currentEvent?.sede : 'Sede desconocida'}
-                            </Typography>
-                          </Stack>
-                        </>
-                      ) : (
-                        <>
-                          <Stack
-                            alignItems="center"
-                            sx={{
-                              alignItems: 'center',
-                              display: 'flex',
-                            }}
-                          >
-                            <Iconify icon="mdi:earth" width={30} sx={{ color: 'text.disabled' }} />
-                          </Stack>
-                          <Stack
-                            alignItems="center"
-                            sx={{
-                              alignItems: 'center',
-                              display: 'flex',
-                            }}
-                          >
-                            <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                              {currentEvent?.sede ? `${currentEvent?.sede} (En línea)` : 'En línea'}
-                            </Typography>
-                          </Stack>
-                        </>
-                      )}
-                    </Stack>
-                    <Stack
-                      alignItems="center"
-                      sx={{
-                        flexDirection: 'row',
-                        px: { xs: 1, md: 2 },
-                        py: 1,
-                        alignItems: 'center',
-                      }}
-                    >
-                      {currentEvent?.modalidad === 1 ? (
-                        <>
-                          <Stack
-                            alignItems="center"
-                            sx={{
-                              alignItems: 'center',
-                              display: 'flex',
-                            }}
-                          >
-                            <Iconify
-                              icon="ic:outline-place"
-                              width={30}
-                              sx={{ color: 'text.disabled' }}
-                            />
-                          </Stack>
-                          <Stack
-                            alignItems="center"
-                            sx={{
-                              alignItems: 'center',
-                              display: 'flex',
-                            }}
-                          >
-                            <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                              {currentEvent?.ubicación
-                                ? currentEvent?.ubicación
-                                : 'Ubicación desconocida'}
-                            </Typography>
-                          </Stack>
-                        </>
-                      ) : (
-                        <>
-                          <Stack
-                            alignItems="center"
-                            sx={{
-                              alignItems: 'center',
-                              display: 'flex',
-                            }}
-                          >
-                            <Stack
-                              alignItems="center"
-                              sx={{
-                                alignItems: 'center',
-                                display: 'flex',
-                              }}
-                            >
-                              <Iconify
-                                icon="ic:outline-place"
-                                width={30}
-                                sx={{ color: 'text.disabled' }}
-                              />
-                            </Stack>
-                          </Stack>
-                          <Stack
-                            alignItems="center"
-                            sx={{
-                              alignItems: 'center',
-                              display: 'flex',
-                            }}
-                          >
-                            <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                              {currentEvent?.ubicación
-                                ? currentEvent?.ubicación
-                                : 'Remoto (En línea)'}
-                            </Typography>
-                          </Stack>
-                        </>
-                      )}
-                    </Stack>
-                    <Stack
-                      sx={{
-                        flexDirection: 'row',
-                        px: { xs: 1, md: 2 },
-                        py: 1,
-                        alignItems: 'center',
-                      }}
-                    >
-                      <Stack
-                        alignItems="center"
-                        sx={{
-                          alignItems: 'center',
-                          display: 'flex',
-                        }}
-                      >
-                        <Iconify
-                          icon="ic:outline-email"
-                          width={30}
-                          sx={{ color: 'text.disabled' }}
-                        />
-                      </Stack>
+                            <TimelineItem  >
+                              <TimelineSeparator >
+                                <TimelineDot className='icons'>
+                                  <Iconify
+                                    icon="fluent:form-28-filled"
+                                    width={30}
+                                    sx={{ color: '#5551dd' }}
+                                  />
+                                </TimelineDot>
+                                <TimelineConnector />
+                              </TimelineSeparator>
 
-                      <Stack
-                        alignItems="center"
-                        sx={{
-                          alignItems: 'center',
-                          display: 'flex',
-                        }}
-                      >
-                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                          {currentEvent?.correoEspecialista
-                            ? currentEvent?.correoEspecialista.toLowerCase()
-                            : 'correo-demo@ciudadmaderas.com.mx'}
-                        </Typography>
-                      </Stack>
-                    </Stack>
-                    <Stack
-                      sx={{
-                        flexDirection: 'row',
-                        px: { xs: 1, md: 2 },
-                        py: 1,
-                        alignItems: 'center',
-                      }}
-                    >
-                      <Stack
-                        alignItems="center"
-                        sx={{
-                          alignItems: 'center',
-                          display: 'flex',
-                        }}
-                      >
-                        <Iconify
-                          icon="fa-solid:money-bill"
-                          width={30}
-                          sx={{ color: 'text.disabled' }}
-                        />
-                      </Stack>
-                      <Stack
-                        alignItems="center"
-                        sx={{
-                          alignItems: 'center',
-                          display: 'flex',
-                        }}
-                      >
-                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                          {currentEvent?.idDetalle === null || currentEvent?.idDetalle === 0 ? (
-                            'Sin pago'
-                          ) : (
-                            <>
-                              {currentEvent?.estatusPago === 1 || currentEvent?.estatusPago === 3
-                                ? 'Pago aprobado'
-                                : 'Pago declinado'}
-                            </>
-                          )}
-                        </Typography>
-                      </Stack>
-                    </Stack>
+                              <TimelineContent>
+                                <Typography variant="subtitle1">Cita</Typography>
+
+                                {currentEvent?.estatus === 1 && currentEvent?.tipoCita === 1 ? (
+                                  <Typography variant="body2">
+                                    {`${currentEvent?.beneficio} (por asistir - primera cita)`}
+                                  </Typography>
+                                ) : (
+                                  ''
+                                )}
+                                {currentEvent?.estatus === 1 && currentEvent?.tipoCita === 2 ? (
+                                  <Typography variant="body2">
+                                    {`${currentEvent?.beneficio} (por asistir - cita en línea)`}
+                                  </Typography>
+                                ) : (
+                                  ''
+                                )}
+                                {currentEvent?.estatus === 1 && currentEvent?.tipoCita === 3 ? (
+                                  <Typography variant="body2">
+                                    {`${currentEvent?.beneficio} (por asistir - cita normal)`}
+                                  </Typography>
+                                ) : (
+                                  ''
+                                )}
+                                {currentEvent?.estatus === 2 ? (
+                                  <Typography variant="body2">
+                                    {`${currentEvent?.beneficio} (cancelado)`}
+                                  </Typography>
+                                ) : (
+                                  ''
+                                )}
+                                {currentEvent?.estatus === 3 ? (
+                                  <Typography variant="body2">
+                                    {`${currentEvent?.beneficio} (penalizado)`}
+                                  </Typography>
+                                ) : (
+                                  ''
+                                )}
+                                {currentEvent?.estatus === 4 ? (
+                                  <Typography variant="body2">
+                                    {`${currentEvent?.beneficio} (finalizada)`}
+                                  </Typography>
+                                ) : (
+                                  ''
+                                )}
+                                {currentEvent?.estatus === 5 ? (
+                                  <Typography variant="body2">
+                                    {`${currentEvent?.beneficio} (justificado)`}
+                                  </Typography>
+                                ) : (
+                                  ''
+                                )}
+                                {currentEvent?.estatus === 6 ? (
+                                  <Typography variant="body2">
+                                    {`${currentEvent?.beneficio} (pendiente de pago)`}
+                                  </Typography>
+                                ) : (
+                                  ''
+                                )}
+                                {currentEvent?.estatus === 7 ? (
+                                  <Typography variant="body2">
+                                    {`${currentEvent?.beneficio} (cancelado por especialista)`}
+                                  </Typography>
+                                ) : (
+                                  ''
+                                )}
+                                {currentEvent?.estatus === 8 ? (
+                                  <Typography variant="body2">
+                                    {`${currentEvent?.beneficio} (reagendado)`}
+                                  </Typography>
+                                ) : (
+                                  ''
+                                )}
+                                {currentEvent?.estatus === 9 ? (
+                                  <Typography variant="body2">
+                                    Cita en {`${currentEvent?.beneficio} (cita expirada)`}
+                                  </Typography>
+                                ) : (
+                                  ''
+                                )}
+                                {currentEvent?.estatus === 10 ? (
+                                  <Typography variant="body2">
+                                    Cita en {`${currentEvent?.beneficio} (proceso de pago)`}
+                                  </Typography>
+                                ) : (
+                                  ''
+                                )}
+                              </TimelineContent>
+                            </TimelineItem>
+
+                            <TimelineItem  >
+                              <TimelineSeparator >
+                                <TimelineDot
+                                  className='icons'
+                                >
+                                  <Iconify
+                                    icon="mdi:account-circle"
+                                    width={30}
+                                    sx={{ color: '#c9a61d' }}
+                                  />
+                                </TimelineDot>
+                                <TimelineConnector />
+                              </TimelineSeparator>
+
+                              <TimelineContent>
+                                <Typography variant="subtitle1">Especialista</Typography>
+
+                                <Typography variant="body2" sx={{ color: 'text.disabled' }} mb={3}>
+                                  {currentEvent?.especialista ? currentEvent?.especialista : 'Especialista'}
+                                </Typography>
+                              </TimelineContent>
+                            </TimelineItem>
+
+                            <TimelineItem  >
+                              <TimelineSeparator >
+                                <TimelineDot
+                                  className='icons'
+                                >
+                                  <Iconify
+                                    icon="mdi:phone"
+                                    width={30}
+                                    sx={{ color: '#3399ff' }}
+                                  />
+                                </TimelineDot>
+                                <TimelineConnector />
+                              </TimelineSeparator>
+
+                              <TimelineContent>
+                                <Typography variant="subtitle1">Teléfono</Typography>
+
+                                <Typography variant="body2" sx={{ color: 'text.disabled' }} mb={3}>
+                                  {currentEvent?.telefonoEspecialista
+                                    ? currentEvent?.telefonoEspecialista
+                                    : 'n/a'}
+                                </Typography>
+                              </TimelineContent>
+                            </TimelineItem>
+
+                            <TimelineItem  >
+                              <TimelineSeparator >
+                                <TimelineDot
+                                  className='icons'
+                                >
+                                  <Iconify
+                                    icon="mdi:calendar-clock"
+                                    width={30}
+                                    sx={{ color: 'orange' }}
+                                  />
+                                </TimelineDot>
+                                <TimelineConnector />
+                              </TimelineSeparator>
+
+                              <TimelineContent>
+                                <Typography variant="subtitle1">Horario</Typography>
+
+                                <Typography variant="body2" sx={{ color: 'text.disabled' }} mb={3}>
+                                  {currentEvent?.id
+                                    ? `${dayjs(currentEvent?.start).format('HH:mm a')} - ${dayjs(
+                                      currentEvent?.end
+                                    ).format('HH:mm a')}`
+                                    : 'Fecha'}
+                                </Typography>
+                              </TimelineContent>
+                            </TimelineItem>
+
+                            <TimelineItem  >
+                              <TimelineSeparator >
+                                <TimelineDot
+                                  className='icons'
+                                >
+                                  <Iconify
+                                    icon="mdi:earth"
+                                    width={30}
+                                    sx={{ color: '#1ac949' }}
+                                  />
+                                </TimelineDot>
+                                <TimelineConnector />
+                              </TimelineSeparator>
+
+                              <TimelineContent>
+                                <Typography variant="subtitle1">Sede</Typography>
+
+                                <Typography variant="body2" sx={{ color: 'text.disabled' }} mb={3}>
+                                  {currentEvent?.sede ? currentEvent?.sede : 'Sede desconocida'}
+                                </Typography>
+                              </TimelineContent>
+                            </TimelineItem>
+
+                            <TimelineItem  >
+                              <TimelineSeparator >
+                                <TimelineDot
+                                  className='icons'
+                                >
+                                  <Iconify
+                                    icon="ic:outline-place"
+                                    width={30}
+                                    sx={{ color: '#084a73' }}
+                                  />
+                                </TimelineDot>
+                                <TimelineConnector />
+                              </TimelineSeparator>
+
+                              <TimelineContent>
+                                <Typography variant="subtitle1">Ubicación</Typography>
+
+                                <Typography variant="body2" sx={{ color: 'text.disabled' }} mb={3}>
+                                  {currentEvent?.ubicación
+                                    ? currentEvent?.ubicación
+                                    : 'Ubicación desconocida'}
+                                </Typography>
+                              </TimelineContent>
+                            </TimelineItem>
+
+                            <TimelineItem  >
+                              <TimelineSeparator >
+                                <TimelineDot className='icons'
+                                >
+                                  <Iconify
+                                    icon="fa-solid:money-bill"
+                                    width={30}
+                                    sx={{ color: '#16d6d7' }}
+                                  />
+                                </TimelineDot>
+                                <TimelineConnector />
+                              </TimelineSeparator>
+
+                              <TimelineContent>
+                                <Typography variant="subtitle1">Pago</Typography>
+
+                                <Typography variant="body2" sx={{ color: 'text.disabled' }} mb={3}>
+                                  {currentEvent?.idDetalle === null || currentEvent?.idDetalle === 0 ? (
+                                    'Sin pago'
+                                  ) : (
+                                    <>
+                                      {currentEvent?.estatusPago === 1 || currentEvent?.estatusPago === 3
+                                        ? 'Pago aprobado'
+                                        : 'Pago declinado'}
+                                    </>
+                                  )}
+                                </Typography>
+                              </TimelineContent>
+                            </TimelineItem>
+                          </Timeline>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+
                     {currentEvent?.fechasFolio && (
-                      <Stack
-                        flexDirection="row"
-                        flexWrap="wrap"
-                        flex={1}
-                        spacing={2}
-                        sx={{ px: { xs: 1, md: 2 }, py: 1 }}
-                      >
-                        <Stack
-                          alignItems="center"
+
+                        <Timeline
                           sx={{
-                            alignItems: 'center',
-                            display: 'flex',
+                            m: 0,
+                            p: 2,
+                            [`& .${timelineItemClasses.root}:before`]: {
+                              flex: 0,
+                              padding: 0,
+                            },
                           }}
                         >
-                          <Iconify
-                            icon="mdi:clock-remove-outline"
-                            width={30}
-                            sx={{ color: 'text.disabled' }}
-                          />
-                        </Stack>
-                        <Stack
-                          alignItems="center"
-                          sx={{
-                            alignItems: 'center',
-                            display: 'flex',
-                          }}
-                        >
-                          {fechasFolio.map((fecha, i) => [
-                            i > 0 && '',
-                            <Typography
-                              key={i}
-                              style={{ textDecoration: 'line-through' }}
-                              fontSize="90%"
-                            >
-                              {fecha}
-                            </Typography>,
-                          ])}
-                        </Stack>
-                      </Stack>
+                          <TimelineItem  >
+                            <TimelineSeparator >
+                              <TimelineDot
+                                className='icons'
+                              >
+                                <Iconify
+                                  icon="mdi:clock-remove-outline"
+                                  width={30}
+                                  sx={{ color: 'red' }}
+                                />
+                              </TimelineDot>
+                              <TimelineConnector />
+                            </TimelineSeparator>
+
+                            <TimelineContent>
+                              <Typography variant="subtitle1">Cancelación</Typography>
+
+                              {fechasFolio.map((fecha, i) => [
+                              i > 0 && '',
+                              <Typography
+                                key={i}
+                                style={{ textDecoration: 'line-through' }}
+                                fontSize="90%"
+                              >
+                                {fecha}
+                              </Typography>,
+                            ])}
+                            </TimelineContent>
+                          </TimelineItem>
+                        </Timeline>
                     )}
                     {currentEvent?.estatus === 4 ? (
                       <Stack spacing={1} sx={{ px: { xs: 1, md: 2 }, py: 1 }}>
@@ -2127,6 +1991,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                     )}
                     {currentEvent?.estatus === 1 ? (
                       <>
+                      
                         <Stack
                           sx={{
                             flexDirection: 'row',
@@ -2136,33 +2001,29 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                           }}
                           spacing={2}
                         >
-                          <Typography variant="subtitle1" sx={{ py: { xs: 1, md: 1 } }}>
+                         
+                          <Typography className='notificar' variant="subtitle1" sx={{ py: { xs: 1, md: 1, cursor: 'pointer' } }}  onClick={() => handleSendEmails()}>
                             Notificar a externos
-                          </Typography>
-                          <Stack
-                            onClick={() => handleSendEmails()}
-                            sx={{
-                              cursor: 'pointer', // Hace que aparezca la manita al pasar el ratón
-                            }}
-                          >
                             {!sendEmails ? (
                               <Iconify
                                 icon="icons8:plus"
                                 width={24}
-                                sx={{ color: 'text.disabled' }}
+                                sx={{  color: 'text.disabled' }}
+                                className='notificarIcon'
                               />
                             ) : (
                               <Iconify
                                 icon="icons8:minus"
-                                width={24}
                                 sx={{ color: 'text.disabled' }}
+                                width={24}
                               />
                             )}
-                          </Stack>
+                          </Typography>
                         </Stack>
 
                         {sendEmails === true && (
                           <>
+                          
                             <Stack
                               sx={{
                                 px: { xs: 1, md: 2 },
@@ -2277,11 +2138,11 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                 sx={
                   !currentEvent?.id && selectedValues.modalidad
                     ? {
-                        background: {
-                          xs: 'white',
-                          md: 'linear-gradient(90deg, #2c3239 50%, white 50%)',
-                        },
-                      }
+                      background: {
+                        xs: 'white',
+                        md: 'linear-gradient(90deg, #2c3239 50%, white 50%)',
+                      },
+                    }
                     : {}
                 }
               >
@@ -2289,18 +2150,18 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                   Cerrar
                 </Button>
                 {currentEvent?.id && currentEvent?.estatus === 6 ? (
-                    <LoadingButton
-                      variant="contained"
-                      color="success"
-                      disabled={currentEvent?.estatus !== 6 && currentEvent?.estatus !== 10}
-                      loading={btnPayDisabled}
-                      onClick={pagarCitaPendiente}
-                    >
-                      Pagar
-                    </LoadingButton>
-                  ):(
-                    null
-                  )}
+                  <LoadingButton
+                    variant="contained"
+                    color="success"
+                    disabled={currentEvent?.estatus !== 6 && currentEvent?.estatus !== 10}
+                    loading={btnPayDisabled}
+                    onClick={pagarCitaPendiente}
+                  >
+                    Pagar
+                  </LoadingButton>
+                ) : (
+                  null
+                )}
                 {currentEvent?.id && currentEvent?.estatus === 1 && (
                   <LoadingButton
                     variant="contained"
@@ -2353,7 +2214,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
           sx={
             // !currentEvent?.id && selectedValues.modalidad ?
             {
-              p: { xs: 1, md: 2 },
+              p: { xs: 1, md: 1 },
               background: {
                 xs: 'linear-gradient(180deg, #2c3239 54%, white 46%)',
                 md: 'linear-gradient(90deg, #2c3239 50%, white 50%)',
