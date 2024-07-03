@@ -188,16 +188,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       ahora >= inicioHorarioVerano(añoDate) && ahora <= finHorarioVerano(añoDate) ? 1 : 2;
     ahora.setHours(ahora.getHours() - horasARestar);
 
-    const fechaActual = dayjs(ahora).format('YYYY-MM-DD');
-
     const año = horarioSeleccionado.substring(0, 4);
     const mes = horarioSeleccionado.substring(5, 7);
-
-    if (datosUser.fechaIngreso > fechaActual) {
-      enqueueSnackbar('¡Existe un error con la fecha de antigüedad!', { variant: 'error' });
-      onClose();
-      return false;
-    }
 
     // *** VALIDAMOS SI TIENE CITAS SIN FINALIZAR ***
     const citasSinFinalizar = await getCitasSinFinalizar(
@@ -1255,7 +1247,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     const horasARestar =
       ahora >= inicioHorarioVerano(añoDate) && ahora <= finHorarioVerano(añoDate) ? 1 : 2;
     ahora.setHours(ahora.getHours() - horasARestar);
-    const fechaActual = dayjs(ahora).format('YYYY-MM-DD');
 
     const año = horarioSeleccionado.substring(0, 4);
     const mes = horarioSeleccionado.substring(5, 7);
@@ -1265,13 +1256,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     if (!checkInvoiceDetail.result) {
       enqueueSnackbar('¡No puedes reagendar más veces esta cita!', {
-        variant: 'error',
-      });
-      return onClose();
-    }
-
-    if (datosUser.fechaIngreso > fechaActual) {
-      enqueueSnackbar('¡Existe un error con la fecha de antigüedad!', {
         variant: 'error',
       });
       return onClose();
