@@ -206,28 +206,6 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
       return enqueueSnackbar('No has llenado el formulario', { variant: 'error' });
     }
 
-    if (type === 'date') {
-      const ahora = new Date();
-      const fechaActual = dayjs(ahora).format('YYYY-MM-DD');
-
-      if (patient.fechaIngreso > fechaActual) {
-        setBtnDisable(false);
-        return enqueueSnackbar('¡Surgio un problema con la antigüedad del colaborador!', {
-          variant: 'error',
-        });
-      }
-
-      const tieneAntiguedad = validarAntiguedad(patient.fechaIngreso, fechaActual); // Validamos la antiguedad: Mandamos fechaIngreso, fechaDeHoy, isPracticante, idBeneficio.
-
-      if (!tieneAntiguedad && user.idArea !== 25) {
-        // 25 es de ventas
-        onClose();
-        return enqueueSnackbar('¡El paciente no cuenta con la antigüedad requerida!', {
-          variant: 'error',
-        });
-      }
-    }
-
     switch (type) {
       case 'cancel':
         save = await createCustom(eventDataCancel, user.idUsuario, user.idSede);
@@ -299,29 +277,6 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
       especialista: value?.especialista,
       modalidad: value.modalidad,
     });
-  };
-
-  const validarAntiguedad = (fechaIngreso, fechaHoy) => {
-    // Convierte las fechas a objetos de tipo Date
-    const ingreso = new Date(fechaIngreso);
-    const hoy = new Date(fechaHoy);
-
-    // Calcula la diferencia en milisegundos
-    const diferenciaMilisegundos = hoy - ingreso;
-
-    // Calcula la diferencia en años, meses y días
-    const milisegundosEnUnDia = 24 * 60 * 60 * 1000; // Milisegundos en un día
-    const milisegundosEnUnAnio = milisegundosEnUnDia * 365.25; // Milisegundos en un año, considerando años bisiestos
-
-    const diferenciaAnios = Math.floor(diferenciaMilisegundos / milisegundosEnUnAnio);
-    const diferenciaMeses = Math.floor(
-      (diferenciaMilisegundos % milisegundosEnUnAnio) / (milisegundosEnUnDia * 30.44)
-    );
-    // Compara la diferencia de meses beneficio, y  puesto.
-    if (diferenciaMeses >= 3 || diferenciaAnios > 0) {
-      return true;
-    }
-    return false;
   };
 
   return (
