@@ -199,21 +199,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       return false;
     }
 
-    const AREAS = Object.freeze({
-      VENTAS: 25,
-    });
-
-    // Validamos la antiguedad: Mandamos fechaIngreso, fechaDeHoy, isPracticante, idBeneficio.
-    const tieneAntiguedad = validarAntiguedad(datosUser.fechaIngreso, fechaActual);
-    // Escluimos a ventas por su tipo de contratación
-    if (!tieneAntiguedad && datosUser.idArea !== AREAS.VENTAS) {
-      enqueueSnackbar('¡No cuentas con la antigüedad suficiente para hacer uso del beneficio!', {
-        variant: 'error',
-      });
-      onClose();
-      return false;
-    }
-
     // *** VALIDAMOS SI TIENE CITAS SIN FINALIZAR ***
     const citasSinFinalizar = await getCitasSinFinalizar(
       datosUser.idUsuario,
@@ -613,9 +598,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       return onClose();
     }
 
-    await evaluacionCancelacion(
-      currentEvent.id
-    );
+    await evaluacionCancelacion(currentEvent.id);
 
     enqueueSnackbar('¡Has cancelado la cita!', {
       variant: 'success',
@@ -1259,29 +1242,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     return registrarCita;
   };
 
-  const validarAntiguedad = (fechaIngreso, fechaHoy) => {
-    // Convierte las fechas a objetos de tipo Date
-    const ingreso = new Date(fechaIngreso);
-    const hoy = new Date(fechaHoy);
-
-    // Calcula la diferencia en milisegundos
-    const diferenciaMilisegundos = hoy - ingreso;
-
-    // Calcula la diferencia en años, meses y días
-    const milisegundosEnUnDia = 24 * 60 * 60 * 1000; // Milisegundos en un día
-    const milisegundosEnUnAnio = milisegundosEnUnDia * 365.25; // Milisegundos en un año, considerando años bisiestos
-
-    const diferenciaAnios = Math.floor(diferenciaMilisegundos / milisegundosEnUnAnio);
-    const diferenciaMeses = Math.floor(
-      (diferenciaMilisegundos % milisegundosEnUnAnio) / (milisegundosEnUnDia * 30.44)
-    );
-    // Compara la diferencia de meses beneficio, y  puesto.
-    if (diferenciaMeses >= 3 || diferenciaAnios > 0) {
-      return true;
-    }
-    return false;
-  };
-
   const handleReSchedule = async () => {
     setBtnDisabled(true);
     // Validaciones de inputs: Coloca leyenda de error debajo de cada input en caso que le falte cumplir con el valor
@@ -1312,17 +1272,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     if (datosUser.fechaIngreso > fechaActual) {
       enqueueSnackbar('¡Existe un error con la fecha de antigüedad!', {
-        variant: 'error',
-      });
-      return onClose();
-    }
-
-    // Validamos la antiguedad: Mandamos fechaIngreso, fechaDeHoy, isPracticante, idBeneficio.
-    const tieneAntiguedad = validarAntiguedad(datosUser.fechaIngreso, fechaActual);
-
-    // 25 Es ventas :)
-    if (!tieneAntiguedad && datosUser.idArea !== 25) {
-      enqueueSnackbar('¡No cuentas con la antigüedad suficiente para hacer uso del beneficio!', {
         variant: 'error',
       });
       return onClose();
@@ -1401,13 +1350,9 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       });
     } */
 
-    await creaEvaluaciones(
-      agendar.data
-    );
+    await creaEvaluaciones(agendar.data);
 
-    await evaluacionReagenda(
-      agendar.data
-    );
+    await evaluacionReagenda(agendar.data);
 
     const startDate = dayjs(horarioSeleccionado);
     const endDate = startDate.add(1, 'hour');
@@ -1561,21 +1506,33 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     if (eventReasons?.length > 0) {
       items = eventReasons.map((er) => (
         <Tooltip title={er.nombre} key={er.idOpcion}>
-          <Typography variant="body2" sx={{
-            color: 'text.disabled',
-            whiteSpace: 'normal',
-            wordBreak: 'break-word',
-          }} mb={3}>{er.nombre}</Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.disabled',
+              whiteSpace: 'normal',
+              wordBreak: 'break-word',
+            }}
+            mb={3}
+          >
+            {er.nombre}
+          </Typography>
         </Tooltip>
       ));
     } else {
       items = (
         <Tooltip title="Motivos por agregar por especialista">
-          <Typography variant="body2" sx={{
-            color: 'text.disabled',
-            whiteSpace: 'normal',
-            wordBreak: 'break-word', 
-          }} mb={3}>Motivos por agregar por especialista</Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.disabled',
+              whiteSpace: 'normal',
+              wordBreak: 'break-word',
+            }}
+            mb={3}
+          >
+            Motivos por agregar por especialista
+          </Typography>
         </Tooltip>
       );
     }
@@ -1595,34 +1552,37 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
           {currentEvent?.id && (
             <DialogTitle sx={{ p: { xs: 1, md: 1 } }}>
               <Stack spacing={1} sx={{ p: { xs: 1, md: 2 } }}>
-                <Stack
-                  direction="row"
-                  justifyContent="space-between"
-                  alignItems="center"
-                >
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
                   <Typography variant="h5">
                     {currentEvent?.id ? 'DATOS DE CITA' : 'AGENDAR CITA'}
                   </Typography>
-                  {currentEvent?.id && (currentEvent?.estatus === 1 || currentEvent?.estatus === 6) && (
-                    <Stack direction="row" spacing={1}>
-                      {dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss') <
-                        dayjs(currentEvent.start)
-                          .subtract(3, 'hour')
-                          .format('YYYY-MM-DD HH:mm:ss') &&
-                        currentEvent?.estatus === 1 && (
-                          <Tooltip title="Reagendar cita">
-                            <IconButton className="buttonActions" onClick={() => rescheduleAppointment()}>
-                              <Iconify icon="fluent-mdl2:date-time-12" className="bell" />
-                            </IconButton>
-                          </Tooltip>
-                        )}
-                      <Tooltip title="Cancelar cita">
-                        <IconButton className="buttonActions" onClick={() => setConfirmCancel(true)}>
-                          <Iconify icon="solar:trash-bin-trash-bold" className="bell" />
-                        </IconButton>
-                      </Tooltip>
-                    </Stack>
-                  )}
+                  {currentEvent?.id &&
+                    (currentEvent?.estatus === 1 || currentEvent?.estatus === 6) && (
+                      <Stack direction="row" spacing={1}>
+                        {dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss') <
+                          dayjs(currentEvent.start)
+                            .subtract(3, 'hour')
+                            .format('YYYY-MM-DD HH:mm:ss') &&
+                          currentEvent?.estatus === 1 && (
+                            <Tooltip title="Reagendar cita">
+                              <IconButton
+                                className="buttonActions"
+                                onClick={() => rescheduleAppointment()}
+                              >
+                                <Iconify icon="fluent-mdl2:date-time-12" className="bell" />
+                              </IconButton>
+                            </Tooltip>
+                          )}
+                        <Tooltip title="Cancelar cita">
+                          <IconButton
+                            className="buttonActions"
+                            onClick={() => setConfirmCancel(true)}
+                          >
+                            <Iconify icon="solar:trash-bin-trash-bold" className="bell" />
+                          </IconButton>
+                        </Tooltip>
+                      </Stack>
+                    )}
                 </Stack>
                 <Typography variant="subtitle1">{selectedDateTittle}</Typography>
               </Stack>
@@ -1632,37 +1592,32 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
             <>
               <DialogContent
                 // sx={{ p: { xs: 1, md: 2 } }}
-                style={{ maxHeight: currentEvent?.id ? '400px' : '600px', overflowY: currentEvent?.id ? 'auto' : 'hidden' }}
+                style={{
+                  maxHeight: currentEvent?.id ? '400px' : '600px',
+                  overflowY: currentEvent?.id ? 'auto' : 'hidden',
+                }}
                 sx={
                   !currentEvent?.id && selectedValues.modalidad
                     ? {
-                      p: { xs: 1, md: 2 },
-                      background: {
-                        xs: 'linear-gradient(180deg, #2c3239 54%, white 46%)',
-                        md: 'linear-gradient(90deg, #2c3239 50%, white 50%)',
-                      },
-                      backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f6f7f8'
-                    }
-                    : { p: { xs: 1, md: 2 }, backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f6f7f8' }
+                        p: { xs: 1, md: 2 },
+                        background: {
+                          xs: 'linear-gradient(180deg, #2c3239 54%, white 46%)',
+                          md: 'linear-gradient(90deg, #2c3239 50%, white 50%)',
+                        },
+                        backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f6f7f8',
+                      }
+                    : {
+                        p: { xs: 1, md: 2 },
+                        backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f6f7f8',
+                      }
                 }
                 direction="row"
                 justifycontent="space-between"
               >
                 {currentEvent?.id ? (
                   <>
-
-                    <Grid
-                      container
-                      direction="column"
-                      justifyContent="space-between"
-                    >
-                      <Grid
-                        item
-                        container
-                        direction="row"
-                        spacing={1}
-                        sx={{ width: '100%' }}
-                      >
+                    <Grid container direction="column" justifyContent="space-between">
+                      <Grid item container direction="row" spacing={1} sx={{ width: '100%' }}>
                         <Grid xs={12}>
                           <Timeline
                             sx={{
@@ -1674,9 +1629,9 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                               },
                             }}
                           >
-                            <TimelineItem  >
-                              <TimelineSeparator >
-                                <TimelineDot className='icons'>
+                            <TimelineItem>
+                              <TimelineSeparator>
+                                <TimelineDot className="icons">
                                   <Iconify
                                     icon="fluent:form-28-filled"
                                     width={30}
@@ -1690,84 +1645,84 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                                 <Typography variant="subtitle1">Cita</Typography>
 
                                 {currentEvent?.estatus === 1 && currentEvent?.tipoCita === 1 ? (
-                                  <Typography variant="body2" sx={{color: 'text.disabled'}}>
+                                  <Typography variant="body2" sx={{ color: 'text.disabled' }}>
                                     {`${currentEvent?.beneficio} (por asistir - primera cita)`}
                                   </Typography>
                                 ) : (
                                   ''
                                 )}
                                 {currentEvent?.estatus === 1 && currentEvent?.tipoCita === 2 ? (
-                                   <Typography variant="body2" sx={{color: 'text.disabled'}}>
+                                  <Typography variant="body2" sx={{ color: 'text.disabled' }}>
                                     {`${currentEvent?.beneficio} (por asistir - cita en línea)`}
                                   </Typography>
                                 ) : (
                                   ''
                                 )}
                                 {currentEvent?.estatus === 1 && currentEvent?.tipoCita === 3 ? (
-                                   <Typography variant="body2" sx={{color: 'text.disabled'}}>
+                                  <Typography variant="body2" sx={{ color: 'text.disabled' }}>
                                     {`${currentEvent?.beneficio} (por asistir - cita normal)`}
                                   </Typography>
                                 ) : (
                                   ''
                                 )}
                                 {currentEvent?.estatus === 2 ? (
-                                   <Typography variant="body2" sx={{color: 'text.disabled'}}>
+                                  <Typography variant="body2" sx={{ color: 'text.disabled' }}>
                                     {`${currentEvent?.beneficio} (cancelado)`}
                                   </Typography>
                                 ) : (
                                   ''
                                 )}
                                 {currentEvent?.estatus === 3 ? (
-                                   <Typography variant="body2" sx={{color: 'text.disabled'}}>
+                                  <Typography variant="body2" sx={{ color: 'text.disabled' }}>
                                     {`${currentEvent?.beneficio} (penalizado)`}
                                   </Typography>
                                 ) : (
                                   ''
                                 )}
                                 {currentEvent?.estatus === 4 ? (
-                                   <Typography variant="body2" sx={{color: 'text.disabled'}}>
+                                  <Typography variant="body2" sx={{ color: 'text.disabled' }}>
                                     {`${currentEvent?.beneficio} (finalizada)`}
                                   </Typography>
                                 ) : (
                                   ''
                                 )}
                                 {currentEvent?.estatus === 5 ? (
-                                   <Typography variant="body2" sx={{color: 'text.disabled'}}>
+                                  <Typography variant="body2" sx={{ color: 'text.disabled' }}>
                                     {`${currentEvent?.beneficio} (justificado)`}
                                   </Typography>
                                 ) : (
                                   ''
                                 )}
                                 {currentEvent?.estatus === 6 ? (
-                                   <Typography variant="body2" sx={{color: 'text.disabled'}}>
+                                  <Typography variant="body2" sx={{ color: 'text.disabled' }}>
                                     {`${currentEvent?.beneficio} (pendiente de pago)`}
                                   </Typography>
                                 ) : (
                                   ''
                                 )}
                                 {currentEvent?.estatus === 7 ? (
-                                   <Typography variant="body2" sx={{color: 'text.disabled'}}>
+                                  <Typography variant="body2" sx={{ color: 'text.disabled' }}>
                                     {`${currentEvent?.beneficio} (cancelado por especialista)`}
                                   </Typography>
                                 ) : (
                                   ''
                                 )}
                                 {currentEvent?.estatus === 8 ? (
-                                   <Typography variant="body2" sx={{color: 'text.disabled'}}>
+                                  <Typography variant="body2" sx={{ color: 'text.disabled' }}>
                                     {`${currentEvent?.beneficio} (reagendado)`}
                                   </Typography>
                                 ) : (
                                   ''
                                 )}
                                 {currentEvent?.estatus === 9 ? (
-                                   <Typography variant="body2" sx={{color: 'text.disabled'}}>
+                                  <Typography variant="body2" sx={{ color: 'text.disabled' }}>
                                     Cita en {`${currentEvent?.beneficio} (cita expirada)`}
                                   </Typography>
                                 ) : (
                                   ''
                                 )}
                                 {currentEvent?.estatus === 10 ? (
-                                   <Typography variant="body2" sx={{color: 'text.disabled'}}>
+                                  <Typography variant="body2" sx={{ color: 'text.disabled' }}>
                                     Cita en {`${currentEvent?.beneficio} (proceso de pago)`}
                                   </Typography>
                                 ) : (
@@ -1776,11 +1731,9 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                               </TimelineContent>
                             </TimelineItem>
 
-                            <TimelineItem  >
-                              <TimelineSeparator >
-                                <TimelineDot
-                                  className='icons'
-                                >
+                            <TimelineItem>
+                              <TimelineSeparator>
+                                <TimelineDot className="icons">
                                   <Iconify
                                     icon="mdi:account-circle"
                                     width={30}
@@ -1794,21 +1747,17 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                                 <Typography variant="subtitle1">Especialista</Typography>
 
                                 <Typography variant="body2" sx={{ color: 'text.disabled' }} mb={3}>
-                                  {currentEvent?.especialista ? currentEvent?.especialista : 'Especialista'}
+                                  {currentEvent?.especialista
+                                    ? currentEvent?.especialista
+                                    : 'Especialista'}
                                 </Typography>
                               </TimelineContent>
                             </TimelineItem>
 
-                            <TimelineItem  >
-                              <TimelineSeparator >
-                                <TimelineDot
-                                  className='icons'
-                                >
-                                  <Iconify
-                                    icon="mdi:phone"
-                                    width={30}
-                                    sx={{ color: '#3399ff' }}
-                                  />
+                            <TimelineItem>
+                              <TimelineSeparator>
+                                <TimelineDot className="icons">
+                                  <Iconify icon="mdi:phone" width={30} sx={{ color: '#3399ff' }} />
                                 </TimelineDot>
                                 <TimelineConnector />
                               </TimelineSeparator>
@@ -1824,11 +1773,9 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                               </TimelineContent>
                             </TimelineItem>
 
-                            <TimelineItem  >
-                              <TimelineSeparator >
-                                <TimelineDot
-                                  className='icons'
-                                >
+                            <TimelineItem>
+                              <TimelineSeparator>
+                                <TimelineDot className="icons">
                                   <Iconify
                                     icon="mdi:calendar-clock"
                                     width={30}
@@ -1844,23 +1791,17 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                                 <Typography variant="body2" sx={{ color: 'text.disabled' }} mb={3}>
                                   {currentEvent?.id
                                     ? `${dayjs(currentEvent?.start).format('HH:mm a')} - ${dayjs(
-                                      currentEvent?.end
-                                    ).format('HH:mm a')}`
+                                        currentEvent?.end
+                                      ).format('HH:mm a')}`
                                     : 'Fecha'}
                                 </Typography>
                               </TimelineContent>
                             </TimelineItem>
 
-                            <TimelineItem  >
-                              <TimelineSeparator >
-                                <TimelineDot
-                                  className='icons'
-                                >
-                                  <Iconify
-                                    icon="mdi:earth"
-                                    width={30}
-                                    sx={{ color: '#1ac949' }}
-                                  />
+                            <TimelineItem>
+                              <TimelineSeparator>
+                                <TimelineDot className="icons">
+                                  <Iconify icon="mdi:earth" width={30} sx={{ color: '#1ac949' }} />
                                 </TimelineDot>
                                 <TimelineConnector />
                               </TimelineSeparator>
@@ -1874,11 +1815,9 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                               </TimelineContent>
                             </TimelineItem>
 
-                            <TimelineItem  >
-                              <TimelineSeparator >
-                                <TimelineDot
-                                  className='icons'
-                                >
+                            <TimelineItem>
+                              <TimelineSeparator>
+                                <TimelineDot className="icons">
                                   <Iconify
                                     icon="ic:outline-place"
                                     width={30}
@@ -1899,11 +1838,9 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                               </TimelineContent>
                             </TimelineItem>
 
-                            <TimelineItem  >
-                              <TimelineSeparator >
-                                <TimelineDot
-                                  className='icons'
-                                >
+                            <TimelineItem>
+                              <TimelineSeparator>
+                                <TimelineDot className="icons">
                                   <Iconify
                                     icon="ic:outline-email"
                                     width={30}
@@ -1916,11 +1853,15 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                               <TimelineContent>
                                 <Typography variant="subtitle1">Correo</Typography>
 
-                                <Typography variant="body2" sx={{
-                                  color: 'text.disabled',
-                                  whiteSpace: 'normal',
-                                  wordBreak: 'break-word', // Esto permitirá que las palabras largas se dividan y se envuelvan a la siguiente línea
-                                }} mb={3}>
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    color: 'text.disabled',
+                                    whiteSpace: 'normal',
+                                    wordBreak: 'break-word', // Esto permitirá que las palabras largas se dividan y se envuelvan a la siguiente línea
+                                  }}
+                                  mb={3}
+                                >
                                   {currentEvent?.correoEspecialista
                                     ? currentEvent?.correoEspecialista
                                     : 'correo-demo@ciudadmaderas.com.mx'}
@@ -1928,10 +1869,9 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                               </TimelineContent>
                             </TimelineItem>
 
-                            <TimelineItem  >
-                              <TimelineSeparator >
-                                <TimelineDot className='icons'
-                                >
+                            <TimelineItem>
+                              <TimelineSeparator>
+                                <TimelineDot className="icons">
                                   <Iconify
                                     icon="fa-solid:money-bill"
                                     width={30}
@@ -1945,11 +1885,13 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                                 <Typography variant="subtitle1">Pago</Typography>
 
                                 <Typography variant="body2" sx={{ color: 'text.disabled' }} mb={3}>
-                                  {currentEvent?.idDetalle === null || currentEvent?.idDetalle === 0 ? (
+                                  {currentEvent?.idDetalle === null ||
+                                  currentEvent?.idDetalle === 0 ? (
                                     'Sin pago'
                                   ) : (
                                     <>
-                                      {currentEvent?.estatusPago === 1 || currentEvent?.estatusPago === 3
+                                      {currentEvent?.estatusPago === 1 ||
+                                      currentEvent?.estatusPago === 3
                                         ? 'Pago aprobado'
                                         : 'Pago declinado'}
                                     </>
@@ -1963,7 +1905,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                     </Grid>
 
                     {currentEvent?.fechasFolio && (
-
                       <Timeline
                         sx={{
                           m: 0,
@@ -1974,11 +1915,9 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                           },
                         }}
                       >
-                        <TimelineItem  >
-                          <TimelineSeparator >
-                            <TimelineDot
-                              className='icons'
-                            >
+                        <TimelineItem>
+                          <TimelineSeparator>
+                            <TimelineDot className="icons">
                               <Iconify
                                 icon="mdi:clock-remove-outline"
                                 width={30}
@@ -1996,7 +1935,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                               <Typography
                                 key={i}
                                 variant="body2"
-                                style={{ color: 'text.disabled', textDecoration: 'line-through'}}
+                                style={{ color: 'text.disabled', textDecoration: 'line-through' }}
                               >
                                 {fecha}
                               </Typography>,
@@ -2006,7 +1945,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                       </Timeline>
                     )}
                     {currentEvent?.estatus === 4 ? (
-
                       <Timeline
                         sx={{
                           m: 0,
@@ -2017,11 +1955,9 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                           },
                         }}
                       >
-                        <TimelineItem  >
-                          <TimelineSeparator >
-                            <TimelineDot
-                              className='icons'
-                            >
+                        <TimelineItem>
+                          <TimelineSeparator>
+                            <TimelineDot className="icons">
                               <Iconify
                                 icon="solar:chat-round-line-outline"
                                 width={30}
@@ -2043,7 +1979,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                     )}
                     {currentEvent?.estatus === 1 ? (
                       <>
-
                         <Stack
                           sx={{
                             flexDirection: 'row',
@@ -2053,15 +1988,19 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                           }}
                           spacing={2}
                         >
-
-                          <Typography className='notificar' variant="subtitle1" sx={{ py: { xs: 1, md: 1, cursor: 'pointer' } }} onClick={() => handleSendEmails()}>
+                          <Typography
+                            className="notificar"
+                            variant="subtitle1"
+                            sx={{ py: { xs: 1, md: 1, cursor: 'pointer' } }}
+                            onClick={() => handleSendEmails()}
+                          >
                             Notificar a externos
                             {!sendEmails ? (
                               <Iconify
                                 icon="icons8:plus"
                                 width={24}
                                 sx={{ color: 'text.disabled' }}
-                                className='notificarIcon'
+                                className="notificarIcon"
                               />
                             ) : (
                               <Iconify
@@ -2075,7 +2014,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
                         {sendEmails === true && (
                           <>
-
                             <Stack
                               sx={{
                                 px: { xs: 1, md: 2 },
@@ -2190,11 +2128,11 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                 sx={
                   !currentEvent?.id && selectedValues.modalidad
                     ? {
-                      background: {
-                        xs: 'white',
-                        md: 'linear-gradient(90deg, #2c3239 50%, white 50%)',
-                      },
-                    }
+                        background: {
+                          xs: 'white',
+                          md: 'linear-gradient(90deg, #2c3239 50%, white 50%)',
+                        },
+                      }
                     : {}
                 }
               >
@@ -2211,9 +2149,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                   >
                     Pagar
                   </LoadingButton>
-                ) : (
-                  null
-                )}
+                ) : null}
                 {currentEvent?.id && currentEvent?.estatus === 1 && (
                   <LoadingButton
                     variant="contained"
