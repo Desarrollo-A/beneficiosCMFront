@@ -66,8 +66,8 @@ export default function ModalEstatus({ open, onClose, id, estatus }) {
     <>
       <Stack spacing={1} >
         {estatus === 1 ?
-            <DialogTitle>¿Estás seguro que quieres deshabilitar está FAQ?</DialogTitle>
-            : <DialogTitle>¿Estás seguro que quieres habilitar está FAQ?</DialogTitle>
+            <DialogTitle>¿Estás seguro que quieres deshabilitar esta FAQ?</DialogTitle>
+            : <DialogTitle>¿Estás seguro que quieres habilitar esta FAQ?</DialogTitle>
         }
       </Stack>
 

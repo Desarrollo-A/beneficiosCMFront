@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
-import { m } from 'framer-motion';
 import PropTypes from 'prop-types';
+import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
@@ -13,6 +12,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import ListItemButton from '@mui/material/ListItemButton';
 
+import { DialogContentText } from '@material-ui/core';
+
 import { endpoints } from 'src/utils/axios';
 
 import { useAuthContext } from 'src/auth/hooks';
@@ -20,45 +21,7 @@ import { useGetGeneral } from 'src/api/general';
 
 import Image from 'src/components/image';
 import TextMaxLine from 'src/components/text-max-line';
-import { varFade, MotionViewport } from 'src/components/animate';
-import { DialogContentText } from '@material-ui/core';
-
-
-// ----------------------------------------------------------------------
-
-const CATEGORIES = [
-  {
-    label: 'Gestión de tu cuenta',
-    icon: '/assets/icons/faqs/ic_account.svg',
-    href: '#',
-  },
-  {
-    label: 'Pagos',
-    icon: '/assets/icons/faqs/ic_payment.svg',
-    href: '#',
-  },
-  {
-    label: 'Citas',
-    icon: '/assets/icons/faqs/ic_delivery.svg',
-    href: '#',
-  },
-  {
-    label: 'Ajustes',
-    icon: '/assets/icons/faqs/ic_package.svg',
-    href: '#',
-  },
-  /*   {
-      label: 'Reglas',
-      icon: '/assets/icons/faqs/ic_refund.svg',
-      href: '#',
-    },
-    {
-      label: 'Citas',
-      icon: '/assets/icons/faqs/ic_assurances.svg',
-      href: '#',
-    }, */
-];
-
+import { MotionViewport } from 'src/components/animate';
 // ----------------------------------------------------------------------
 
 export default function Manuales() {
