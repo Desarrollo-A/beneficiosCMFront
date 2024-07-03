@@ -29,7 +29,9 @@ const EstatusPuestosPage = lazy(() => import('src/pages/dashboard/gestor/estausP
 const SedesPage = lazy(() => import('src/pages/dashboard/gestor/sedes-view'));
 const UsuariosPage = lazy(() => import('src/pages/dashboard/gestor/usuarios-view'));
 // ----------------------------------------------------------------------
-
+// AYUDA
+const AyudaPage = lazy(() => import('src/pages/dashboard/ayuda/ayuda-view'));
+const GestorAyudaPage = lazy(() => import('src/pages/dashboard/ayuda/gestorAyuda-view'));
 // AVISOS DE PRIVACIDAD
 const AvisosDePrivacidad = lazy(() => import('src/pages/dashboard/privacidad/aviso-privacidad'));
 const OverviewEcommercePage = lazy(() => import('src/pages/dashboard/ecommerce'));
@@ -141,6 +143,13 @@ export const dashboardRoutes = [
         children: [
           { path: 'administrar', element: <AvisosDePrivacidad /> },
           { path: 'ver', element: <AvisosDePrivacidad /> },
+        ],
+      },
+      {
+        path: 'ayuda',
+        children: [
+          { path: 'ayuda', element: <AyudaPage /> },
+          { path: 'gestor', element: <GestorAyudaPage /> }
         ],
       },
       { path: 'dash', element: <DashPage /> },

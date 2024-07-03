@@ -317,4 +317,16 @@ export const endpoints = {
   citas: {
     getCitas: '/GeneralController/getCitas',
   },
+  ayuda: {
+    getFaqs: '/AyudaController/getFaqs',
+    getAllFaqs: '/AyudaController/getAllFaqs',
+    getAllManuales: '/AyudaController/getAllManuales',
+    getManuales: '/AyudaController/getManuales',
+    createFaqs: '/AyudaController/createFaqs',
+    createManuales: '/AyudaController/createManuales',
+    updateFaqs: '/AyudaController/updateFaqs',
+    updateManuales: '/AyudaController/updateManuales',
+    updateEstatusFaq: '/AyudaController/updateEstatusFaq',
+    updateEstatusManual: '/AyudaController/updateEstatusManual',
+  }
 };
