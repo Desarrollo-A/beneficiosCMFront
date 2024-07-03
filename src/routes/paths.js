@@ -139,6 +139,9 @@ export const paths = {
     privacidad: {
       aprivacidad: `${ROOTS.DASHBOARD}/privacidad/administrar`,
     },
+    ayuda: {
+      root: `${ROOTS.DASHBOARD}/ayuda/ayuda`,
+    },
     user: {
       root: `${ROOTS.DASHBOARD}/user`,
       new: `${ROOTS.DASHBOARD}/user/new`,
