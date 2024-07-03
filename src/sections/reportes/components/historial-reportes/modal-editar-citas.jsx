@@ -85,6 +85,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
       enqueueSnackbar(`Error en actualizar los datos`, { variant: 'danger' });
 
     }
+    
   });
 
   const handleDrop = useCallback(
