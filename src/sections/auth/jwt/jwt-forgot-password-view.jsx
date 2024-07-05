@@ -27,7 +27,7 @@ export default function JwtForgotPasswordView() {
   const theme = useTheme();
 
   const ForgotPasswordSchema = Yup.object().shape({
-    noEmp: Yup.string().required('Se requiere el numero de empleado').test('len', 'Deben ser más de 6 caracteres', val => val.length >= 6),
+    noEmp: Yup.string().required('Se requiere el numero de empleado').test('len', 'Deben ser más de 1 caracter', val => val.length >= 1),
   });
 
   const defaultValues = {

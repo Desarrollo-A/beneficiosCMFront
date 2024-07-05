@@ -328,7 +328,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
                 handleKeyDown();
               }}
               options={userData.map((users) => ({
-                label: users.nombreCompleto,
+                label: users.nombreCompleto ? users.nombreCompleto : '',
                 value: users.idUsuario,
                 idSede: users.idSede,
                 values: users,
