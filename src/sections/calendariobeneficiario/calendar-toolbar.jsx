@@ -124,10 +124,9 @@ export default function CalendarToolbar({
               size="small"
               color="inherit"
               onClick={popover.onOpen}
-              startIcon={<Iconify icon={selectedItem.icon} />}
               endIcon={<Iconify icon="eva:arrow-ios-downward-fill" sx={{ ml: -0.5 }} />}
             >
-              {selectedItem.label}
+              Agenda
             </Button>
 
             <Grid item container direction="row" alignItems="center" spacing={1}>
