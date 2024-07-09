@@ -96,12 +96,17 @@ export default function AppointmentSchedule({
   const [open, setOpen] = useState(false);
   const [openMap, setOpenMap] = useState(false);
   const [archivo, setArchivo] = useState(0);
+  const [nombreEspecialidad, setNombreEspecialidad] = useState('');
   const verTerminos = async () => {
     setOpen(true);
 
     const getDoc = await getDocumento(beneficioActivo.beneficio);
     setArchivo(getDoc[0]?.expediente);
+
+    
   };
+
+  
 
   const close = () => {
     setOpen(false);
@@ -113,6 +118,26 @@ export default function AppointmentSchedule({
   };
 
   const [address, setAddress] = useState('');
+
+  useEffect(() => {
+    switch(beneficioActivo.beneficio){
+      case 537:
+        setNombreEspecialidad('Nutrición');
+        break;
+      
+      case 585:
+        setNombreEspecialidad('Psicología');
+        break;
+  
+      case 686:
+        setNombreEspecialidad('Guía espiritual');
+        break;
+  
+      default:
+        setNombreEspecialidad('ERROR');
+        break;
+    }
+  }, [beneficioActivo.beneficio]);
 
   useEffect(() => {
     if (!isEmpty(oficina)) {
@@ -154,7 +179,7 @@ export default function AppointmentSchedule({
           if (response.data.results[0]?.geometry) {
             setCoordinates(response.data.results[0]?.geometry.location);
           } else {
-            console.log('No se encontraron coordenadas para esta dirección');
+            // console.log('No se encontraron coordenadas para esta dirección');
           }
         } catch (error) {
           console.error('Error al obtener las coordenadas', error);
@@ -654,7 +679,7 @@ export default function AppointmentSchedule({
                 <FormControlLabel
                   value="end"
                   control={<Checkbox value={aceptar} onClick={aceptarTerminos} />}
-                  label={`Sí, he leído y acepto los términos y condiciones conforme a lo dispuesto en la Política de ${selectedValues.beneficio}`}
+                  label={`Sí, he leído y acepto los términos y condiciones conforme a lo dispuesto en la Política de ${nombreEspecialidad}`}
                   sx={{ color: 'black' }}
                   // checked={isChecked}
                   // onChange={handleCheckboxChange}
