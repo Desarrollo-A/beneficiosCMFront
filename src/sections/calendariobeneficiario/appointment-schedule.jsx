@@ -394,9 +394,9 @@ export default function AppointmentSchedule({
                               : 'Sin dirección'}
                           </Typography>
                         </Stack>
-                        <Button variant="contained" color="primary" onClick={handleClickOpen}>
+                       {/*  <Button variant="contained" color="primary" onClick={handleClickOpen}>
                           Ver mapa
-                        </Button>
+                        </Button> */}
                       </Stack>
 
                       {coordinates !== null ? (
