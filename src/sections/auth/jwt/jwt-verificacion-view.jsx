@@ -223,7 +223,7 @@ export default function Verificacion({ email, formReg }) {
               <LoadingButton
                 variant="contained"
                 loading={btnLoad}
-                onClick={() => {handleSend(codigo)}}
+                onClick={() => {handleSend(codigo); setBtnLoad(true);}}
               >
                 Verificar
               </LoadingButton>
