@@ -1,3 +1,5 @@
+import { mutate } from 'swr';
+
 import Accordion from '@mui/material/Accordion';
 import Typography from '@mui/material/Typography';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -17,6 +19,8 @@ export default function FaqsList() {
   const { user } = useAuthContext();
 
   const rol = user?.idRol;
+
+  mutate(endpoints.ayuda.getFaqs);
 
   const { faqsData } = useGetGeneral(endpoints.ayuda.getFaqs, "faqsData");
 

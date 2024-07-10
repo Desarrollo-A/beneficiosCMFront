@@ -98,9 +98,9 @@ export default function TableRowFaqs({ row, rol, close }) {
 
       <ModalEditarFaqs
         id={row.id}
-        titulo={titulo}
-        descripcion={descripcion}
-        idRol={idRol}
+        titulo={row.titulo}
+        descripcion={row.descripcion}
+        idRol={row.idRol}
         open={quickEditar.value}
         onClose={quickEditar.onFalse}
       />

@@ -39,6 +39,7 @@ import Iconify from 'src/components/iconify';
 import CalendarPreview from 'src/sections/calendariobeneficiario/calendar-preview';
 
 import EvaluateDialog from './evaluate-dialog';
+import ConfirmDoblePayment from './confirm-doble-payment';
 
 export default function PendingModalUser({ idUsuario }) {
   const [open, setOpen] = useState(true); // En true para abrir el modal
@@ -47,12 +48,18 @@ export default function PendingModalUser({ idUsuario }) {
   const [event, setEvent] = useState({});
   const { data: pendientes, pendingsMutate } = useGetPendientes(); // traer todas las citas en pendiente de pago o evaluacion
   const [confirmCancel, setConfirmCancel] = useState(false);
+  const [confirmDoblePago, setConfirmDoblePago] = useState(false);
   const [datosCita, setDatosCita] = useState({});
   const [btnConfirmAction, setBtnConfirmAction] = useState(false);
+  const [citaPayment, setCitaPayment] = useState([]);
 
-  const { encuestaData } = usePostGeneral(idUsuario, endpoints.encuestas.evaluacionEncuesta, "encuestaData");
+  const { encuestaData } = usePostGeneral(
+    idUsuario,
+    endpoints.encuestas.evaluacionEncuesta,
+    'encuestaData'
+  );
 
-  const encDisponible = encuestaData.some(objeto => Object.values(objeto).includes(0));
+  const encDisponible = encuestaData.some((objeto) => Object.values(objeto).includes(0));
 
   dayjs.locale('es');
   dayjs.extend(localeData);
@@ -75,6 +82,16 @@ export default function PendingModalUser({ idUsuario }) {
     setDatosCita(cita);
   };
 
+  const handlePayment = (cita) => {
+    if (cita.fechaIntentoPago == null || cita.fechaIntentoPago === 'NULL') {
+      pagarCitaPendiente(cita);
+    } else {
+      setCitaPayment([]);
+      setConfirmDoblePago(true);
+      setCitaPayment(cita);
+    }
+  };
+
   const onCancel = async () => {
     setBtnConfirmAction(true);
     const cancel = await cancelAppointment(datosCita, datosCita.id, 0, datosUser.idUsuario);
@@ -86,7 +103,6 @@ export default function PendingModalUser({ idUsuario }) {
       return onClose();
     }
     if (cancel.result) {
-
       enqueueSnackbar('¡Has cancelado la cita!', {
         variant: 'success',
       });
@@ -112,13 +128,10 @@ export default function PendingModalUser({ idUsuario }) {
       return false;
     }
     if (datosUser.correo) {
-      console.log('object: ', scheduledAppointment.data[0])
       const email = await sendMail(
         scheduledAppointment.data[0],
         2,
-        [
-          datosUser.correo
-        ],
+        [datosUser.correo],
         datosUser.idUsuario
       );
       if (!email.result) {
@@ -136,7 +149,7 @@ export default function PendingModalUser({ idUsuario }) {
 
     /* VALIDAR SI ES GRATUITA LA CITA */
     let precio = 50;
-    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') precio = 0.00;
+    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') precio = 0.0;
 
     let nombreBeneficio = '';
     let abreviatura = '';
@@ -348,7 +361,12 @@ export default function PendingModalUser({ idUsuario }) {
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="Pagar">
-                        <IconButton onClick={() => pagarCitaPendiente(pendientes?.data.pago[key])}>
+                        <IconButton
+                          onClick={() => {
+                            handlePayment(pendientes?.data.pago[key]);
+                          }}
+                          disabled={citaPayment?.id === pendientes?.data?.pago[key].id}
+                        >
                           <Iconify icon="ph:money-fill" width={22} />
                         </IconButton>
                       </Tooltip>
@@ -418,10 +436,8 @@ export default function PendingModalUser({ idUsuario }) {
           mutate={pendingsMutate}
           cerrar={onClose}
         />
-      ) : (
-        null
-      )}
-      <Dialog open={confirmCancel} maxWidth="sm">
+      ) : null}
+      <Dialog open={confirmCancel} maxWidth="sm" disableEnforceFocus>
         <DialogContent>
           <Stack
             direction="row"
@@ -452,10 +468,65 @@ export default function PendingModalUser({ idUsuario }) {
           </LoadingButton>
         </DialogActions>
       </Dialog>
+
+      <ConfirmDoblePayment
+        open={confirmDoblePago}
+        onClose={() => {
+          setConfirmDoblePago(false);
+          setCitaPayment([]);
+        }}
+        paymentFunc={() => pagarCitaPendiente(citaPayment)}
+        cita={citaPayment}
+        sx={{ backgroundColor: '#000000' }}
+      />
+
+      {/* <Dialog open={confirmDoblePago} maxWidth="sm" disableEnforceFocus>
+        <DialogContent>
+          <Stack
+            direction="row"
+            justifyContent="center"
+            useFlexGap
+            flexWrap="wrap"
+            sx={{ pt: { xs: 1, md: 2 }, pb: { xs: 1, md: 2 } }}
+          >
+            <Typography color="red" sx={{ mt: 1, mb: 1 }}>
+              <strong>¡ATENCIÓN!</strong>
+            </Typography>
+          </Stack>
+
+          <Typography
+            sx={{ justifyContent: 'center', alignContent: 'center', textAlign: 'center' }}
+          >
+            Si ya realizó el pago le pedimos de favor que espere a que el banco actualice el pago de
+            la cita. De lo contrario proceda a pagar :D
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => {
+              setConfirmDoblePago(false);
+              setCitaPayment([]);
+            }}
+          >
+            Cerrar
+          </Button>
+          <LoadingButton
+            variant="contained"
+            color="success"
+            onClick={() => pagarCitaPendiente(citaPayment)}
+            loading={btnConfirmAction}
+            autoFocus
+          >
+            Pagar
+          </LoadingButton>
+        </DialogActions>
+      </Dialog> */}
     </>
   );
 }
 
 PendingModalUser.propTypes = {
-  idUsuario: PropTypes.any
+  idUsuario: PropTypes.any,
 };

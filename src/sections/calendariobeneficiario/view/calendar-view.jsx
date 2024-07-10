@@ -92,17 +92,14 @@ export default function CalendarView() {
 
   const [animate, setAnimate] = useState(false);
 
-  const handleClick = useCallback(
-    () => {
-      document.body.scrollTop = 0;
-      document.documentElement.scrollTop = 0;
-      setAnimate(true);
-      setTimeout(() => {
+  const handleClick = useCallback(() => {
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+    setAnimate(true);
+    setTimeout(() => {
       setAnimate(false);
     }, 500); // Duración de la animación en milisegundos
-    },
-    []
-  );
+  }, []);
 
   return (
     <>
@@ -116,15 +113,19 @@ export default function CalendarView() {
           }}
         >
           <Typography variant="h4"> </Typography>
-          <Button className={`ButtonCita ${animate ? 'animate' : ''}`}  onClick={dialog.onTrue} id="animateElement" >
+          <Button
+            className={`ButtonCita ${animate ? 'animate' : ''}`}
+            onClick={dialog.onTrue}
+            id="animateElement"
+          >
             <span>Agendar nueva cita</span>
-            <Iconify icon="carbon:add-filled"/>
+            <Iconify icon="carbon:add-filled" />
           </Button>
-          </Stack>
+        </Stack>
 
         {/* Calendario */}
         <Card>
-          <StyledCalendar  >
+          <StyledCalendar>
             <CalendarToolbar
               date={date}
               view={view}
@@ -135,12 +136,14 @@ export default function CalendarView() {
               onChangeView={onChangeView}
             />
             <Calendar
-              id="clickableElement" 
+              id="clickableElement"
               weekends
               editable={false} // en false para prevenir un drag del evento
               selectable
               locales={allLocales}
               locale="es"
+              fixedWeekCount={false}
+              showNonCurrentDates={false}
               rerenderDelay={10}
               allDayMaintainDuration
               eventResizableFromStart
@@ -150,7 +153,7 @@ export default function CalendarView() {
               events={dataFiltered}
               headerToolbar={false}
               select={handleClick}
-              eventClick={ onClickEvent}
+              eventClick={onClickEvent}
               height={smUp ? 720 : 'auto'}
               plugins={[
                 listPlugin,
