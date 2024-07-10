@@ -79,15 +79,18 @@ export const StyledCalendar = styled('div')(({ theme }) => ({
   '& .fc .fc-event .fc-event-time': {
     overflow: 'unset',
     fontWeight: theme.typography.fontWeightBold,
+    
   },
 
   // Popover
   '& .fc .fc-popover': {
     border: 0,
-    overflow: 'hidden',
+    overflowY: 'auto',  
+    overflowX: 'hidden',
     boxShadow: theme.customShadows.dropdown,
     borderRadius: theme.shape.borderRadius * 1.5,
     backgroundColor: theme.palette.background.paper,
+    height: '15vh',
   },
   '& .fc .fc-popover-header': {
     ...theme.typography.subtitle2,
