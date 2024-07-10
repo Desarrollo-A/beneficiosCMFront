@@ -1630,14 +1630,14 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
                                 {currentEvent?.estatus === 1 && currentEvent?.tipoCita === 1 ? (
                                   <Typography variant="body2" sx={{ color: 'text.disabled' }}>
-                                    {`${currentEvent?.beneficio} (por asistir - primera cita)`}
+                                    {`${currentEvent?.beneficio} (por asistir - ${currentEvent?.modalidad === 1 ? 'presencial' : 'en línea'} - primera cita)`}
                                   </Typography>
                                 ) : (
                                   ''
                                 )}
-                                {currentEvent?.estatus === 1 && currentEvent?.tipoCita === 2 ? (
+                                {currentEvent?.estatus === 1 && currentEvent?.tipoCita !== 1 ? (
                                   <Typography variant="body2" sx={{ color: 'text.disabled' }}>
-                                    {`${currentEvent?.beneficio} (por asistir - cita en línea)`}
+                                    {`${currentEvent?.beneficio} (por asistir - ${currentEvent?.modalidad === 1 ? 'presencial' : 'en línea'})`}
                                   </Typography>
                                 ) : (
                                   ''
