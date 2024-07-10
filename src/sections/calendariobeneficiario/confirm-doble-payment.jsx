@@ -50,7 +50,8 @@ export default function ConfirmDoblePayment({ open, onClose, paymentFunc }) {
               mb: 1,
             }}
           >
-            ¡Si ya realizaste tu pago, espera 10 minutos en lo que se procesa tu pago!
+            ¡Si ya realizaste tu pago, espera 10 minutos mientras se procesa! Si no lo has
+            realizado, puedes hacer clic en "Pagar".
           </Typography>
         </DialogContent>
         <DialogActions>
@@ -66,7 +67,7 @@ export default function ConfirmDoblePayment({ open, onClose, paymentFunc }) {
             }}
             autoFocus
           >
-            Pagar
+            Pagar de todas formas
           </LoadingButton>
         </DialogActions>
       </Box>
