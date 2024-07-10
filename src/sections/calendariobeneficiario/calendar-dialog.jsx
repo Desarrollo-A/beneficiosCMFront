@@ -86,6 +86,7 @@ import FormProvider from 'src/components/hook-form/form-provider';
 import './style.css';
 import CalendarPreview from './calendar-preview';
 import AppointmentSchedule from './appointment-schedule';
+import ConfirmDoblePayment from './confirm-doble-payment';
 
 dayjs.locale('es');
 dayjs.extend(utc);
@@ -129,6 +130,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const [sedesAtencionEspecialista, setSedesAtencionEspecialista] = useState({});
   const [diasPresenciales, setDiasPresenciales] = useState([]);
   const [aceptar, setAceptar] = useState(false);
+  const [confirmDoblePago, setConfirmDoblePago] = useState(false);
+  const [citaPayment, setCitaPayment] = useState([]);
 
   const [btnNotificationDisabled, setBtnNotificationDisabled] = useState(false);
   const [email, setEmail] = useState('');
@@ -708,6 +711,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         DATOS_PAGO.SERVICIO
       );
       if (!resultadoPago) {
+        alert(resultadoPago);
         const update = await updateStatusAppointment(
           DATOS_CITA.ID_USUARIO,
           currentEvent.id,
@@ -716,6 +720,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         if (!update) console.error('La cita no se pudo actualizar para realizar el pago');
       }
       if (resultadoPago) {
+        alert(resultadoPago);
         await actualizarFechaIntentoPago(DATOS_CITA.ID_USUARIO, currentEvent.id);
       }
     }
@@ -1113,6 +1118,16 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const handleHorarioSeleccionado = (val) => {
     setBtnDisabled(false);
     setHorarioSeleccionado(val);
+  };
+
+  const handlePayment = (cita) => {
+    if (cita.fechaIntentoPago == null || cita.fechaIntentoPago === 'NULL') {
+      pagarCitaPendiente();
+    } else {
+      setCitaPayment([]);
+      setConfirmDoblePago(true);
+      setCitaPayment(cita);
+    }
   };
 
   const handleDateChange = (newDate) => {
@@ -2123,13 +2138,14 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                 <Button variant="contained" color="error" onClick={onClose}>
                   Cerrar
                 </Button>
-                {currentEvent?.id && currentEvent?.estatus === 6 ? (
+                {currentEvent?.id &&
+                (currentEvent?.estatus === 6 || currentEvent?.estatus === 10) ? (
                   <LoadingButton
                     variant="contained"
                     color="success"
                     disabled={currentEvent?.estatus !== 6 && currentEvent?.estatus !== 10}
                     loading={btnPayDisabled}
-                    onClick={pagarCitaPendiente}
+                    onClick={() => handlePayment(currentEvent)}
                   >
                     Pagar
                   </LoadingButton>
@@ -2280,6 +2296,13 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
           </LoadingButton>
         </DialogActions>
       </Dialog>
+
+      <ConfirmDoblePayment
+        open={confirmDoblePago}
+        onClose={() => setConfirmDoblePago(false)}
+        paymentFunc={pagarCitaPendiente}
+        cita={citaPayment}
+      />
 
       <CalendarPreview event={event} open={open2} handleClose={handleClose} />
       {/* {pendiente && openEvaluateDialog && (
