@@ -1,8 +1,8 @@
 import * as Yup from 'yup';
 import { mutate } from 'swr';
 import PropTypes from 'prop-types';
-import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useMemo, useState, useEffect } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import { Box } from '@mui/system';
@@ -54,18 +54,15 @@ export default function ModalEditarOficinas({
     titulo: Yup.string().required('El campo es requerido')
   });
 
-  const defaultValues = useMemo(
-    () => ({
-      titulo,
-      descripcion,
-      modificadoPor: idUsr
-    }),
-    [titulo, descripcion, idUsr]
-  );
+  const [values, setValues] = useState({ titulo, descripcion, modificadoPor: idUsr });
+
+  useEffect(() => {
+    setValues({ titulo, descripcion, modificadoPor: idUsr });
+  }, [titulo, descripcion, idUsr]);
 
   const methods = useForm({
     resolver: yupResolver(NewUserSchema),
-    defaultValues,
+    values,
   });
 
   const {
@@ -90,7 +87,7 @@ export default function ModalEditarOficinas({
       reset();
       onClose();
 
-     const update = await updateFaqs(dataValue);
+      const update = await updateFaqs(dataValue);
 
       if (update.estatus === true) {
         enqueueSnackbar(update.msj, { variant: 'success' });
@@ -158,7 +155,7 @@ export default function ModalEditarOficinas({
             <Box mb={2} />
 
             <Grid xs={12} md={6}>
-              <RHFTextField name="descripcion" label="Descripcion" multiline rows={4}/>
+              <RHFTextField name="descripcion" label="Descripcion" multiline rows={4} />
             </Grid>
 
           </DialogContent>
