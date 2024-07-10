@@ -51,7 +51,7 @@ export default function ConfirmDoblePayment({ open, onClose, paymentFunc }) {
             }}
           >
             ¡Si ya realizaste tu pago, espera 10 minutos mientras se procesa! Si no lo has
-            realizado, puedes hacer clic en (Pagar).
+            realizado, puedes hacer clic en &quot;Pagar&quot;.
           </Typography>
         </DialogContent>
         <DialogActions>
