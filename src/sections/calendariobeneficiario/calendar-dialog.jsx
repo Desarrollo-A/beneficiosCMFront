@@ -61,11 +61,10 @@ import {
   getCitasSinPagar,
   getAtencionXSede,
   cancelAppointment,
-  getModalitiesBene,
   getDiasDisponibles,
   // getCitasSinEvaluar,
   getBeneficioActivo,
-  getCitasFinalizadas,
+  // getCitasFinalizadas,
   updateDetailPacient,
   getHorariosOcupados,
   getSedesPresenciales,
@@ -109,7 +108,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const [beneficios, setBeneficios] = useState([]);
   const [especialistas, setEspecialistas] = useState([]);
   const [modalidades, setModalidades] = useState([]);
-  const [modalidadesBene, setModalidadesBene] = useState([]);
   const [errorBeneficio, setErrorBeneficio] = useState(false);
   const [errorEspecialista, setErrorEspecialista] = useState(false);
   const [errorModalidad, setErrorModalidad] = useState(false);
@@ -123,10 +121,10 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const [event, setEvent] = useState({});
   const [btnDisabled, setBtnDisabled] = useState(false);
   const [btnPayDisabled, setBtnPayDisabled] = useState(false);
-  const [btnEvaluateDisabled, setBtnEvaluateDisabled] = useState(false);
+  // const [btnEvaluateDisabled, setBtnEvaluateDisabled] = useState(false);
   const [btnConfirmAction, setBtnConfirmAction] = useState(false);
-  const [openEvaluateDialog, setOpenEvaluateDialog] = useState(false);
-  const [pendiente, setPendiente] = useState({});
+  // const [openEvaluateDialog, setOpenEvaluateDialog] = useState(false);
+  // const [pendiente, setPendiente] = useState({});
   const [sedesAtencionEspecialista, setSedesAtencionEspecialista] = useState({});
   const [diasPresenciales, setDiasPresenciales] = useState([]);
   const [aceptar, setAceptar] = useState(false);
@@ -191,8 +189,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       ahora >= inicioHorarioVerano(añoDate) && ahora <= finHorarioVerano(añoDate) ? 1 : 2;
     ahora.setHours(ahora.getHours() - horasARestar);
 
-    const año = horarioSeleccionado.substring(0, 4);
-    const mes = horarioSeleccionado.substring(5, 7);
+    // const año = horarioSeleccionado.substring(0, 4);
+    // const mes = horarioSeleccionado.substring(5, 7);
 
     // *** VALIDAMOS SI TIENE CITAS SIN FINALIZAR ***
     const citasSinFinalizar = await getCitasSinFinalizar(
@@ -230,15 +228,15 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     }
 
     // *** VALIDAMOS SI YA GOZO SUS BENEFICIOS ***
-    const citasFinalizadas = await getCitasFinalizadas(datosUser.idUsuario, mes, año);
-    if (citasFinalizadas.result === true && citasFinalizadas?.data.length >= 2) {
-      enqueueSnackbar(
-        'Ya cuentas con la cantidad máxima de beneficios brindados en el mes seleccionado',
-        { variant: 'error' }
-      );
-      onClose();
-      return false;
-    }
+    // const citasFinalizadas = await getCitasFinalizadas(datosUser.idUsuario, mes, año);
+    // if (citasFinalizadas.result === true && citasFinalizadas?.data.length >= 2) {
+    //   enqueueSnackbar(
+    //     'Ya cuentas con la cantidad máxima de beneficios brindados en el mes seleccionado',
+    //     { variant: 'error' }
+    //   );
+    //   onClose();
+    //   return false;
+    // }
 
     // *** VERIFICAMOS QUE EXISTA LA ATENCIÓN A SU SEDE O AREA ***
     const idAtencionPorSede = await getAtencionXSede(
@@ -711,7 +709,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         DATOS_PAGO.SERVICIO
       );
       if (!resultadoPago) {
-        alert(resultadoPago);
         const update = await updateStatusAppointment(
           DATOS_CITA.ID_USUARIO,
           currentEvent.id,
@@ -720,7 +717,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         if (!update) console.error('La cita no se pudo actualizar para realizar el pago');
       }
       if (resultadoPago) {
-        alert(resultadoPago);
         await actualizarFechaIntentoPago(DATOS_CITA.ID_USUARIO, currentEvent.id);
       }
     }
@@ -753,12 +749,12 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     appointmentMutate();
   };
 
-  const onEvaluate = async () => {
-    setBtnEvaluateDisabled(true);
-    setPendiente(currentEvent);
-    setOpenEvaluateDialog(true);
-    return true;
-  };
+  // const onEvaluate = async () => {
+  //   setBtnEvaluateDisabled(true);
+  //   setPendiente(currentEvent);
+  //   setOpenEvaluateDialog(true);
+  //   return true;
+  // };
 
   const handleChange = async (input, value) => {
     setBtnDisabled(false);
@@ -772,7 +768,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       setIsLoadingEspecialidad(true); // Marcamos que recibimos input
       setEspecialistas([]);
       setModalidades([]);
-      setModalidadesBene([]);
       setSelectedValues({
         beneficio: value,
         especialista: '',
@@ -820,7 +815,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     } else if (input === 'especialista') {
       setIsLoadingModalidad(true);
       setModalidades([]);
-      setModalidadesBene([]);
       setSelectedValues({
         ...selectedValues,
         especialista: value,
@@ -834,7 +828,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       /* ************************************* */
       setErrorEspecialista(false);
       const modalitiesData = await getModalities(datosUser.idSede, value, datosUser.idArea); // Modalidades input
-      const modalitiesBeneData = await getModalitiesBene(datosUser.idSede, value, datosUser.idArea);
+      setModalidades(modalitiesData?.data);
       if (modalitiesData.data.length > 0 && modalitiesData?.data.length === 1) {
         setSelectedValues({
           ...selectedValues,
@@ -849,10 +843,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
           modalitiesData.data[0].tipoCita
         );
         setOficina(data);
+        getHorariosDisponibles(selectedValues.beneficio, value);
       }
-      getHorariosDisponibles(selectedValues.beneficio, value);
-      setModalidades(modalitiesData?.data);
-      setModalidadesBene(modalitiesBeneData?.data);
     } else if (input === 'modalidad') {
       setSelectedValues({
         ...selectedValues,
@@ -1263,8 +1255,8 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       ahora >= inicioHorarioVerano(añoDate) && ahora <= finHorarioVerano(añoDate) ? 1 : 2;
     ahora.setHours(ahora.getHours() - horasARestar);
 
-    const año = horarioSeleccionado.substring(0, 4);
-    const mes = horarioSeleccionado.substring(5, 7);
+    // const año = horarioSeleccionado.substring(0, 4);
+    // const mes = horarioSeleccionado.substring(5, 7);
     // const dia = horarioSeleccionado.substring(8, 10);
 
     const checkInvoiceDetail = await checkInvoice(currentEvent.idDetalle);
@@ -1285,30 +1277,31 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       return onClose();
     }
 
-    const citasSinFinalizar = await getCitasSinFinalizar(
-      datosUser.idUsuario,
-      selectedValues.beneficio
-    );
+    // SE COMENTARON LAS VALIDACIONES DEBIDO A QUE ESTAS REGLAS YA NO VAN A APLICAR
+    // const citasSinFinalizar = await getCitasSinFinalizar(
+    //   datosUser.idUsuario,
+    //   selectedValues.beneficio
+    // );
 
-    // Si tiene citas en proceso no lo tengo que dejar agendar citas
-    if (citasSinFinalizar.result) {
-      enqueueSnackbar('Ya tienes una cita en proceso de este beneficio', {
-        variant: 'error',
-      });
-      return onClose();
-    }
+    // // Si tiene citas en proceso no lo tengo que dejar agendar citas
+    // if (citasSinFinalizar.result) {
+    //   enqueueSnackbar('Ya tienes una cita en proceso de este beneficio', {
+    //     variant: 'error',
+    //   });
+    //   return onClose();
+    // }
 
-    const citasFinalizadas = await getCitasFinalizadas(datosUser.idUsuario, mes, año);
+    // const citasFinalizadas = await getCitasFinalizadas(datosUser.idUsuario, mes, año);
 
-    if (citasFinalizadas.result === true && citasFinalizadas?.data.length >= 3) {
-      enqueueSnackbar(
-        'Ya cuentas con la cantidad máxima de beneficios brindados en el mes seleccionado',
-        {
-          variant: 'error',
-        }
-      );
-      return onClose();
-    }
+    // if (citasFinalizadas.result === true && citasFinalizadas?.data.length >= 3) {
+    //   enqueueSnackbar(
+    //     'Ya cuentas con la cantidad máxima de beneficios brindados en el mes seleccionado',
+    //     {
+    //       variant: 'error',
+    //     }
+    //   );
+    //   return onClose();
+    // }
 
     let nombreBeneficio = '';
     switch (selectedValues.beneficio) {
@@ -1650,7 +1643,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                                 ) : (
                                   ''
                                 )}
-                                {currentEvent?.estatus === 1 && currentEvent?.tipoCita !== 1 ? (
+                                {currentEvent?.estatus === 1 && currentEvent?.tipoCita === 2 ? (
                                   <Typography variant="body2" sx={{ color: 'text.disabled' }}>
                                     {`${currentEvent?.beneficio} (por asistir - ${currentEvent?.modalidad === 1 ? 'presencial' : 'en línea'})`}
                                   </Typography>
@@ -1659,7 +1652,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                                 )}
                                 {currentEvent?.estatus === 1 && currentEvent?.tipoCita === 3 ? (
                                   <Typography variant="body2" sx={{ color: 'text.disabled' }}>
-                                    {`${currentEvent?.beneficio} (por asistir - cita normal)`}
+                                    {`${currentEvent?.beneficio} (por asistir - ${currentEvent?.modalidad === 1 ? 'presencial' : 'en línea'} - agendada por especialista)`}
                                   </Typography>
                                 ) : (
                                   ''
@@ -2104,7 +2097,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                     errorBeneficio={errorBeneficio}
                     especialistas={especialistas}
                     errorEspecialista={errorEspecialista}
-                    modalidades={modalidadesBene}
+                    modalidades={modalidades}
                     errorModalidad={errorModalidad}
                     oficina={oficina}
                     isLoading={isLoading}
@@ -2222,7 +2215,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
             errorBeneficio={errorBeneficio}
             especialistas={especialistas}
             errorEspecialista={errorEspecialista}
-            modalidades={modalidadesBene}
+            modalidades={modalidades}
             errorModalidad={errorModalidad}
             oficina={oficina}
             isLoading={isLoading}

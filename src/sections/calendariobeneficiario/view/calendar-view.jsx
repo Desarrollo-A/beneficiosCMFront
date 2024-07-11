@@ -136,7 +136,6 @@ export default function CalendarView() {
               onChangeView={onChangeView}
             />
             <Calendar
-              id="clickableElement"
               weekends
               editable={false} // en false para prevenir un drag del evento
               selectable

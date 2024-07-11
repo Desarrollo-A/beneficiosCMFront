@@ -106,7 +106,7 @@ export const endpoints = {
     registerUser: 'LoginController/addRegistroEmpleado',
     recuperarPassword: 'LoginController/recuperarPassword',
     guardarNuevaPassword: 'LoginController/guardarNuevaPassword',
-    validarNumEmp: 'LoginController/validarNumEmp'
+    validarNumEmp: 'LoginController/validarNumEmp',
   },
   mail: {
     list: '/api/mail/list',
@@ -224,7 +224,7 @@ export const endpoints = {
     demandaDepartamentos: '/ReportesController/demandaDepartamentos',
     allDemandaAreas: '/ReportesController/allDemandaAreas',
     demandaAreas: '/ReportesController/demandaAreas',
-    demandaPuestos: '/ReportesController/demandaPuestos'
+    demandaPuestos: '/ReportesController/demandaPuestos',
   },
   dashboard: {
     citasAnual: '/DashboardController/citasAnual',
@@ -307,7 +307,7 @@ export const endpoints = {
     getPuestos: '/GestorController/getPuestos',
     updateEstatusPuestos: '/GestorController/updateEstatusPuestos',
     updateEstatusAreas: '/GestorController/updateEstatusAreas',
-    updateEstatusDepartamentos: '/GestorController/updateEstatusDepartamentos'
+    updateEstatusDepartamentos: '/GestorController/updateEstatusDepartamentos',
   },
   avisosPrivacidad: {
     getEspecialidadToSelect: '/AvisosPrivacidadController/getEspecialidades',
@@ -328,5 +328,5 @@ export const endpoints = {
     updateManuales: '/AyudaController/updateManuales',
     updateEstatusFaq: '/AyudaController/updateEstatusFaq',
     updateEstatusManual: '/AyudaController/updateEstatusManual',
-  }
+  },
 };
