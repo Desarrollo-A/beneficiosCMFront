@@ -102,11 +102,7 @@ export default function AppointmentSchedule({
 
     const getDoc = await getDocumento(beneficioActivo.beneficio);
     setArchivo(getDoc[0]?.expediente);
-
-    
   };
-
-  
 
   const close = () => {
     setOpen(false);
@@ -120,24 +116,24 @@ export default function AppointmentSchedule({
   const [address, setAddress] = useState('');
 
   useEffect(() => {
-    switch(beneficioActivo.beneficio){
+    switch (beneficioActivo?.beneficio) {
       case 537:
         setNombreEspecialidad('Nutrición');
         break;
-      
+
       case 585:
         setNombreEspecialidad('Psicología');
         break;
-  
+
       case 686:
         setNombreEspecialidad('Guía espiritual');
         break;
-  
+
       default:
         setNombreEspecialidad('ERROR');
         break;
     }
-  }, [beneficioActivo.beneficio]);
+  }, [beneficioActivo?.beneficio]);
 
   useEffect(() => {
     if (!isEmpty(oficina)) {
@@ -172,8 +168,9 @@ export default function AppointmentSchedule({
       const fetchCoordinates = async () => {
         try {
           const response = await axios.get(`
-        https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY
-            }
+        https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${
+          import.meta.env.VITE_GOOGLE_MAPS_API_KEY
+        }
         `);
 
           if (response.data.results[0]?.geometry) {
@@ -203,15 +200,13 @@ export default function AppointmentSchedule({
             sx={
               selectedValues.modalidad
                 ? {
-                  color: 'white',
-                }
+                    color: 'white',
+                  }
                 : {}
             }
           >
-            <Typography variant="subtitle1">
-                Agendamiento de cita
-            </Typography>
-            <Box mb={1}/>
+            <Typography variant="subtitle1">Agendamiento de cita</Typography>
+            <Box mb={1} />
             {/* El primero es reagendar. */}
             {!currentEvent?.id && selectedValues?.modalidad ? (
               <ThemeProvider theme={darkTheme}>
@@ -227,7 +222,7 @@ export default function AppointmentSchedule({
                       value={selectedValues.beneficio || ''}
                       defaultValue=""
                       onChange={(e) => handleChange('beneficio', e.target.value)}
-                    /* disabled={!!(beneficios?.length === 0 || currentEvent?.id)} */
+                      /* disabled={!!(beneficios?.length === 0 || currentEvent?.id)} */
                     >
                       {!(beneficios?.length === 0 || currentEvent?.id) ? (
                         beneficios?.map((e) => (
@@ -258,7 +253,7 @@ export default function AppointmentSchedule({
                       value={selectedValues.especialista}
                       defaultValue=""
                       onChange={(e) => handleChange('especialista', e.target.value)}
-                    /* disabled={!!(especialistas?.length === 0 || currentEvent?.id)} */
+                      /* disabled={!!(especialistas?.length === 0 || currentEvent?.id)} */
                     >
                       {!(especialistas?.length === 0 || currentEvent?.id) ? (
                         especialistas?.map((e, index) => (
@@ -289,7 +284,7 @@ export default function AppointmentSchedule({
                       defaultValue=""
                       value={selectedValues.modalidad}
                       onChange={(e) => handleChange('modalidad', e.target.value)}
-                    /* disabled={!!(modalidades?.length === 0 || currentEvent?.id)} */
+                      /* disabled={!!(modalidades?.length === 0 || currentEvent?.id)} */
                     >
                       {!(modalidades?.length === 0 || currentEvent?.id) ? (
                         modalidades?.map((e, index) => (
@@ -419,7 +414,7 @@ export default function AppointmentSchedule({
                               : 'Sin dirección'}
                           </Typography>
                         </Stack>
-                       {/*  <Button variant="contained" color="primary" onClick={handleClickOpen}>
+                        {/*  <Button variant="contained" color="primary" onClick={handleClickOpen}>
                           Ver mapa
                         </Button> */}
                       </Stack>
@@ -485,15 +480,12 @@ export default function AppointmentSchedule({
                       }}
                     >
                       <Stack>
-                        <Iconify
-                          icon="line-md:alert-twotone"
-                          width={30}
-                          sx={{ color: 'yellow' }}
-                        />
+                        <Iconify icon="line-md:alert-twotone" width={30} sx={{ color: 'yellow' }} />
                       </Stack>
                       <Stack sx={{ flexDirection: 'col' }}>
                         <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                          Una vez que agendes tu cita, tendrás 10 minutos para hacer el pago, de lo contrario se cancelará.
+                          Una vez que agendes tu cita, tendrás 10 minutos para hacer el pago, de lo
+                          contrario se cancelará.
                         </Typography>
                       </Stack>
                     </Stack>
@@ -571,26 +563,27 @@ export default function AppointmentSchedule({
                     </Typography>
                   </Stack>
                 </Stack>
-                <Stack
-                  sx={{
-                    flexDirection: 'row',
-                    p: { xs: 1, md: 1 },
-                    alignItems: 'center',
-                  }}
-                >
-                  <Stack>
-                    <Iconify
-                      icon="line-md:alert-twotone"
-                      width={30}
-                      sx={{ color: 'text.disabled' }}
-                    />
-                  </Stack>
-                  <Stack sx={{ flexDirection: 'col' }}>
-                    <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
-                      Una vez que agendes tu cita, tendrás 10 minutos para hacer el pago, de lo contrario se cancelará.
-                    </Typography>
-                  </Stack>
-                </Stack>
+                <div className="card example-4">
+                  <div className="inner">
+                    <Stack
+                      sx={{
+                        flexDirection: 'row',
+                        p: { xs: 1, md: 1 },
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Stack>
+                        <Iconify icon="line-md:alert-twotone" width={30} sx={{ color: 'yellow' }} />
+                      </Stack>
+                      <Stack sx={{ flexDirection: 'col' }}>
+                        <Typography variant="body1" sx={{ pl: { xs: 1, md: 2 } }}>
+                          Una vez que agendes tu cita, tendrás 10 minutos para hacer el pago, de lo
+                          contrario se cancelará.
+                        </Typography>
+                      </Stack>
+                    </Stack>
+                  </div>
+                </div>
               </>
             )}
           </Stack>
@@ -674,7 +667,6 @@ export default function AppointmentSchedule({
               <>Fecha sin horarios disponibles</>
             )}
             {beneficioActivo?.primeraCita === 0 || beneficioActivo?.primeraCita === null ? (
-
               <Stack>
                 <FormControlLabel
                   value="end"
@@ -689,8 +681,6 @@ export default function AppointmentSchedule({
                   Ver términos y condiciones
                 </Button>
               </Stack>
-
-
             ) : (
               ''
             )}

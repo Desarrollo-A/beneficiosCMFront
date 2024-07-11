@@ -7,8 +7,6 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { Stack, Button, Typography, DialogActions, Box } from '@mui/material';
 
 import Image from 'src/components/image';
-import SvgColor from 'src/components/svg-color/svg-color';
-import { alignProperty } from '@mui/material/styles/cssUtils';
 
 export default function ConfirmDoblePayment({ open, onClose, paymentFunc }) {
   const theme = useTheme();
@@ -25,7 +23,7 @@ export default function ConfirmDoblePayment({ open, onClose, paymentFunc }) {
           >
             <Image
               disabledEffect
-              alt={`${import.meta.env.BASE_URL}assets/icons/faqs/ic_payment.svg`}
+              alt="PAGO"
               src={`${import.meta.env.BASE_URL}assets/icons/faqs/ic_payment.svg`}
               sx={{ width: 150, height: 150, mx: 'auto' }}
             />
