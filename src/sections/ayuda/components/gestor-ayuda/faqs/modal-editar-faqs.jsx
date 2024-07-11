@@ -2,7 +2,7 @@ import * as Yup from 'yup';
 import { mutate } from 'swr';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
-import { useMemo, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import { Box } from '@mui/system';
