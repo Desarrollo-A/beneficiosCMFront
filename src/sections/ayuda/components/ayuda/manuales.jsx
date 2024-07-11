@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
+import { DialogContentText } from '@material-ui/core';
 
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
@@ -12,8 +13,6 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import ListItemButton from '@mui/material/ListItemButton';
 
-import { DialogContentText } from '@material-ui/core';
-
 import { endpoints } from 'src/utils/axios';
 
 import { useAuthContext } from 'src/auth/hooks';
@@ -25,19 +24,18 @@ import { MotionViewport } from 'src/components/animate';
 // ----------------------------------------------------------------------
 
 export default function Manuales() {
-
   const { user } = useAuthContext();
 
   const rol = user?.idRol;
 
-  const { manualesData } = useGetGeneral(endpoints.ayuda.getManuales, "manualesData");
+  const { manualesData } = useGetGeneral(endpoints.ayuda.getManuales, 'manualesData');
 
   const [data, setData] = useState([]);
 
-  const count = data.filter(item => item.idRol === rol).length;
+  const count = data.filter((item) => item.idRol === rol).length;
 
   useEffect(() => {
-      setData(manualesData);
+    setData(manualesData);
   }, [manualesData]);
 
   return (
@@ -60,16 +58,10 @@ export default function Manuales() {
           lg: `repeat(${count}, 1fr)`,
         }}
       >
-
-        {data.map((category) => (
-          rol === category.idRol ? (
-            <CardDesktop category={category} />
-          ) : ( 
-            null
-          )
-        ))}
+        {data.map((category) =>
+          rol === category.idRol ? <CardDesktop category={category} /> : null
+        )}
       </Box>
-
     </>
   );
 }
@@ -89,9 +81,7 @@ function CardDesktop({ category }) {
     setOpen(false);
   };
 
-
   return (
-
     <>
       <Paper
         variant="outlined"
@@ -105,7 +95,7 @@ function CardDesktop({ category }) {
             boxShadow: (theme) => theme.customShadows.z20,
           },
           bgcolor: (theme) => alpha(theme.palette.grey[500], 0.04),
-          border: (theme) => `dashed 1px ${theme.palette.divider}`
+          border: (theme) => `dashed 1px ${theme.palette.divider}`,
         }}
         onClick={handleClickOpen}
       >
@@ -117,44 +107,37 @@ function CardDesktop({ category }) {
         />
 
         <TextMaxLine variant="subtitle2" persistent>
-         {titulo}
+          {titulo}
         </TextMaxLine>
       </Paper>
-
 
       <Dialog
         open={open}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
-        maxWidth='lg'
+        maxWidth="lg"
       >
-        <DialogTitle id="alert-dialog-title">
-          Manual de {titulo}
-        </DialogTitle>
+        <DialogTitle id="alert-dialog-title">Manual de {titulo}</DialogTitle>
         <DialogContent>
           {video ? (
-          <video width="100%" controls>
-            <source src={video} type="video/mp4" />
-            <track
-              kind="captions"
-              srcLang="es"
-              label="Español"
-              default
-            />
-            Tu navegador no soporta la reproducción de videos.
-          </video>
-          ):( 
+            <video width="100%" controls>
+              <source src={video} type="video/mp4" />
+              <track kind="captions" srcLang="es" label="Español" default />
+              Tu navegador no soporta la reproducción de videos.
+            </video>
+          ) : (
             <DialogContentText id="alert-dialog-description">
-            No hay video disponible
-          </DialogContentText>
-           )}
+              No hay video disponible
+            </DialogContentText>
+          )}
         </DialogContent>
         <DialogActions>
-          <Button color='error' variant='contained' onClick={handleClose}>Cerrar</Button>
+          <Button color="error" variant="contained" onClick={handleClose}>
+            Cerrar
+          </Button>
         </DialogActions>
       </Dialog>
-
     </>
   );
 }

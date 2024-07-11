@@ -27,7 +27,7 @@ import { endpoints } from 'src/utils/axios';
 import { fDate } from 'src/utils/format-time';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { getHorario, getModalities } from 'src/api/calendar-colaborador';
+import { getHorario, getModalitiesBene } from 'src/api/calendar-colaborador';
 import {
   reRender,
   createCustom,
@@ -252,7 +252,7 @@ export default function Lista({ currentEvent, onClose, userData, selectedDate, u
 
     setPatient(value.values);
 
-    const modalidades = await getModalities(value?.idSede, user?.idUsuario, patient?.idArea);
+    const modalidades = await getModalitiesBene(value?.idSede, user?.idUsuario, patient?.idArea);
     if (modalidades.result) setAllModalities(modalidades.data);
   };
 

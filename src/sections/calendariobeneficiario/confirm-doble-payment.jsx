@@ -4,7 +4,7 @@ import { Dialog, DialogContent } from '@material-ui/core';
 
 import { useTheme } from '@mui/material/styles';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { Stack, Button, Typography, DialogActions, Box } from '@mui/material';
+import { Box, Stack, Button, Typography, DialogActions } from '@mui/material';
 
 import Image from 'src/components/image';
 
