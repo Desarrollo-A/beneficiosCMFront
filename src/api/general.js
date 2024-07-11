@@ -27,7 +27,7 @@ export function usePostGeneral(dataValue, URL, nameData) {
         dataLoading: isLoading,
         dataError: error,
         dataValidating: isValidating,
-        dataEmpty: !isLoading && !data?.data.length,
+        dataEmpty: !isLoading /* && !data?.data.length */,
       }),
       [data?.data, error, isLoading, isValidating, nameData]
     );
@@ -43,7 +43,7 @@ export function useGetGeneral(URL, nameData) {
       dataLoading: isLoading,
       dataError: error,
       dataValidating: isValidating,
-      dataEmpty: !isLoading && !data?.data.length,
+      dataEmpty: !isLoading /* && !data?.data.length */,
     }),
     [data?.data, error, isLoading, isValidating, nameData]
   );

@@ -1585,7 +1585,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
               <DialogContent
                 // sx={{ p: { xs: 1, md: 2 } }}
                 style={{
-                  maxHeight: currentEvent?.id ? '400px' : '600px',
+                  maxHeight: currentEvent?.id ? '400px' : 'fit-content',
                   overflowY: currentEvent?.id ? 'auto' : 'hidden',
                 }}
                 sx={

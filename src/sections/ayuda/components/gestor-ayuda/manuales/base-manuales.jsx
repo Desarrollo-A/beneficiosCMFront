@@ -61,8 +61,6 @@ export default function GestorAyudaView() {
 
   const router = useRouter();
 
-  const confirm = useBoolean();
-
   const { user } = useAuthContext();
 
   const rol = user?.idRol

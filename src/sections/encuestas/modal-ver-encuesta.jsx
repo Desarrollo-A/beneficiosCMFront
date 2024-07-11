@@ -33,12 +33,6 @@ export default function UserQuickEditForm({ open, onClose, idEncuesta }) {
   const methods = useForm({
   });
 
-  const { Resp2Data } = useGetGeneral(endpoints.encuestas.getResp2, "Resp2Data");
-
-  const { Resp3Data } = useGetGeneral(endpoints.encuestas.getResp3, "Resp3Data");
-
-  const { Resp4Data } = useGetGeneral(endpoints.encuestas.getResp4, "Resp4Data");
-
   return (
     <Dialog
       onClose={onClose}
