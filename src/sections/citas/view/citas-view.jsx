@@ -163,7 +163,7 @@ export default function CitasView() {
 
   useEffect(() => {
     let datos = [];
-    if (datosUser.idSede === 11) {
+    if (datosUser?.idSede === 11) {
       datos = citasData.map((cita) => {
         // Dividir la cadena en dos partes
         const partes = cita.horario.split(' - ');
