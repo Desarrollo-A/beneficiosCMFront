@@ -7,10 +7,6 @@ import IconButton from '@mui/material/IconButton';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import { endpoints } from 'src/utils/axios';
-
-import { usePostGeneral } from 'src/api/general';
-
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
@@ -22,8 +18,6 @@ import EncuestaHabilitar from './modal-habilitar-encuesta';
 
 export default function EncuestasTablaFilas({ row, selected, puestos }) {
   const { idEncuesta, idTipoEnc, tipoEncuesta, fechaCreacion, estatus } = row;
-
- // const { EstatusData } = usePostGeneral(area, endpoints.encuestas.getEstatusUno, "EstatusData");
 
   const popover = usePopover();
 

@@ -1,8 +1,8 @@
 import * as Yup from 'yup';
 import { mutate } from 'swr';
 import PropTypes from 'prop-types';
-import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useState, useEffect } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import { Box } from '@mui/system';
@@ -56,20 +56,15 @@ export default function ModalEditarOficinas({
     titulo: Yup.string().required('El campo es requerido')
   });
 
-  const defaultValues = useMemo(
-    () => ({
-      titulo,
-      descripcion,
-      icono,
-      video,
-      modificadoPor: idUsr
-    }),
-    [titulo, descripcion, idUsr, icono,video,]
-  );
+  const [values, setValues] = useState({ titulo, descripcion, icono, video, modificadoPor: idUsr });
+
+  useEffect(() => {
+    setValues({ titulo, descripcion, icono, video, modificadoPor: idUsr });
+  }, [titulo, descripcion, icono, video, idUsr]);
 
   const methods = useForm({
     resolver: yupResolver(NewUserSchema),
-    defaultValues,
+    values,
   });
 
   const {

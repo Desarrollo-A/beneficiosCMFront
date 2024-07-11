@@ -20,8 +20,7 @@ import { useRouter, useSearchParams } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useCountdownSeconds } from 'src/hooks/use-countdown';
 
-import { SentIcon } from 'src/assets/icons';
-import { useAuthContext } from 'src/auth/hooks';
+import { SentIcon } from 'src/assets/icons'
 import { validarNumEmp, recuperarPassword, guardarNuevaPassword } from 'src/api/register';
 
 import Iconify from 'src/components/iconify';
@@ -30,7 +29,6 @@ import FormProvider, { RHFCode, RHFTextField } from 'src/components/hook-form';
 // ----------------------------------------------------------------------
 
 export default function JwtNewPasswordView() {
-  const { forgotPassword } = useAuthContext();
   const theme = useTheme();
 
   const router = useRouter();
@@ -75,7 +73,7 @@ export default function JwtNewPasswordView() {
 
   const password = useBoolean();
 
-  const { countdown, counting, startCountdown } = useCountdownSeconds(60);
+  const { countdown, counting } = useCountdownSeconds(60);
 
   const VerifySchema = Yup.object().shape({
     code: Yup.string().min(6, 'El código debe ser de 6 caracteres').required('Se requiere el código'),
@@ -102,12 +100,9 @@ export default function JwtNewPasswordView() {
   });
 
   const {
-    watch,
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
-
-  const values = watch();
 
   const onSubmit = handleSubmit(async (data) => {
     try {
