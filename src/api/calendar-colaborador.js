@@ -80,8 +80,7 @@ export async function getHorario(beneficio, especialista, idSede, idSedeEsp) {
     const hoy = new Date();
     const año = hoy.getFullYear();
 
-    const horasARestar =
-      hoy >= inicioHorarioVerano(año) && hoy <= finHorarioVerano(año) ? 1 : 2;
+    const horasARestar = hoy >= inicioHorarioVerano(año) && hoy <= finHorarioVerano(año) ? 1 : 2;
     dataModificada = dataModificada.map((item) => {
       const horaInicio = new Date(`1970-01-01T${item.horaInicio}Z`);
       const tempTime = horaInicio.getHours() - horasARestar;
@@ -109,8 +108,7 @@ export async function getHorario(beneficio, especialista, idSede, idSedeEsp) {
     const hoy = new Date();
     const año = hoy.getFullYear();
 
-    const horasASumar =
-      hoy >= inicioHorarioVerano(año) && hoy <= finHorarioVerano(año) ? 1 : 2;
+    const horasASumar = hoy >= inicioHorarioVerano(año) && hoy <= finHorarioVerano(año) ? 1 : 2;
     dataModificada = dataModificada.map((item) => {
       const horaInicio = new Date(`1970-01-01T${item.horaInicio}Z`);
       const tempTime = horaInicio.getHours() + horasASumar;
@@ -304,12 +302,10 @@ export function useGetPendientes() {
   }
 
   const memoizedValue = useMemo(() => {
-
     let pagos = [];
     let evaluaciones = [];
     switch (datosUser.idSede) {
       case 11:
-
         pagos = data?.data?.pago?.map((i) => {
           let startConverted = horaTijuana(i.start);
           startConverted = toLocalISOString(startConverted);
@@ -324,7 +320,7 @@ export function useGetPendientes() {
             start: inicioCita,
             end: finCita,
             textColor: i?.color ? i.color : 'black',
-          }
+          };
         });
 
         evaluaciones = data?.data?.evaluacion?.map((i) => {
@@ -341,11 +337,10 @@ export function useGetPendientes() {
             start: inicioCita,
             end: finCita,
             textColor: i?.color ? i.color : 'black',
-          }
+          };
         });
         break;
       case 9:
-
         pagos = data?.data?.pago?.map((i) => {
           let startConverted = horaCancun(i.start);
           startConverted = toLocalISOString(startConverted);
@@ -360,7 +355,7 @@ export function useGetPendientes() {
             start: inicioCita,
             end: finCita,
             textColor: i?.color ? i.color : 'black',
-          }
+          };
         });
 
         evaluaciones = data?.data?.evaluacion?.map((i) => {
@@ -377,7 +372,7 @@ export function useGetPendientes() {
             start: inicioCita,
             end: finCita,
             textColor: i?.color ? i.color : 'black',
-          }
+          };
         });
         break;
       default:
@@ -389,7 +384,7 @@ export function useGetPendientes() {
             start: inicioCita,
             end: finCita,
             textColor: i?.color ? i.color : 'black',
-          }
+          };
         });
 
         evaluaciones = data?.data?.evaluacion?.map((i) => {
@@ -400,7 +395,7 @@ export function useGetPendientes() {
             start: inicioCita,
             end: finCita,
             textColor: i?.color ? i.color : 'black',
-          }
+          };
         });
     }
 
@@ -514,7 +509,6 @@ export function useGetAppointmentsByUser(current, id, idSede) {
   }, [current, revalidate]);
 
   const memoizedValue = useMemo(() => {
-
     let events = [];
     switch (idSede) {
       case 11:
@@ -591,14 +585,14 @@ export function useGetAppointmentsByUser(current, id, idSede) {
           fechasCitasReagendadas?.forEach((fecha) => {
             fechas +=
               fechas === ''
-                ? `${dayjs(fecha).format('DD / MM / YYYY')} A las ${dayjs(
-                  fecha
-                  ).format('HH:mm')} horas.`
-                : `,${dayjs(fecha).format('DD / MM / YYYY')} A las ${dayjs(
-                  fecha
-                  ).format('HH:mm')} horas.`;
+                ? `${dayjs(fecha).format('DD / MM / YYYY')} A las ${dayjs(fecha).format(
+                    'HH:mm'
+                  )} horas.`
+                : `,${dayjs(fecha).format('DD / MM / YYYY')} A las ${dayjs(fecha).format(
+                    'HH:mm'
+                  )} horas.`;
           });
-          
+
           return {
             ...event,
             start: inicioCita,
@@ -618,7 +612,6 @@ export function useGetAppointmentsByUser(current, id, idSede) {
       appointmentMutate: revalidate,
     };
   }, [data?.data, error, isLoading, isValidating, revalidate, idSede]);
-  
 
   return memoizedValue;
 }
@@ -670,7 +663,7 @@ export async function consultarCita(idCita, idSede) {
 
       inicioCita = startConverted;
       finCita = endConverted;
-      
+
       break;
     default:
       startConverted = [];
@@ -817,7 +810,7 @@ export function actualizarFechaIntentoPago(idUsuario, idCita) {
   return update;
 }
 
-export function getBeneficioActivo(idUsuario){
+export function getBeneficioActivo(idUsuario) {
   const URL = [endpoints.calendarioColaborador.getBeneficioActivo];
 
   const get = fetcherPost(URL, { idUsuario });
@@ -825,7 +818,7 @@ export function getBeneficioActivo(idUsuario){
   return get;
 }
 
-export function getDocumento(beneficio){
+export function getDocumento(beneficio) {
   const URL = [endpoints.calendarioColaborador.getDocumento];
 
   const get = fetcherPost(URL, { beneficio });
