@@ -1,23 +1,23 @@
 import PropTypes from 'prop-types';
 import { enqueueSnackbar } from 'notistack';
 import { useState, useCallback } from 'react';
-import Dialog from '@material-ui/core/Dialog';
 import { useForm, Controller } from 'react-hook-form';
 
 import Box from '@mui/material/Box';
 import { Button } from '@mui/material';
 import Radio from '@mui/material/Radio';
 import Stack from '@mui/material/Stack';
+import Dialog from '@mui/material/Dialog';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import RadioGroup from '@mui/material/RadioGroup';
+import { createTheme } from '@mui/material/styles';
 import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import CircularProgress from '@mui/material/CircularProgress';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
@@ -243,7 +243,6 @@ const onSubmit = handleSubmit(async (data) => {
                         </DialogContent>
 
                         <DialogContent sx={{ margin: '15px' }}>
-                        <ThemeProvider theme={lightTheme}>
                         <Controller
                           name={`resp_${index}`}
                           control={methods.control}
@@ -259,12 +258,9 @@ const onSubmit = handleSubmit(async (data) => {
                             </RadioGroup>
                           )}
                         />
-                        </ThemeProvider>
 
                           {item.respuestas === "5" || item.respuestas === 5 && (
-                            <ThemeProvider theme={lightTheme}>
                             <RHFTextField name={`resp_${index}`} multiline rows={3} />
-                            </ThemeProvider>
                           )}
 
                         </DialogContent>

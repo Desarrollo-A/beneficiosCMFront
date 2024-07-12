@@ -59,10 +59,10 @@ const lightTheme = createTheme({
   },
   components: {
     MuiPickersDay: {
-      // Sobrescribe los estilos del día del calendario
+      
       styleOverrides: {
         root: {
-          color: 'black', // Establece el color del día a negro
+          color: 'black', 
         },
       },
     },
@@ -638,7 +638,6 @@ export default function AppointmentSchedule({
           >
             {horariosDisponibles ? (
               <FormControl error={!!errorHorarioSeleccionado} fullWidth>
-                <ThemeProvider theme={lightTheme}>
                   <InputLabel id="modalidad-input">Horarios disponibles</InputLabel>
                   <Select
                     labelId="Horarios disponibles"
@@ -656,7 +655,6 @@ export default function AppointmentSchedule({
                       </MenuItem>
                     ))}
                   </Select>
-                </ThemeProvider>
                 {errorHorarioSeleccionado && horarioSeleccionado === '' && (
                   <FormHelperText error={errorHorarioSeleccionado}>
                     Seleccione fecha y horario
