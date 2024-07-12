@@ -2,10 +2,10 @@ import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import Box from '@mui/material/Box';
+import { Card } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Drawer from '@mui/material/Drawer';
 import Grid from '@mui/material/Unstable_Grid2';
-import CircularProgress from '@mui/material/CircularProgress';
 
 import { usePathname } from 'src/routes/hooks';
 
@@ -63,13 +63,40 @@ export default function NavVertical({ openNav, onCloseNav }) {
           slotProps={{
             currentRole: user?.role,
           }}
+          className="fade-in"
         />
 
       ) : (
+        <>
+          <Grid container spacing={1} sx={{
+            mx: 'auto', my: .4, borderRadius: '7px', width: '88%',
+            p: 3, backgroundColor: "#ececec7a", animation: 'pulse 1.5s infinite',
+          }} justifyContent="center" alignItems="center">
+            <Card />
+          </Grid>
 
-        <Grid container spacing={1} sx={{ p: 5 }} justifyContent="center" alignItems="center">
-          <CircularProgress sx={{color:'white'}}/>
-        </Grid>
+          <Grid container spacing={1} sx={{
+            mx: 'auto', my: .4, borderRadius: '7px', width: '88%',
+            p: 3, backgroundColor: "#ececec7a", animation: 'pulse 1.5s infinite',
+          }} justifyContent="center" alignItems="center">
+            <Card />
+          </Grid>
+
+          <Grid container spacing={1} sx={{
+            mx: 'auto', my: .4, borderRadius: '7px', width: '88%',
+            p: 3, backgroundColor: "#ececec7a", animation: 'pulse 1.5s infinite',
+          }} justifyContent="center" alignItems="center">
+            <Card />
+          </Grid>
+
+          <Grid container spacing={1} sx={{
+            mx: 'auto', my: .4, borderRadius: '7px', width: '88%',
+            p: 3, backgroundColor: "#ececec7a", animation: 'pulse 1.5s infinite',
+          }} justifyContent="center" alignItems="center">
+            <Card />
+          </Grid>
+
+        </>
       )}
       <Box sx={{ flexGrow: 1 }} />
 

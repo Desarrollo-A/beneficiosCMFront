@@ -18,6 +18,8 @@ import Image from 'src/components/image';
 import { varFade, MotionContainer } from 'src/components/animate';
 import Carousel, { useCarousel, CarouselDots, CarouselArrows } from 'src/components/carousel';
 
+import './view/style.css';
+
 // ----------------------------------------------------------------------
 
 export default function AppFeatured({ list, ...other }) {
@@ -54,8 +56,13 @@ export default function AppFeatured({ list, ...other }) {
           />
         </>
       ) : (
-        <Grid container spacing={1} sx={{ p: 5 }} justifyContent="center" alignItems="center">
-          <CircularProgress />
+        <Grid container spacing={1} sx={{
+          p: 5, backgroundColor: "#ECECEC", animation: 'pulse 1.5s infinite', height: {
+            xs: 280,
+            xl: 320,
+          }
+        }} justifyContent="center" alignItems="center">
+          <Card />
         </Grid>
       )}
     </Card>
@@ -90,7 +97,7 @@ function CarouselItem({ item, active }) {
   );
 
   return (
-    <MotionContainer action animate={active} sx={{ position: 'relative' }}>
+    <MotionContainer action animate={active} sx={{ position: 'relative' }} className="fade-in">
       <Stack
         spacing={1}
         sx={{

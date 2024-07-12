@@ -11,7 +11,6 @@ import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import { styled, useTheme } from '@mui/material/styles';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import CircularProgress from '@mui/material/CircularProgress';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
@@ -173,13 +172,14 @@ export default function AppCurrentDownload({
 
   return (
     <Card {...other}>
-      <CardHeader title={title} subheader={subheader} sx={{ mb: 5 }} />
 
       {pacientesData.length > 0 ? (
         <>
-
-          <Grid container spacing={2} sx={{ p: 3, backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f7f7f7',
-        borderRadius: '20px', margin: '20px' }}>
+          <CardHeader title={title} subheader={subheader} sx={{ mb: 5 }} />
+          <Grid container spacing={2} className="fade-in" sx={{
+            p: 3, backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f7f7f7',
+            borderRadius: '20px', margin: '20px'
+          }}>
 
             {rol !== 3 ? (
               <>
@@ -286,9 +286,7 @@ export default function AppCurrentDownload({
         </>
 
       ) : (
-        <Grid container spacing={1} sx={{ p: 5 }} justifyContent="center" alignItems="center">
-          <CircularProgress />
-        </Grid>
+        <Grid container spacing={1} sx={{ backgroundColor: "#ECECEC", animation: 'pulse 1.5s infinite', p: 5 }} justifyContent="center" alignItems="center" />
       )}
     </Card>
   );

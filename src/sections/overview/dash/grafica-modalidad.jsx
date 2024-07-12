@@ -212,11 +212,11 @@ export default function GraficaModalidad({
   return (
 
     <Card {...other}>
-      <CardHeader title={title} subheader={subheader} sx={{ mb: 0 }} />
 
       {modalidadData.length > 0 ? (
         <>
-          <Grid container spacing={2} sx={{ p: 3, backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f7f7f7',
+        <CardHeader title={title} subheader={subheader} sx={{ mb: 0 }} />
+          <Grid container spacing={2} className="fade-in" sx={{ p: 3, backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f7f7f7',
         borderRadius: '20px', margin: '20px' }}>
 
           <Grid md={12} xs={12}>
@@ -350,9 +350,7 @@ export default function GraficaModalidad({
         </>
 
       ) : (
-        <Grid container spacing={1} sx={{ p: 5 }} justifyContent="center" alignItems="center">
-          <CircularProgress />
-        </Grid>
+        <Grid container spacing={1} sx={{ backgroundColor: "#ECECEC", animation: 'pulse 1.5s infinite', p: 5 }} justifyContent="center" alignItems="center"/>
       )}
     </Card>
   );
