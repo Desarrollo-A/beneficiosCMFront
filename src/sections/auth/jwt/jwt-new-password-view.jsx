@@ -4,6 +4,7 @@ import { enqueueSnackbar } from 'notistack';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useState, useEffect, useCallback } from 'react';
 
+import { Box } from '@mui/material';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import { useTheme } from '@mui/material/styles';
@@ -25,6 +26,7 @@ import { validarNumEmp, recuperarPassword, guardarNuevaPassword } from 'src/api/
 
 import Iconify from 'src/components/iconify';
 import FormProvider, { RHFCode, RHFTextField } from 'src/components/hook-form';
+import { margin } from '@mui/system';
 
 // ----------------------------------------------------------------------
 
@@ -136,15 +138,17 @@ export default function JwtNewPasswordView() {
   }, [noEmp]);
 
   const renderForm = (
-    <Stack spacing={3} alignItems="center">
+    <Stack spacing={1.5} alignItems="center">
+      <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'left' }}>
+          Ingresa el código de verificación
+      </Typography>
+      <RHFCode name="code" color={colorDist}/>
       <RHFTextField
         name="noEmp"
         label="Número de empleado"
         disabled
         InputLabelProps={{ shrink: true }}
       />
-
-      <RHFCode name="code" color={colorDist}/>
 
       <RHFTextField
         name="password"
@@ -218,28 +222,61 @@ export default function JwtNewPasswordView() {
         <Iconify icon="eva:arrow-ios-back-fill" width={16} />
         Regresar
       </Link>
+
+    </Stack>
+    
+  );
+
+  const logoMd = (
+    <Stack>
+      {isMobile && (
+        <Box
+          component="img"
+          alt="auth"
+          src={`${import.meta.env.BASE_URL}assets/img/logoMaderas.svg`}
+          sx={{
+            maxWidth: { xs: 480, lg: 560, xl: 720 },
+            position: 'absolute',
+            width: { xs: '50%', md: '21%' },
+            left: { xs: '25%', md: '40%' },
+            top: '90%'
+          }}
+        />
+      )}
+      {!isMobile && (
+        <Box
+          component="img"
+          alt="auth"
+          src={`${import.meta.env.BASE_URL}assets/img/logoMaderas.svg`}
+          sx={{
+            position: 'absolute',
+            left: '37%',
+            width: { xs: '55%', md: '26%' },
+            top: { md: '90%', lg: '95%', xl: '102%' }
+          }}
+        />
+      )}
     </Stack>
   );
 
   const renderHead = (
     <>
+    <Box mb={-2}>
       <SentIcon sx={{ height: 50 }} />
 
-      <Stack  sx={{ my: 5 }}>
+      <Stack alignItems="center">
         <Typography variant="h3" sx={{color: colorDist}}>Solicitud enviada</Typography>
-
-        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          Se ha enviado un código de 6 digitos a tu correo.
-          <br />
-          Por favor ingresa el código del correo.
-        </Typography>
       </Stack>
+    </Box>
+      <Box mb={2}/>
     </>
   );
 
   return (
-    <FormProvider methods={methods} onSubmit={onSubmit}>
+    <FormProvider methods={methods} onSubmit={onSubmit} >
       {renderHead}
+
+      {logoMd}
 
       {renderForm}
     </FormProvider>

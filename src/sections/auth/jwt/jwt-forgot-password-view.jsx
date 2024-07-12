@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { enqueueSnackbar } from 'notistack';
 import { yupResolver } from '@hookform/resolvers/yup';
 
+import { Box } from '@mui/material';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import { useTheme } from '@mui/material/styles';
@@ -72,6 +73,38 @@ export default function JwtForgotPasswordView() {
     }
   });
 
+  const logoMd = (
+    <Stack>
+      {isMobile && (
+        <Box
+          component="img"
+          alt="auth"
+          src={`${import.meta.env.BASE_URL}assets/img/logoMaderas.svg`}
+          sx={{
+            maxWidth: { xs: 480, lg: 560, xl: 720 },
+            position: 'absolute',
+            width: { xs: '50%', md: '21%' },
+            left: { xs: '25%', md: '40%' },
+            top: '90%'
+          }}
+        />
+      )}
+      {!isMobile && (
+        <Box
+          component="img"
+          alt="auth"
+          src={`${import.meta.env.BASE_URL}assets/img/logoMaderas.svg`}
+          sx={{
+            position: 'absolute',
+            left: '37%',
+            width: { xs: '55%', md: '26%' },
+            top: { md: '90%', lg: '95%', xl: '102%' }
+          }}
+        />
+      )}
+    </Stack>
+  );
+
   const renderForm = (
     <Stack spacing={3} alignItems="center">
       <RHFTextField name="noEmp" label="Número de empleado" color={colorDist}/>
@@ -111,7 +144,7 @@ export default function JwtForgotPasswordView() {
         <Typography variant="h3" sx={{ color: colorDist }}>Recuperar contraseña</Typography>
 
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          Por favor escribe tu número de empleado y te enviaremos un código de recuperación a tu correo institucional
+         Ingresa tu número de empleado y te enviaremos un código de verificación a tu correo con el que te registraste
         </Typography>
       </Stack>
     </>
@@ -120,6 +153,8 @@ export default function JwtForgotPasswordView() {
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       {renderHead}
+
+      {logoMd}
 
       {renderForm}
     </FormProvider>

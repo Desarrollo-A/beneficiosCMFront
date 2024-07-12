@@ -15,6 +15,7 @@ import { useInsert } from 'src/api/verificacion';
 
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
+import { Typography } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -75,32 +76,32 @@ export default function Verificacion({ email, formReg }) {
     setCodigo('');
   };
 
-/*   const onSubmit = async (data) => {
-    const dataValue = {
-      correo: email,
-      token: data
-    };
-
-    try {
-      const insert = await insertData(dataValue);
-
-      if (insert.estatus === true) {
-        enqueueSnackbar(insert.msj, { variant: 'success' });
-
+  /*   const onSubmit = async (data) => {
+      const dataValue = {
+        correo: email,
+        token: data
+      };
+  
+      try {
+        const insert = await insertData(dataValue);
+  
+        if (insert.estatus === true) {
+          enqueueSnackbar(insert.msj, { variant: 'success' });
+  
+          setBtnLoad(false);
+          formReg(true);
+        } else {
+          enqueueSnackbar(insert.msj, { variant: 'error' });
+  
+          setBtnLoad(false);
+          formReg(false);
+        }
+      } catch (error) {
         setBtnLoad(false);
-        formReg(true);
-      } else {
-        enqueueSnackbar(insert.msj, { variant: 'error' });
-
-        setBtnLoad(false);
-        formReg(false);
+        console.error('Error en handleEstatus:', error);
+        enqueueSnackbar(`¡No se pudo enviar el código!`, { variant: 'danger' });
       }
-    } catch (error) {
-      setBtnLoad(false);
-      console.error('Error en handleEstatus:', error);
-      enqueueSnackbar(`¡No se pudo enviar el código!`, { variant: 'danger' });
-    }
-  }; */
+    }; */
 
   const handleSend = async (data) => {
     const dataValue = {
@@ -166,45 +167,33 @@ export default function Verificacion({ email, formReg }) {
             sm: 'repeat(1, 1fr)',
           }}
         >
-          <div>
-            <Box
-              component="img"
-              alt="auth"
-              src={`${import.meta.env.BASE_URL}assets/img/logoBeneficios.svg`}
-              sx={{
-                maxWidth: { sm: 120, xs: 80, lg: 60, md: 70, xl: 80 },
-                position: 'relative',
-                left: { xs: '75%', md: '71%' },
-                top: { xs: '23%', md: '25%' }
-              }}
-            />
-            <Box
-              component="img"
-              alt="auth"
-              src={`${import.meta.env.BASE_URL}assets/img/beneficiosBrand.svg`}
-              sx={{
-                maxWidth: { sm: 800, xs: 480, md: 900, lg: 560, xl: 370 },
-                position: 'relative',
-                left: { xs: '2%', md: '1%' },
-                top: { xs: '15%', md: '15%' }
-              }}
-            />
-          </div>
-          <DialogTitle style={{ paddingLeft: '0px', color: 'black' }}>Registro de usuario</DialogTitle>
+          <Box mb={2} />
+          <Box
+            component="img"
+            alt="auth"
+            src={`${import.meta.env.BASE_URL}assets/img/logo.svg`}
+            sx={{
+              maxWidth: '100%',
+              position: 'center',
+            }}
+          />
+           <Typography variant="body1" style={{ color: 'black', fontWeight: 'bold' }}>Registro de usuario</Typography>
 
           {countdown !== 0 ? (
             <>
-              <p style={{ color: 'black' }}>
-                El código vence en <b>{formatTime(countdown)}</b>
-              </p>
+            <Typography variant="body2" style={{ color: 'black'}}>
+              El código vence en: <b>{formatTime(countdown)}</b>
+            </Typography>
 
               <ThemeProvider theme={lightTheme}>
                 <RHFTextField id='codigo' value={codigo}
-                onChange={(e) => setCodigo(e.target.value)} name="codigo" label="Código" autoComplete="off" />
+                  onChange={(e) => setCodigo(e.target.value)} name="codigo" label="Código" autoComplete="off" />
               </ThemeProvider>
             </>
           ) : (
-            <p style={{ color: 'black' }}>El código de verificación expiró</p>
+            <Typography variant="body2" style={{ color: 'black'}}>
+              El código de verificación expiró
+            </Typography>
           )}
 
           <DialogActions>
@@ -223,7 +212,7 @@ export default function Verificacion({ email, formReg }) {
               <LoadingButton
                 variant="contained"
                 loading={btnLoad}
-                onClick={() => {handleSend(codigo); setBtnLoad(true);}}
+                onClick={() => { handleSend(codigo); setBtnLoad(true); }}
               >
                 Verificar
               </LoadingButton>

@@ -36,7 +36,7 @@ export default function AuthClassicLayout({ children, image, title }) {
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center center',
         backgroundImage: {
-          xs : `url(${import.meta.env.BASE_URL}assets/illustrations/responsiveLoginBGFinal.png)`,
+          xs : `url(${import.meta.env.BASE_URL}assets/illustrations/fondoMobil.png)`,
           md : `url(${import.meta.env.BASE_URL}assets/illustrations/mainLoginBGFinal.png)`
         }
       }}

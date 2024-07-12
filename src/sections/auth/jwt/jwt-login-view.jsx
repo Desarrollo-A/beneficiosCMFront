@@ -75,11 +75,11 @@ export default function JwtLoginView() {
         if (response === undefined) {
           router.push(returnTo || PATH_AFTER_LOGIN);
         }
-        else if (response.result === 2 ) {
-          enqueueSnackbar(response.message, {variant: "error"});
-      }
-        else if (response !== undefined && response.result === 0 ) {
-            enqueueSnackbar(response.message, {variant: "error"});
+        else if (response.result === 2) {
+          enqueueSnackbar(response.message, { variant: "error" });
+        }
+        else if (response !== undefined && response.result === 0) {
+          enqueueSnackbar(response.message, { variant: "error" });
         }
       })
   }
@@ -88,47 +88,31 @@ export default function JwtLoginView() {
 
   let colorDist = '#25303d'; // colores sobre el tema que tenga
 
-  if(!isMobile && theme.palette.mode === 'dark'){
+  if (!isMobile && theme.palette.mode === 'dark') {
     colorDist = '#f7f7f7';
   }
 
   const renderHead = (
     <Stack spacing={1} sx={{ mb: 0 }}>
-      <div>
-        <Box
-          component="img"
-          alt="auth"
-          src={`${import.meta.env.BASE_URL}assets/img/logoBeneficios.svg`}
-          sx={{
-            maxWidth: { xs: 480, lg: 560, xl: 720 },
-            position: 'absolute',
-            width: { xs: '20%', md: '16%' },
-            left: '64%',
-            top: { xs: '1%', md: '-9%' }
-          }}
-        />
-        <Box
-          component="img"
-          alt="auth"
-          src={`${import.meta.env.BASE_URL}assets/img/beneficiosBrand.svg`}
-          sx={{
-            maxWidth: {
-              xs: 480,
-              lg: 560,
-              xl: 720,
-            }
-          }}
-        />
-      </div>
+      <Box mb={-5} />
+      <Box
+        component="img"
+        alt="auth"
+        src={`${import.meta.env.BASE_URL}assets/img/logo.svg`}
+        sx={{
+          maxWidth: '100%',
+          position: 'center',
+        }}
+      />
       <Typography variant="h4">Iniciar sesión</Typography>
 
       <Stack direction="row" spacing={1}>
-          <Typography variant="body2" sx={{color: colorDist}}>¿Aún no tienes una cuenta? Puedas crearla &nbsp;
+        <Typography variant="body2">¿Aún no tienes una cuenta? Puedas crearla &nbsp;
 
           <Link component={RouterLink} href={paths.auth.jwt.register} variant="subtitle2">
             aquí
           </Link>
-          </Typography>
+        </Typography>
         <Box mb={7} />
       </Stack>
     </Stack>
@@ -139,7 +123,7 @@ export default function JwtLoginView() {
     <Stack spacing={2.5}>
       {/* {!!errorMsg && <Alert severity="error">{errorMsg}</Alert>} */}
 
-      <RHFTextField name="numEmpleado" value={numEmpleado} onChange={(e) => setnumEmpleado(e.target.value)} label="Número de empleado"  autoComplete="off" color={colorDist}/>
+      <RHFTextField name="numEmpleado" value={numEmpleado} onChange={(e) => setnumEmpleado(e.target.value)} label="Número de empleado" autoComplete="off" color={colorDist} />
 
       <RHFTextField
         name="password"
@@ -175,88 +159,88 @@ export default function JwtLoginView() {
   const logoMd = (
     <Stack>
       {isMobile && (
-          <Box
-            component="img"
-            alt="auth"
-            src={`${import.meta.env.BASE_URL}assets/img/logoMaderas.svg`}
-            sx={{
-              maxWidth: { xs: 480, lg: 560, xl: 720 },
-              position: 'absolute',
-              width: { xs: '50%', md: '21%' },
-              left: { xs: '25%', md: '40%'},
-              top: { xs: '68%', md: '87%'}
-            }}
-          />
-        )}
-        {!isMobile && (
-          <Box
-            component="img"
-            alt="auth"
-            src={`${import.meta.env.BASE_URL}assets/img/logoMaderas.svg`}
-            sx={{
-              position: 'absolute',
-              left: '37%',
-              width: { xs: '55%', md: '26%' },
-              top: { md: '90%', lg: '95%', xl:'102%' }
-            }}
-          />
-        )}
+        <Box
+          component="img"
+          alt="auth"
+          src={`${import.meta.env.BASE_URL}assets/img/logoMaderas.svg`}
+          sx={{
+            maxWidth: { xs: 480, lg: 560, xl: 720 },
+            position: 'absolute',
+            width: { xs: '50%', md: '21%' },
+            left: { xs: '25%', md: '40%' },
+            top: { xs: '68%', md: '87%' }
+          }}
+        />
+      )}
+      {!isMobile && (
+        <Box
+          component="img"
+          alt="auth"
+          src={`${import.meta.env.BASE_URL}assets/img/logoMaderas.svg`}
+          sx={{
+            position: 'absolute',
+            left: '37%',
+            width: { xs: '55%', md: '26%' },
+            top: { md: '90%', lg: '95%', xl: '102%' }
+          }}
+        />
+      )}
     </Stack>
   );
 
   const renderTerms = (
     <Stack sx={{ mt: 3 }}>
       <Stack direction="row" spacing={1}>
-          <Typography variant="body2" sx={{color: colorDist}}>¿Has olvidado tu contraseña?, Recupérala &nbsp;
+        <Typography variant="body2">¿Has olvidado tu contraseña?, Recupérala &nbsp;
 
           <Link component={RouterLink} href={paths.auth.jwt.forgotPassword} variant="subtitle2">
             aquí
           </Link>
-          </Typography>
+        </Typography>
         <Box mb={7} />
       </Stack>
 
       {isMobile && (
-      <Typography
-        component="div"
-        sx={{
-          color: 'text.secondary',
-          typography: 'caption',
-          textAlign: 'center',
-          mt: -3
-        }}
-      >
-      <ModalPoliticas open={quickEdit.value} onClose={quickEdit.onFalse} />
-      
-      {'Al registrarme, acepto '}
-      {' las '}
-        <Button variant="outlined" color="primary" sx={{height:"20px"}} onClick={quickEdit.onTrue}>
-          Políticas de privacidad
-        </Button>
-      </Typography>)}
+        <Typography
+          component="div"
+          sx={{
+            color: 'text.secondary',
+            typography: 'caption',
+            textAlign: 'center',
+            mt: -3
+          }}
+        >
+          <ModalPoliticas open={quickEdit.value} onClose={quickEdit.onFalse} />
+
+          {'Al registrarme, acepto '}
+          {' las '}
+          <Button variant="outlined" color="primary" sx={{ height: "20px" }} onClick={quickEdit.onTrue}>
+            Políticas de privacidad
+          </Button>
+        </Typography>)}
 
       {!isMobile && (
-      <Typography
-        component="div"
-        sx={{
-          color: 'text.secondary',
-          typography: 'caption',
-          textAlign: 'center',
-        }}
-      >
-      <ModalPoliticas open={quickEdit.value} onClose={quickEdit.onFalse} />
-      
-      {'Al registrarme, acepto '}
-      {' las '}
-        <Button variant="outlined" color="primary" sx={{height:"20px"}} onClick={quickEdit.onTrue}>
-          Políticas de privacidad
-        </Button>
-      </Typography>)}
-    </Stack>    
+        <Typography
+          component="div"
+          sx={{
+            color: 'text.secondary',
+            typography: 'caption',
+            textAlign: 'center',
+          }}
+        >
+          <ModalPoliticas open={quickEdit.value} onClose={quickEdit.onFalse} />
+
+          {'Al registrarme, acepto '}
+          {' las '}
+          <Button variant="outlined" color="primary" sx={{ height: "20px" }} onClick={quickEdit.onTrue}>
+            Políticas de privacidad
+          </Button>
+        </Typography>)}
+    </Stack>
   );
 
   const space = (
-    <Divider sx={{ my: {xs: 12, md: 5, lg: 2, xl:0}, borderStyle: 'none' }} />
+    <Divider sx={{ my: { xs: 12, md: 5, lg: 2, xl: 0 }, borderStyle: 'none' }} />
   )
 
   return (

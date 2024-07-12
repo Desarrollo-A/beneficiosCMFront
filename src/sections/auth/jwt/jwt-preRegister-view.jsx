@@ -89,7 +89,7 @@ export default function PreRegisterUser({ currentUser }) {
     } else if (!domainRegex.test(data)) {
       setBtnLoad(false);
       enqueueSnackbar('Dominio no permitido',
-         { variant: 'warning', autoHideDuration:7000  });
+        { variant: 'warning', autoHideDuration: 7000 });
     } else {
       try {
         const insert = await insertData(data);
@@ -146,7 +146,7 @@ export default function PreRegisterUser({ currentUser }) {
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
-    
+
     const temDatos = { ...location.state.data[0], password: data.confirmNewPassword, mailForm };
 
     const registro = await registrarColaborador(temDatos);
@@ -189,8 +189,11 @@ export default function PreRegisterUser({ currentUser }) {
 
   return (
     <Grid container sx={styles}>
-      <Grid xs={12} sm={12} md={3} lg={3} xl={2.5} sx={{ color: theme.palette.mode === 'dark' ? '#25303d' : '#f7f7f7'}}>
-        <div style={{ height: '70%', backgroundColor: 'white', borderRadius: '25px' }}>
+      <Grid xl={3} sx={{ color: theme.palette.mode === 'dark' ? '#25303d' : '#f7f7f7' }}>
+        <div style={{
+          height: '70%', backgroundColor: 'white', borderRadius: '25px', border: '1px solid #ddd',
+          boxShadow: '0 2px 5px rgba(0,0,0,0.1)', margin:'15px'
+        }}>
           {mail !== false && registroForm === false ? (
             <FormProvider methods={form}>
               <DialogContent>
@@ -208,65 +211,47 @@ export default function PreRegisterUser({ currentUser }) {
                     }
                   }}
                 >
-                  <div>
-                    <Box
-                      component="img"
-                      alt="auth"
-                      src={`${import.meta.env.BASE_URL}assets/img/logoBeneficios.svg`}
-                      sx={{
-                        maxWidth: { sm: 120, xs: 80, lg: 60, md: 70, xl: 80 },
-                        position: 'relative',
-                        left: { xs: '75%', md: '71%', lg: '78%' },
-                        top: { xs: '23%', md: '25%' },
-                      }}
-                    />
-                    <Box
-                      component="img"
-                      alt="auth"
-                      src={`${import.meta.env.BASE_URL}assets/img/beneficiosBrand.svg`}
-                      sx={{
-                        maxWidth: { sm: 800, xs: 480, md: 900, lg: 560, xl: 370 },
-                        position: 'relative',
-                        left: { xs: '2%', md: '1%' },
-                        top: { xs: '15%', md: '15%' },
-                      }}
-                    />
-                  </div>
+                  <Box mb={2} />
+                  <Box
+                    component="img"
+                    alt="auth"
+                    src={`${import.meta.env.BASE_URL}assets/img/logo.svg`}
+                    sx={{
+                      maxWidth: '100%',
+                      position: 'center',
+                    }}
+                  />
+                  <>
+                  <Typography variant="body1" style={{ color: 'black', fontWeight: 'bold' }}>Registro de usuario</Typography>
+                    <ThemeProvider theme={lightTheme}>
 
-                  <DialogTitle style={{ paddingLeft: '0px', color: 'black' }}>Registro de usuario</DialogTitle>
-                      <>
-                        <ThemeProvider theme={lightTheme}>
-                          
-                          <Box sx={{ fontSize: 12, color: 'black' }}>
-                          Ingresa el correo con el cual deseas registrarte
-                          </Box>
-                       
-                          <Tooltip 
-                          title={
-                            <>
-                              <Typography color="inherit">Dominios aceptados:</Typography>
-                              <em>@ciudadmaderas.com, @gmail.com, @fundacionlamat.com.mx, @fundacionlamat.com,
+                      <Tooltip
+                        title={
+                          <>
+                            <Typography color="inherit">Dominios aceptados:</Typography>
+                            <em>@ciudadmaderas.com, @gmail.com, @fundacionlamat.com.mx, @fundacionlamat.com,
                               @gph.com.mx, @ooam.com.mx, @nyssa.lat, @seguromaderas.com</em>
-                            </>}  
-                          placement="right" arrow>
-                          <RHFTextField name="correo" label="Correo" />
-                          </Tooltip>
-                        </ThemeProvider>
-                        <DialogActions>
-                          <LoadingButton
-                            variant="contained"
-                            loading={btnLoad}
-                            onClick={() => {
-                              setBtnLoad(true);
-                              const dataMail = document.querySelector('[name="correo"]');
-                              handleChange(dataMail.value);
-                              setMailForm(dataMail.value);
-                            }}
-                          >
-                            Enviar código de verificación
-                          </LoadingButton>
-                        </DialogActions>
-                      </>
+                          </>}
+                        placement="right" arrow>
+                          <Typography variant="body2" style={{ color: 'black' }} mb={1}>Ingresa el correo con el cual deseas registrarte</Typography>
+                        <RHFTextField name="correo" label="Correo" />
+                      </Tooltip>
+                    </ThemeProvider>
+                    <DialogActions>
+                      <LoadingButton
+                        variant="contained"
+                        loading={btnLoad}
+                        onClick={() => {
+                          setBtnLoad(true);
+                          const dataMail = document.querySelector('[name="correo"]');
+                          handleChange(dataMail.value);
+                          setMailForm(dataMail.value);
+                        }}
+                      >
+                        Enviar código de verificación
+                      </LoadingButton>
+                    </DialogActions>
+                  </>
                 </Box>
               </DialogContent>
             </FormProvider>
@@ -288,30 +273,16 @@ export default function PreRegisterUser({ currentUser }) {
                     sm: 'repeat(1, 1fr)',
                   }}
                 >
-                  <div>
-                    <Box
-                      component="img"
-                      alt="auth"
-                      src={`${import.meta.env.BASE_URL}assets/img/logoBeneficios.svg`}
-                      sx={{
-                        maxWidth: { sm: 120, xs: 80, lg: 60, md: 70, xl: 80 },
-                        position: 'relative',
-                        left: { xs: '75%', md: '71%' },
-                        top: { xs: '23%', md: '25%' },
-                      }}
-                    />
-                    <Box
-                      component="img"
-                      alt="auth"
-                      src={`${import.meta.env.BASE_URL}assets/img/beneficiosBrand.svg`}
-                      sx={{
-                        maxWidth: { sm: 800, xs: 480, md: 900, lg: 560, xl: 370 },
-                        position: 'relative',
-                        left: { xs: '2%', md: '1%' },
-                        top: { xs: '15%', md: '15%' },
-                      }}
-                    />
-                  </div>
+                  <Box mb={2} />
+                  <Box
+                    component="img"
+                    alt="auth"
+                    src={`${import.meta.env.BASE_URL}assets/img/logo.svg`}
+                    sx={{
+                      maxWidth: '100%',
+                      position: 'center',
+                    }}
+                  />
                   <DialogTitle style={{ paddingLeft: '0px', color: 'black' }}>Registro de usuario</DialogTitle>
                   <RHFTextField
                     name="numEmpleado"
@@ -326,40 +297,40 @@ export default function PreRegisterUser({ currentUser }) {
                     disabled
                   />
                   <ThemeProvider theme={lightTheme}>
-                  <RHFTextField
-                    name="newPassword"
-                    label="Contraseña"
-                    type={password.value ? 'text' : 'password'}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton onClick={password.onToggle} edge="end">
-                            <Iconify
-                              icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'}
-                            />
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                  <RHFTextField
-                    name="confirmNewPassword"
-                    type={passwordConfirm.value ? 'text' : 'password'}
-                    label="Confirmar nueva contraseña"
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton onClick={passwordConfirm.onToggle} edge="end">
-                            <Iconify
-                              icon={
-                                passwordConfirm.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'
-                              }
-                            />
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
+                    <RHFTextField
+                      name="newPassword"
+                      label="Contraseña"
+                      type={password.value ? 'text' : 'password'}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton onClick={password.onToggle} edge="end">
+                              <Iconify
+                                icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'}
+                              />
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                    <RHFTextField
+                      name="confirmNewPassword"
+                      type={passwordConfirm.value ? 'text' : 'password'}
+                      label="Confirmar nueva contraseña"
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton onClick={passwordConfirm.onToggle} edge="end">
+                              <Iconify
+                                icon={
+                                  passwordConfirm.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'
+                                }
+                              />
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
                   </ThemeProvider>
                 </Box>
               </DialogContent>
