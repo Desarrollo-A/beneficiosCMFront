@@ -90,10 +90,10 @@ export default function AnalyticsConversionRates({ title, subheader, beneficios,
 
   useEffect(() => {
     setDemandaValues({
-      beneficio : areas,
-      departamento : depa,
+      beneficio: areas,
+      departamento: depa,
       area: ar,
-      puestos, 
+      puestos,
     });
   }, [areas, depa, ar, puestos]);
 
@@ -106,15 +106,15 @@ export default function AnalyticsConversionRates({ title, subheader, beneficios,
   const chartSeries = demandaData.map((i) => i.value);
 
   const colors = [
-    "#FF6633", "#FFB399", "#FF33FF", "#FFFF99", "#00B3E6", 
+    "#FF6633", "#FFB399", "#FF33FF", "#FFFF99", "#00B3E6",
     "#E6B333", "#3366E6", "#999966", "#99FF99", "#B34D4D",
-    "#80B300", "#809900", "#E6B3B3", "#6680B3", "#66991A", 
+    "#80B300", "#809900", "#E6B3B3", "#6680B3", "#66991A",
     "#FF99E6", "#CCFF1A", "#FF1A66", "#E6331A", "#33FFCC",
-    "#66994D", "#B366CC", "#4D8000", "#B33300", "#CC80CC", 
+    "#66994D", "#B366CC", "#4D8000", "#B33300", "#CC80CC",
     "#66664D", "#991AFF", "#E666FF", "#4DB3FF", "#1AB399",
-    "#E666B3", "#33991A", "#CC9999", "#B3B31A", "#00E680", 
+    "#E666B3", "#33991A", "#CC9999", "#B3B31A", "#00E680",
     "#4D8066", "#809980", "#E6FF80", "#1AFF33", "#999933",
-    "#FF3380", "#CCCC00", "#66E64D", "#4D80CC", "#9900B3", 
+    "#FF3380", "#CCCC00", "#66E64D", "#4D80CC", "#9900B3",
     "#E64D66", "#4DB380", "#FF4D4D", "#99E6E6", "#6666FF"
   ];
 
@@ -190,169 +190,183 @@ export default function AnalyticsConversionRates({ title, subheader, beneficios,
   });
 
   return (
-    <Card {...other}>
-      <CardHeader title={title} subheader={subheader} />
+    <>
+      {depaData.length > 0 ? (
 
-      <Grid container spacing={2} sx={{
-        p: 3, backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f7f7f7',
-        borderRadius: '20px', margin: '20px'
-      }}>
-        <Grid md={6} xs={12}>
-          <FormControl sx={{
-            width: "100%",
-            pr: { xs: 1, md: 1 },
+        <Card {...other}>
+
+          <CardHeader title={title} subheader={subheader} />
+
+          <Grid container spacing={2} sx={{
+            p: 3, backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f7f7f7',
+            borderRadius: '20px', margin: '20px'
           }}>
-            <InputLabel id="demo-simple-select-label">Beneficio</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={!areas ? '' : areas}
-              label="Beneficio"
-              onChange={(e) => handleChangeArea(e)}
-            >
-              {!isEmpty(beneficios) ? (
-                beneficios.map((i, index) => (
-                  <MenuItem key={index} value={i.idPuesto}>
-                    {i.nombre}
+            <Grid md={6} xs={12}>
+              <FormControl sx={{
+                width: "100%",
+                pr: { xs: 1, md: 1 },
+              }}>
+                <InputLabel id="demo-simple-select-label">Beneficio</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={!areas ? '' : areas}
+                  label="Beneficio"
+                  onChange={(e) => handleChangeArea(e)}
+                >
+                  {!isEmpty(beneficios) ? (
+                    beneficios.map((i, index) => (
+                      <MenuItem key={index} value={i.idPuesto}>
+                        {i.nombre}
+                      </MenuItem>
+                    ))
+                  ) : (
+
+                    <Grid style={{ paddingTop: '2%' }}>
+                      <LinearProgress />
+                      <Box mb={3} />
+                    </Grid>
+                  )}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid md={6} xs={12}>
+              <FormControl sx={{
+                width: "100%",
+                pr: { xs: 1, md: 1 },
+              }}>
+                <InputLabel id="demo-simple-select-label">Departamento</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={depa}
+                  label="Departamneto"
+                  onChange={(e) => handleChangeDepa(e)}
+                >
+                  <MenuItem value={0}>
+                    TOP 10
                   </MenuItem>
-                ))
-              ) : (
+                  {!isEmpty(beneficios) ? (
+                    depaData.map((i, index) => (
+                      <MenuItem key={index} value={i.id}>
+                        {i.departamento}
+                      </MenuItem>
+                    ))
+                  ) : (
 
-                <Grid style={{ paddingTop: '2%' }}>
-                  <LinearProgress />
-                  <Box mb={3} />
+                    <Grid style={{ paddingTop: '2%' }}>
+                      <LinearProgress />
+                      <Box mb={3} />
+                    </Grid>
+                  )}
+                </Select>
+              </FormControl>
+            </Grid>
+
+            <Grid md={6} xs={12}>
+              <FormControl sx={{
+                width: "100%",
+                pr: { xs: 1, md: 1 },
+              }}>
+                <InputLabel id="demo-simple-select-label">Área</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  label="Área"
+                  disabled={depa === 0}
+                  onChange={(e) => handleChangeAr(e)}
+                >
+                  {!isEmpty(areaData) ? (
+                    areaData.map((i, index) => (
+                      <MenuItem key={index} value={i.id}>
+                        {i.area}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <Grid style={{ paddingTop: '2%' }}>
+                      <LinearProgress />
+                      <Box mb={3} />
+                    </Grid>
+                  )}
+                </Select>
+              </FormControl>
+            </Grid>
+
+            <Grid md={6} xs={12}>
+              <FormControl sx={{
+                width: "100%",
+                pr: { xs: 1, md: 1 },
+              }}>
+                <InputLabel id="demo-simple-select-label">Puestos</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  label="Puestos"
+                  disabled={ar === 0}
+                  onChange={(e) => handleChangePuestos(e)}
+                >
+                  {!isEmpty(puestosData) ? (
+                    puestosData.map((i, index) => (
+                      <MenuItem key={index} value={i.id}>
+                        {i.puesto}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <Grid style={{ paddingTop: '2%' }}>
+                      <LinearProgress />
+                      <Box mb={3} />
+                    </Grid>
+                  )}
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
+
+          <Grid container spacing={2}>
+            {!isEmpty(demandaData) ? (
+              <>
+                <Grid item xs={12} md={6} lg={8}>
+                  <Chart
+                    dir="ltr"
+                    type="bar"
+                    series={[{ data: chartSeries }]}
+                    options={chartOptions}
+                    width="100%"
+                    height={300}
+                  />
                 </Grid>
-              )}
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid md={6} xs={12}>
-          <FormControl sx={{
-            width: "100%",
-            pr: { xs: 1, md: 1 },
-          }}>
-            <InputLabel id="demo-simple-select-label">Departameto</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={depa}
-              label="Departamneto"
-              onChange={(e) => handleChangeDepa(e)}
-            >
-              <MenuItem value={0}>
-                TOP 10
-              </MenuItem>
-              {!isEmpty(beneficios) ? (
-                depaData.map((i, index) => (
-                  <MenuItem key={index} value={i.id}>
-                    {i.departamento}
-                  </MenuItem>
-                ))
-              ) : (
-
-                <Grid style={{ paddingTop: '2%' }}>
-                  <LinearProgress />
-                  <Box mb={3} />
+                <Grid item xs={12} md={6} lg={4}>
+                  <StyledChart
+                    dir="ltr"
+                    type="pie"
+                    series={chartSeries}
+                    options={chartOptionsPie}
+                    width="100%"
+                    height={280}
+                  />
                 </Grid>
-              )}
-            </Select>
-          </FormControl>
-        </Grid>
+              </>
+            ) : (
+              <EmptyContent
+                filled
+                title="Sin datos"
+                sx={{
+                  py: 5,
+                }}
+              />
+            )}
+          </Grid>
 
-        <Grid md={6} xs={12}>
-          <FormControl sx={{
-            width: "100%",
-            pr: { xs: 1, md: 1 },
-          }}>
-            <InputLabel id="demo-simple-select-label">Área</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              label="Área"
-              disabled={depa === 0}
-              onChange={(e) => handleChangeAr(e)}
-            >
-               {!isEmpty(areaData) ? (
-                areaData.map((i, index) => (
-                  <MenuItem key={index} value={i.id}>
-                    {i.area}
-                  </MenuItem>
-                ))
-              ) : (
-                <Grid style={{ paddingTop: '2%' }}>
-                  <LinearProgress />
-                  <Box mb={3} />
-                </Grid>
-              )}
-            </Select>
-          </FormControl>
-        </Grid>
 
-        <Grid md={6} xs={12}>
-          <FormControl sx={{
-            width: "100%",
-            pr: { xs: 1, md: 1 },
-          }}>
-            <InputLabel id="demo-simple-select-label">Puestos</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              label="Puestos"
-              disabled={ar === 0}
-              onChange={(e) => handleChangePuestos(e)}
-            >
-              {!isEmpty(puestosData) ? (
-                puestosData.map((i, index) => (
-                  <MenuItem key={index} value={i.id}>
-                    {i.puesto}
-                  </MenuItem>
-                ))
-              ) : (
-                <Grid style={{ paddingTop: '2%' }}>
-                  <LinearProgress />
-                  <Box mb={3} />
-                </Grid>
-              )}
-            </Select>
-          </FormControl>
-        </Grid>
-      </Grid>
+        </Card>
 
-      <Grid container spacing={2}>
-        {!isEmpty(demandaData) ? (
-        <>
-        <Grid item xs={12} md={6} lg={8}>
-          <Chart
-            dir="ltr"
-            type="bar"
-            series={[{ data: chartSeries }]}
-            options={chartOptions}
-            width="100%"
-            height={300}
-          />
-        </Grid>
-        <Grid item xs={12} md={6} lg={4}>
-          <StyledChart
-            dir="ltr"
-            type="pie"
-            series={chartSeries}
-            options={chartOptionsPie}
-            width="100%"
-            height={280}
-          />
-        </Grid>
-        </>
-        ) : (
-          <EmptyContent
-            filled
-            title="Sin datos"
-            sx={{
-              py: 5,
-            }}
-          />
-        )}
-      </Grid>
-    </Card>
+      ) : (
+        <Card {...other}>
+          <Grid container spacing={1} sx={{ backgroundColor: "#ECECEC", animation: 'pulse 1.5s infinite', p: 5 }} justifyContent="center" alignItems="center" />
+        </Card>
+      )}
+
+    </>
   );
 }
 

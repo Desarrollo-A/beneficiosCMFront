@@ -14,7 +14,7 @@ export default function HistorialReportesPage() {
   return (
     <>
       <Helmet>
-        <title>Beneficios CDM | historial</title>
+        <title>Reportes | Historial</title>
       </Helmet>
 
       < HistorialReportesView />

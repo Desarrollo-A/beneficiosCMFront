@@ -11,7 +11,7 @@ export default function AyudaPage() {
   return (
     <>
       <Helmet>
-        <title> Beneficios CDM | Ayuda</title>
+        <title> Ayuda</title>
       </Helmet>
 
       < AyudaView />

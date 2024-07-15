@@ -3,10 +3,12 @@ import { useState, useEffect } from 'react';
 import { DialogContentText } from '@material-ui/core';
 
 import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import { alpha } from '@mui/material/styles';
+import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
@@ -39,30 +41,50 @@ export default function Manuales() {
   }, [manualesData]);
 
   return (
-    <>
-      <Typography
-        variant="h6"
-        sx={{
-          my: { xs: 2, md: 2 },
-        }}
-      >
-        Manuales
-      </Typography>
+    manualesData.length > 0 ? (
+      <>
+        <Typography
+          variant="h6"
+          sx={{
+            my: { xs: 2, md: 2 },
+          }}
+        >
+          Manuales
+        </Typography>
 
-      <Box
-        component={MotionViewport}
-        gap={3}
-        display="grid"
-        gridTemplateColumns={{
-          md: 'repeat(1, 1fr)',
-          lg: `repeat(${count}, 1fr)`,
-        }}
-      >
-        {data.map((category) =>
-          rol === category.idRol ? <CardDesktop category={category} /> : null
-        )}
-      </Box>
-    </>
+        <Box
+          component={MotionViewport}
+          gap={3}
+          display="grid"
+          gridTemplateColumns={{
+            md: 'repeat(1, 1fr)',
+            lg: `repeat(${count}, 1fr)`,
+          }}
+          className="fade-in"
+        >
+          {data.map((category) =>
+            rol === category.idRol ? <CardDesktop category={category} /> : null
+          )}
+        </Box>
+
+      </>
+    ) : (
+      <>
+        <Grid container spacing={2} justifyContent="center" alignItems="center">
+          <Grid item md={4} xs={12}>
+            <Box sx={{ borderRadius: 2, backgroundColor: "#ECECEC", animation: 'pulse 1.5s infinite', p: 5 }} />
+          </Grid>
+          <Grid item md={4} xs={12}>
+            <Box sx={{ borderRadius: 2, backgroundColor: "#ECECEC", animation: 'pulse 1.5s infinite', p: 5 }} />
+          </Grid>
+          <Grid item md={4} xs={12}>
+            <Box sx={{ borderRadius: 2, backgroundColor: "#ECECEC", animation: 'pulse 1.5s infinite', p: 5 }} />
+          </Grid>
+        </Grid>
+
+        <Box mb={2} />
+      </>
+    )
   );
 }
 
