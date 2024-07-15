@@ -8,7 +8,7 @@ export default function CitasPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Citas</title>
+        <title> Citas</title>
       </Helmet>
 
       <CitasView />

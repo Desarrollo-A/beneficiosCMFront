@@ -200,7 +200,7 @@ export default function CitasView() {
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
           heading="Citas"
-          links={[{ name: 'Dashboard', href: paths.dashboard.root }, { name: 'Citas' }]}
+          links={[{ name: '' }]}
           sx={{
             mb: { xs: 3, md: 5 },
           }}

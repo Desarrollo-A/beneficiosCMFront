@@ -11,7 +11,7 @@ export default function UsuariosPage() {
   return (
     <>
       <Helmet>
-        <title> Beneficios CDM | Usuarios</title>
+        <title> Gestor | Usuarios</title>
       </Helmet>
 
       < UsuariosView />
