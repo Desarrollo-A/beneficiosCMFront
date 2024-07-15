@@ -8,7 +8,7 @@ export default function ReportePacientesPage() {
   return (
     <>
       <Helmet>
-        <title>Beneficios CDM | Pacientes</title>
+        <title>Reportes | Pacientes</title>
       </Helmet>
 
       <ReportePacientesView />

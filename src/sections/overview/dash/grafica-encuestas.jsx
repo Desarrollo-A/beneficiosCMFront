@@ -223,226 +223,221 @@ export default function GraficaEncuestas({
   return (
     <>
       <Card {...other}>
-        <CardHeader title={title} />
+        {tipoEncData.length > 0 ? (
+          <>
 
-        <>
-          <Grid
-            container
-            spacing={2}
-            sx={{
-              p: 6.5,
-              backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f7f7f7',
-              borderRadius: '20px',
-              margin: '20px',
-            }}
-          >
-            {rol !== 3 ? (
-              <>
-                <Grid md={6} xs={12}>
-                  <FormControl
-                    sx={{
-                      width: '100%',
-                      pr: { xs: 1, md: 1 },
-                    }}
-                  >
-                    <InputLabel id="demo-simple-select-label">Beneficio</InputLabel>
-                    <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value={!areas ? '' : areas}
-                      label="Beneficio"
-                      onChange={(e) => handleChangeArea(e)}
-                    >
-                      {beneficios.map((i, index) => (
-                        <MenuItem key={index} value={i.idPuesto}>
-                          {i.nombre}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-
-                <Grid md={6} xs={12}>
-                  <FormControl
-                    sx={{
-                      width: '100%',
-                      pr: { xs: 1, md: 1 },
-                    }}
-                  >
-                    <InputLabel id="demo-simple-select-label">Especialista</InputLabel>
-                    <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value={_es}
-                      label="Especialista"
-                      onChange={(e) => handleChangeEsp(e)}
-                    >
-                      <MenuItem value="0">Todos</MenuItem>
-                      {especialistas.map((i, index) => (
-                        <MenuItem key={index} value={i.idUsuario}>
-                          {i.nombre}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-              </>
-            ) : null}
-
-            <Grid md={6} xs={12}>
-              <FormControl
-                sx={{
-                  width: '100%',
-                  pr: { xs: 1, md: 1 },
-                }}
-              >
-                <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
-                  <DatePicker
-                    label="Fecha inicio"
-                    value={datePikerI()}
-                    maxDate={fhF.setDate(fhF.getDate() + 1)}
-                    onChange={handleFilterStartDate}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                      },
-                    }}
-                  />
-                </LocalizationProvider>
-              </FormControl>
-            </Grid>
-
-            <Grid md={6} xs={12}>
-              <FormControl
-                sx={{
-                  width: '100%',
-                  pr: { xs: 1, md: 1 },
-                }}
-              >
-                <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
-                  <DatePicker
-                    label="Fecha fin"
-                    minDate={fhI.setDate(fhI.getDate() + 1)}
-                    value={datePikerF()}
-                    onChange={handleFilterEndDate}
-                    slotProps={{ textField: { fullWidth: true } }}
-                  />
-                </LocalizationProvider>
-              </FormControl>
-            </Grid>
-
-            <Grid md={6} xs={12}>
-              <FormControl
-                sx={{
-                  width: '100%',
-                  pr: { xs: 1, md: 1 },
-                }}
-              >
-                <InputLabel id="demo-simple-select-label">Tipo de encuesta</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  label="Tipo de encuesta"
-                  value={tipoEnc}
-                  onChange={(e) => handleChangeTypeEnc(e)}
-                >
-                  {tipoEncData.map((i) => (
-                    <MenuItem key={i.id} value={i.id}>
-                      {i.nombre}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-
-            <Grid md={6} xs={12}>
-              <FormControl
-                sx={{
-                  width: '100%',
-                  pr: { xs: 1, md: 1 },
-                }}
-              >
-                <InputLabel id="demo-simple-select-label">Pregunta</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  label="Pregunta"
-                  value={pregunta}
-                  onChange={(e) => handleChangeSct(e)}
-                >
-                  {preguntaData.map((i) => (
-                    <MenuItem key={i.idPregunta} value={i.idPregunta}>
-                      {i.pregunta}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-          </Grid>
-
-          {/* <Tooltip title="Exportar XLS" placement="top" arrow>
-                    <MenuItem
-                        sx={{ width: 50, ml: 2, mt: 2 }}
-                        onClick={handleExcel}
-                    >
-                        <Iconify
-                            icon="teenyicons:xls-outline"
-                            width={24} />
-                    </MenuItem>
-                </Tooltip> */}
-
-          <CardHeader
-            action={
-              <ButtonBase
-                style={{ display: 'none' }}
-                onClick={popover.onOpen}
-                sx={{
-                  pl: 1,
-                  py: 0.5,
-                  pr: 0.5,
-                  borderRadius: 1,
-                  typography: 'subtitle2',
-                  bgcolor: 'background.neutral',
-                }}
-              >
-                {seriesData}
-
-                <Iconify
-                  width={16}
-                  icon={popover.open ? 'eva:arrow-ios-upward-fill' : 'eva:arrow-ios-downward-fill'}
-                  sx={{ ml: 0.5 }}
-                />
-              </ButtonBase>
-            }
-          />
-
-          {respCountData.length !== 0 ? (
-            <>
-              {series.map((item) => (
-                <Box key={item.type} sx={{ mt: 3, mx: 3 }}>
-                  {item.type === seriesData && (
-                    <Chart
-                      dir="ltr"
-                      type="bar"
-                      series={item.data}
-                      options={chartOptions}
-                      width="100%"
-                      height={364}
-                    />
-                  )}
-                </Box>
-              ))}
-            </>
-          ) : (
-            <EmptyContent
-              filled
-              title="No hay encuestas contestadas"
+            <CardHeader title={title} />
+            <Grid
+              container
+              className="fade-in"
+              spacing={2}
               sx={{
-                py: 5,
+                p: 6.5,
+                backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f7f7f7',
+                borderRadius: '20px',
+                margin: '20px',
               }}
+            >
+              {rol !== 3 ? (
+                <>
+                  <Grid md={6} xs={12}>
+                    <FormControl
+                      sx={{
+                        width: '100%',
+                        pr: { xs: 1, md: 1 },
+                      }}
+                    >
+                      <InputLabel id="demo-simple-select-label">Beneficio</InputLabel>
+                      <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={!areas ? '' : areas}
+                        label="Beneficio"
+                        onChange={(e) => handleChangeArea(e)}
+                      >
+                        {beneficios.map((i, index) => (
+                          <MenuItem key={index} value={i.idPuesto}>
+                            {i.nombre}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+
+                  <Grid md={6} xs={12}>
+                    <FormControl
+                      sx={{
+                        width: '100%',
+                        pr: { xs: 1, md: 1 },
+                      }}
+                    >
+                      <InputLabel id="demo-simple-select-label">Especialista</InputLabel>
+                      <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={_es}
+                        label="Especialista"
+                        onChange={(e) => handleChangeEsp(e)}
+                      >
+                        <MenuItem value="0">Todos</MenuItem>
+                        {especialistas.map((i, index) => (
+                          <MenuItem key={index} value={i.idUsuario}>
+                            {i.nombre}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                </>
+              ) : null}
+
+              <Grid md={6} xs={12}>
+                <FormControl
+                  sx={{
+                    width: '100%',
+                    pr: { xs: 1, md: 1 },
+                  }}
+                >
+                  <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
+                    <DatePicker
+                      label="Fecha inicio"
+                      value={datePikerI()}
+                      maxDate={fhF.setDate(fhF.getDate() + 1)}
+                      onChange={handleFilterStartDate}
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                        },
+                      }}
+                    />
+                  </LocalizationProvider>
+                </FormControl>
+              </Grid>
+
+              <Grid md={6} xs={12}>
+                <FormControl
+                  sx={{
+                    width: '100%',
+                    pr: { xs: 1, md: 1 },
+                  }}
+                >
+                  <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
+                    <DatePicker
+                      label="Fecha fin"
+                      minDate={fhI.setDate(fhI.getDate() + 1)}
+                      value={datePikerF()}
+                      onChange={handleFilterEndDate}
+                      slotProps={{ textField: { fullWidth: true } }}
+                    />
+                  </LocalizationProvider>
+                </FormControl>
+              </Grid>
+
+              <Grid md={6} xs={12}>
+                <FormControl
+                  sx={{
+                    width: '100%',
+                    pr: { xs: 1, md: 1 },
+                  }}
+                >
+                  <InputLabel id="demo-simple-select-label">Tipo de encuesta</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    label="Tipo de encuesta"
+                    value={tipoEnc}
+                    onChange={(e) => handleChangeTypeEnc(e)}
+                  >
+                    {tipoEncData.map((i) => (
+                      <MenuItem key={i.id} value={i.id}>
+                        {i.nombre}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid md={6} xs={12}>
+                <FormControl
+                  sx={{
+                    width: '100%',
+                    pr: { xs: 1, md: 1 },
+                  }}
+                >
+                  <InputLabel id="demo-simple-select-label">Pregunta</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    label="Pregunta"
+                    value={pregunta}
+                    onChange={(e) => handleChangeSct(e)}
+                  >
+                    {preguntaData.map((i) => (
+                      <MenuItem key={i.idPregunta} value={i.idPregunta}>
+                        {i.pregunta}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Grid>
+
+            <CardHeader
+              action={
+                <ButtonBase
+                  style={{ display: 'none' }}
+                  onClick={popover.onOpen}
+                  sx={{
+                    pl: 1,
+                    py: 0.5,
+                    pr: 0.5,
+                    borderRadius: 1,
+                    typography: 'subtitle2',
+                    bgcolor: 'background.neutral',
+                  }}
+                >
+                  {seriesData}
+
+                  <Iconify
+                    width={16}
+                    icon={popover.open ? 'eva:arrow-ios-upward-fill' : 'eva:arrow-ios-downward-fill'}
+                    sx={{ ml: 0.5 }}
+                  />
+                </ButtonBase>
+              }
             />
-          )}
-        </>
+
+            {respCountData.length !== 0 ? (
+              <>
+                {series.map((item) => (
+                  <Box key={item.type} sx={{ mt: 3, mx: 3 }}>
+                    {item.type === seriesData && (
+                      <Chart
+                        dir="ltr"
+                        type="bar"
+                        series={item.data}
+                        options={chartOptions}
+                        width="100%"
+                        height={364}
+                      />
+                    )}
+                  </Box>
+                ))}
+              </>
+            ) : (
+              <EmptyContent
+                filled
+                title="No hay encuestas contestadas"
+                sx={{
+                  py: 5,
+                }}
+              />
+            )}
+          </>
+
+        ) : (
+          <Grid container spacing={1} sx={{ backgroundColor: "#ECECEC", animation: 'pulse 1.5s infinite', p: 5 }} justifyContent="center" alignItems="center" />
+        )}
       </Card>
 
       <CustomPopover open={popover.open} onClose={popover.onClose} sx={{ width: 140 }}>

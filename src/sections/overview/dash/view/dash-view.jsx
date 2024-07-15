@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Unstable_Grid2';
 import Container from '@mui/material/Container';
-import LinearProgress from '@mui/material/LinearProgress';
 
 import { endpoints } from 'src/utils/axios';
 
@@ -16,6 +15,7 @@ import { useGetEspecialistasPorArea } from 'src/api/especialistas';
 
 import { useSettingsContext } from 'src/components/settings';
 
+import './style.css';
 import AppWelcome from '../app-welcome';
 import AppFeatured from '../app-featured';
 import WidgetConteo from '../widget-conteo';
@@ -126,12 +126,12 @@ export default function DashView() {
         </Grid>
 
         {rol === 4 ? (
-        <Grid xs={12} md={12} lg={12}>
-          <GraficaDemandaDepartamento
-          title="Demanda de beneficios"
-          beneficios={especialistasData}/>
-        </Grid>
-        ):(
+          <Grid xs={12} md={12} lg={12}>
+            <GraficaDemandaDepartamento
+              title="Demanda de beneficios"
+              beneficios={especialistasData} />
+          </Grid>
+        ) : (
           null
         )}
 
@@ -227,13 +227,13 @@ export default function DashView() {
               >ㅤ</Stack>
 
               {rol === 4 ? (
-                  <GraficaMetasArea id={id} />
+                <GraficaMetasArea id={id} />
               ) : (
                 null
               )}
 
               {rol === 3 ? (
-                  <GraficaMetas id={id} />
+                <GraficaMetas id={id} />
               ) : (
                 null
               )}
@@ -271,54 +271,73 @@ export default function DashView() {
             {asistenciaData.length > 0 && canceladaData.length > 0 && penalizadaData.length > 0 && ctDisponiblesData.length > 0 ? (
               <>
                 {asistenciaData.map((i, index) => (
-                  <Grid xs={12} sm={6} md={3} key={index}>
+                  <Grid xs={12} sm={6} md={3} key={index} className="fade-in">
                     <WidgetConteo
                       title="Total citas asistidas"
                       total={i.asistencia}
-                      sx={{ backgroundColor: "#DDFAD7" }}
-                      icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/check.png`} />}
+                      sx={{ backgroundColor: "#d2ffc9" }}
+                      icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/shield.svg`} />}
                     />
                   </Grid>
                 ))
                 }
 
                 {canceladaData.map((i, index) => (
-                  <Grid xs={12} sm={6} md={3} key={index}>
+                  <Grid xs={12} sm={6} md={3} key={index} className="fade-in">
                     <WidgetConteo
                       title="Total citas canceladas"
                       total={i.cancelada}
-                      color="warning"
-                      icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/cancelar.png`} />}
+                      sx={{ backgroundColor: "#f7e4bd" }}
+                      icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/close.svg`} />}
                     />
                   </Grid>
                 ))}
 
                 {penalizadaData.map((i, index) => (
-                  <Grid xs={12} sm={6} md={3} key={index}>
+                  <Grid xs={12} sm={6} md={3} key={index} className="fade-in">
                     <WidgetConteo
                       title="Total citas penalizadas"
                       total={i.penalizada}
-                      color="error"
-                      icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/dolar.png`} />}
+                      sx={{ backgroundColor: "#f7d0c8" }}
+                      icon={<img alt="icon" width={128} src={`${import.meta.env.BASE_URL}assets/icons/glass/danger.svg`} />}
                     />
                   </Grid>
                 ))}
 
                 {ctDisponiblesData.map((i, index) => (
-                  <Grid xs={12} sm={6} md={3} key={index}>
+                  <Grid xs={12} sm={6} md={3} key={index} className="fade-in">
                     <WidgetConteo
                       title="Citas disponibles del mes presente"
                       total={(2 - i.total) < 0 ? 0 : 2 - i.total}
-                      sx={{ backgroundColor: "#E5D7FA" }}
-                      icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/calendario.png`} />}
+                      sx={{ backgroundColor: "#fad3ff" }}
+                      icon={<img alt="icon" src={`${import.meta.env.BASE_URL}assets/icons/glass/calendar.svg`} />}
                     />
                   </Grid>
                 ))}
               </>
             ) : (
-              <Grid xs={12} sm={12} md={12} spacing={2} sx={{ p: 3 }}>
-                <LinearProgress />
-              </Grid>
+              <>
+                <Grid xs={12} sm={6} md={3}>
+                  <WidgetConteo
+                    sx={{ backgroundColor: "#ECECEC", animation: 'pulse 1.5s infinite' }}
+                  />
+                </Grid>
+                <Grid xs={12} sm={6} md={3}>
+                  <WidgetConteo
+                    sx={{ backgroundColor: "#ECECEC", animation: 'pulse 1.5s infinite' }}
+                  />
+                </Grid>
+                <Grid xs={12} sm={6} md={3}>
+                  <WidgetConteo
+                    sx={{ backgroundColor: "#ECECEC", animation: 'pulse 1.5s infinite' }}
+                  />
+                </Grid>
+                <Grid xs={12} sm={6} md={3}>
+                  <WidgetConteo
+                    sx={{ backgroundColor: "#ECECEC", animation: 'pulse 1.5s infinite' }}
+                  />
+                </Grid>
+              </>
             )}
           </>
         ) : (

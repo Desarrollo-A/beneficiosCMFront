@@ -8,7 +8,6 @@ import { useTheme } from '@mui/material/styles';
 import CardHeader from '@mui/material/CardHeader';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
-import CircularProgress from '@mui/material/CircularProgress';
 
 import { endpoints } from 'src/utils/axios';
 
@@ -99,8 +98,10 @@ export default function GraficaMetasArea() {
       <Card sx={{ pr: 2, pl: 1 }}>
         <CardHeader title='Metas de citas de los especialistas' />
 
-        <Grid container spacing={2} sx={{ p: 3, backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f7f7f7',
-        borderRadius: '20px', margin: '20px' }}>
+        <Grid container spacing={2} sx={{
+          p: 3, backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f7f7f7',
+          borderRadius: '20px', margin: '20px'
+        }}>
 
           <Grid md={6} xs={12}>
             <FormControl sx={{
@@ -157,13 +158,9 @@ export default function GraficaMetasArea() {
         />
       </Card>
       :
-      <Card sx={{ pr: 2, pl: 1 }}>
-      <CardHeader title='Metas de citas de los especialistas' />
-
-      <Grid container spacing={1} sx={{ p: 5}} justifyContent="center" alignItems="center">
-          <CircularProgress />
-      </Grid>
-    </Card>
+      <Card>
+          <Grid container spacing={1} sx={{ backgroundColor: "#ECECEC", animation: 'pulse 1.5s infinite', p: 5 }} justifyContent="center" alignItems="center" />
+      </Card>
   )
 }
 

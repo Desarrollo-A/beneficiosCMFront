@@ -14,7 +14,7 @@ export default function DemandaBeneficiosPage() {
   return (
     <>
       <Helmet>
-        <title>Beneficios CDM | Demanda beneficios</title>
+        <title>Reportes | Demanda beneficios</title>
       </Helmet>
 
       < DemandaBeneficiosView />

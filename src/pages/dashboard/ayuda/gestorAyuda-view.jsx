@@ -11,7 +11,7 @@ export default function GestorAyudaPage() {
   return (
     <>
       <Helmet>
-        <title> Beneficios CDM | Ayuda</title>
+        <title> Ayuda | Gestor ayuda</title>
       </Helmet>
 
       < GestorAyudaView />

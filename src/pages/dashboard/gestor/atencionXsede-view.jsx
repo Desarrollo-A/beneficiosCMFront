@@ -11,7 +11,7 @@ export default function AtencionXsedePage() {
   return (
     <>
       <Helmet>
-        <title> Beneficios CDM | Atención por sede</title>
+        <title> Gestor | Atención por sede</title>
       </Helmet>
 
       < AtencionXsedeView />

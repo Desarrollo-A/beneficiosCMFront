@@ -1,10 +1,10 @@
 import { memo } from 'react';
 
+import { Card } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import { useTheme } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';
-import CircularProgress from '@mui/material/CircularProgress';
 
 import { useMockedUser } from 'src/hooks/use-mocked-user';
 
@@ -58,13 +58,47 @@ function NavHorizontal() {
               sx={{
                 ...theme.mixins.toolbar,
               }}
+              className="fade-in"
             />
 
           ) : (
+            <>
+              <Grid container spacing={1} component="nav" direction="row" sx={{
+                mx: 1, my: 2, borderRadius: '7px', width: '5%',
+                height: 30, backgroundColor: "#ececec7a", animation: 'pulse 1.5s infinite',
+                marginLeft: '35%'
+              }} >
+                <Card />
+              </Grid>
 
-            <Grid container spacing={1} sx={{ p: 3.5 }} justifyContent="center" alignItems="center">
-              <CircularProgress sx={{ color: 'white' }} />
-            </Grid>
+              <Grid container spacing={1} component="nav" direction="row" sx={{
+                mx: 1, my: 2, borderRadius: '7px', width: '5%',
+                height: 30, backgroundColor: "#ececec7a", animation: 'pulse 1.5s infinite',
+              }} >
+                <Card />
+              </Grid>
+
+              <Grid container spacing={1} component="nav" direction="row" sx={{
+                mx: 1, my: 2, borderRadius: '7px', width: '5%',
+                height: 30, backgroundColor: "#ececec7a", animation: 'pulse 1.5s infinite',
+              }} >
+                <Card />
+              </Grid>
+
+              <Grid container spacing={1} component="nav" direction="row" sx={{
+                mx: 1, my: 2, borderRadius: '7px', width: '5%',
+                height: 30, backgroundColor: "#ececec7a", animation: 'pulse 1.5s infinite',
+              }} >
+                <Card />
+              </Grid>
+
+              <Grid container spacing={1} component="nav" direction="row" sx={{
+                mx: 1, my: 2, borderRadius: '7px', width: '5%',
+                height: 30, backgroundColor: "#ececec7a", animation: 'pulse 1.5s infinite',
+              }} >
+                <Card />
+              </Grid>
+            </>
           )}
 
         </Scrollbar>
