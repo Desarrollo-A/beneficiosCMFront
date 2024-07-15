@@ -235,7 +235,7 @@ export default function AnalyticsConversionRates({ title, subheader, beneficios,
                 width: "100%",
                 pr: { xs: 1, md: 1 },
               }}>
-                <InputLabel id="demo-simple-select-label">Departameto</InputLabel>
+                <InputLabel id="demo-simple-select-label">Departamento</InputLabel>
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
