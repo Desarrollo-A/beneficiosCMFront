@@ -230,7 +230,7 @@ export default function PreRegisterUser({ currentUser }) {
                           <>
                             <Typography color="inherit">Dominios aceptados:</Typography>
                             <em>@ciudadmaderas.com, @gmail.com, @fundacionlamat.com.mx, @fundacionlamat.com,
-                              @gph.com.mx, @ooam.com.mx, @nyssa.lat, @seguromaderas.com</em>
+                              @gph.com.mx, @gph.mx, @ooam.com.mx, @nyssa.lat, @seguromaderas.com</em>
                           </>}
                         placement="right" arrow>
                           <Typography variant="body2" style={{ color: 'black' }} mb={1}>Ingresa el correo con el cual deseas registrarte</Typography>
