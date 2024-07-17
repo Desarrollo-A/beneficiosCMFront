@@ -92,11 +92,17 @@ export default function AppointmentSchedule({
   beneficioActivo,
   aceptarTerminos,
   aceptar,
+  beneficioDisabled,
+  especialistaDisabled,
+  modalidadDisabled,
+  horariosDisabled,
+  calendarDisabled,
 }) {
   const [open, setOpen] = useState(false);
   const [openMap, setOpenMap] = useState(false);
   const [archivo, setArchivo] = useState(0);
   const [nombreEspecialidad, setNombreEspecialidad] = useState('');
+
   const verTerminos = async () => {
     setOpen(true);
 
@@ -207,7 +213,7 @@ export default function AppointmentSchedule({
           >
             <Typography variant="subtitle1">Agendamiento de cita</Typography>
             <Box mb={1} />
-            {/* El primero es reagendar. */}
+            {/* El primero es agenda y segundo reaagenda. */}
             {!currentEvent?.id && selectedValues?.modalidad ? (
               <ThemeProvider theme={darkTheme}>
                 <Stack direction="column" spacing={3} justifyContent="space-between">
@@ -223,6 +229,7 @@ export default function AppointmentSchedule({
                       defaultValue=""
                       onChange={(e) => handleChange('beneficio', e.target.value)}
                       /* disabled={!!(beneficios?.length === 0 || currentEvent?.id)} */
+                      disabled={beneficioDisabled}
                     >
                       {!(beneficios?.length === 0 || currentEvent?.id) ? (
                         beneficios?.map((e) => (
@@ -254,6 +261,7 @@ export default function AppointmentSchedule({
                       defaultValue=""
                       onChange={(e) => handleChange('especialista', e.target.value)}
                       /* disabled={!!(especialistas?.length === 0 || currentEvent?.id)} */
+                      disabled={especialistaDisabled}
                     >
                       {!(especialistas?.length === 0 || currentEvent?.id) ? (
                         especialistas?.map((e, index) => (
@@ -285,6 +293,7 @@ export default function AppointmentSchedule({
                       value={selectedValues.modalidad}
                       onChange={(e) => handleChange('modalidad', e.target.value)}
                       /* disabled={!!(modalidades?.length === 0 || currentEvent?.id)} */
+                      disabled={modalidadDisabled}
                     >
                       {!(modalidades?.length === 0 || currentEvent?.id) ? (
                         modalidades?.map((e, index) => (
@@ -614,6 +623,7 @@ export default function AppointmentSchedule({
             >
               <DateCalendar
                 loading={isLoading}
+                disabled={calendarDisabled}
                 onChange={handleDateChange}
                 renderLoading={() => <DayCalendarSkeleton />}
                 minDate={initialValue}
@@ -647,7 +657,7 @@ export default function AppointmentSchedule({
                     name="Horarios disponibles"
                     value={horarioSeleccionado}
                     onChange={(e) => handleHorarioSeleccionado(e.target.value)}
-                    disabled={horariosDisponibles.length === 0}
+                    disabled={horariosDisponibles.length === 0 || horariosDisabled}
                     theme={lightTheme}
                   >
                     {horariosDisponibles.map((e, index) => (
@@ -717,4 +727,9 @@ AppointmentSchedule.propTypes = {
   beneficioActivo: PropTypes.object,
   aceptarTerminos: PropTypes.func,
   aceptar: PropTypes.bool,
+  beneficioDisabled: PropTypes.bool,
+  especialistaDisabled: PropTypes.bool,
+  modalidadDisabled: PropTypes.bool,
+  horariosDisabled: PropTypes.bool,
+  calendarDisabled: PropTypes.bool,
 };

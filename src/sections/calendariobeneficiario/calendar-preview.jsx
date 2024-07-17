@@ -1,14 +1,17 @@
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Dialog, DialogContent } from '@material-ui/core';
 
+import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Stack, Button, Typography, DialogActions } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
 
-export default function CalendarPreview({ event, open, handleClose }) {
+export default function CalendarPreview({ event, open, handleClose, handlePayment }) {
+  const [loadingButton, setLoadingButton] = useState(false);
   return (
     <Dialog
       open={open}
@@ -417,6 +420,21 @@ export default function CalendarPreview({ event, open, handleClose }) {
         <Button variant="contained" color="error" onClick={handleClose}>
           Cerrar
         </Button>
+        {event?.id && event?.estatus === 6 ? (
+          <LoadingButton
+            variant="contained"
+            color="success"
+            loading={loadingButton}
+            onClick={async () => {
+              setLoadingButton(true);
+              await handlePayment(event);
+              setLoadingButton(false);
+              handleClose();
+            }}
+          >
+            Pagar
+          </LoadingButton>
+        ) : null}
       </DialogActions>
     </Dialog>
   );
@@ -426,4 +444,5 @@ CalendarPreview.propTypes = {
   event: PropTypes.object,
   open: PropTypes.bool,
   handleClose: PropTypes.func,
+  handlePayment: PropTypes.func,
 };

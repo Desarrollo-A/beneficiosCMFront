@@ -102,6 +102,21 @@ export default function CalendarView() {
     }, 500); // Duración de la animación en milisegundos
   }, []);
 
+  const renderFloatingCircleTimers = () =>
+    events
+      .filter(
+        (event) => event?.idDetalle === null && (event?.estatus === 6 || event?.estatus === 10)
+      )
+      .map((event, index) => (
+        <FloatingCircleTimer
+          key={event?.id}
+          benefit={event?.beneficio}
+          leftTime={event?.diferenciaEnMs}
+          appointmentMutate={appointmentMutate}
+          topOffset={index * 120} // Ajustar el espaciado vertical entre elementos
+        />
+      ));
+
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'xl'}>
@@ -205,25 +220,15 @@ export default function CalendarView() {
           top: 0,
           right: 0,
           width: '200px' /* Ajusta el ancho según tus necesidades */,
-          height: '98vh' /* Hace que el componente tome el 100% de la altura de la pantalla */,
-          backgroundColor: 'rgba(0,0,0,0.1)' /* Color de fondo */,
+          height: '90' /* Hace que el componente tome el 100% de la altura de la pantalla */,
           padding: '10px',
-          boxShadow: '-2px 0 5px rgba(0,0,0,0.1)' /* Sombra para dar efecto flotante */,
           zIndex: 9999,
           pointerEvents: 'none',
           marginTop: '12px',
           marginRight: '12px',
         }}
       >
-        {eventsLoading === false &&
-          events?.map((event, index) => (
-            <FloatingCircleTimer
-              key={event?.id}
-              benefit={event?.beneficio}
-              leftTime={event?.diferenciaEnMs}
-              topOffset={index * 120} // Ajustar el espaciado vertical entre elementos
-            />
-          ))}
+        {!eventsLoading && renderFloatingCircleTimers()}
       </Stack>
     </>
   );

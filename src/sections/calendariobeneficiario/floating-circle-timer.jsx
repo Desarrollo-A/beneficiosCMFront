@@ -2,34 +2,52 @@
 import PropTypes from 'prop-types';
 import React, { useState, useEffect } from 'react';
 
-import Stack from '@mui/system/Stack';
+import Stack from '@mui/material/Stack';
 
-export default function FloatingCircleTimer({ benefit, leftTime }) {
-  const [time, setTime] = useState(leftTime);
+import { doEventCancelaCitas } from 'src/api/calendar-colaborador';
+
+export default function FloatingCircleTimer({ benefit, leftTime, appointmentMutate, topOffset }) {
+  const [time, setTime] = useState(1);
 
   useEffect(() => {
+    if (time === 2000) {
+      updateStatusAppointment();
+    }
+
     if (time > 0) {
       const timerId = setInterval(() => {
         setTime((prevTime) => prevTime - 1000);
       }, 1000);
 
-      return () => clearInterval(timerId); // Esta es la función de limpieza.
+      return () => clearInterval(timerId);
     }
   }, [time]);
 
+  useEffect(() => {
+    setTime(leftTime);
+  }, [leftTime]);
+
+  const updateStatusAppointment = async () => {
+    const event = await doEventCancelaCitas();
+    console.log(event);
+    appointmentMutate();
+  };
+
   const formatTime = (ms) => {
+    if (ms === 0) return '00:00:00';
     const totalSeconds = Math.floor(ms / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
-    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    return `${hours < 10 ? '0' : ''}${hours}h ${minutes < 10 ? '0' : ''}${minutes}m ${seconds < 10 ? '0' : ''}${seconds}s`;
   };
 
   return (
     <Stack
-      style={{
+      sx={{
         position: 'relative',
-        top: `0px`,
-        right: '0px',
+        top: topOffset,
+        right: 0,
         width: '120px',
         height: '120px',
         borderRadius: '50%',
@@ -50,7 +68,7 @@ export default function FloatingCircleTimer({ benefit, leftTime }) {
       <Stack sx={{ justifyContent: 'center', alignItems: 'center' }}>
         Tiempo para pagar tu cita de {benefit}
       </Stack>
-      <Stack sx={{ justifyContent: 'center', alignItems: 'center' }}>{formatTime(time)}s</Stack>
+      <Stack sx={{ justifyContent: 'center', alignItems: 'center' }}>{formatTime(time)}</Stack>
     </Stack>
   );
 }
@@ -58,4 +76,6 @@ export default function FloatingCircleTimer({ benefit, leftTime }) {
 FloatingCircleTimer.propTypes = {
   benefit: PropTypes.string,
   leftTime: PropTypes.number,
+  topOffset: PropTypes.number,
+  appointmentMutate: PropTypes.func,
 };

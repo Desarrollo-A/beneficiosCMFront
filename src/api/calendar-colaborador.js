@@ -833,3 +833,10 @@ export function getSedeEsp(especialista) {
 
   return idSede;
 }
+
+export function doEventCancelaCitas() {
+  const URL = [endpoints.calendarioColaborador.doEventCancelaCitas];
+  const event = fetcherPost(URL, {});
+
+  return event;
+}
