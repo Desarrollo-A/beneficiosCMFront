@@ -59,10 +59,9 @@ const lightTheme = createTheme({
   },
   components: {
     MuiPickersDay: {
-      
       styleOverrides: {
         root: {
-          color: 'black', 
+          color: 'black',
         },
       },
     },
@@ -92,6 +91,7 @@ export default function AppointmentSchedule({
   beneficioActivo,
   aceptarTerminos,
   aceptar,
+  selectedDay,
 }) {
   const [open, setOpen] = useState(false);
   const [openMap, setOpenMap] = useState(false);
@@ -614,6 +614,7 @@ export default function AppointmentSchedule({
             >
               <DateCalendar
                 loading={isLoading}
+                value={selectedDay}
                 onChange={handleDateChange}
                 renderLoading={() => <DayCalendarSkeleton />}
                 minDate={initialValue}
@@ -638,23 +639,23 @@ export default function AppointmentSchedule({
           >
             {horariosDisponibles ? (
               <FormControl error={!!errorHorarioSeleccionado} fullWidth>
-                  <InputLabel id="modalidad-input">Horarios disponibles</InputLabel>
-                  <Select
-                    labelId="Horarios disponibles"
-                    id="select-horario"
-                    label="Horarios disponibles"
-                    name="Horarios disponibles"
-                    value={horarioSeleccionado}
-                    onChange={(e) => handleHorarioSeleccionado(e.target.value)}
-                    disabled={horariosDisponibles.length === 0}
-                    theme={lightTheme}
-                  >
-                    {horariosDisponibles.map((e, index) => (
-                      <MenuItem key={e.inicio} value={`${e.fecha} ${e.inicio}`}>
-                        {e.inicio}
-                      </MenuItem>
-                    ))}
-                  </Select>
+                <InputLabel id="modalidad-input">Horarios disponibles</InputLabel>
+                <Select
+                  labelId="Horarios disponibles"
+                  id="select-horario"
+                  label="Horarios disponibles"
+                  name="Horarios disponibles"
+                  value={horarioSeleccionado}
+                  onChange={(e) => handleHorarioSeleccionado(e.target.value)}
+                  disabled={horariosDisponibles.length === 0}
+                  theme={lightTheme}
+                >
+                  {horariosDisponibles.map((e, index) => (
+                    <MenuItem key={e.inicio} value={`${e.fecha} ${e.inicio}`}>
+                      {e.inicio}
+                    </MenuItem>
+                  ))}
+                </Select>
                 {errorHorarioSeleccionado && horarioSeleccionado === '' && (
                   <FormHelperText error={errorHorarioSeleccionado}>
                     Seleccione fecha y horario
@@ -715,4 +716,5 @@ AppointmentSchedule.propTypes = {
   beneficioActivo: PropTypes.object,
   aceptarTerminos: PropTypes.func,
   aceptar: PropTypes.bool,
+  selectedDay: PropTypes.any,
 };
