@@ -137,6 +137,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const [errorMessage, setErrorMessage] = useState('Formato de correo erróneo');
   const [errorEmail, setErrorEmail] = useState(false);
   const [sendEmails, setSendEmails] = useState(false);
+  const [selectedDay, setSelectedDay] = useState(null);
 
   const theme = useTheme();
 
@@ -762,6 +763,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     setHorarioSeleccionado('');
     setErrorHorarioSeleccionado(false);
     setHorariosDisponibles([]);
+    setSelectedDay(null);
 
     if (input === 'beneficio') {
       setErrorBeneficio(false); // Por si tiene error lo limpia
@@ -889,6 +891,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       const diasDisponibles = await getDiasDisponibles(value.idEspecialista, datosUser.idSede);
       setDiasPresenciales(diasDisponibles.result ? diasDisponibles.data : []);
       /* ************************************* */
+      setSelectedDay(null);
     }
     setIsLoadingEspecialidad(false);
     setIsLoadingModalidad(false);
@@ -1125,6 +1128,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const handleDateChange = (newDate) => {
     setErrorHorarioSeleccionado(false);
     setBtnDisabled(false);
+    setSelectedDay(newDate);
 
     // Bloque para obtener las horas del dia actual mas una cant de horas para validar registros del mismo dia actual.
     // 3 HORAS DE MARGEN PARA NO PENALIZARLOS.
@@ -2113,6 +2117,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                     beneficioActivo={beneficioActivo}
                     aceptarTerminos={onAceptar}
                     aceptar={aceptar}
+                    selectedDay={selectedDay}
                   />
                 )}
               </DialogContent>
@@ -2228,6 +2233,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
             errorHorarioSeleccionado={errorHorarioSeleccionado}
             currentEvent={currentEvent}
             handleHorarioSeleccionado={handleHorarioSeleccionado}
+            selectedDay={selectedDay}
           />
         </DialogContent>
         <DialogActions
