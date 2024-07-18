@@ -57,6 +57,7 @@ const TABLE_HEAD = [
   { id: 'fechaCreacion', label: 'Fecha de registro' },
   { id: 'servicios', label: 'Servicios usados' },
   { id: 'rol', label: 'Rol' },
+  { id: 'permisos', label: 'Permisos adicionales', width: 100 },
   { id: 'estatus', label: 'Estatus', width: 100 },
   { id: '', width: 88 },
 ];
@@ -145,7 +146,7 @@ export default function UsuariosView() {
     idPuesto: user?.idPuesto,
   });
 
-  const { usuariosData } = usePostGeneral(userDt, endpoints.gestor.getUsuarios, "usuariosData");
+  const { usuariosData, getData: getUsuarios } = usePostGeneral(userDt, endpoints.gestor.getUsuarios, "usuariosData");
 
   const [tableData, setTableData] = useState([]);
 
@@ -329,7 +330,7 @@ export default function UsuariosView() {
                         selected={table.selected.includes(row.id)}
                         onSelectRow={() => table.onSelectRow(row.id)}
                         onDeleteRow={() => handleDeleteRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
+                        onEditRow={() => getUsuarios()}
                       />
                     ))}
 

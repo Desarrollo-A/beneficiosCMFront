@@ -1,14 +1,18 @@
+import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 import { useState, useEffect } from 'react';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 import { Box } from '@mui/system';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
+import MenuItem from '@mui/material/MenuItem';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
+import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -17,11 +21,16 @@ import LinearProgress from '@mui/material/LinearProgress';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
+import { endpoints } from 'src/utils/axios';
+
 import { getDecodedPassAdmin } from 'src/api/perfil';
+import { useSnackbar } from 'src/components/snackbar';
+import { useGetGeneral, useInsertGeneral } from 'src/api/general';
 
 import Iconify from 'src/components/iconify';
 import FormProvider, {
-  RHFTextField
+  RHFTextField,
+  RHFSelect
 } from 'src/components/hook-form';
 // ----------------------------------------------------------------------
 
@@ -38,16 +47,53 @@ export default function ModalUsuarios({
   area,
   puesto,
   sede, 
-  rol
+  rol,
+  permisos_id
  }) {
 
+  const { enqueueSnackbar } = useSnackbar();
+
+  const schema = Yup.object().shape({
+    //id: Yup.number(),
+    //permisos_id: Yup.number(),
+  })
+
   const methods = useForm({
+    resolver: yupResolver(schema),
   });
+
+  const {
+    handleSubmit,
+    formState: { isSubmitting },
+  } = methods;
+
+  const passwordOld = useBoolean();
 
   const [ passDecode, setPassDecode ] = useState('');
 
+  const { permisos } = useGetGeneral(endpoints.gestor.permisos, "permisos");
+  const insertData = useInsertGeneral(endpoints.gestor.save_permisos)
+
   const usuario = passDecode ? passDecode?.find(u => u.idUsuario === id) : '';
   const pw = usuario ? usuario.password : null;
+
+  const onSubmit = handleSubmit(async (data) => {
+    // console.log(data)
+
+    const dataValue = {
+      id,
+      permisos_id: data.permisos_id,
+    }
+    
+    const response = await insertData(dataValue)
+    // console.log(response)
+
+    enqueueSnackbar(response.msg, {variant: response.status});
+
+    if(response.status === 'success'){
+      onClose()
+    }
+  });
 
   useEffect(() => {
     const getPassword = async() => {
@@ -56,8 +102,6 @@ export default function ModalUsuarios({
     }
     getPassword();
   }, []);
-
-  const passwordOld = useBoolean();
 
   return (
     <Dialog
@@ -103,10 +147,10 @@ export default function ModalUsuarios({
                 <Grid xs={3} md={3}>
                   <RHFTextField name="rol" label="Rol" value={rol} disabled />
                 </Grid>
-                <Grid xs={6} md={6}>
+                <Grid xs={4} md={4}>
                   <RHFTextField name="correo" label="Correo" value={correo} disabled />
                 </Grid>
-                <Grid xs={6} md={6}>
+                <Grid xs={4} md={4}>
                 {passDecode ? (
                   <RHFTextField
                     name="oldPassword"
@@ -125,10 +169,21 @@ export default function ModalUsuarios({
                     }}
                   />
                 ):(
-                  <Grid xs={6} md={6}>
+                  <Grid xs={4} md={4}>
                     <LinearProgress />
                   </Grid>
                 )}
+                </Grid>
+
+                <Grid xs={4} md={4}>
+                  <RHFSelect name="permisos_id" label="Permisos" value={permisos_id}>
+                    <MenuItem value="">Ninguno</MenuItem>
+                    {permisos.map((option, index) => (
+                      <MenuItem key={index} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </RHFSelect>
                 </Grid>
                 
               </Grid>
@@ -143,6 +198,9 @@ export default function ModalUsuarios({
         <Button variant="contained" color="error" onClick={onClose}>
           Cerrar
         </Button>
+        <LoadingButton type="submit" variant="contained" color="primary" loading={isSubmitting} onClick={onSubmit} >
+          Guardar
+        </LoadingButton>
       </DialogActions>
 
     </Dialog>
@@ -163,5 +221,6 @@ ModalUsuarios.propTypes = {
   area: PropTypes.any,
   puesto: PropTypes.any,
   sede: PropTypes.any,
-  rol: PropTypes.any
+  rol: PropTypes.any,
+  permisos_id: PropTypes.any
 };
