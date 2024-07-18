@@ -48,7 +48,8 @@ export default function ModalUsuarios({
   puesto,
   sede, 
   rol,
-  permisos_id
+  permisos_id,
+  idRol
  }) {
 
   const { enqueueSnackbar } = useSnackbar();
@@ -176,7 +177,7 @@ export default function ModalUsuarios({
                 </Grid>
 
                 <Grid xs={4} md={4}>
-                  <RHFSelect name="permisos_id" label="Permisos" value={permisos_id}>
+                  <RHFSelect name="permisos_id" label="Permisos adicionales" value={permisos_id} disabled={idRol !== 4}>
                     <MenuItem value="">Ninguno</MenuItem>
                     {permisos.map((option, index) => (
                       <MenuItem key={index} value={option.value}>
@@ -198,9 +199,11 @@ export default function ModalUsuarios({
         <Button variant="contained" color="error" onClick={onClose}>
           Cerrar
         </Button>
-        <LoadingButton type="submit" variant="contained" color="primary" loading={isSubmitting} onClick={onSubmit} >
-          Guardar
-        </LoadingButton>
+        {idRol === 4 &&
+          <LoadingButton type="submit" variant="contained" color="primary" loading={isSubmitting} onClick={onSubmit} >
+            Guardar
+          </LoadingButton>
+        }
       </DialogActions>
 
     </Dialog>
@@ -222,5 +225,6 @@ ModalUsuarios.propTypes = {
   puesto: PropTypes.any,
   sede: PropTypes.any,
   rol: PropTypes.any,
-  permisos_id: PropTypes.any
+  permisos_id: PropTypes.any,
+  idRol: PropTypes.any,
 };

@@ -14,7 +14,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import ModalUsuarios from './modal-usuarios';
 // ----------------------------------------------------------------------
 
-export default function TableRowUsuarios({ row, close, onEditRow }) {
+export default function TableRowUsuarios({ row, idRol, close, onEditRow }) {
   const { 
     id, 
     numEmpleado,
@@ -26,15 +26,16 @@ export default function TableRowUsuarios({ row, close, onEditRow }) {
     correo, 
     fechaCreacion,
     servicios,
-
-    estatus, 
     rol,
+    estatus,
     permisos_id,
     permisos_name,
     contrato,
     password,
     
   } = row;
+
+  console.log(idRol)
 
   const quickEditar = useBoolean();
 
@@ -108,6 +109,7 @@ export default function TableRowUsuarios({ row, close, onEditRow }) {
         area={area}
         puesto={puesto}
         rol={rol}
+        idRol={idRol}
         permisos_id={permisos_id}
         open={quickEditar.value}
         onClose={handleClose}
@@ -126,8 +128,8 @@ export default function TableRowUsuarios({ row, close, onEditRow }) {
             popover.onClose();
           }}
         >
-          <Iconify icon="solar:clapperboard-edit-outline" />
-          Editar
+          <Iconify icon={idRol === 4 ?"solar:clapperboard-edit-outline" : "solar:eye-bold"} />
+          {idRol === 4 ? 'Editar' : 'Ver'}
         </MenuItem>
       </CustomPopover>
     </>
