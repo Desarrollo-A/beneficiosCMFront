@@ -44,9 +44,7 @@ export default function PerfilUsuarioView() {
       <CustomBreadcrumbs
         heading="Perfil"
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Usuarios', href: paths.dashboard.usuariosexternos.root },
-          { name: 'Perfil' },
+          { name: '' }
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

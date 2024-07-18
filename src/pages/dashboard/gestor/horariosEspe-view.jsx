@@ -11,7 +11,7 @@ export default function HorariosEspePage() {
   return (
     <>
       <Helmet>
-        <title> Beneficios CDM | Horario Especificos</title>
+        <title> Gestor | Horario especificos</title>
       </Helmet>
 
       < HorariosEspeView />

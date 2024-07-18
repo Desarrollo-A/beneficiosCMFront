@@ -23,30 +23,35 @@ export default function WidgetConteo({
 
   return (
     <Stack
-      alignItems="center"
-      sx={{
-        ...bgGradient({
-          direction: '135deg',
-          startColor: alpha(theme.palette[color].light, 0.2),
-          endColor: alpha(theme.palette[color].main, 0.2),
-        }),
-        py: 5,
-        borderRadius: 2,
-        textAlign: 'center',
-        color: `${color}.darker`,
-        backgroundColor: 'common.white',
-        ...sx,
-      }}
-      {...other}
-    >
-      {icon && <Box sx={{ width: 64, height: 64, mb: 1 }}>{icon}</Box>}
+    alignItems="center"
+    sx={{
+      ...bgGradient({
+        direction: '135deg',
+        startColor: alpha(theme.palette[color].light, 0.2),
+        endColor: alpha(theme.palette[color].main, 0.2),
+      }),
+      py: 5,
+      borderRadius: 2,
+      textAlign: 'center',
+      color: `${color}.darker`,
+      backgroundColor: alpha(theme.palette[color].main, 0.24), // Opacidad del 24%
+      backgroundImage: `url(${import.meta.env.BASE_URL}assets/icons/glass/shape-square.svg)`,
+      backgroundRepeat: 'no-repeat',
+      backgroundPosition: 'center',
+      backgroundSize: 'cover',
+      ...sx,
+    }}
+    {...other}
+  >
+    
+    {icon && <Box sx={{ width: 128, height: 96, mb: 1 }}>{icon}</Box>}
 
-      <Typography variant="h3">{(total)}</Typography>
+    <Typography variant="h3">{total}</Typography>
 
-      <Typography variant="subtitle2" sx={{ opacity: 0.64 }}>
-        {title}
-      </Typography>
-    </Stack>
+    <Typography variant="subtitle2" sx={{ opacity: 0.64 }}>
+      {title}
+    </Typography>
+  </Stack>
   );
 }
 
@@ -55,5 +60,5 @@ WidgetConteo.propTypes = {
   icon: PropTypes.oneOfType([PropTypes.element, PropTypes.string]),
   sx: PropTypes.object,
   title: PropTypes.string,
-  total: PropTypes.number,
+  total: PropTypes.any,
 };

@@ -261,7 +261,7 @@ export default function DemandaBeneficiosView() {
         heading="Demanda beneficios"
         links={[
           {
-            name: 'Gestor',
+            name: 'Reportes',
           },
           { name: 'Demanda beneficios' },
         ]}

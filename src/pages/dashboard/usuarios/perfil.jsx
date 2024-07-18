@@ -8,7 +8,7 @@ export default function PerfilPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Perfil de usuario</title>
+        <title> Perfil</title>
       </Helmet>
 
       <PerfilUsuarioView />

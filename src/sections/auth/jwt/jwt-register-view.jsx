@@ -99,32 +99,16 @@ export default function JwtRegisterView() {
 
   const renderHead = (
     <Stack spacing={1} sx={{ mb: 0 }}>
-      <div>
-        <Box
-          component="img"
-          alt="auth"
-          src={`${import.meta.env.BASE_URL}assets/img/logoBeneficios.svg`}
-          sx={{
-            maxWidth: { xs: 480, lg: 560, xl: 720 },
-            position: 'absolute',
-            width: { xs: '20%', md: '16%' },
-            left: '64%',
-            top: { xs: '1%', md: '-9%' }
-          }}
-        />
-        <Box
-          component="img"
-          alt="auth"
-          src={`${import.meta.env.BASE_URL}assets/img/beneficiosBrand.svg`}
-          sx={{
-            maxWidth: {
-              xs: 480,
-              lg: 560,
-              xl: 720,
-            }
-          }}
-        />
-      </div>
+      <Box mb={2} />
+      <Box
+        component="img"
+        alt="auth"
+        src={`${import.meta.env.BASE_URL}assets/img/logo.svg`}
+        sx={{
+          maxWidth: '100%',
+          position: 'center',
+        }}
+      />
       <Typography variant="h4">Registro de usuarios</Typography>
       <Stack direction="row" spacing={0.5}>
         <Typography variant="body2"> ¿Ya tienes una cuenta? </Typography>
@@ -193,8 +177,8 @@ export default function JwtRegisterView() {
           maxWidth: { xs: 480, lg: 560, xl: 720 },
           position: 'absolute',
           width: { xs: '50%', md: '35%' },
-          left: { xs: '25%', md: '30%'},
-          top: { xs: '90%', md: '105%'}
+          left: { xs: '25%', md: '30%' },
+          top: { xs: '90%', md: '105%' }
         }}
       />
     </Stack>
@@ -208,7 +192,7 @@ export default function JwtRegisterView() {
       {logoMd}
       {renderTerms}
 
-      
+
     </>
   );
 }

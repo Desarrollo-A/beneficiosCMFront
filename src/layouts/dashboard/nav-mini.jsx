@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
+import { Card } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Unstable_Grid2';
-import CircularProgress from '@mui/material/CircularProgress';
 
 import { useMockedUser } from 'src/hooks/use-mocked-user';
 
@@ -49,7 +49,7 @@ export default function NavMini() {
         }}
       >
         <Logo sx={{ mx: 'auto', my: 2 }} />
-
+        
         {navData.length > 0 ? (
 
           <NavSectionMini
@@ -57,15 +57,42 @@ export default function NavMini() {
             slotProps={{
               currentRole: user?.role,
             }}
+            className="fade-in"
           />
 
         ) : (
+          <>
+            <Grid container spacing={1} sx={{
+              mx: 'auto', my: .4, borderRadius: '7px', width: '90%',
+              p: 4, backgroundColor: "#ececec7a", animation: 'pulse 1.5s infinite',
+            }} justifyContent="center" alignItems="center">
+              <Card />
+            </Grid>
 
-          <Grid container spacing={1} sx={{ p: 3.5 }} justifyContent="center" alignItems="center">
-            <CircularProgress sx={{ color: 'white' }} />
-          </Grid>
+            <Grid container spacing={1} sx={{
+              mx: 'auto', my: .4, borderRadius: '7px', width: '90%',
+              p: 4, backgroundColor: "#ececec7a", animation: 'pulse 1.5s infinite',
+            }} justifyContent="center" alignItems="center">
+              <Card />
+            </Grid>
+
+            <Grid container spacing={1} sx={{
+              mx: 'auto', my: .4, borderRadius: '7px', width: '90%',
+              p: 4, backgroundColor: "#ececec7a", animation: 'pulse 1.5s infinite',
+            }} justifyContent="center" alignItems="center">
+              <Card />
+            </Grid>
+
+            <Grid container spacing={1} sx={{
+              mx: 'auto', my: .4, borderRadius: '7px', width: '90%',
+              p: 4, backgroundColor: "#ececec7a", animation: 'pulse 1.5s infinite',
+            }} justifyContent="center" alignItems="center">
+              <Card />
+            </Grid>
+
+          </>
         )}
-        
+
       </Stack>
     </Box>
   );

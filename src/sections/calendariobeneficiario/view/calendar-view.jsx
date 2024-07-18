@@ -25,6 +25,7 @@ import { useGetAppointmentsByUser } from 'src/api/calendar-colaborador';
 
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
+import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
 import '../style.css';
 import { StyledCalendar } from '../styles';
@@ -121,14 +122,14 @@ export default function CalendarView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'xl'}>
         <Stack
+          direction="row"
           alignItems="center"
           justifyContent="space-between"
           sx={{
             mb: { xs: 3, md: 5 },
-            flexDirection: { sm: 'row', md: 'col' },
           }}
         >
-          <Typography variant="h4"> </Typography>
+          <Typography variant="h4">Calendario</Typography>
           <Button
             className={`ButtonCita ${animate ? 'animate' : ''}`}
             onClick={dialog.onTrue}
