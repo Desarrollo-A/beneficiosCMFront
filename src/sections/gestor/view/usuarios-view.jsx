@@ -326,7 +326,7 @@ export default function UsuariosView() {
                       <TableRowUsuarios
                         key={index}
                         row={row}
-                        rol={rol}
+                        idRol={rol}
                         selected={table.selected.includes(row.id)}
                         onSelectRow={() => table.onSelectRow(row.id)}
                         onDeleteRow={() => handleDeleteRow(row.id)}
