@@ -158,6 +158,13 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const [isLoadingEspecialidad, setIsLoadingEspecialidad] = useState(false);
   const [isLoadingModalidad, setIsLoadingModalidad] = useState(false);
 
+  const [beneficioDisabled, setBeneficioDisabled] = useState(false);
+  const [especialistaDisabled, setEspecialistaDisabled] = useState(false);
+  const [modalidadDisabled, setModalidadDisabled] = useState(false);
+  const [horariosDisabled, setHorariosDisabled] = useState(false);
+  const [cerrarDisabled, setCerrarDisabled] = useState(false);
+  const [calendarDisabled, setCalendarDisabled] = useState(false);
+
   const { enqueueSnackbar } = useSnackbar();
 
   const formSchema = yup.object().shape({});
@@ -181,6 +188,12 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     if (selectedValues.especialista === '') return setErrorEspecialista(true);
     if (selectedValues.modalidad === '') return setErrorModalidad(true);
     if (horarioSeleccionado === '') return setErrorHorarioSeleccionado(true);
+    setBeneficioDisabled(true);
+    setEspecialistaDisabled(true);
+    setModalidadDisabled(true);
+    setHorariosDisabled(true);
+    setCalendarDisabled(true);
+    setCerrarDisabled(true);
     setBtnDisabled(true);
 
     const ahora = new Date();
@@ -465,6 +478,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     mutate(endpoints.citas.getCitas);
     mutate(endpoints.dashboard.getCountModalidades);
     mutate(endpoints.dashboard.getCountEstatusCitas);
+    setCerrarDisabled(false);
 
     /* *** PROCESO DE MUESTRA DE PREVIEW *** */
     const scheduledAppointment = await consultarCita(agendar.data, datosUser.idSede);
@@ -649,7 +663,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     return onClose();
   };
 
-  const pagarCitaPendiente = async () => {
+  const pagarCitaPendiente = async (cita) => {
     setBtnPayDisabled(true);
     /* VALIDAR SI ES GRATUITA LA CITA */
     let precio = 50;
@@ -657,7 +671,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     let nombreBeneficio = '';
     let abreviatura = '';
-    switch (currentEvent.idPuesto) {
+    switch (cita.idPuesto) {
       case 158:
         nombreBeneficio = 'quantum balance';
         abreviatura = 'QUAN';
@@ -680,17 +694,18 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     const ESTATUS_CITA = Object.freeze({
       PENDIENTE_PAGO: 6,
+      PROCESAND_PAGO: 10,
     });
 
     const DATOS_CITA = Object.freeze({
       TITULO: `Cita ${nombreBeneficio} - ${datosUser.nombre}`,
-      ID_ESPECIALISTA: currentEvent.idEspecialista,
+      ID_ESPECIALISTA: cita.idEspecialista,
       ID_USUARIO: datosUser.idUsuario,
     });
 
     const DATOS_PAGO = Object.freeze({
       FOLIO: `${DATOS_CITA.ID_USUARIO}${dayjs(new Date()).format('HHmmssYYYYMMDD')}`,
-      REFERENCIA: `U${DATOS_CITA.ID_USUARIO}-${abreviatura}-E${DATOS_CITA.ID_ESPECIALISTA}-C${currentEvent.id}`,
+      REFERENCIA: `U${DATOS_CITA.ID_USUARIO}-${abreviatura}-E${DATOS_CITA.ID_ESPECIALISTA}-C${cita.id}`,
       // 'U88-QUAN-E64-C65',
       // `U${DATOS_CITA.ID_USUARIO}-${abreviatura}-E${DATOS_CITA.ID_ESPECIALISTA}-C${agendar.data}}`,
       // Referencia: 'U(idUsuario)-(NUTR, PSIC, GUIA, QUAN)-E(idEspecialista)-C(IDCITA)'
@@ -711,13 +726,22 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       if (!resultadoPago) {
         const update = await updateStatusAppointment(
           DATOS_CITA.ID_USUARIO,
-          currentEvent.id,
+          cita.id,
           ESTATUS_CITA.PENDIENTE_PAGO
         );
         if (!update) console.error('La cita no se pudo actualizar para realizar el pago');
       }
-      if (resultadoPago) {
-        await actualizarFechaIntentoPago(DATOS_CITA.ID_USUARIO, currentEvent.id);
+      if (resultadoPago && cita.fechaIntentoPago == null) {
+        if (cita.fechaIntentoPago == null) {
+          await actualizarFechaIntentoPago(DATOS_CITA.ID_USUARIO, cita.id);
+        } else {
+          const update = await updateStatusAppointment(
+            DATOS_CITA.ID_USUARIO,
+            cita.id,
+            ESTATUS_CITA.PROCESAND_PAGO
+          );
+          if (!update) console.error('La cita no se pudo actualizar para realizar el pago');
+        }
       }
     }
 
@@ -737,7 +761,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         DATOS_PAGO.MONTO,
         METODO_PAGO.NO_APLICA,
         ESTATUS_PAGO.COBRADO,
-        currentEvent.id
+        cita.id
       );
 
       enqueueSnackbar('¡El pago de cita se ha realizado con exito!', {
@@ -1114,7 +1138,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
   const handlePayment = (cita) => {
     if (cita.fechaIntentoPago == null || cita.fechaIntentoPago === 'NULL') {
-      pagarCitaPendiente();
+      pagarCitaPendiente(cita);
     } else {
       setCitaPayment([]);
       setConfirmDoblePago(true);
@@ -2113,6 +2137,11 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                     beneficioActivo={beneficioActivo}
                     aceptarTerminos={onAceptar}
                     aceptar={aceptar}
+                    beneficioDisabled={beneficioDisabled}
+                    especialistaDisabled={especialistaDisabled}
+                    modalidadDisabled={modalidadDisabled}
+                    horariosDisabled={horariosDisabled}
+                    calendarDisabled={calendarDisabled}
                   />
                 )}
               </DialogContent>
@@ -2128,7 +2157,12 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                     : {}
                 }
               >
-                <Button variant="contained" color="error" onClick={onClose}>
+                <Button
+                  variant="contained"
+                  color="error"
+                  onClick={onClose}
+                  disabled={cerrarDisabled}
+                >
                   Cerrar
                 </Button>
                 {currentEvent?.id &&
@@ -2228,6 +2262,14 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
             errorHorarioSeleccionado={errorHorarioSeleccionado}
             currentEvent={currentEvent}
             handleHorarioSeleccionado={handleHorarioSeleccionado}
+            beneficioActivo={beneficioActivo}
+            aceptarTerminos={onAceptar}
+            aceptar={aceptar}
+            beneficioDisabled={beneficioDisabled}
+            especialistaDisabled={especialistaDisabled}
+            modalidadDisabled={modalidadDisabled}
+            horariosDisabled={horariosDisabled}
+            calendarDisabled={calendarDisabled}
           />
         </DialogContent>
         <DialogActions
@@ -2293,11 +2335,16 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       <ConfirmDoblePayment
         open={confirmDoblePago}
         onClose={() => setConfirmDoblePago(false)}
-        paymentFunc={pagarCitaPendiente}
+        paymentFunc={() => pagarCitaPendiente(currentEvent)}
         cita={citaPayment}
       />
 
-      <CalendarPreview event={event} open={open2} handleClose={handleClose} />
+      <CalendarPreview
+        event={event}
+        open={open2}
+        handleClose={handleClose}
+        handlePayment={handlePayment}
+      />
       {/* {pendiente && openEvaluateDialog && (
         <EvaluateDialog
           open={openEvaluateDialog}

@@ -32,6 +32,7 @@ import { StyledCalendar } from '../styles';
 import CalendarDialog from '../calendar-dialog';
 import { useEvent, useCalendar } from '../hooks';
 import CalendarToolbar from '../calendar-toolbar';
+import FloatingCircleTimer from '../floating-circle-timer';
 
 // ----------------------------------------------------------------------
 
@@ -101,6 +102,21 @@ export default function CalendarView() {
       setAnimate(false);
     }, 500); // Duración de la animación en milisegundos
   }, []);
+
+  const renderFloatingCircleTimers = () =>
+    events
+      .filter(
+        (event) => event?.idDetalle === null && (event?.estatus === 6 || event?.estatus === 10)
+      )
+      .map((event, index) => (
+        <FloatingCircleTimer
+          key={event?.id}
+          benefit={event?.beneficio}
+          leftTime={event?.diferenciaEnMs}
+          appointmentMutate={appointmentMutate}
+          topOffset={index * 120} // Ajustar el espaciado vertical entre elementos
+        />
+      ));
 
   return (
     <>
@@ -198,6 +214,23 @@ export default function CalendarView() {
           appointmentMutate={appointmentMutate}
         />
       </Dialog>
+
+      <Stack
+        style={{
+          position: 'fixed',
+          top: 0,
+          right: 0,
+          width: '200px' /* Ajusta el ancho según tus necesidades */,
+          height: '90' /* Hace que el componente tome el 100% de la altura de la pantalla */,
+          padding: '10px',
+          zIndex: 9999,
+          pointerEvents: 'none',
+          marginTop: '12px',
+          marginRight: '12px',
+        }}
+      >
+        {!eventsLoading && renderFloatingCircleTimers()}
+      </Stack>
     </>
   );
 }

@@ -1,8 +1,10 @@
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Stack, Button, Typography, DialogActions, Grid } from '@mui/material';
 
+import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import Dialog from '@mui/material/Dialog';
@@ -16,8 +18,8 @@ import TimelineItem, { timelineItemClasses } from '@mui/lab/TimelineItem';
 
 import Iconify from 'src/components/iconify';
 
-export default function CalendarPreview({ event, open, handleClose }) {
-
+export default function CalendarPreview({ event, open, handleClose, handlePayment }) {
+  const [loadingButton, setLoadingButton] = useState(false);
   const theme = useTheme();
 
   return (
@@ -341,6 +343,21 @@ export default function CalendarPreview({ event, open, handleClose }) {
         <Button variant="contained" color="error" onClick={handleClose}>
           Cerrar
         </Button>
+        {event?.id && event?.estatus === 6 ? (
+          <LoadingButton
+            variant="contained"
+            color="success"
+            loading={loadingButton}
+            onClick={async () => {
+              setLoadingButton(true);
+              await handlePayment(event);
+              setLoadingButton(false);
+              handleClose();
+            }}
+          >
+            Pagar
+          </LoadingButton>
+        ) : null}
       </DialogActions>
     </Dialog>
   );
@@ -350,4 +367,5 @@ CalendarPreview.propTypes = {
   event: PropTypes.object,
   open: PropTypes.bool,
   handleClose: PropTypes.func,
+  handlePayment: PropTypes.func,
 };

@@ -176,6 +176,7 @@ export default function PendingModalUser({ idUsuario }) {
 
     const ESTATUS_CITA = Object.freeze({
       PENDIENTE_PAGO: 6,
+      PROCESANDO_PAGO: 10,
     });
 
     const DATOS_CITA = Object.freeze({
@@ -214,7 +215,16 @@ export default function PendingModalUser({ idUsuario }) {
       }
       // Actualizamos la fecha de intento de pago para que tenga una duración de 10 minutos desde que se intento pagar
       if (resultadoPago) {
-        await actualizarFechaIntentoPago(DATOS_CITA.ID_USUARIO, currentEvent.id);
+        if (currentEvent.fechaIntentoPago == null) {
+          await actualizarFechaIntentoPago(DATOS_CITA.ID_USUARIO, currentEvent.id);
+        } else {
+          const update = await updateStatusAppointment(
+            DATOS_CITA.ID_USUARIO,
+            currentEvent.id,
+            ESTATUS_CITA.PROCESANDO_PAGO
+          );
+          if (!update) console.error('La cita no se pudo actualizar para realizar el pago');
+        }
       }
     }
 
