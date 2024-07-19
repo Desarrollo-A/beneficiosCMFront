@@ -53,7 +53,7 @@ export default function CalendarToolbar({
   return (
     <>
       <Stack
-        direction="row"
+        direction={{ xs : "column", md: 'row'}}
         alignItems="center"
         justifyContent="space-between"
         sx={{ p: 2.5, pr: 2, position: 'relative' }}
@@ -82,11 +82,11 @@ export default function CalendarToolbar({
           </IconButton>
         </Stack>
 
-        <Stack direction="row" alignItems="center" spacing={1}>
-          <Button size="small" color="error" variant="contained" onClick={onToday}>
+        <Stack direction={{ xs : "column", md: 'row'}} alignItems='center' spacing={1}>
+          <Button size="small" color="error" variant="contained" onClick={onToday} fullWidth={!smUp}>
             Hoy
           </Button>
-          <Button size="small" color="primary" variant="contained" onClick={() => setOpenLabels(true)}>
+          <Button size="small" color="primary" variant="contained" onClick={() => setOpenLabels(true)} fullWidth={!smUp}>
             Leyenda
           </Button>
         </Stack>
