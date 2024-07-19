@@ -41,8 +41,10 @@ export const StyledCalendar = styled('div')(({ theme }) => ({
 
   // Event
   '& .fc .fc-event': {
-    borderColor: 'transparent !important',
+    // borderColor: 'currentColor !important',
     backgroundColor: 'transparent !important',
+    borderRadius: 6,
+    borderWidth: 2,
   },
   '& .fc .fc-event .fc-event-main': {
     padding: '2px 4px',

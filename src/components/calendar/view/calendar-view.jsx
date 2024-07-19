@@ -20,6 +20,9 @@ export default function CalendarView({
   eventsLoading = false,
   events = [],
   select,
+  labels,
+  eventClick,
+  loading,
 }){
 
   const {
@@ -32,7 +35,7 @@ export default function CalendarView({
     onDateToday,
     calendarRef,
     onChangeView,
-    onClickEvent,
+    //onClickEvent,
     selectedDate,
     selectEventId,
   } = useCalendar()
@@ -45,10 +48,11 @@ export default function CalendarView({
         <CalendarToolbar
           date={date}
           view={view}
-          loading={eventsLoading}
+          labels={labels}
+          onToday={onDateToday}
+          loading={loading}
           onNextDate={onDateNext}
           onPrevDate={onDatePrev}
-          onToday={onDateToday}
           onChangeView={onChangeView}
         />
 
@@ -69,7 +73,7 @@ export default function CalendarView({
           events={events}
           headerToolbar={false}
           select={select}
-          eventClick={onClickEvent}
+          eventClick={eventClick}
           height={smUp ? 720 : 'auto'}
           plugins={[
             listPlugin,
