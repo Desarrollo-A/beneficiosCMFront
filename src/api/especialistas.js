@@ -113,7 +113,7 @@ export function useGetHorariosPresenciales(object) {
   const memoizedValue = useMemo(
     () => ({
       horarios: data || [],
-      horariosLoading: isLoading,
+      horariosLoading: isLoading || isValidating,
       horariosError: error,
       horariosValidating: isValidating,
       horariosEmpty: !isLoading && !data?.length,

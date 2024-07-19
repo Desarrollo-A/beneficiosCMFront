@@ -605,7 +605,7 @@ export function useGetAppointmentsByUser(current, id, idSede) {
 
     return {
       data: events || [],
-      appointmentLoading: isLoading,
+      appointmentLoading: isLoading || isValidating,
       appointmentError: error,
       appointmentValidating: isValidating,
       appointmentEmpty: !isLoading && !data?.data?.length,

@@ -174,7 +174,7 @@ export function GetCustomEvents(current, idUsuario, idSede) {
 
     return {
       events: events || [],
-      eventsLoading: isLoading,
+      eventsLoading: isLoading || isValidating,
       eventsError: error,
       eventsValidating: isValidating,
       eventsEmpty: !isLoading && !data?.events?.length,
