@@ -17,6 +17,7 @@ import { Calendar } from 'src/components/calendar';
 import { useSettingsContext } from 'src/components/settings';
 
 import { useBoolean } from 'src/hooks/use-boolean';
+import { useResponsive } from 'src/hooks/use-responsive';
 
 import './style.css';
 import AgendarDialog from './dialogs/agendar';
@@ -80,6 +81,7 @@ const defaultFilters = {
 export default function CalendarioView() {
 	const settings = useSettingsContext()
 	const { user } = useAuthContext()
+	const smUp = useResponsive('up', 'sm')
 
 	const [animate, setAnimate] = useState(false)
 	const [presencialDialog, setOpenPresencialDialog] = useState(false)
@@ -151,7 +153,7 @@ export default function CalendarioView() {
 		<>
 			<Container maxWidth={settings.themeStretch ? false : 'xl'}>
 				<Stack
-	        direction="row"
+	        direction={{ xs : "column", md: 'row'}}
 	        alignItems="center"
 	        spacing={2}
 	        justifyContent="right"
@@ -159,18 +161,19 @@ export default function CalendarioView() {
 	          mb: { xs: 3, md: 5 },
 	        }}
 	      >
-	      	
+	      	<Typography variant='h4'>Calendario</Typography>
 	      	<Box sx={{ flex: 1 }}></Box>
           <Button
             className={`ButtonCita ${animate ? 'animate' : ''}`}
             onClick={agendarDialog.onTrue}
             id="animateElement"
+            fullWidth={!smUp}
           >
             <span>{user?.idRol === 3 ? 'Agendar cita como beneficiario' : 'Agendar nueva cita'}</span>
             <Iconify icon="carbon:add-filled" />
           </Button>
           {user?.idRol === 3 &&
-	          <Button color="inherit" variant="outlined" onClick={addHorarioPresencial}>
+	          <Button color="inherit" variant="outlined" onClick={addHorarioPresencial} fullWidth={!smUp}>
 	            Establecer horario presencial
 	          </Button>
         	}
