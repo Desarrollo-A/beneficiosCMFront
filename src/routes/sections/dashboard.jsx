@@ -159,7 +159,8 @@ export const dashboardRoutes = [
       { path: 'banking', element: <OverviewBankingPage /> },
       { path: 'booking', element: <OverviewBookingPage /> },
       { path: 'file', element: <OverviewFilePage /> },
-      { path: 'calendarioespecialista', element: <CalendarioPage /> },
+      { path: 'calendario', element: <CalendarioPage /> },
+      // { path: 'calendarioespecialista', element: <CalendarioPage /> },
       {
         path: 'user',
         children: [
