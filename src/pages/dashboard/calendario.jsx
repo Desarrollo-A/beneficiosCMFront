@@ -2,17 +2,18 @@ import { Helmet } from "react-helmet-async";
 
 import { useSession } from 'src/hooks/use-session';
 
-import { CalendarioView } from "src/sections/overview/calendarioespecialista/view";
+import { CalendarioView } from "src/sections/calendario";
 
 export default function CalendarioPage(){
-    useSession();
+    useSession()
+    
     return(
         <>
-        <Helmet>
-            <title>Calendario</title>
-        </Helmet>
+            <Helmet>
+                <title>Calendario</title>
+            </Helmet>
 
-        <CalendarioView />
+            <CalendarioView />
         </>
     );
 }
