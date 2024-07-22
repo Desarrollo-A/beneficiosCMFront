@@ -830,7 +830,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       /* ************************************* */
       setErrorEspecialista(false);
       const modalitiesData = await getModalities(datosUser.idSede, value, datosUser.idArea); // Modalidades input
-      setModalidades(modalitiesData?.data);
+      
       if (modalitiesData.data.length > 0 && modalitiesData?.data.length === 1) {
         setSelectedValues({
           ...selectedValues,
@@ -845,8 +845,10 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
           modalitiesData.data[0].tipoCita
         );
         setOficina(data);
-        getHorariosDisponibles(selectedValues.beneficio, value);
+        
       }
+      setModalidades(modalitiesData?.data);
+      getHorariosDisponibles(selectedValues.beneficio, value);
     } else if (input === 'modalidad') {
       setSelectedValues({
         ...selectedValues,
