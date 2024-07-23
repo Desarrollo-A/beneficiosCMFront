@@ -146,6 +146,7 @@ export const endpoints = {
     list: 'CalendarioController/getEspecialistaPorBeneficioYSede',
     modalities: 'CalendarioController/getModalidadesEspecialista',
     modalitiesBene: 'CalendarioController/getModalidadesEspecialistaBene',
+    area: 'Especialistas/area',
     sedes: 'Especialistas/sedes',
     horario: 'Especialistas/horario',
     horarios: 'Especialistas/horarios',
@@ -154,6 +155,7 @@ export const endpoints = {
   },
   areas: {
     citas: 'Areas/citas',
+    list: 'Areas/list',
   },
   calendario: {
     getAllEvents: 'CalendarioController/getAllEvents',
@@ -328,5 +330,11 @@ export const endpoints = {
     updateManuales: '/AyudaController/updateManuales',
     updateEstatusFaq: '/AyudaController/updateEstatusFaq',
     updateEstatusManual: '/AyudaController/updateEstatusManual',
+  },
+  sedes: {
+    list: '/sedes/list',
+  },
+  oficinas: {
+    list: '/oficinas/list',
   },
 };
