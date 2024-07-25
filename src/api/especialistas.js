@@ -77,7 +77,7 @@ export function useGetSedesPresenciales(object) {
     },
   };
 
-  const { data, isLoading, error, isValidating } = useSWR([URL, config], fetcherGet);
+  const { data, isLoading, error, isValidating, mutate } = useSWR([URL, config], fetcherGet);
 
   const memoizedValue = useMemo(
     () => ({
@@ -86,8 +86,9 @@ export function useGetSedesPresenciales(object) {
       sedesError: error,
       sedesValidating: isValidating,
       sedesEmpty: !isLoading && !data?.length,
+      getSedesPresenciales: mutate,
     }),
-    [data, error, isLoading, isValidating]
+    [data, error, isLoading, isValidating, mutate]
   );
 
   return memoizedValue;
@@ -263,4 +264,10 @@ export function useGetEspecialistas(load, object) {
   );
 
   return memoizedValue;
+}
+
+export async function getActiveSedes(object) {
+    const params = new URLSearchParams(object).toString()
+    const URL = `${endpoints.especialistas.active}?${params}`;
+    return fetcherPost([URL]);
 }

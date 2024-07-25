@@ -152,6 +152,7 @@ export const endpoints = {
     horarios: 'Especialistas/horarios',
     disponibles: 'Especialistas/disponibles',
     meta: 'Especialistas/meta',
+    active: 'Especialistas/active',
   },
   areas: {
     citas: 'Areas/citas',

@@ -37,5 +37,11 @@ export function useGetSedes(object) {
 export async function saveAtencionXSede(object) {
     const params = new URLSearchParams(object).toString()
     const URL = `${endpoints.sedes.save}?${params}`;
-    return await fetcherPost([URL]);
+    return fetcherPost([URL]);
+}
+
+export async function getSedes(object) {
+    const params = new URLSearchParams(object).toString()
+    const URL = `${endpoints.sedes.list}?${params}`;
+    return fetcherGet([URL]);
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import List from '@mui/material/List';
 import Card from '@mui/material/Card';
@@ -10,12 +10,13 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import ListItemButton from '@mui/material/ListItemButton';
 import LinearProgress from '@mui/material/LinearProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import { useGetAreas } from 'src/api/areas';
-import { useGetSedes, saveAtencionXSede } from 'src/api/sedes';
+import { getSedes, saveAtencionXSede } from 'src/api/sedes';
 import { useGetOficinas } from 'src/api/oficinas';
 import { useGetModalidades } from 'src/api/modalidades';
-import { useGetEspecialistas, useGetSedesPresenciales } from 'src/api/especialistas';
+import { useGetEspecialistas, getActiveSedes } from 'src/api/especialistas';
 
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
@@ -30,16 +31,20 @@ export default function AtencionXsedeView() {
   const [ sede, setSede ] = useState(null)
   const [ especialista, setEspecialista ] = useState(null)
   const [ modalidad, setModalidad ] = useState(null)
+  const [ sedes, setSedes ] = useState([])
+  const [ activas, setActivas ] = useState([])
+  const [ loadingActivas, setLoadingActivas ] = useState(false)
+  const [ allChecked, setAllChecked ] = useState(false)
 
   const { areas, areasLoading } = useGetAreas()
   const { especialistas, especialistasLoading } = useGetEspecialistas(area, {area})
-  const { sedes: presenciales } = useGetSedesPresenciales({ idEspecialista: especialista })
-  const { sedes, getSedes } = useGetSedes()
-  const { oficinas } = useGetOficinas(sede, {sede})
+  // const { sedes: lista_activas, getSedesPresenciales } = useGetSedesPresenciales({ idEspecialista: especialista })
+  // const { sedes: lista_sedes, getSedes } = useGetSedes()
+  // const { oficinas } = useGetOficinas(sede, {sede})
   const { modalidades } = useGetModalidades(true)
 
-  const handleChangeArea = (area) => {
-    setArea(area)
+  const handleChangeArea = (are) => {
+    setArea(are)
     setEspecialista(null)
     setModalidad(null)
   }
@@ -49,14 +54,101 @@ export default function AtencionXsedeView() {
     setModalidad(null)
   }
 
-  const handleChangeModalidad = (moda) => {
+  const handleChangeModalidad = async(moda) => {
     setModalidad(moda)
+
+    getActivas()
   }
 
-  const handleCheckSede = async(sede, checked) => {
-    await saveAtencionXSede({area, especialista, modalidad, sede, checked})
-    getSedes()
+  const handleCheckSede = async(sed, checked) => {
+    // console.log({area, especialista, modalidad, sed, checked})
+
+    const tmp_sedes = [...sedes]
+
+    const index = tmp_sedes.findIndex(pres => pres.idsede === sed)
+
+    if(index !== -1){
+      tmp_sedes[index].active = checked
+    }
+
+    setSedes(tmp_sedes)
+
+    await saveAtencionXSede({area, especialista, modalidad, sede: sed, checked})
   }
+
+  const getActivas = async() => {
+    setLoadingActivas(true)
+    const act = await getActiveSedes({modalidad, especialista})
+
+    setActivas(act)
+  }
+
+  const getListSedes = async() => {
+    const seds = await getSedes()
+
+    setSedes(seds)
+  }
+
+  const checkAllchecked = () => {
+    const total = sedes.every(sed => sed.active === true)
+
+    setAllChecked(total)
+  }
+
+  const buildChecked = () => {
+    const tmp = [...sedes]
+
+    tmp.map((sed) => {
+      const exist = activas.find(activa => sed.idsede === activa.value)
+
+      if(exist){
+        sed.active = true
+      }else{
+        sed.active = false
+      }
+
+      return true
+    })
+
+    setSedes(tmp)
+
+    setLoadingActivas(false)
+  }
+
+  const handleCheckAll = (checked) => {
+    const tmp = [...sedes]
+
+    tmp.map((sed) => {
+      sed.active = checked
+
+      saveAtencionXSede({area, especialista, modalidad, sede: sed.idsede, checked})
+
+      return true
+    })
+
+    setSedes(tmp)
+  }
+
+  useEffect(() => {
+    checkAllchecked()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sedes])
+
+  useEffect(() => {
+    buildChecked()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activas])
+
+  useEffect(() => {
+    if(modalidad){
+      getActivas()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [modalidad])
+
+  useEffect(() => {
+    getListSedes()
+  }, [])
 
   return (
   	<Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -71,17 +163,19 @@ export default function AtencionXsedeView() {
         }}
       />
 
-      { (areasLoading || especialistasLoading) && <LinearProgress />}
-
       <Card sx={{ marginTop: 1, padding: 1 }} >
 
         <Stack direction='row' spacing={3} divider={<Divider flexItem orientation='vertical' />} >
           <Stack sx={{ flex: 1 }} >
-            <Typography variant='h6' >Areas</Typography>
-            <Divider flexItem orientation='horizontal' />
+            <Typography variant='h6' sx={{ marginBottom: 1, paddingLeft: 1 }} >Areas</Typography>
+            {areasLoading ?
+              <LinearProgress />
+            :
+              <Divider flexItem orientation='horizontal' />
+            }
             <List>
               {areas.map((are, index) => (
-                <ListItemButton onClick={() => handleChangeArea(are.idAreaBeneficio)}>
+                <ListItemButton key={index} onClick={() => handleChangeArea(are.idAreaBeneficio)}>
                   <Typography sx={{ fontWeight: are.idAreaBeneficio === area ? 'bold' : '' }}>{are.nombre} ({are.especialistas})</Typography>
                 </ListItemButton>
               ))}
@@ -90,11 +184,15 @@ export default function AtencionXsedeView() {
 
           {area && (
             <Stack sx={{ flex: 1 }} >
-              <Typography variant='h6' >Especialistas</Typography>
-              <Divider flexItem orientation='horizontal' />
+              <Typography variant='h6' sx={{ marginBottom: 1, paddingLeft: 1 }} >Especialistas</Typography>
+              {especialistasLoading ?
+                <LinearProgress />
+              :
+                <Divider flexItem orientation='horizontal' />
+              }
               <List>
                 {especialistas.map((espe, index) => (
-                  <ListItemButton  onClick={() => handleChangeEspecialista(espe.idUsuario)}>
+                  <ListItemButton key={index} onClick={() => handleChangeEspecialista(espe.idUsuario)}>
                     <Typography sx={{ fontWeight: espe.idUsuario === especialista ? 'bold' : '' }}>{espe.nombre}</Typography>
                   </ListItemButton>
                 ))}
@@ -105,61 +203,67 @@ export default function AtencionXsedeView() {
           {especialista && (
             <>
               <Stack sx={{ flex: 1 }} >
-                <Typography variant='h6' >Modalidad</Typography>
+                <Typography variant='h6' sx={{ marginBottom: 1, paddingLeft: 1 }} >Modalidad</Typography>
                 <Divider flexItem orientation='horizontal' />
                 <List>
                   {modalidades.map((moda, index) => (
-                    <ListItemButton onClick={() => handleChangeModalidad(moda.idOpcion)}>
+                    <ListItemButton key={index} onClick={() => handleChangeModalidad(moda.idOpcion)}>
                       <Typography sx={{ fontWeight: moda.idOpcion === modalidad ? 'bold' : '' }}>{moda.nombre}</Typography>
                     </ListItemButton>
                   ))}
                 </List>
               </Stack>
+            </>
+            )}
 
-              {modalidad && (
-                <>
-                  <Stack sx={{ flex: 1 }} >
-                    <Typography variant='h6' >Sedes</Typography>
-                    <Divider flexItem orientation='horizontal' />
-                    <List>
-                      <Scrollbar sx={{ height: 500 }} >
-                        <ListItem>
+          {modalidad && (
+            <>
+              <Stack sx={{ flex: 1 }} >
+                <Typography variant='h6' sx={{ marginLeft: 2 }} >
+                  <Checkbox
+                    edge="start"
+                    checked={allChecked}
+                    // indeterminate
+                    onChange={ (event) => handleCheckAll(event.target.checked) }
+                  />
+                  Sedes
+                </Typography>
+                  
+                {loadingActivas?
+                  <LinearProgress />
+                :
+                  <Divider flexItem orientation='horizontal' />
+                }
+                {!loadingActivas && (
+                  <List>
+                    <Scrollbar sx={{ height: 500 }} >
+                      {sedes.map((sed, index) => (
+                        <ListItem key={index}>
                           <Checkbox
                             edge="start"
-                            checked={ true }
-                            indeterminate={ true }
-                            onChange={ (event) => console.log(event.target.checked) }
+                            checked={ sed.active }
+                            onChange={ (event) => handleCheckSede(sed.idsede, event.target.checked) }
                           />
-                          Todas
+                          {sed.nsede}
                         </ListItem>
-                        {sedes.map((sed, index) => (
-                          <ListItem>
-                            <Checkbox
-                              edge="start"
-                              checked={ presenciales.find(pres => pres.value == sed.idsede ) }
-                              onChange={ (event) => handleCheckSede(sed.idsede, event.target.checked) }
-                            />
-                            {sed.nsede}
-                          </ListItem>
-                        ))}
-                        </Scrollbar>
-                    </List>
-                  </Stack>
-                  {/*
-                  <Stack sx={{ flex: 1 }} >
-                    <Typography variant='h6' >Oficina</Typography>
-                    <Divider flexItem orientation='horizontal' />
-                    <List>
-                      {oficinas.map((ofi, index) => (
-                        <ListItemButton>
-                          {ofi.noficina}
-                        </ListItemButton>
                       ))}
-                    </List>
-                  </Stack>
-                  */}
-                </>
-              )}
+                      </Scrollbar>
+                  </List>
+                )}
+              </Stack>
+              {/*
+              <Stack sx={{ flex: 1 }} >
+                <Typography variant='h6' >Oficina</Typography>
+                <Divider flexItem orientation='horizontal' />
+                <List>
+                  {oficinas.map((ofi, index) => (
+                    <ListItemButton>
+                      {ofi.noficina}
+                    </ListItemButton>
+                  ))}
+                </List>
+              </Stack>
+              */}
             </>
           )}
 
