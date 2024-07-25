@@ -11,7 +11,7 @@ const options = {
 };
 
 export function usePostGeneral(dataValue, URL, nameData) {
-  const { data, isLoading, error, isValidating } = useSWR(
+  const { data, isLoading, error, isValidating, mutate } = useSWR(
     URL,
     (url) => fetcherPost(url, dataValue),
     options
@@ -24,12 +24,13 @@ export function usePostGeneral(dataValue, URL, nameData) {
     const memoizedVal = useMemo(
       () => ({
         [nameData]: data?.data || [],
+        getData: mutate,
         dataLoading: isLoading,
         dataError: error,
         dataValidating: isValidating,
         dataEmpty: !isLoading /* && !data?.data.length */,
       }),
-      [data?.data, error, isLoading, isValidating, nameData]
+      [data?.data, mutate, error, isLoading, isValidating, nameData]
     );
     return { ...memoizedVal };
 }
@@ -54,7 +55,7 @@ export function useGetGeneral(URL, nameData) {
 export function useInsertGeneral(endpoints) {
   const insertData = async (obj) => {
     const URL = obj ? endpoints : '';
-    return fetcherPost([URL, obj]);
+    return fetcherPost(URL, obj);
   };
 
   return insertData;
