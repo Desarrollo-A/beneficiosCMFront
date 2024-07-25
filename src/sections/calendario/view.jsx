@@ -19,6 +19,8 @@ import { useSettingsContext } from 'src/components/settings';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 
+import { fTimestamp } from 'src/utils/format-time';
+
 import './style.css';
 import AgendarDialog from './dialogs/agendar';
 import PresencialDialog from './dialogs/presencial';
@@ -26,7 +28,7 @@ import { useEvent, useCalendar } from './hooks';
 
 //---------------------------------------------------------
 
-const colors = [
+const COLORS = [
   {
     color: '#ffa500',
     text: 'Cita por asistir',
@@ -162,7 +164,7 @@ export default function CalendarioView() {
 	        }}
 	      >
 	      	<Typography variant='h4'>Calendario</Typography>
-	      	<Box sx={{ flex: 1 }}></Box>
+	      	<Box sx={{ flex: 1 }} />
           <Button
             className={`ButtonCita ${animate ? 'animate' : ''}`}
             onClick={agendarDialog.onTrue}
@@ -181,7 +183,7 @@ export default function CalendarioView() {
 
 	      <Calendar
 	      	select={handleClick}
-	      	labels={colors}
+	      	labels={COLORS}
 	      	events={beneficiarioFiltered}
 	      	eventClick={onClickEvent}
 	      	loading={appointmentLoading || eventsLoading || horariosLoading}

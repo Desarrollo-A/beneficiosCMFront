@@ -55,8 +55,8 @@ export default function ModalUsuarios({
   const { enqueueSnackbar } = useSnackbar();
 
   const schema = Yup.object().shape({
-    //id: Yup.number(),
-    //permisos_id: Yup.number(),
+    // id: Yup.number(),
+    // permisos_id: Yup.number(),
   })
 
   const methods = useForm({

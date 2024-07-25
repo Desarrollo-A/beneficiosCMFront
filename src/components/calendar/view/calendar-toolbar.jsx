@@ -144,4 +144,5 @@ CalendarToolbar.propTypes = {
   onPrevDate: PropTypes.func,
   onToday: PropTypes.func,
   view: PropTypes.oneOf(['dayGridMonth', 'timeGridWeek', 'timeGridDay', 'listWeek']),
+  labels: PropTypes.any,
 };

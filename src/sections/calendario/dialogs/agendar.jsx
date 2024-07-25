@@ -2329,4 +2329,6 @@ AgendarDialog.propTypes = {
   onClose: PropTypes.func,
   selectedDate: PropTypes.instanceOf(Date),
   appointmentMutate: PropTypes.func,
+  open: PropTypes.bool,
+  maxWidth: PropTypes.number,
 };
