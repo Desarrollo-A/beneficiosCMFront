@@ -140,4 +140,6 @@ TableRowUsuarios.propTypes = {
   row: PropTypes.object,
   estatus: PropTypes.any,
   close: PropTypes.func,
+  idRol: PropTypes.number,
+  onEditRow: PropTypes.func,
 };
