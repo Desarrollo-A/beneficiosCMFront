@@ -7,6 +7,7 @@ import utc from 'dayjs/plugin/utc';
 import { useState, useEffect } from 'react';
 import timezone from 'dayjs/plugin/timezone';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import { parse, format, addHours,  subHours  } from 'date-fns';
 import { Marker, GoogleMap, LoadScript } from '@react-google-maps/api';
 
 import Box from '@mui/material/Box';
@@ -31,6 +32,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
+import { useAuthContext } from 'src/auth/hooks';
 import { getDocumento } from 'src/api/calendar-colaborador';
 
 import Iconify from 'src/components/iconify';
@@ -113,6 +115,8 @@ export default function AppointmentSchedule({
     width: '100%',
   };
 
+  const { user: datosUser } = useAuthContext();
+
   const [address, setAddress] = useState('');
 
   useEffect(() => {
@@ -185,6 +189,32 @@ export default function AppointmentSchedule({
       fetchCoordinates();
     }
   }, [address]);
+
+  // Función para determinar si es horario de verano
+const isDaylightSavingTime = (date) => {
+  const year = date.getFullYear();
+  const startDST = new Date(year, 2, 31 - new Date(year, 2, 31).getDay());
+  const endDST = new Date(year, 9, 31 - new Date(year, 9, 31).getDay());
+
+  return date >= startDST && date < endDST;
+};
+
+const adjustTime = (time, idSede) => {
+  const parsedTime = parse(time, 'HH:mm:ss', new Date());
+  const now = new Date();
+  const isDST = isDaylightSavingTime(now);
+  let adjustedTime;
+
+  if (idSede === 9) {
+    adjustedTime = addHours(parsedTime, 1);
+  } else if (idSede === 11) {
+    adjustedTime = isDST ? subHours(parsedTime, 2) : subHours(parsedTime, 1);
+  } else {
+    adjustedTime = parsedTime;
+  }
+
+  return format(adjustedTime, 'HH:mm:ss');
+};
 
   return (
     <Grid sx={{ display: { xs: 'block', sm: 'flex', md: 'flex' } }}>
@@ -652,7 +682,7 @@ export default function AppointmentSchedule({
                 >
                   {horariosDisponibles.map((e, index) => (
                     <MenuItem key={e.inicio} value={`${e.fecha} ${e.inicio}`}>
-                      {e.inicio}
+                      {adjustTime(e.inicio, datosUser?.idSede)}
                     </MenuItem>
                   ))}
                 </Select>
