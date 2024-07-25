@@ -12,9 +12,10 @@ import ListItemButton from '@mui/material/ListItemButton';
 import LinearProgress from '@mui/material/LinearProgress';
 
 import { useGetAreas } from 'src/api/areas';
-import { useGetSedes } from 'src/api/sedes';
+import { useGetSedes, saveAtencionXSede } from 'src/api/sedes';
 import { useGetOficinas } from 'src/api/oficinas';
-import { useGetEspecialistas } from 'src/api/especialistas';
+import { useGetModalidades } from 'src/api/modalidades';
+import { useGetEspecialistas, useGetSedesPresenciales } from 'src/api/especialistas';
 
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
@@ -28,15 +29,33 @@ export default function AtencionXsedeView() {
   const [ area, setArea ] = useState(null)
   const [ sede, setSede ] = useState(null)
   const [ especialista, setEspecialista ] = useState(null)
+  const [ modalidad, setModalidad ] = useState(null)
 
   const { areas, areasLoading } = useGetAreas()
   const { especialistas, especialistasLoading } = useGetEspecialistas(area, {area})
-  const { sedes } = useGetSedes()
+  const { sedes: presenciales } = useGetSedesPresenciales({ idEspecialista: especialista })
+  const { sedes, getSedes } = useGetSedes()
   const { oficinas } = useGetOficinas(sede, {sede})
+  const { modalidades } = useGetModalidades(true)
 
   const handleChangeArea = (area) => {
     setArea(area)
     setEspecialista(null)
+    setModalidad(null)
+  }
+
+  const handleChangeEspecialista = (espe) => {
+    setEspecialista(espe)
+    setModalidad(null)
+  }
+
+  const handleChangeModalidad = (moda) => {
+    setModalidad(moda)
+  }
+
+  const handleCheckSede = async(sede, checked) => {
+    await saveAtencionXSede({area, especialista, modalidad, sede, checked})
+    getSedes()
   }
 
   return (
@@ -75,7 +94,7 @@ export default function AtencionXsedeView() {
               <Divider flexItem orientation='horizontal' />
               <List>
                 {especialistas.map((espe, index) => (
-                  <ListItemButton  onClick={() => setEspecialista(espe.idUsuario)}>
+                  <ListItemButton  onClick={() => handleChangeEspecialista(espe.idUsuario)}>
                     <Typography sx={{ fontWeight: espe.idUsuario === especialista ? 'bold' : '' }}>{espe.nombre}</Typography>
                   </ListItemButton>
                 ))}
@@ -89,53 +108,58 @@ export default function AtencionXsedeView() {
                 <Typography variant='h6' >Modalidad</Typography>
                 <Divider flexItem orientation='horizontal' />
                 <List>
-                  <ListItemButton>
-                    <Checkbox
-                      edge="start"
-                      checked
-                      disableRipple
-                    />
-                    Presencial
-                  </ListItemButton>
-                  <ListItemButton>
-                    <Checkbox
-                      edge="start"
-                      checked
-                      disableRipple
-                    />
-                    Remota
-                  </ListItemButton>
-                </List>
-              </Stack>
-              <Stack sx={{ flex: 1 }} >
-                <Typography variant='h6' >Sedes</Typography>
-                <Divider flexItem orientation='horizontal' />
-                <List>
-                  <Scrollbar sx={{ height: 500 }} >
-                    {sedes.map((sede, index) => (
-                      <ListItemButton onClick={() => setSede(sede.idsede)}>
-                        <Checkbox
-                          edge="start"
-                          checked
-                          disableRipple
-                        />
-                        {sede.nsede}
-                      </ListItemButton>
-                    ))}
-                    </Scrollbar>
-                </List>
-              </Stack>
-              <Stack sx={{ flex: 1 }} >
-                <Typography variant='h6' >Oficina</Typography>
-                <Divider flexItem orientation='horizontal' />
-                <List>
-                  {oficinas.map((ofi, index) => (
-                    <ListItemButton>
-                      {ofi.noficina}
+                  {modalidades.map((moda, index) => (
+                    <ListItemButton onClick={() => handleChangeModalidad(moda.idOpcion)}>
+                      <Typography sx={{ fontWeight: moda.idOpcion === modalidad ? 'bold' : '' }}>{moda.nombre}</Typography>
                     </ListItemButton>
                   ))}
                 </List>
               </Stack>
+
+              {modalidad && (
+                <>
+                  <Stack sx={{ flex: 1 }} >
+                    <Typography variant='h6' >Sedes</Typography>
+                    <Divider flexItem orientation='horizontal' />
+                    <List>
+                      <Scrollbar sx={{ height: 500 }} >
+                        <ListItem>
+                          <Checkbox
+                            edge="start"
+                            checked={ true }
+                            indeterminate={ true }
+                            onChange={ (event) => console.log(event.target.checked) }
+                          />
+                          Todas
+                        </ListItem>
+                        {sedes.map((sed, index) => (
+                          <ListItem>
+                            <Checkbox
+                              edge="start"
+                              checked={ presenciales.find(pres => pres.value == sed.idsede ) }
+                              onChange={ (event) => handleCheckSede(sed.idsede, event.target.checked) }
+                            />
+                            {sed.nsede}
+                          </ListItem>
+                        ))}
+                        </Scrollbar>
+                    </List>
+                  </Stack>
+                  {/*
+                  <Stack sx={{ flex: 1 }} >
+                    <Typography variant='h6' >Oficina</Typography>
+                    <Divider flexItem orientation='horizontal' />
+                    <List>
+                      {oficinas.map((ofi, index) => (
+                        <ListItemButton>
+                          {ofi.noficina}
+                        </ListItemButton>
+                      ))}
+                    </List>
+                  </Stack>
+                  */}
+                </>
+              )}
             </>
           )}
 

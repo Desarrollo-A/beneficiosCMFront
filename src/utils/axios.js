@@ -333,8 +333,12 @@ export const endpoints = {
   },
   sedes: {
     list: '/sedes/list',
+    save: '/sedes/save',
   },
   oficinas: {
     list: '/oficinas/list',
+  },
+  modalidades: {
+    list: '/modalidades/list',
   },
 };

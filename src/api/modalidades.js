@@ -5,9 +5,9 @@ import { endpoints, fetcherGet, fetcherPost } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
-export function useGetSedes(object) {
+export function useGetModalidades(load, object) {
   const params = new URLSearchParams(object).toString();
-  const URL = `${endpoints.sedes.list}?${params}`;
+  const URL = load ? `${endpoints.modalidades.list}?${params}` : null;
 
   const accessToken = localStorage.getItem('accessToken');
 
@@ -21,21 +21,15 @@ export function useGetSedes(object) {
 
   const memoizedValue = useMemo(
     () => ({
-      sedes: data || [],
-      sedesLoading: isLoading || isValidating,
-      sedesError: error,
-      sedesValidating: isValidating,
-      sedesEmpty: !isLoading && !data,
-      getSedes: mutate,
+      modalidades: data || [],
+      modalidadesLoading: isLoading || isValidating,
+      modalidadesError: error,
+      modalidadesValidating: isValidating,
+      modalidadesEmpty: !isLoading && !data,
+      getModalidades: mutate,
     }),
     [data, error, isLoading, isValidating, mutate]
   );
 
   return memoizedValue;
-}
-
-export async function saveAtencionXSede(object) {
-    const params = new URLSearchParams(object).toString()
-    const URL = `${endpoints.sedes.save}?${params}`;
-    return await fetcherPost([URL]);
 }
