@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react';
 import timezone from 'dayjs/plugin/timezone';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import { parse, format, addHours,  subHours  } from 'date-fns';
-import { Marker, GoogleMap, LoadScript } from '@react-google-maps/api';
+// import { Marker, GoogleMap, LoadScript } from '@react-google-maps/api';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/system/Stack';
@@ -96,7 +96,7 @@ export default function AppointmentSchedule({
   selectedDay,
 }) {
   const [open, setOpen] = useState(false);
-  const [openMap, setOpenMap] = useState(false);
+/*   const [openMap, setOpenMap] = useState(false); */
   const [archivo, setArchivo] = useState(0);
   const [nombreEspecialidad, setNombreEspecialidad] = useState('');
   const verTerminos = async () => {
@@ -110,14 +110,14 @@ export default function AppointmentSchedule({
     setOpen(false);
   };
 
-  const mapStyles = {
+/*   const mapStyles = {
     height: '60vh',
     width: '100%',
-  };
+  }; */
 
   const { user: datosUser } = useAuthContext();
 
-  const [address, setAddress] = useState('');
+/*   const [address, setAddress] = useState(''); */
 
   useEffect(() => {
     switch (beneficioActivo?.beneficio) {
@@ -139,23 +139,23 @@ export default function AppointmentSchedule({
     }
   }, [beneficioActivo?.beneficio]);
 
-  useEffect(() => {
+/*   useEffect(() => {
     if (!isEmpty(oficina)) {
       if (oficina?.result !== false) {
         setAddress(oficina?.data[0]?.ubicación ? oficina?.data[0]?.ubicación : '');
       }
     }
-  }, [oficina]);
+  }, [oficina]); */
 
   const [openWindow, setOpenWindow] = useState(false);
 
-  const handleClickOpen = () => {
+/*   const handleClickOpen = () => {
     setOpenMap(true);
   };
 
   const handleClose = () => {
     setOpenMap(false);
-  };
+  }; */
 
   /*   const handleWindowActive = () => {
     setOpenWindow(true);
@@ -165,9 +165,9 @@ export default function AppointmentSchedule({
     setOpenWindow(false);
   };
 
-  const [coordinates, setCoordinates] = useState(null);
+/*   const [coordinates, setCoordinates] = useState(null); */
 
-  useEffect(() => {
+ /*  useEffect(() => {
     if (address !== '') {
       const fetchCoordinates = async () => {
         try {
@@ -188,7 +188,7 @@ export default function AppointmentSchedule({
       };
       fetchCoordinates();
     }
-  }, [address]);
+  }, [address]); */
 
   // Función para determinar si es horario de verano
 const isDaylightSavingTime = (date) => {
@@ -449,7 +449,7 @@ const adjustTime = (time, idSede) => {
                         </Button> */}
                       </Stack>
 
-                      {coordinates !== null ? (
+                      {/* {coordinates !== null ? (
                         <Dialog open={openMap} onClose={handleClose} fullWidth maxWidth="md">
                           <DialogTitle>
                             OFICINA: {oficina?.result !== false ? oficina?.data[0]?.oficina : ''}
@@ -471,7 +471,7 @@ const adjustTime = (time, idSede) => {
                             </Button>
                           </DialogActions>
                         </Dialog>
-                      ) : null}
+                      ) : null} */}
                     </>
                   ) : (
                     <LinearProgress />
