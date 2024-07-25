@@ -135,7 +135,8 @@ export default function BarraTareasTabla({
     selectEsp,
     mod,
     currentStatus,
-    currenTypeUsers
+    currenTypeUsers,
+    user
   ]);
 
   const [condi, setCondi] = useState(true);

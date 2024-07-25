@@ -1,4 +1,4 @@
-import useSWR, { mutate } from 'swr';
+import useSWR from 'swr';
 import { useMemo, useEffect } from 'react';
 
 import { fetcherGet, fetcherPost } from 'src/utils/axios';
@@ -19,7 +19,7 @@ export function usePostGeneral(dataValue, URL, nameData) {
 
     useEffect(() => {
       mutate(URL);
-    }, [URL, dataValue]);
+    }, [URL, dataValue, mutate]);
     
     const memoizedVal = useMemo(
       () => ({

@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 import Calendar from '@fullcalendar/react';
 import listPlugin from '@fullcalendar/list';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -28,16 +30,16 @@ export default function CalendarView({
   const {
     view,
     date,
-    openForm,
+    // openForm,
     onDatePrev,
     onDateNext,
-    onCloseForm,
+    // onCloseForm,
     onDateToday,
     calendarRef,
     onChangeView,
-    //onClickEvent,
-    selectedDate,
-    selectEventId,
+    // onClickEvent,
+    // selectedDate,
+    // selectEventId,
   } = useCalendar()
 
   const smUp = useResponsive('up', 'sm')
@@ -88,3 +90,12 @@ export default function CalendarView({
     </Card>
   )
 }
+
+CalendarView.propTypes = {
+  eventsLoading: PropTypes.bool,
+  events: PropTypes.any,
+  select: PropTypes.any,
+  labels: PropTypes.any,
+  eventClick: PropTypes.func,
+  loading: PropTypes.bool,
+};
