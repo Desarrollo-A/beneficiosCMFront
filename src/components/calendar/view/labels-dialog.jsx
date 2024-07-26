@@ -76,4 +76,5 @@ export default function LabelsDialog({ open, labels=[], onClose }) {
 LabelsDialog.propTypes = {
   open: PropTypes.bool,
   onClose: PropTypes.func,
+  labels: PropTypes.array,
 };

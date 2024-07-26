@@ -67,11 +67,6 @@ export default function JwtLoginView() {
     defaultValues,
   });
 
-  const {
-    //formState: { isSubmitting },
-  } = methods;
-
-
   const onSubmit = (e) => {
     setSubmitting(true)
 
