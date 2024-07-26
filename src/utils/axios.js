@@ -331,4 +331,8 @@ export const endpoints = {
     updateEstatusFaq: '/AyudaController/updateEstatusFaq',
     updateEstatusManual: '/AyudaController/updateEstatusManual',
   },
+  notificacion: {
+    getNotificacion: '/NotificacionController/getNotificacion',
+    deleteNotificacion: '/NotificacionController/deleteNotificacion'
+  },
 };

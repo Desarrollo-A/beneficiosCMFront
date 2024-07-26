@@ -97,6 +97,7 @@ const lastDayOfNextMonth = initialValue.add(2, 'month').startOf('month').subtrac
 initialValue = initialValue.hour() < 15 ? initialValue : initialValue.add(1, 'day');
 
 export default function CalendarDialog({ currentEvent, onClose, selectedDate, appointmentMutate }) {
+  console.log(currentEvent)
   const [selectedValues, setSelectedValues] = useState({
     beneficio: '',
     especialista: '',
