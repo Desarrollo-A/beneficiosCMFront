@@ -345,4 +345,8 @@ export const endpoints = {
   modalidades: {
     list: '/modalidades/list',
   },
+  notificacion: {
+    getNotificacion: '/NotificacionController/getNotificacion',
+    deleteNotificacion: '/NotificacionController/deleteNotificacion'
+  },
 };
