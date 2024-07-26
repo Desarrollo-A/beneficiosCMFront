@@ -40,6 +40,12 @@ export async function saveAtencionXSede(object) {
     return fetcherPost([URL]);
 }
 
+export async function saveOficinaXSede(object) {
+    const params = new URLSearchParams(object).toString()
+    const URL = `${endpoints.sedes.oficina}?${params}`;
+    return fetcherPost([URL]);
+}
+
 export async function getSedes(object) {
     const params = new URLSearchParams(object).toString()
     const URL = `${endpoints.sedes.list}?${params}`;
