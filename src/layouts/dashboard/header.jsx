@@ -22,6 +22,7 @@ import PendingModal from 'src/sections/overview/calendarioespecialista/view/pend
 import { NAV, HEADER } from '../config-layout';
 import SettingsButton from '../common/settings-button';
 import AccountPopover from '../common/account-popover';
+import NotificationsPopover from '../common/notifications-popover';
 
 // ----------------------------------------------------------------------
 export default function Header({ onOpenNav }) {
@@ -61,7 +62,7 @@ export default function Header({ onOpenNav }) {
         justifyContent="flex-end"
         spacing={{ xs: 0.5, sm: 1 }}
       >
-        {/* <NotificationsPopover /> */}
+        <NotificationsPopover idUsuario={datosUser?.idUsuario}/>
 
         <SettingsButton />
 
