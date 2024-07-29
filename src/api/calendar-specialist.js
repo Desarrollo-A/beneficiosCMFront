@@ -84,16 +84,17 @@ export function GetCustomEvents(current, idUsuario, idSede) {
   }, [month]);
 
   const memoizedValue = useMemo(() => {
+
     const events = data?.events?.map((event) => {
       if(event.type === 'date'){
         let startConverted = idSede === 11 ? horaTijuana(event.start) : horaCancun(event.start);
         startConverted = toLocalISOString(startConverted);
         startConverted = startConverted.slice(0, 19).replace('T', ' ');
-        const inicioCita = ((idSede === 11 || idSede === 9) && event.idSedePaciente !== idSede) ? startConverted : event.start;
+        const inicioCita = ((idSede === 11 || idSede === 9)) ? startConverted : event.start;
         let endConverted = idSede === 11 ? horaTijuana(event.end) : horaCancun(event.end);
         endConverted = toLocalISOString(endConverted);
         endConverted = endConverted.slice(0, 19).replace('T', ' ');
-        const finCita = ((idSede === 11 || idSede === 9) && event.idSedePaciente !== idSede) ? endConverted : event.end;
+        const finCita = ((idSede === 11 || idSede === 9)) ? endConverted : event.end;
         const fechasCitasReagendadas = obtenerFechasConHoras(event.fechasFolio);
         let fechas = '';
         fechasCitasReagendadas?.forEach((fecha) => {
@@ -158,6 +159,7 @@ export function GetCustomEvents(current, idUsuario, idSede) {
                   fechaInicioCita
                 ).format('HH:mm')} horas.`;
         });
+
         return {
           ...event,
           textColor: event?.tipoCita === 1 && event?.estatus === 1 ? 'yellow' : event?.color,
@@ -172,7 +174,7 @@ export function GetCustomEvents(current, idUsuario, idSede) {
 
     return {
       events: events || [],
-      eventsLoading: isLoading,
+      eventsLoading: isLoading || isValidating,
       eventsError: error,
       eventsValidating: isValidating,
       eventsEmpty: !isLoading && !data?.events?.length,

@@ -40,6 +40,7 @@ const OverviewBankingPage = lazy(() => import('src/pages/dashboard/banking'));
 const OverviewBookingPage = lazy(() => import('src/pages/dashboard/booking'));
 const OverviewFilePage = lazy(() => import('src/pages/dashboard/file'));
 const CalendarioPage = lazy(() => import('src/pages/dashboard/calendario'));
+const CalendarioEspePage = lazy(() => import('src/pages/dashboard/calendario_espe'));
 // PRODUCT
 const ProductDetailsPage = lazy(() => import('src/pages/dashboard/product/details'));
 const ProductListPage = lazy(() => import('src/pages/dashboard/product/list'));
@@ -159,7 +160,8 @@ export const dashboardRoutes = [
       { path: 'banking', element: <OverviewBankingPage /> },
       { path: 'booking', element: <OverviewBookingPage /> },
       { path: 'file', element: <OverviewFilePage /> },
-      { path: 'calendarioespecialista', element: <CalendarioPage /> },
+      { path: 'calendario', element: <CalendarioPage /> },
+      { path: 'calendarioespecialista', element: <CalendarioEspePage /> },
       {
         path: 'user',
         children: [

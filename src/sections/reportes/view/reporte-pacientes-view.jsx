@@ -141,7 +141,7 @@ export default function ReportePacientesView() {
 
   let puestos = 0;
 
-  if (rol === "4" || rol === 4) {
+  if (rol === "4" || rol === 4 || user?.permisos === 5) {
     puestos = 585;
   } else {
     puestos = user?.idPuesto;
@@ -153,9 +153,10 @@ export default function ReportePacientesView() {
 
   const [dt, setDt] = useState({
     idRol: user?.idRol,
-    esp: area,
+    esp: puestos,
     idUs: user?.idUsuario,
-    tipoUsuario: typeusersData
+    tipoUsuario: typeusersData,
+    permisos: user?.permisos,
   });
 
   useEffect(() => {
@@ -163,7 +164,8 @@ export default function ReportePacientesView() {
       idRol: user?.idRol,
       esp: area,
       idUs: user?.idUsuario,
-      tipoUsuario: typeusersData
+      tipoUsuario: typeusersData,
+      permisos: user?.permisos,
     });
   }, [area, user, typeusersData ]);
 

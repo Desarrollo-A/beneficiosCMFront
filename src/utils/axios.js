@@ -311,6 +311,8 @@ export const endpoints = {
     updateEstatusPuestos: '/GestorController/updateEstatusPuestos',
     updateEstatusAreas: '/GestorController/updateEstatusAreas',
     updateEstatusDepartamentos: '/GestorController/updateEstatusDepartamentos',
+    permisos: '/GestorController/getPermisosOptions',
+    save_permisos: '/GestorController/savePermisos',
   },
   avisosPrivacidad: {
     getEspecialidadToSelect: '/AvisosPrivacidadController/getEspecialidades',
@@ -342,5 +344,8 @@ export const endpoints = {
   },
   modalidades: {
     list: '/modalidades/list',
+  notificacion: {
+    getNotificacion: '/NotificacionController/getNotificacion',
+    deleteNotificacion: '/NotificacionController/deleteNotificacion'
   },
 };

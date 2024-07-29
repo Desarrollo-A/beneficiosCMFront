@@ -144,9 +144,7 @@ export const horaTijuanaAEstandar = (fechaStr) => {
 
 export const horaCancun = (fechaStr) => {
   const fecha = new Date(fechaStr);
-  const año = fecha.getFullYear();
-  const horasASumar =
-    fecha >= inicioHorarioVerano(año) && fecha <= finHorarioVerano(año) ? 1 : 2;
+  const horasASumar = 1;
   fecha.setHours(fecha.getHours() + horasASumar);
 
   return fecha;
@@ -154,9 +152,7 @@ export const horaCancun = (fechaStr) => {
 
 export const horaCancunAEstandar = (fechaStr) => {
   const fecha = new Date(fechaStr);
-  const año = fecha.getFullYear();
-  const horasARestar =
-    fecha >= inicioHorarioVerano(año) && fecha <= finHorarioVerano(año) ? 1 : 2;
+  const horasARestar = 1;
   fecha.setHours(fecha.getHours() - horasARestar);
 
   return fecha;
