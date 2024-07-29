@@ -1,5 +1,5 @@
 .ButtonCita {
-  --black: #000000;
+  --black: #ffffff;
   --ch-black: #ffffff;
   --eer-black: #0152d3;
   --night-rider: #e8d17d;
@@ -15,12 +15,10 @@
   gap: 10px;
   padding: 0px 15px;
   border: none;
-  color: black;
   position: relative;
   cursor: pointer;
   font-weight: 700;
   transition-duration: .2s;
-  background-color: var(--ch-black);
 }
 
 .ButtonCita:before,
