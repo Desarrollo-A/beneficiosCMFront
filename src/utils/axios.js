@@ -146,14 +146,17 @@ export const endpoints = {
     list: 'CalendarioController/getEspecialistaPorBeneficioYSede',
     modalities: 'CalendarioController/getModalidadesEspecialista',
     modalitiesBene: 'CalendarioController/getModalidadesEspecialistaBene',
+    area: 'Especialistas/area',
     sedes: 'Especialistas/sedes',
     horario: 'Especialistas/horario',
     horarios: 'Especialistas/horarios',
     disponibles: 'Especialistas/disponibles',
     meta: 'Especialistas/meta',
+    active: 'Especialistas/active',
   },
   areas: {
     citas: 'Areas/citas',
+    list: 'Areas/list',
   },
   calendario: {
     getAllEvents: 'CalendarioController/getAllEvents',
@@ -308,6 +311,8 @@ export const endpoints = {
     updateEstatusPuestos: '/GestorController/updateEstatusPuestos',
     updateEstatusAreas: '/GestorController/updateEstatusAreas',
     updateEstatusDepartamentos: '/GestorController/updateEstatusDepartamentos',
+    permisos: '/GestorController/getPermisosOptions',
+    save_permisos: '/GestorController/savePermisos',
   },
   avisosPrivacidad: {
     getEspecialidadToSelect: '/AvisosPrivacidadController/getEspecialidades',
@@ -328,5 +333,24 @@ export const endpoints = {
     updateManuales: '/AyudaController/updateManuales',
     updateEstatusFaq: '/AyudaController/updateEstatusFaq',
     updateEstatusManual: '/AyudaController/updateEstatusManual',
+  },
+  notificacion: {
+    getNotificacion: '/NotificacionController/getNotificacion',
+    deleteNotificacion: '/NotificacionController/deleteNotificacion'
+  },
+  notificacion: {
+    getNotificacion: '/NotificacionController/getNotificacion',
+    deleteNotificacion: '/NotificacionController/deleteNotificacion'
+  },
+  sedes: {
+    list: '/sedes/list',
+    save: '/sedes/save',
+    oficina: '/sedes/oficina',
+  },
+  oficinas: {
+    list: '/oficinas/list',
+  },
+  modalidades: {
+    list: '/modalidades/list',
   },
 };

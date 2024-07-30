@@ -8,7 +8,7 @@ export const StyledCalendar = styled('div')(({ theme }) => ({
   marginBottom: -1,
   '.fc-event': { // estilo para que el cursor sea siempre pointer sobre el evento
     cursor: 'pointer'
-  }, 
+  },
   '& .fc': {
     '--fc-border-color': alpha(theme.palette.grey[500], 0.16),
     '--fc-now-indicator-color': theme.palette.error.main,
@@ -41,8 +41,10 @@ export const StyledCalendar = styled('div')(({ theme }) => ({
 
   // Event
   '& .fc .fc-event': {
-    borderColor: 'transparent !important',
-    // backgroundColor: 'transparent !important',
+    // borderColor: 'currentColor !important',
+    backgroundColor: 'transparent !important',
+    borderRadius: 6,
+    borderWidth: 2,
   },
   '& .fc .fc-event .fc-event-main': {
     padding: '2px 4px',

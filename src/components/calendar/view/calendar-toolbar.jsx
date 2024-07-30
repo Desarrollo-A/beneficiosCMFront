@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import Stack from '@mui/material/Stack';
@@ -12,6 +13,8 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
+import LabelsDialog from './labels-dialog';
+
 // ----------------------------------------------------------------------
 
 const VIEW_OPTIONS = [
@@ -21,12 +24,7 @@ const VIEW_OPTIONS = [
     icon: 'mingcute:calendar-month-line',
   },
   { value: 'timeGridWeek', label: 'Semana', icon: 'mingcute:calendar-week-line' },
-  { value: 'timeGridDay', label: 'Dia', icon: 'mingcute:calendar-day-line' },
-  {
-    value: 'listWeek',
-    label: 'Agenda',
-    icon: 'fluent:calendar-agenda-24-regular',
-  },
+  { value: 'timeGridDay', label: 'Día', icon: 'mingcute:calendar-day-line' },
 ];
 
 // ----------------------------------------------------------------------
@@ -34,6 +32,7 @@ const VIEW_OPTIONS = [
 export default function CalendarToolbar({
   date,
   view,
+  labels,
   loading,
   onToday,
   onNextDate,
@@ -45,14 +44,16 @@ export default function CalendarToolbar({
 
   const popover = usePopover();
 
-  // const selectedItem = VIEW_OPTIONS.filter((item) => item.value === view)[0];
+  const [openLabels, setOpenLabels] = useState(false)
 
-  // const fechaTitulo = new Intl.DateTimeFormat('es-MX', {year: 'numeric', month: 'long'}).format(date);
+  const selectedItem = VIEW_OPTIONS.filter((item) => item.value === view)[0];
+
+  const fechaTitulo = new Intl.DateTimeFormat('es-MX', { year: 'numeric', month: 'long' }).format(date)
 
   return (
     <>
       <Stack
-        direction="row"
+        direction={{ xs : "column", md: 'row'}}
         alignItems="center"
         justifyContent="space-between"
         sx={{ p: 2.5, pr: 2, position: 'relative' }}
@@ -62,9 +63,10 @@ export default function CalendarToolbar({
             size="small"
             color="inherit"
             onClick={popover.onOpen}
+            startIcon={<Iconify icon={selectedItem.icon} />}
             endIcon={<Iconify icon="eva:arrow-ios-downward-fill" sx={{ ml: -0.5 }} />}
           >
-            Agenda
+            {selectedItem.label}
           </Button>
         )}
 
@@ -73,18 +75,27 @@ export default function CalendarToolbar({
             <Iconify icon="eva:arrow-ios-back-fill" />
           </IconButton>
 
-          <Typography variant="h6" />
+          <Typography variant="h6">{fechaTitulo}</Typography>
 
           <IconButton onClick={onNextDate}>
             <Iconify icon="eva:arrow-ios-forward-fill" />
           </IconButton>
         </Stack>
 
-        <Stack direction="row" alignItems="center" spacing={1}>
-          <Button size="small" color="error" variant="contained" onClick={onToday}>
+        <Stack direction={{ xs : "column", md: 'row'}} alignItems='center' spacing={1}>
+          <Button size="small" color="error" variant="contained" onClick={onToday} fullWidth={!smUp}>
             Hoy
-          </Button> 
+          </Button>
+          <Button size="small" color="primary" variant="contained" onClick={() => setOpenLabels(true)} fullWidth={!smUp}>
+            Leyenda
+          </Button>
         </Stack>
+
+        <LabelsDialog
+          open={openLabels}
+          labels={labels}
+          onClose={() => setOpenLabels(false)}
+        />
 
         {loading && (
           <LinearProgress
@@ -133,4 +144,5 @@ CalendarToolbar.propTypes = {
   onPrevDate: PropTypes.func,
   onToday: PropTypes.func,
   view: PropTypes.oneOf(['dayGridMonth', 'timeGridWeek', 'timeGridDay', 'listWeek']),
+  labels: PropTypes.any,
 };

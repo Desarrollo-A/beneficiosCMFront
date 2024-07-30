@@ -68,7 +68,7 @@ export default function BarraTareasTabla({
 
   const diaUnoMes = formatFirstDayOfMonth();
 
-  const [area, setArea] = useState([rol === 4 ? filters.area : _eu]);
+  const [area, setArea] = useState([(rol === 4 || user?.permisos === 5) ? filters.area : _eu]);
 
   const [fechaI, setFechaI] = useState(diaUnoMes);
 
@@ -98,7 +98,7 @@ export default function BarraTareasTabla({
   const [currenTypeUsers, setCurrenTypeUsers] = useState(typeUsers[0].value);
 
   const [dt, setDt] = useState({
-    esp: rol === 4 ? area : _eu,
+    esp: (rol === 4 || user?.permisos === 5) ? area : _eu,
     fhI: fechaI,
     fhF: fechaF,
     roles: rol,
@@ -106,13 +106,14 @@ export default function BarraTareasTabla({
     idEsp: selectEsp,
     modalidad: mod,
     reporte: currentStatus,
-    tipo: currenTypeUsers
+    tipo: currenTypeUsers,
+    permisos: user?.permisos,
   });
 
   useEffect(() => {
     if (area) {
       setDt({
-        esp: rol === 4 ? area : _eu,
+        esp: (rol === 4 || user?.permisos === 5) ? area : _eu,
         fhI: fechaI,
         fhF: fechaF,
         roles: rol,
@@ -120,7 +121,8 @@ export default function BarraTareasTabla({
         idEsp: selectEsp,
         modalidad: mod,
         reporte: currentStatus,
-        tipo: currenTypeUsers
+        tipo: currenTypeUsers,
+        permisos: user?.permisos,
       });
     }
   }, [
@@ -133,7 +135,8 @@ export default function BarraTareasTabla({
     selectEsp,
     mod,
     currentStatus,
-    currenTypeUsers
+    currenTypeUsers,
+    user
   ]);
 
   const [condi, setCondi] = useState(true);
@@ -337,7 +340,7 @@ export default function BarraTareasTabla({
           </TextField>
         </FormControl>
 
-        {rol === 4 ? (
+        {rol === 4 || user?.permisos === 5 ? (
 
           <>
             <FormControl sx={{
@@ -493,7 +496,7 @@ export default function BarraTareasTabla({
           pr: { xs: 2.5, md: 1 },
         }}
       >
-        {rol === 4 ? (
+        {rol === 4 || user?.permisos === 5 ? (
           <>
             <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
               <DatePicker
