@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { DialogContentText } from '@material-ui/core';
 
 import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';

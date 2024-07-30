@@ -1,13 +1,14 @@
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
-import axios from 'axios';
+/* import axios from 'axios'; */
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import utc from 'dayjs/plugin/utc';
 import { useState, useEffect } from 'react';
 import timezone from 'dayjs/plugin/timezone';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
-import { Marker, GoogleMap, LoadScript } from '@react-google-maps/api';
+/* import { Marker, GoogleMap, LoadScript } from '@react-google-maps/api'; */
+import { parse, format, addHours,  subHours  } from 'date-fns';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/system/Stack';
@@ -31,6 +32,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
+import { useAuthContext } from 'src/auth/hooks';
 import { getDocumento } from 'src/api/calendar-colaborador';
 
 import Iconify from 'src/components/iconify';
@@ -94,7 +96,7 @@ export default function AppointmentSchedule({
   selectedDay,
 }) {
   const [open, setOpen] = useState(false);
-  const [openMap, setOpenMap] = useState(false);
+/*   const [openMap, setOpenMap] = useState(false); */
   const [archivo, setArchivo] = useState(0);
   const [nombreEspecialidad, setNombreEspecialidad] = useState('');
   const verTerminos = async () => {
@@ -107,13 +109,13 @@ export default function AppointmentSchedule({
   const close = () => {
     setOpen(false);
   };
-
+/* 
   const mapStyles = {
     height: '60vh',
     width: '100%',
   };
 
-  const [address, setAddress] = useState('');
+  const [address, setAddress] = useState(''); */
 
   useEffect(() => {
     switch (beneficioActivo?.beneficio) {
@@ -135,23 +137,23 @@ export default function AppointmentSchedule({
     }
   }, [beneficioActivo?.beneficio]);
 
-  useEffect(() => {
+/*   useEffect(() => {
     if (!isEmpty(oficina)) {
       if (oficina?.result !== false) {
         setAddress(oficina?.data[0]?.ubicación ? oficina?.data[0]?.ubicación : '');
       }
     }
-  }, [oficina]);
+  }, [oficina]); */
 
   const [openWindow, setOpenWindow] = useState(false);
 
-  const handleClickOpen = () => {
+/*   const handleClickOpen = () => {
     setOpenMap(true);
-  };
+  }; */
 
-  const handleClose = () => {
+/*   const handleClose = () => {
     setOpenMap(false);
-  };
+  }; */
 
   /*   const handleWindowActive = () => {
     setOpenWindow(true);
@@ -161,7 +163,7 @@ export default function AppointmentSchedule({
     setOpenWindow(false);
   };
 
-  const [coordinates, setCoordinates] = useState(null);
+/*   const [coordinates, setCoordinates] = useState(null);
 
   useEffect(() => {
     if (address !== '') {
@@ -184,7 +186,35 @@ export default function AppointmentSchedule({
       };
       fetchCoordinates();
     }
-  }, [address]);
+  }, [address]); */
+
+  const { user: datosUser } = useAuthContext();
+
+    // Función para determinar si es horario de verano
+const isDaylightSavingTime = (date) => {
+  const year = date.getFullYear();
+  const startDST = new Date(year, 2, 31 - new Date(year, 2, 31).getDay());
+  const endDST = new Date(year, 9, 31 - new Date(year, 9, 31).getDay());
+
+  return date >= startDST && date < endDST;
+};
+
+const adjustTime = (time, idSede) => {
+  const parsedTime = parse(time, 'HH:mm:ss', new Date());
+  const now = new Date();
+  const isDST = isDaylightSavingTime(now);
+  let adjustedTime;
+
+  if (idSede === 9) {
+    adjustedTime = addHours(parsedTime, 1);
+  } else if (idSede === 11) {
+    adjustedTime = isDST ? subHours(parsedTime, 2) : subHours(parsedTime, 1);
+  } else {
+    adjustedTime = parsedTime;
+  }
+
+  return format(adjustedTime, 'HH:mm:ss');
+};
 
   return (
     <Grid sx={{ display: { xs: 'block', sm: 'flex', md: 'flex' } }}>
@@ -419,7 +449,7 @@ export default function AppointmentSchedule({
                         </Button> */}
                       </Stack>
 
-                      {coordinates !== null ? (
+                      {/* {coordinates !== null ? (
                         <Dialog open={openMap} onClose={handleClose} fullWidth maxWidth="md">
                           <DialogTitle>
                             OFICINA: {oficina?.result !== false ? oficina?.data[0]?.oficina : ''}
@@ -441,7 +471,7 @@ export default function AppointmentSchedule({
                             </Button>
                           </DialogActions>
                         </Dialog>
-                      ) : null}
+                      ) : null} */}
                     </>
                   ) : (
                     <LinearProgress />
@@ -652,7 +682,7 @@ export default function AppointmentSchedule({
                 >
                   {horariosDisponibles.map((e, index) => (
                     <MenuItem key={e.inicio} value={`${e.fecha} ${e.inicio}`}>
-                      {e.inicio}
+                      {adjustTime(e.inicio, datosUser?.idSede)}
                     </MenuItem>
                   ))}
                 </Select>

@@ -25,7 +25,6 @@ import { useGetAppointmentsByUser } from 'src/api/calendar-colaborador';
 
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
-import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
 import '../style.css';
 import { StyledCalendar } from '../styles';
@@ -115,9 +114,10 @@ export default function CalendarView() {
         >
           <Typography variant="h4">Calendario</Typography>
           <Button
-            className={`ButtonCita ${animate ? 'animate' : ''}`}
-            onClick={dialog.onTrue}
-            id="animateElement"
+           className={`ButtonCita ${animate ? 'animate' : ''}`}
+           onClick={dialog.onTrue}
+           id="animateElement"
+           sx={{backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : 'white',}}
           >
             <span>Agendar nueva cita</span>
             <Iconify icon="carbon:add-filled" />
