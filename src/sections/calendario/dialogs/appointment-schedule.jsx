@@ -639,6 +639,7 @@ export default function AppointmentSchedule({
           >
             {horariosDisponibles ? (
               <FormControl error={!!errorHorarioSeleccionado} fullWidth>
+                <ThemeProvider theme={lightTheme}>
                   <InputLabel id="modalidad-input">Horarios disponibles</InputLabel>
                   <Select
                     labelId="Horarios disponibles"
@@ -656,6 +657,7 @@ export default function AppointmentSchedule({
                       </MenuItem>
                     ))}
                   </Select>
+                  </ThemeProvider>
                 {errorHorarioSeleccionado && horarioSeleccionado === '' && (
                   <FormHelperText error={errorHorarioSeleccionado}>
                     Seleccione fecha y horario
