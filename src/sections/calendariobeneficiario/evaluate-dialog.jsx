@@ -11,7 +11,6 @@ import Dialog from '@mui/material/Dialog';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import RadioGroup from '@mui/material/RadioGroup';
-import { createTheme } from '@mui/material/styles';
 import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
@@ -53,22 +52,6 @@ export default function EvaluateDialog({ open, encuestas, mutate, cerrar }) {
   function formatText(string) {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
   }
-
-  const lightTheme = createTheme({
-    palette: {
-      mode: 'light',
-    },
-    components: {
-      MuiPickersDay: {
-        // Sobrescribe los estilos del día del calendario
-        styleOverrides: {
-          root: {
-            color: 'black', // Establece el color del día a negro
-          },
-        },
-      },
-    },
-  });
 
   const router = useRouter();
 

@@ -45,7 +45,7 @@ export default function CalendarToolbar({
 
   const popover = usePopover();
 
-  const selectedItem = VIEW_OPTIONS.filter((item) => item.value === view)[0];
+  // const selectedItem = VIEW_OPTIONS.filter((item) => item.value === view)[0];
 
   // const fechaTitulo = new Intl.DateTimeFormat('es-MX', {year: 'numeric', month: 'long'}).format(date);
 
