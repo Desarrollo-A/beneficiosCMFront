@@ -338,10 +338,6 @@ export const endpoints = {
     getNotificacion: '/NotificacionController/getNotificacion',
     deleteNotificacion: '/NotificacionController/deleteNotificacion'
   },
-  notificacion: {
-    getNotificacion: '/NotificacionController/getNotificacion',
-    deleteNotificacion: '/NotificacionController/deleteNotificacion'
-  },
   sedes: {
     list: '/sedes/list',
     save: '/sedes/save',
