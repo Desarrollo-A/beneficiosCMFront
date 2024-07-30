@@ -510,8 +510,6 @@ export function useGetAppointmentsByUser(current, id, idSede) {
 
   const memoizedValue = useMemo(() => {
     let events = [];
-console.log(idSede)
-
     switch (idSede) {
       case 11:
         events = data?.data?.map((event) => {
@@ -607,7 +605,7 @@ console.log(idSede)
 
     return {
       data: events || [],
-      appointmentLoading: isLoading || isValidating,
+      appointmentLoading: isLoading,
       appointmentError: error,
       appointmentValidating: isValidating,
       appointmentEmpty: !isLoading && !data?.data?.length,
