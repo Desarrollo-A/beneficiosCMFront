@@ -77,7 +77,7 @@ export function useGetSedesPresenciales(object) {
     },
   };
 
-  const { data, isLoading, error, isValidating } = useSWR([URL, config], fetcherGet);
+  const { data, isLoading, error, isValidating, mutate } = useSWR([URL, config], fetcherGet);
 
   const memoizedValue = useMemo(
     () => ({
@@ -86,8 +86,9 @@ export function useGetSedesPresenciales(object) {
       sedesError: error,
       sedesValidating: isValidating,
       sedesEmpty: !isLoading && !data?.length,
+      getSedesPresenciales: mutate,
     }),
-    [data, error, isLoading, isValidating]
+    [data, error, isLoading, isValidating, mutate]
   );
 
   return memoizedValue;
@@ -112,7 +113,7 @@ export function useGetHorariosPresenciales(object) {
   const memoizedValue = useMemo(
     () => ({
       horarios: data || [],
-      horariosLoading: isLoading || isValidating,
+      horariosLoading: isLoading,
       horariosError: error,
       horariosValidating: isValidating,
       horariosEmpty: !isLoading && !data?.length,
@@ -234,4 +235,39 @@ export function useGetEspecialistasPorArea(object) {
   );
 
   return memoizedValue;
+}
+
+export function useGetEspecialistas(load, object) {
+  const params = new URLSearchParams(object).toString();
+  const URL = load ? `${endpoints.especialistas.area}?${params}` : null;
+
+  const accessToken = localStorage.getItem('accessToken');
+
+  const config = {
+    headers: {
+      Token: accessToken,
+    },
+  };
+
+  const { data, isLoading, error, isValidating, mutate } = useSWR([URL, config], fetcherGet);
+
+  const memoizedValue = useMemo(
+    () => ({
+      especialistas: data || [],
+      especialistasLoading: isLoading,
+      especialistasError: error,
+      especialistasValidating: isValidating,
+      especialistasEmpty: !isLoading && !data?.length,
+      getEspecialistas: mutate,
+    }),
+    [data, error, isLoading, isValidating, mutate]
+  );
+
+  return memoizedValue;
+}
+
+export async function getActiveSedes(object) {
+    const params = new URLSearchParams(object).toString()
+    const URL = `${endpoints.especialistas.active}?${params}`;
+    return fetcherPost([URL]);
 }

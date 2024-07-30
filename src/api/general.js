@@ -1,4 +1,4 @@
-import useSWR from 'swr';
+import useSWR, { mutate } from 'swr';
 import { useMemo, useEffect } from 'react';
 
 import { fetcherGet, fetcherPost } from 'src/utils/axios';
@@ -11,7 +11,7 @@ const options = {
 };
 
 export function usePostGeneral(dataValue, URL, nameData) {
-  const { data, isLoading, error, isValidating, mutate } = useSWR(
+  const { data, isLoading, error, isValidating } = useSWR(
     URL,
     (url) => fetcherPost(url, dataValue),
     options
@@ -19,18 +19,17 @@ export function usePostGeneral(dataValue, URL, nameData) {
 
     useEffect(() => {
       mutate(URL);
-    }, [URL, dataValue, mutate]);
+    }, [URL, dataValue]);
     
     const memoizedVal = useMemo(
       () => ({
         [nameData]: data?.data || [],
-        getData: mutate,
         dataLoading: isLoading,
         dataError: error,
         dataValidating: isValidating,
         dataEmpty: !isLoading /* && !data?.data.length */,
       }),
-      [data?.data, mutate, error, isLoading, isValidating, nameData]
+      [data?.data, error, isLoading, isValidating, nameData]
     );
     return { ...memoizedVal };
 }
@@ -55,7 +54,7 @@ export function useGetGeneral(URL, nameData) {
 export function useInsertGeneral(endpoints) {
   const insertData = async (obj) => {
     const URL = obj ? endpoints : '';
-    return fetcherPost(URL, obj);
+    return fetcherPost([URL, obj]);
   };
 
   return insertData;
