@@ -554,8 +554,8 @@ function applyFilter({ inputData, comparator, filters, dateError, rol }) {
     if (startDate && endDate) {
       inputData = inputData.filter(
         (order) =>
-          fTimestamp(order.fechaInicio) >= fTimestamp(startDate) &&
-          fTimestamp(order.fechaFinal) <= fTimestamp(endDateF)
+          fTimestamp(order.fechaCreacion) >= fTimestamp(startDate) &&
+          fTimestamp(order.fechaCreacion) <= fTimestamp(endDateF)
       );
     }
   }
