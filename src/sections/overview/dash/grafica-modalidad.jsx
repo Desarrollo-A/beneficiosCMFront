@@ -11,7 +11,6 @@ import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import { styled, useTheme } from '@mui/material/styles';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import CircularProgress from '@mui/material/CircularProgress';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 

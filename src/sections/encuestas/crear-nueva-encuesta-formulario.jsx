@@ -43,8 +43,6 @@ export default function InvoiceNewEditForm() {
 
   const insertData = useInsert(endpoints.encuestas.encuestaCreate);
 
-  const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
-
   const { tipoEncData } = useGetGeneral(endpoints.encuestas.tipoEncuesta, "tipoEncData");
 
   const [btnLoad, setBtnLoad] = useState(false);

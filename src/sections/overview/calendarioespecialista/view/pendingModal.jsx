@@ -2,9 +2,10 @@ import dayjs from 'dayjs';
 import { useState } from 'react';
 import { enqueueSnackbar } from 'notistack';
 import localeData from 'dayjs/plugin/localeData';
-import { Dialog, DialogContent } from '@material-ui/core';
 
 import { LoadingButton } from '@mui/lab';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
 import {
   Box,
   Chip,

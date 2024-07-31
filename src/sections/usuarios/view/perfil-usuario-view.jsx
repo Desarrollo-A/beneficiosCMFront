@@ -4,8 +4,6 @@ import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Container from '@mui/material/Container';
 
-import { paths } from 'src/routes/paths';
-
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';

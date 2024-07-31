@@ -150,6 +150,7 @@ export const horaCancun = (fechaStr) => {
   return fecha;
 };
 
+
 export const horaCancunAEstandar = (fechaStr) => {
   const fecha = new Date(fechaStr);
   const horasARestar = 1;

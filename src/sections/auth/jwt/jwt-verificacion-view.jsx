@@ -3,8 +3,8 @@ import { useForm } from 'react-hook-form';
 import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
+import { Typography } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
-import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -15,7 +15,6 @@ import { useInsert } from 'src/api/verificacion';
 
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
-import { Typography } from '@mui/material';
 
 // ----------------------------------------------------------------------
 

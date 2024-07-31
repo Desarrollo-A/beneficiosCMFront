@@ -1,6 +1,6 @@
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
-import axios from 'axios';
+/* import axios from 'axios'; */
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import utc from 'dayjs/plugin/utc';
@@ -110,14 +110,15 @@ export default function AppointmentSchedule({
     setOpen(false);
   };
 
+
 /*   const mapStyles = {
     height: '60vh',
     width: '100%',
   }; */
 
   const { user: datosUser } = useAuthContext();
-
 /*   const [address, setAddress] = useState(''); */
+
 
   useEffect(() => {
     switch (beneficioActivo?.beneficio) {
@@ -151,9 +152,9 @@ export default function AppointmentSchedule({
 
 /*   const handleClickOpen = () => {
     setOpenMap(true);
-  };
+  }; */
 
-  const handleClose = () => {
+/*   const handleClose = () => {
     setOpenMap(false);
   }; */
 
@@ -190,7 +191,9 @@ export default function AppointmentSchedule({
     }
   }, [address]); */
 
-  // Función para determinar si es horario de verano
+  const { user: datosUser } = useAuthContext();
+
+    // Función para determinar si es horario de verano
 const isDaylightSavingTime = (date) => {
   const year = date.getFullYear();
   const startDST = new Date(year, 2, 31 - new Date(year, 2, 31).getDay());
