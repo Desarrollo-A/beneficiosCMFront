@@ -830,7 +830,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
       /* ************************************* */
       setErrorEspecialista(false);
       const modalitiesData = await getModalities(datosUser.idSede, value, datosUser.idArea); // Modalidades input
-      
+
       if (modalitiesData.data.length > 0 && modalitiesData?.data.length === 1) {
         setSelectedValues({
           ...selectedValues,
@@ -845,7 +845,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
           modalitiesData.data[0].tipoCita
         );
         setOficina(data);
-        
       }
       setModalidades(modalitiesData?.data);
       getHorariosDisponibles(selectedValues.beneficio, value);
@@ -1067,13 +1066,27 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
 
     const registrosCadaHora = getRegistrosEn1hora(registrosFiltrados);
 
+    // Retiramos los registros de las 3 proximas horas para que no las muestre.
+    const ahora = new Date();
+    const ahoraMasTresHoras = new Date(ahora.getTime() + 3 * 60 * 60 * 1000);
+
+    const fechaActual = ahora.toISOString().split('T')[0]; // Formato 'YYYY-MM-DD'
+    const horaLimite = ahoraMasTresHoras.toTimeString().split(' ')[0]; // Formato 'HH:MM:SS'
+
+    const registrosCadaHoraConMargen = registrosCadaHora.filter((registro) => {
+      if (registro.fecha === fechaActual) {
+        return !(registro.inicio <= horaLimite);
+      }
+      return true;
+    });
+
     // Resltado final de los horarios de todos los dias para agendar
-    setFechasDisponibles(registrosCadaHora);
+    setFechasDisponibles(registrosCadaHoraConMargen);
 
     // ////////////////////////////////////////////////////////////////////////////////////////
     // Este proceso solo es para quitar en el calendario visualmente los dias que no están ///
     // ///////////////////////////////////////////////////////////////////////////////////////
-    const diasDisponibles = obtenerSoloFechas(registrosCadaHora);
+    const diasDisponibles = obtenerSoloFechas(registrosCadaHoraConMargen);
     setDiasHabilitados(diasDisponibles);
 
     const diasOcupadosFiltro = filtradoDias(todosLosDiasSiguientes, diasDisponibles);
