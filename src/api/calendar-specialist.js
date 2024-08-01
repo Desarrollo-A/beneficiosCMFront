@@ -850,7 +850,7 @@ export async function endAppointment(currentEvent, reason, idUsuario) {
     horaFinal: dayjs(currentEvent?.end).format('HH:mm A'),
     view: 'email-end',
     correo: [currentEvent?.correo], /* ['programador.analista36@ciudadmaderas.com'], */ 
-    link: 'https://prueba.gphsis.com/beneficiosmaderas/dashboard/calendariobeneficiario',
+    link: 'https://beneficiosmaderas.gphsis.com/',
     idUsuario,
   };
 
