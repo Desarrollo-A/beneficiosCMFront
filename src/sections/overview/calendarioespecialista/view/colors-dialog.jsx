@@ -31,7 +31,7 @@ export default function ColorsDialog({ onClose }) {
     },
 
     {
-      color: '#ff0000',
+      color: 'pink',
       text: 'Cita con pago pendiente expirado',
     },
     {

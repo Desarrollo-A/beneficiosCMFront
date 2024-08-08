@@ -156,7 +156,7 @@ function OrderItem({ item, lastTimeline, user, idPaciente }) {
               (estatusCita === 6 && 'blue') ||
               (estatusCita === 7 && 'red') ||
               (estatusCita === 8 && 'red') ||
-              (estatusCita === 9 && 'red') ||
+              (estatusCita === 9 && 'pink') ||
               (estatusCita === 10 && 'purple') ||
               'error.main',
           }}
