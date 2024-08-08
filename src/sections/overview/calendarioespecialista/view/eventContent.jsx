@@ -242,7 +242,7 @@ export default function EventContent({
               alignItems="center"
             >
               <Typography variant="h5">
-                {dialogTitle(currentEvent?.estatus, type)}
+                {dialogTitle(currentEvent?.estatus, type)} #{currentEvent?.id}
               </Typography>
               {currentEvent?.id && (currentEvent?.estatus === 1 || currentEvent?.estatus === 6) && (
                 <Stack direction="row" spacing={1}>

@@ -1556,7 +1556,7 @@ export default function AgendarDialog({ open, currentEvent, onClose, selectedDat
               <Stack spacing={1} sx={{ p: { xs: 1, md: 2 } }}>
                 <Stack direction="row" justifyContent="space-between" alignItems="center">
                   <Typography variant="h5">
-                    {currentEvent?.id ? 'DATOS DE CITA' : 'AGENDAR CITA'}
+                    {currentEvent?.id ? `DATOS DE CITA #${currentEvent?.id}`: 'AGENDAR CITA'}
                   </Typography>
                   {currentEvent?.id &&
                     (currentEvent?.estatus === 1 || currentEvent?.estatus === 6) && (

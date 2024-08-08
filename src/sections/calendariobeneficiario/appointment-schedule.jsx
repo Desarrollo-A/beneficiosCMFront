@@ -116,7 +116,6 @@ export default function AppointmentSchedule({
     width: '100%',
   }; */
 
-  const { user: datosUser } = useAuthContext();
 /*   const [address, setAddress] = useState(''); */
 
 
