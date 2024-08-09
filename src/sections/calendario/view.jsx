@@ -54,7 +54,7 @@ const COLORS = [
   },
 
   {
-    color: '#ff0000',
+    color: 'pink',
     text: 'Cita con pago pendiente expirado',
   },
   {
