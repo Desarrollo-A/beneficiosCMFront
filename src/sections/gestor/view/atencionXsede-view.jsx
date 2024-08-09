@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
@@ -17,19 +17,17 @@ import FormControl from '@mui/material/FormControl';
 import ListItemButton from '@mui/material/ListItemButton';
 import LinearProgress from '@mui/material/LinearProgress';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import CircularProgress from '@mui/material/CircularProgress';
-
 import ArrowIcon from '@mui/icons-material/KeyboardArrowRight';
 
 import { useGetAreas } from 'src/api/areas';
-import { getSedes, saveAtencionXSede, saveOficinaXSede } from 'src/api/sedes';
 import { useGetOficinas } from 'src/api/oficinas';
 import { useGetModalidades } from 'src/api/modalidades';
-import { useGetEspecialistas, getActiveSedes } from 'src/api/especialistas';
+import { getActiveSedes, useGetEspecialistas } from 'src/api/especialistas';
+import { getSedes, saveOficinaXSede, saveAtencionXSede } from 'src/api/sedes';
 
+import Scrollbar from 'src/components/scrollbar';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-import Scrollbar from 'src/components/scrollbar';
 
 //---------------------------------------------------------
 
@@ -238,7 +236,6 @@ export default function AtencionXsedeView() {
           )}
 
           {especialista && (
-            <>
               <Stack sx={{ flex: 1 }} >
                 <Typography variant='h6' sx={{ marginBottom: 1, paddingLeft: 1 }} >Modalidad</Typography>
                 <Divider flexItem orientation='horizontal' />
@@ -250,7 +247,6 @@ export default function AtencionXsedeView() {
                   ))}
                 </List>
               </Stack>
-            </>
             )}
 
           {modalidad && (

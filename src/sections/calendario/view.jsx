@@ -6,25 +6,24 @@ import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 
-import { useAuthContext } from 'src/auth/hooks';
-
-import { useGetAppointmentsByUser } from 'src/api/calendar-colaborador';
-import { dropUpdate, useGetMotivos, GetCustomEvents } from 'src/api/calendar-specialist';
-import { useGetSedesPresenciales, useGetHorariosPresenciales } from 'src/api/especialistas';
-
-import Iconify from 'src/components/iconify';
-import { Calendar } from 'src/components/calendar';
-import { useSettingsContext } from 'src/components/settings';
-
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import { fTimestamp } from 'src/utils/format-time';
 
+import { useAuthContext } from 'src/auth/hooks';
+import { GetCustomEvents } from 'src/api/calendar-specialist';
+import { useGetHorariosPresenciales } from 'src/api/especialistas';
+import { useGetAppointmentsByUser } from 'src/api/calendar-colaborador';
+
+import Iconify from 'src/components/iconify';
+import { Calendar } from 'src/components/calendar';
+import { useSettingsContext } from 'src/components/settings';
+
 import './style.css';
 import AgendarDialog from './dialogs/agendar';
-import PresencialDialog from './dialogs/presencial';
 import { useEvent, useCalendar } from './hooks';
+import PresencialDialog from './dialogs/presencial';
 
 //---------------------------------------------------------
 
@@ -152,7 +151,6 @@ export default function CalendarioView() {
   }
 
   return(
-		<>
 			<Container maxWidth={settings.themeStretch ? false : 'xl'}>
 				<Stack
 	        direction={{ xs : "column", md: 'row'}}
@@ -215,7 +213,6 @@ export default function CalendarioView() {
 	        // sede={sedePresencial}
 	      />
 			</Container>
-		</>
   )
 }
 

@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-
 import Calendar from '@fullcalendar/react';
 import listPlugin from '@fullcalendar/list';
 import dayGridPlugin from '@fullcalendar/daygrid';

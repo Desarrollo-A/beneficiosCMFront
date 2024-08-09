@@ -1,18 +1,18 @@
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
-import { Stack, Button, Typography, DialogActions, Grid } from '@mui/material';
 
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import Dialog from '@mui/material/Dialog';
 import Timeline from '@mui/lab/Timeline';
+import Dialog from '@mui/material/Dialog';
 import TimelineDot from '@mui/lab/TimelineDot';
 import { useTheme } from '@mui/material/styles';
+import DialogTitle from '@mui/material/DialogTitle';
 import TimelineContent from '@mui/lab/TimelineContent';
+import DialogContent from '@mui/material/DialogContent';
 import TimelineSeparator from '@mui/lab/TimelineSeparator';
 import TimelineConnector from '@mui/lab/TimelineConnector';
 import TimelineItem, { timelineItemClasses } from '@mui/lab/TimelineItem';
+import { Grid, Stack, Button, Typography, DialogActions } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
 

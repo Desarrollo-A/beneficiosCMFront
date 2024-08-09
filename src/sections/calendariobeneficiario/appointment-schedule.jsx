@@ -191,8 +191,6 @@ export default function AppointmentSchedule({
     }
   }, [address]); */
 
-  const { user: datosUser } = useAuthContext();
-
     // Función para determinar si es horario de verano
 const isDaylightSavingTime = (date) => {
   const year = date.getFullYear();

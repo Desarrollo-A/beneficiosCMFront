@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import { mutate } from 'swr';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 import { useState, useEffect } from 'react';
@@ -23,14 +24,14 @@ import { useBoolean } from 'src/hooks/use-boolean';
 
 import { endpoints } from 'src/utils/axios';
 
+import { useGetGeneral } from 'src/api/general';
+import { useInsert } from 'src/api/verificacion';
 import { getDecodedPassAdmin } from 'src/api/perfil';
-import { useSnackbar } from 'src/components/snackbar';
-import { useGetGeneral, useInsertGeneral } from 'src/api/general';
 
 import Iconify from 'src/components/iconify';
+import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, {
-  RHFTextField,
-  RHFSelect
+  RHFSelect, RHFTextField,
 } from 'src/components/hook-form';
 // ----------------------------------------------------------------------
 
@@ -73,7 +74,8 @@ export default function ModalUsuarios({
   const [ passDecode, setPassDecode ] = useState('');
 
   const { permisos } = useGetGeneral(endpoints.gestor.permisos, "permisos");
-  const insertData = useInsertGeneral(endpoints.gestor.save_permisos)
+
+  const insertData = useInsert(endpoints.gestor.save_permisos);
 
   const usuario = passDecode ? passDecode?.find(u => u.idUsuario === id) : '';
   const pw = usuario ? usuario.password : null;
@@ -92,7 +94,8 @@ export default function ModalUsuarios({
     enqueueSnackbar(response.msg, {variant: response.status});
 
     if(response.status === 'success'){
-      onClose()
+      onClose();
+      mutate(endpoints.gestor.getUsuarios);
     }
   });
 
