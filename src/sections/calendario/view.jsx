@@ -17,7 +17,7 @@ import { useGetHorariosPresenciales } from 'src/api/especialistas';
 import { useGetAppointmentsByUser } from 'src/api/calendar-colaborador';
 
 import Iconify from 'src/components/iconify';
-import { Calendar } from 'src/components/calendar';
+import { Calendar, CalendarioEspelista } from 'src/components/calendar';
 import { useSettingsContext } from 'src/components/settings';
 
 import './style.css';
@@ -80,16 +80,16 @@ const defaultFilters = {
 //---------------------------------------------------------
 
 export default function CalendarioView() {
-	const settings = useSettingsContext()
-	const { user } = useAuthContext()
-	const smUp = useResponsive('up', 'sm')
+  const settings = useSettingsContext()
+  const { user } = useAuthContext()
+  const smUp = useResponsive('up', 'sm')
 
-	const [animate, setAnimate] = useState(false)
-	const [presencialDialog, setOpenPresencialDialog] = useState(false)
+  const [animate, setAnimate] = useState(false)
+  const [presencialDialog, setOpenPresencialDialog] = useState(false)
 
-	const agendarDialog = useBoolean()
+  const agendarDialog = useBoolean()
 
-	const {
+  const {
     // view,
     date,
     openForm,
@@ -111,7 +111,7 @@ export default function CalendarioView() {
       ? filters.startDate.getTime() > filters.endDate.getTime()
       : false;
 
-	const {
+  const {
     data: beneficiarioEvents,
     appointmentLoading,
     appointmentMutate,
@@ -125,13 +125,13 @@ export default function CalendarioView() {
 
   const currentEvent = useEvent(events, selectEventId, openForm)
 
-	const beneficiarioFiltered = applyFilter({
+  const beneficiarioFiltered = applyFilter({
     inputData: events.concat(horarios),
     filters,
     dateError,
   })
 
-	const handleClick = useCallback(() => {
+  const handleClick = useCallback(() => {
     document.body.scrollTop = 0;
     document.documentElement.scrollTop = 0;
     setAnimate(true);
@@ -150,69 +150,91 @@ export default function CalendarioView() {
     horariosGet({ idEspecialista: user?.idUsuario })
   }
 
-  return(
-			<Container maxWidth={settings.themeStretch ? false : 'xl'}>
-				<Stack
-	        direction={{ xs : "column", md: 'row'}}
-	        alignItems="center"
-	        spacing={2}
-	        justifyContent="right"
-	        sx={{
-	          mb: { xs: 3, md: 5 },
-	        }}
-	      >
-	      	<Typography variant='h4'>Calendario</Typography>
-	      	<Box sx={{ flex: 1 }} />
+  return (
+    <Container maxWidth={settings.themeStretch ? false : 'xl'}>
+      <Stack
+        direction={{ xs: "column", md: 'row' }}
+        alignItems="center"
+        spacing={2}
+        justifyContent="right"
+        sx={{
+          mb: { xs: 3, md: 5 },
+        }}
+      >
+        <Typography variant='h4'>Calendario</Typography>
+        <Box sx={{ flex: 1 }} />
+
+        {user?.idRol === 3 ? (
+          <>
+            <Button color="inherit" variant="outlined" onClick={addHorarioPresencial} fullWidth={!smUp}>
+              Establecer horario presencial
+            </Button>
+
+            <Button
+              className={`ButtonCita ${animate ? 'animate' : ''}`}
+              onClick={agendarDialog.onTrue}
+              id="animateElement"
+              fullWidth={!smUp}
+            >
+              <span>Agendar nueva cita</span>
+              <Iconify icon="carbon:add-filled" />
+            </Button>
+          </>
+        ) : (
+
           <Button
             className={`ButtonCita ${animate ? 'animate' : ''}`}
             onClick={agendarDialog.onTrue}
             id="animateElement"
             fullWidth={!smUp}
           >
-            <span>{user?.idRol === 3 ? 'Agendar cita como beneficiario' : 'Agendar nueva cita'}</span>
+            <span>Agendar nueva cita</span>
             <Iconify icon="carbon:add-filled" />
           </Button>
-          {user?.idRol === 3 &&
-	          <Button color="inherit" variant="outlined" onClick={addHorarioPresencial} fullWidth={!smUp}>
-	            Establecer horario presencial
-	          </Button>
-        	}
-	      </Stack>
+        )}
+      </Stack>
 
-	      <Calendar
-	      	select={handleClick}
-	      	labels={COLORS}
-	      	events={beneficiarioFiltered}
-	      	eventClick={onClickEvent}
-	      	loading={appointmentLoading || eventsLoading || horariosLoading}
-	      />
+      {user?.idRol === 3 ? (
 
-	      <AgendarDialog
-	      	maxWidth="md"
-	      	open={agendarDialog.value}
-          onClose={agendarDialog.onFalse}
-          currentEvent={currentEvent}
-          selectedDate={selectedDate}
-          appointmentMutate={appointmentMutate}
+        <CalendarioEspelista />
+
+      ) : (
+        <Calendar
+          select={handleClick}
+          labels={COLORS}
+          events={beneficiarioFiltered}
+          eventClick={onClickEvent}
+          loading={appointmentLoading || eventsLoading || horariosLoading}
         />
 
-        <AgendarDialog
-        	maxWidth="xs"
-	      	open={openForm}
-          currentEvent={currentEvent}
-          onClose={onCloseForm}
-          selectedDate={selectedDate}
-          appointmentMutate={appointmentMutate}
-        />
+      )}
 
-        <PresencialDialog
-	        open={presencialDialog}
-	        onClose={onCloseHorariosDialog}
-	        // start={startPresencial}
-	        // end={endPresencial}
-	        // sede={sedePresencial}
-	      />
-			</Container>
+      <AgendarDialog
+        maxWidth="md"
+        open={agendarDialog.value}
+        onClose={agendarDialog.onFalse}
+        currentEvent={currentEvent}
+        selectedDate={selectedDate}
+        appointmentMutate={appointmentMutate}
+      />
+
+      <AgendarDialog
+        maxWidth="xs"
+        open={openForm}
+        currentEvent={currentEvent}
+        onClose={onCloseForm}
+        selectedDate={selectedDate}
+        appointmentMutate={appointmentMutate}
+      />
+
+      <PresencialDialog
+        open={presencialDialog}
+        onClose={onCloseHorariosDialog}
+      // start={startPresencial}
+      // end={endPresencial}
+      // sede={sedePresencial}
+      />
+    </Container>
   )
 }
 

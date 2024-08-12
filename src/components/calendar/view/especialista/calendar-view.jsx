@@ -11,34 +11,19 @@ import Card from '@mui/material/Card';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
-import { useCalendar } from '../hooks';
+import { useCalendar } from '../../hooks';
 import { StyledCalendar } from './styles';
-import CalendarToolbar from './calendar-toolbar';
 
 // ----------------------------------------------------------------------
 
 export default function CalendarView({
-  eventsLoading = false,
   events = [],
   select,
-  labels,
   eventClick,
-  loading,
 }){
 
   const {
-    view,
-    date,
-    // openForm,
-    onDatePrev,
-    onDateNext,
-    // onCloseForm,
-    onDateToday,
     calendarRef,
-    onChangeView,
-    // onClickEvent,
-    // selectedDate,
-    // selectEventId,
   } = useCalendar()
 
   const smUp = useResponsive('up', 'sm')
@@ -46,16 +31,6 @@ export default function CalendarView({
   return(
     <Card>
       <StyledCalendar>
-        <CalendarToolbar
-          date={date}
-          view={view}
-          labels={labels}
-          onToday={onDateToday}
-          loading={loading}
-          onNextDate={onDateNext}
-          onPrevDate={onDatePrev}
-          onChangeView={onChangeView}
-        />
 
         <Calendar
           weekends
@@ -91,10 +66,7 @@ export default function CalendarView({
 }
 
 CalendarView.propTypes = {
-  eventsLoading: PropTypes.bool,
   events: PropTypes.any,
   select: PropTypes.any,
-  labels: PropTypes.any,
   eventClick: PropTypes.func,
-  loading: PropTypes.bool,
 };
