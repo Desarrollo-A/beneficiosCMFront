@@ -1,10 +1,18 @@
+import listPlugin from '@fullcalendar/list';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import timelinePlugin from '@fullcalendar/timeline';
+import allLocales from '@fullcalendar/core/locales-all';
 import { useState, useEffect, useCallback } from 'react';
+import interactionPlugin from '@fullcalendar/interaction';
 
 import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Dialog from '@mui/material/Dialog';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
+import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -20,14 +28,19 @@ import { useGetAppointmentsByUser } from 'src/api/calendar-colaborador';
 
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
+
+import { StyledCalendar } from '../calendariobeneficiario/styles';
 import { Calendar, CalendarioEspecilista } from 'src/components/calendar';
 
 import './style.css';
 import AgendarDialog from './dialogs/agendar';
 import { useEvent, useCalendar } from './hooks';
+import CalendarDialog from '../calendariobeneficiario/calendar-dialog';
+import CalendarToolbar from '../calendariobeneficiario/calendar-toolbar';
+
 import HorarioPresencialDialog from './dialogs/horario-presencial';
 
-import PresencialDialog from './dialogs/presencial';
+// import PresencialDialog from './dialogs/presencial';
 import FloatingCircleTimer from '../calendariobeneficiario/floating-circle-timer';
 //---------------------------------------------------------
 
@@ -84,6 +97,7 @@ const defaultFilters = {
 //---------------------------------------------------------
 
 export default function CalendarioView() {
+  const theme = useTheme();
   const settings = useSettingsContext();
   const { user } = useAuthContext();
   const smUp = useResponsive('up', 'sm');
@@ -94,15 +108,15 @@ export default function CalendarioView() {
   const agendarDialog = useBoolean();
 
   const {
-    // view,
+    view,
     date,
     openForm,
-    // onDatePrev,
-    // onDateNext,
+    onDatePrev,
+    onDateNext,
     onCloseForm,
-    // onDateToday,
-    // calendarRef,
-    // onChangeView,
+    onDateToday,
+    calendarRef,
+    onChangeView,
     onClickEvent,
     selectedDate,
     selectEventId,
@@ -235,50 +249,94 @@ export default function CalendarioView() {
         <>
           <CalendarioEspecilista />
 
-          <HorarioPresencialDialog
-            open={presencialDialog}
-            onClose={onCloseHorariosDialog}
-          />
-
+          <HorarioPresencialDialog open={presencialDialog} onClose={onCloseHorariosDialog} />
         </>
-
       ) : (
-        <Calendar
-          select={handleClick}
-          labels={COLORS}
-          events={beneficiarioFiltered}
-          eventClick={onClickEvent}
-          loading={appointmentLoading || eventsLoading || horariosLoading}
-        />
+        <Card>
+          <StyledCalendar>
+            <CalendarToolbar
+              date={date}
+              view={view}
+              loading={eventsLoading}
+              onNextDate={onDateNext}
+              onPrevDate={onDatePrev}
+              onToday={onDateToday}
+              onChangeView={onChangeView}
+            />
+            <Calendar
+              weekends
+              editable={false} // en false para prevenir un drag del evento
+              selectable
+              locales={allLocales}
+              locale="es"
+              fixedWeekCount={false}
+              showNonCurrentDates={false}
+              rerenderDelay={10}
+              allDayMaintainDuration
+              eventResizableFromStart
+              ref={calendarRef}
+              dayMaxEventRows={3}
+              eventDisplay="block"
+              events={beneficiarioFiltered}
+              headerToolbar={false}
+              select={handleClick}
+              eventClick={onClickEvent}
+              height={smUp ? 720 : 'auto'}
+              plugins={[
+                listPlugin,
+                dayGridPlugin,
+                timelinePlugin,
+                timeGridPlugin,
+                interactionPlugin,
+              ]}
+            />
+          </StyledCalendar>
+        </Card>
       )}
 
-      {/* Dialog para el agendar cita */}
-      <AgendarDialog
+      {/* AgendarCita */}
+      <Dialog
+        fullWidth
         maxWidth="md"
         open={agendarDialog.value}
-        onClose={agendarDialog.onFalse}
-        currentEvent={currentEvent}
-        selectedDate={selectedDate}
-        appointmentMutate={appointmentMutate}
-      />
+        transitionDuration={{
+          enter: theme.transitions.duration.shortest,
+          exit: theme.transitions.duration.shortest - 1000,
+        }}
+      >
+        <CalendarDialog
+          currentEvent={currentEvent}
+          onClose={agendarDialog.onFalse}
+          selectedDate={selectedDate}
+          appointmentMutate={appointmentMutate}
+        />
+      </Dialog>
 
-      {/* Dialog para reagendar */}
-      <AgendarDialog
+      {/* Previsualizar datos de evento */}
+      <Dialog
+        fullWidth
         maxWidth="xs"
         open={openForm}
-        currentEvent={currentEvent}
-        onClose={onCloseForm}
-        selectedDate={selectedDate}
-        appointmentMutate={appointmentMutate}
-      />
+        transitionDuration={{
+          enter: theme.transitions.duration.shortest,
+          exit: theme.transitions.duration.shortest - 1000,
+        }}
+      >
+        <CalendarDialog
+          currentEvent={currentEvent}
+          onClose={onCloseForm}
+          selectedDate={selectedDate}
+          appointmentMutate={appointmentMutate}
+        />
+      </Dialog>
 
-      <PresencialDialog
+      {/* <PresencialDialog
         open={presencialDialog}
         onClose={onCloseHorariosDialog}
         // start={startPresencial}
         // end={endPresencial}
         // sede={sedePresencial}
-      />
+      /> */}
 
       <Stack
         style={{

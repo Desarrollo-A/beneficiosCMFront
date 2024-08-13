@@ -183,6 +183,7 @@ export default function CalendarView() {
         </Card>
       </Container>
 
+      {/* AgendarCita */}
       <Dialog
         fullWidth
         maxWidth="md"
@@ -200,6 +201,7 @@ export default function CalendarView() {
         />
       </Dialog>
 
+      {/* Previsualizar datos de evento */}
       <Dialog
         fullWidth
         maxWidth="xs"

@@ -49,35 +49,37 @@ export default function App() {
   useScrollToTop();
 
   return (
-    <AuthProvider>
-      <LocalizationProvider>
-        <SettingsProvider
-          defaultSettings={{
-            themeMode: 'light', // 'light' | 'dark'
-            themeDirection: 'ltr', //  'rtl' | 'ltr'
-            themeContrast: 'default', // 'default' | 'bold'
-            themeLayout: 'vertical', // 'vertical' | 'horizontal' | 'mini'
-            themeColorPresets: 'blue', // 'default' | 'cyan' | 'purple' | 'blue' | 'orange' | 'red'
-            themeStretch: false,
-          }}
-        >
-          <ThemeProvider>
-            <MotionLazy>
-              <SnackbarProvider>
-                <CheckoutProvider>
-                  <SettingsDrawer />
-                  <ProgressBar />
-                  <ContextGeneralProvider>
-                    <GoogleOAuthProvider clientId="161969316544-ou10ee3mktbmp2og21po8rj2eke8ej9t.apps.googleusercontent.com">
-                      <Router />
-                    </GoogleOAuthProvider>
-                  </ContextGeneralProvider>
-                </CheckoutProvider>
-              </SnackbarProvider>
-            </MotionLazy>
-          </ThemeProvider>
-        </SettingsProvider>
-      </LocalizationProvider>
-    </AuthProvider>
+    <GoogleOAuthProvider clientId="calendario-recepci-n-cm-local@snappy-tine-360922.iam.gserviceaccount.com">
+      <AuthProvider>
+        <LocalizationProvider>
+          <SettingsProvider
+            defaultSettings={{
+              themeMode: 'light', // 'light' | 'dark'
+              themeDirection: 'ltr', //  'rtl' | 'ltr'
+              themeContrast: 'default', // 'default' | 'bold'
+              themeLayout: 'vertical', // 'vertical' | 'horizontal' | 'mini'
+              themeColorPresets: 'blue', // 'default' | 'cyan' | 'purple' | 'blue' | 'orange' | 'red'
+              themeStretch: false,
+            }}
+          >
+            <ThemeProvider>
+              <MotionLazy>
+                <SnackbarProvider>
+                  <CheckoutProvider>
+                    <SettingsDrawer />
+                    <ProgressBar />
+                    <ContextGeneralProvider>
+                      <GoogleOAuthProvider clientId="161969316544-ou10ee3mktbmp2og21po8rj2eke8ej9t.apps.googleusercontent.com">
+                        <Router />
+                      </GoogleOAuthProvider>
+                    </ContextGeneralProvider>
+                  </CheckoutProvider>
+                </SnackbarProvider>
+              </MotionLazy>
+            </ThemeProvider>
+          </SettingsProvider>
+        </LocalizationProvider>
+      </AuthProvider>
+    </GoogleOAuthProvider>
   );
 }
