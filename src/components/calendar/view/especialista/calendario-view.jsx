@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
-import Calendar from '@fullcalendar/react'; 
+import PropTypes from 'prop-types';
+import Calendar from '@fullcalendar/react';
 import listPlugin from '@fullcalendar/list';
 import { enqueueSnackbar } from 'notistack';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -22,6 +23,7 @@ import { useGetNameUser } from 'src/api/user';
 import { useAuthContext } from 'src/auth/hooks';
 import { dropUpdate, useGetMotivos, GetCustomEvents } from 'src/api/calendar-specialist';
 import { useGetSedesPresenciales, useGetHorariosPresenciales } from 'src/api/especialistas';
+import { useGetAppointmentsByUser } from 'src/api/calendar-colaborador';
 
 import { useSettingsContext } from 'src/components/settings';
 
@@ -30,6 +32,8 @@ import { StyledCalendar } from './styles';
 import CalendarToolbar from '../calendar-tool';
 import DatosEventoDialog from './dialogs/datos-evento-dialog';
 import { useEvent, useCalendar } from '../../hooks';
+
+import AgendarDialog from '../../../../sections/calendario/dialogs/agendar';
 // ----------------------------------------------------------------------
 
 const defaultFilters = {
@@ -39,7 +43,7 @@ const defaultFilters = {
 };
 
 // ----------------------------------------------------------------------
-export default function CalendarioView() {
+export default function CalendarioView({labels}) {
   const { user } = useAuthContext();
 
   const { sedes } = useGetSedesPresenciales({ idEspecialista: user?.idUsuario });
@@ -142,6 +146,12 @@ export default function CalendarioView() {
     horariosGet({ idEspecialista: user?.idUsuario });
   };
 
+  const {
+    data: beneficiarioEvents,
+    appointmentLoading,
+    appointmentMutate,
+  } = useGetAppointmentsByUser(date, user?.idUsuario, user?.idSede);
+
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <Card>
@@ -178,39 +188,50 @@ export default function CalendarioView() {
             eventClick={onClickEvent}
             height={smUp ? 720 : 'auto'}
             eventDrop={(arg) => {
-            onEventUpdate(arg);
+              onEventUpdate(arg);
             }}
             plugins={[listPlugin, dayGridPlugin, timelinePlugin, timeGridPlugin, interactionPlugin]}
           />
         </StyledCalendar>
       </Card>
 
-      <Dialog
-        fullWidth
-        maxWidth={modalSize}
-        open={openForm}
-        transitionDuration={{
-          enter: theme.transitions.duration.shortest,
-          exit: theme.transitions.duration.shortest - 1000,
-        }}
-      >
-        {currentEvent?.id ? (
-          <DatosEventoDialog
-            currentEvent={currentEvent}
-            onClose={onCloseForm}
-            selectedDate={selectedDate}
-            selectedEnd={selectedEnd}
-            reasons={reasons}
-          />
-        ) : (
-          <CrearEventoDialog
-            onClose={onCloseForm}
-            userData={userData}
-            usersMutate={usersMutate}
-            selectedDate={selectedDate}
-          />
-        )}
-      </Dialog>
+      {currentEvent?.idEspecialista === user?.idUsuario ? (
+        <Dialog
+          fullWidth
+          maxWidth={modalSize}
+          open={openForm}
+          transitionDuration={{
+            enter: theme.transitions.duration.shortest,
+            exit: theme.transitions.duration.shortest - 1000,
+          }}
+        >
+          {currentEvent?.id ? (
+            <DatosEventoDialog
+              currentEvent={currentEvent}
+              onClose={onCloseForm}
+              selectedDate={selectedDate}
+              selectedEnd={selectedEnd}
+              reasons={reasons}
+            />
+          ) : (
+            <CrearEventoDialog
+              onClose={onCloseForm}
+              userData={userData}
+              usersMutate={usersMutate}
+              selectedDate={selectedDate}
+            />
+          )}
+        </Dialog>
+      ) : (
+        <AgendarDialog
+          maxWidth="xs"
+          open={openForm}
+          currentEvent={currentEvent}
+          onClose={onCloseForm}
+          selectedDate={selectedDate}
+          appointmentMutate={appointmentMutate}
+        />
+      )}
     </Container>
   );
 }
@@ -240,3 +261,7 @@ function applyFilter({ inputData, filters, dateError }) {
 
   return inputData;
 }
+
+CalendarioView.propTypes = {
+  labels: PropTypes.any,
+};
