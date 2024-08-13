@@ -1,5 +1,5 @@
-import Calendar from '@fullcalendar/react'; // => request placed at the top
 import dayjs from 'dayjs';
+import Calendar from '@fullcalendar/react'; 
 import listPlugin from '@fullcalendar/list';
 import { enqueueSnackbar } from 'notistack';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -8,8 +8,6 @@ import timelinePlugin from '@fullcalendar/timeline';
 import allLocales from '@fullcalendar/core/locales-all';
 import { useState, useEffect, useCallback } from 'react';
 import interactionPlugin from '@fullcalendar/interaction';
-
-// import { useGoogleLogin } from '@react-oauth/google';
 
 import Card from '@mui/material/Card';
 import Dialog from '@mui/material/Dialog';
@@ -22,15 +20,15 @@ import { fTimestamp } from 'src/utils/format-time';
 
 import { useGetNameUser } from 'src/api/user';
 import { useAuthContext } from 'src/auth/hooks';
-import { useGetHorariosPresenciales } from 'src/api/especialistas';
 import { dropUpdate, useGetMotivos, GetCustomEvents } from 'src/api/calendar-specialist';
+import { useGetSedesPresenciales, useGetHorariosPresenciales } from 'src/api/especialistas';
 
 import { useSettingsContext } from 'src/components/settings';
 
-import Lista from './lista';
-import EventContent from './eventContent';
+import CrearEventoDialog from './dialogs/crear-evento-dialog';
 import { StyledCalendar } from './styles';
-import AgendaDialog from './agenda-dialog';
+import CalendarToolbar from '../calendar-tool';
+import DatosEventoDialog from './dialogs/datos-evento-dialog';
 import { useEvent, useCalendar } from '../../hooks';
 // ----------------------------------------------------------------------
 
@@ -43,6 +41,8 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 export default function CalendarioView() {
   const { user } = useAuthContext();
+
+  const { sedes } = useGetSedesPresenciales({ idEspecialista: user?.idUsuario });
 
   const smUp = useResponsive('up', 'sm');
   const settings = useSettingsContext();
@@ -62,10 +62,15 @@ export default function CalendarioView() {
   const {
     calendarRef,
     //
+    view,
     date,
     //
+    onDatePrev,
     onDropEvent,
+    onDateNext,
     onSelectRange,
+    onDateToday,
+    onChangeView,
     onClickEvent,
     openForm,
     onCloseForm,
@@ -75,7 +80,7 @@ export default function CalendarioView() {
     selectedEnd,
   } = useCalendar();
 
-  const { events } = GetCustomEvents(date, user?.idUsuario, user?.idSede);
+  const { events, eventsLoading } = GetCustomEvents(date, user?.idUsuario, user?.idSede);
 
   const { horarios, horariosGet } = useGetHorariosPresenciales({ idEspecialista: user?.idUsuario });
 
@@ -141,6 +146,16 @@ export default function CalendarioView() {
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <Card>
         <StyledCalendar>
+          <CalendarToolbar
+            date={date}
+            view={view}
+            loading={eventsLoading}
+            onNextDate={onDateNext}
+            onPrevDate={onDatePrev}
+            onToday={onDateToday}
+            onChangeView={onChangeView}
+          />
+
           <Calendar
             weekends
             editable={false} // en false para prevenir un drag del evento
@@ -163,7 +178,7 @@ export default function CalendarioView() {
             eventClick={onClickEvent}
             height={smUp ? 720 : 'auto'}
             eventDrop={(arg) => {
-              onEventUpdate(arg);
+            onEventUpdate(arg);
             }}
             plugins={[listPlugin, dayGridPlugin, timelinePlugin, timeGridPlugin, interactionPlugin]}
           />
@@ -180,7 +195,7 @@ export default function CalendarioView() {
         }}
       >
         {currentEvent?.id ? (
-          <EventContent
+          <DatosEventoDialog
             currentEvent={currentEvent}
             onClose={onCloseForm}
             selectedDate={selectedDate}
@@ -188,7 +203,7 @@ export default function CalendarioView() {
             reasons={reasons}
           />
         ) : (
-          <Lista
+          <CrearEventoDialog
             onClose={onCloseForm}
             userData={userData}
             usersMutate={usersMutate}
@@ -196,13 +211,6 @@ export default function CalendarioView() {
           />
         )}
       </Dialog>
-      <AgendaDialog
-        open={presencialDialog}
-        onClose={onCloseHorariosDialog}
-        start={startPresencial}
-        end={endPresencial}
-        sede={sedePresencial}
-      />
     </Container>
   );
 }

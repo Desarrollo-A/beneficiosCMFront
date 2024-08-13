@@ -1,2 +1,2 @@
 export { default as Calendar } from './view/colaborador';
-export { default as CalendarioEspelista } from './view/especialista';
+export { default as CalendarioEspecilista } from './view/especialista';

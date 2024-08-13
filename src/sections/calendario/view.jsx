@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
+import Dialog from '@mui/material/Dialog';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
@@ -11,19 +12,20 @@ import { useResponsive } from 'src/hooks/use-responsive';
 
 import { fTimestamp } from 'src/utils/format-time';
 
+import { useGetNameUser } from 'src/api/user';
 import { useAuthContext } from 'src/auth/hooks';
 import { GetCustomEvents } from 'src/api/calendar-specialist';
 import { useGetHorariosPresenciales } from 'src/api/especialistas';
 import { useGetAppointmentsByUser } from 'src/api/calendar-colaborador';
 
 import Iconify from 'src/components/iconify';
-import { Calendar, CalendarioEspelista } from 'src/components/calendar';
 import { useSettingsContext } from 'src/components/settings';
+import { Calendar, CalendarioEspecilista } from 'src/components/calendar';
 
 import './style.css';
 import AgendarDialog from './dialogs/agendar';
 import { useEvent, useCalendar } from './hooks';
-import PresencialDialog from './dialogs/presencial';
+import HorarioPresencialDialog from './dialogs/horario-presencial';
 
 //---------------------------------------------------------
 
@@ -102,7 +104,7 @@ export default function CalendarioView() {
     onClickEvent,
     selectedDate,
     selectEventId,
-  } = useCalendar()
+  } = useCalendar();
 
   const [filters] = useState(defaultFilters)
 
@@ -150,6 +152,10 @@ export default function CalendarioView() {
     horariosGet({ idEspecialista: user?.idUsuario })
   }
 
+  const [userData, setUserData] = useState('');
+
+  const { data: names, usersMutate } = useGetNameUser(user?.idUsuario);
+
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <Stack
@@ -195,8 +201,15 @@ export default function CalendarioView() {
       </Stack>
 
       {user?.idRol === 3 ? (
+        <>
+          <CalendarioEspecilista />
 
-        <CalendarioEspelista />
+          <HorarioPresencialDialog
+            open={presencialDialog}
+            onClose={onCloseHorariosDialog}
+          />
+
+        </>
 
       ) : (
         <Calendar
@@ -225,14 +238,6 @@ export default function CalendarioView() {
         onClose={onCloseForm}
         selectedDate={selectedDate}
         appointmentMutate={appointmentMutate}
-      />
-
-      <PresencialDialog
-        open={presencialDialog}
-        onClose={onCloseHorariosDialog}
-      // start={startPresencial}
-      // end={endPresencial}
-      // sede={sedePresencial}
       />
     </Container>
   )

@@ -37,7 +37,7 @@ import {
 
 import Iconify from 'src/components/iconify';
 
-export default function PendingModal() {
+export default function FinalizarCitaDialog() {
   const { user } = useAuthContext();
   const [open, setOpen] = useState(true);
   const [open2, setOpen2] = useState(false);
