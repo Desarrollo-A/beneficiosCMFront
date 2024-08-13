@@ -24,8 +24,7 @@ export default function CalendarView({
   labels,
   eventClick,
   loading,
-}){
-
+}) {
   const {
     view,
     date,
@@ -39,11 +38,11 @@ export default function CalendarView({
     // onClickEvent,
     // selectedDate,
     // selectEventId,
-  } = useCalendar()
+  } = useCalendar();
 
-  const smUp = useResponsive('up', 'sm')
+  const smUp = useResponsive('up', 'sm');
 
-  return(
+  return (
     <Card>
       <StyledCalendar>
         <CalendarToolbar
@@ -76,18 +75,11 @@ export default function CalendarView({
           select={select}
           eventClick={eventClick}
           height={smUp ? 720 : 'auto'}
-          plugins={[
-            listPlugin,
-            dayGridPlugin,
-            timelinePlugin,
-            timeGridPlugin,
-            interactionPlugin,
-          ]}
+          plugins={[listPlugin, dayGridPlugin, timelinePlugin, timeGridPlugin, interactionPlugin]}
         />
-
       </StyledCalendar>
     </Card>
-  )
+  );
 }
 
 CalendarView.propTypes = {

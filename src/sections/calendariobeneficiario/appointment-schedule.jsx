@@ -7,7 +7,7 @@ import utc from 'dayjs/plugin/utc';
 import { useState, useEffect } from 'react';
 import timezone from 'dayjs/plugin/timezone';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
-import { parse, format, addHours,  subHours  } from 'date-fns';
+import { parse, format, addHours, subHours } from 'date-fns';
 // import { Marker, GoogleMap, LoadScript } from '@react-google-maps/api';
 
 import Box from '@mui/material/Box';
@@ -93,10 +93,15 @@ export default function AppointmentSchedule({
   beneficioActivo,
   aceptarTerminos,
   aceptar,
+  beneficioDisabled,
+  especialistaDisabled,
+  modalidadDisabled,
+  horariosDisabled,
+  calendarDisabled,
   selectedDay,
 }) {
   const [open, setOpen] = useState(false);
-/*   const [openMap, setOpenMap] = useState(false); */
+  /*   const [openMap, setOpenMap] = useState(false); */
   const [archivo, setArchivo] = useState(0);
   const [nombreEspecialidad, setNombreEspecialidad] = useState('');
   const verTerminos = async () => {
@@ -110,15 +115,13 @@ export default function AppointmentSchedule({
     setOpen(false);
   };
 
-
-/*   const mapStyles = {
+  /*   const mapStyles = {
     height: '60vh',
     width: '100%',
   }; */
 
   const { user: datosUser } = useAuthContext();
-/*   const [address, setAddress] = useState(''); */
-
+  /*   const [address, setAddress] = useState(''); */
 
   useEffect(() => {
     switch (beneficioActivo?.beneficio) {
@@ -140,7 +143,7 @@ export default function AppointmentSchedule({
     }
   }, [beneficioActivo?.beneficio]);
 
-/*   useEffect(() => {
+  /*   useEffect(() => {
     if (!isEmpty(oficina)) {
       if (oficina?.result !== false) {
         setAddress(oficina?.data[0]?.ubicación ? oficina?.data[0]?.ubicación : '');
@@ -150,11 +153,11 @@ export default function AppointmentSchedule({
 
   const [openWindow, setOpenWindow] = useState(false);
 
-/*   const handleClickOpen = () => {
+  /*   const handleClickOpen = () => {
     setOpenMap(true);
   }; */
 
-/*   const handleClose = () => {
+  /*   const handleClose = () => {
     setOpenMap(false);
   }; */
 
@@ -166,9 +169,9 @@ export default function AppointmentSchedule({
     setOpenWindow(false);
   };
 
-/*   const [coordinates, setCoordinates] = useState(null); */
+  /*   const [coordinates, setCoordinates] = useState(null); */
 
- /*  useEffect(() => {
+  /*  useEffect(() => {
     if (address !== '') {
       const fetchCoordinates = async () => {
         try {
@@ -191,31 +194,31 @@ export default function AppointmentSchedule({
     }
   }, [address]); */
 
-    // Función para determinar si es horario de verano
-const isDaylightSavingTime = (date) => {
-  const year = date.getFullYear();
-  const startDST = new Date(year, 2, 31 - new Date(year, 2, 31).getDay());
-  const endDST = new Date(year, 9, 31 - new Date(year, 9, 31).getDay());
+  // Función para determinar si es horario de verano
+  const isDaylightSavingTime = (date) => {
+    const year = date.getFullYear();
+    const startDST = new Date(year, 2, 31 - new Date(year, 2, 31).getDay());
+    const endDST = new Date(year, 9, 31 - new Date(year, 9, 31).getDay());
 
-  return date >= startDST && date < endDST;
-};
+    return date >= startDST && date < endDST;
+  };
 
-const adjustTime = (time, idSede) => {
-  const parsedTime = parse(time, 'HH:mm:ss', new Date());
-  const now = new Date();
-  const isDST = isDaylightSavingTime(now);
-  let adjustedTime;
+  const adjustTime = (time, idSede) => {
+    const parsedTime = parse(time, 'HH:mm:ss', new Date());
+    const now = new Date();
+    const isDST = isDaylightSavingTime(now);
+    let adjustedTime;
 
-  if (idSede === 9) {
-    adjustedTime = addHours(parsedTime, 1);
-  } else if (idSede === 11) {
-    adjustedTime = isDST ? subHours(parsedTime, 2) : subHours(parsedTime, 1);
-  } else {
-    adjustedTime = parsedTime;
-  }
+    if (idSede === 9) {
+      adjustedTime = addHours(parsedTime, 1);
+    } else if (idSede === 11) {
+      adjustedTime = isDST ? subHours(parsedTime, 2) : subHours(parsedTime, 1);
+    } else {
+      adjustedTime = parsedTime;
+    }
 
-  return format(adjustedTime, 'HH:mm:ss');
-};
+    return format(adjustedTime, 'HH:mm:ss');
+  };
 
   return (
     <Grid sx={{ display: { xs: 'block', sm: 'flex', md: 'flex' } }}>
@@ -254,6 +257,7 @@ const adjustTime = (time, idSede) => {
                       defaultValue=""
                       onChange={(e) => handleChange('beneficio', e.target.value)}
                       /* disabled={!!(beneficios?.length === 0 || currentEvent?.id)} */
+                      disabled={beneficioDisabled}
                     >
                       {!(beneficios?.length === 0 || currentEvent?.id) ? (
                         beneficios?.map((e) => (
@@ -285,6 +289,7 @@ const adjustTime = (time, idSede) => {
                       defaultValue=""
                       onChange={(e) => handleChange('especialista', e.target.value)}
                       /* disabled={!!(especialistas?.length === 0 || currentEvent?.id)} */
+                      disabled={especialistaDisabled}
                     >
                       {!(especialistas?.length === 0 || currentEvent?.id) ? (
                         especialistas?.map((e, index) => (
@@ -316,6 +321,7 @@ const adjustTime = (time, idSede) => {
                       value={selectedValues.modalidad}
                       onChange={(e) => handleChange('modalidad', e.target.value)}
                       /* disabled={!!(modalidades?.length === 0 || currentEvent?.id)} */
+                      disabled={modalidadDisabled}
                     >
                       {!(modalidades?.length === 0 || currentEvent?.id) ? (
                         modalidades?.map((e, index) => (
@@ -645,6 +651,7 @@ const adjustTime = (time, idSede) => {
             >
               <DateCalendar
                 loading={isLoading}
+                disabled={calendarDisabled}
                 value={selectedDay}
                 onChange={handleDateChange}
                 renderLoading={() => <DayCalendarSkeleton />}
@@ -670,23 +677,25 @@ const adjustTime = (time, idSede) => {
           >
             {horariosDisponibles ? (
               <FormControl error={!!errorHorarioSeleccionado} fullWidth>
-                <InputLabel id="modalidad-input">Horarios disponibles</InputLabel>
-                <Select
-                  labelId="Horarios disponibles"
-                  id="select-horario"
-                  label="Horarios disponibles"
-                  name="Horarios disponibles"
-                  value={horarioSeleccionado}
-                  onChange={(e) => handleHorarioSeleccionado(e.target.value)}
-                  disabled={horariosDisponibles.length === 0}
-                  theme={lightTheme}
-                >
-                  {horariosDisponibles.map((e, index) => (
-                    <MenuItem key={e.inicio} value={`${e.fecha} ${e.inicio}`}>
-                      {adjustTime(e.inicio, datosUser?.idSede)}
-                    </MenuItem>
-                  ))}
-                </Select>
+                <ThemeProvider theme={lightTheme}>
+                  <InputLabel id="modalidad-input">Horarios disponibles</InputLabel>
+                  <Select
+                    labelId="Horarios disponibles"
+                    id="select-horario"
+                    label="Horarios disponibles"
+                    name="Horarios disponibles"
+                    value={horarioSeleccionado}
+                    onChange={(e) => handleHorarioSeleccionado(e.target.value)}
+                    disabled={horariosDisponibles.length === 0 || horariosDisabled}
+                    theme={lightTheme}
+                  >
+                    {horariosDisponibles.map((e, index) => (
+                      <MenuItem key={e.inicio} value={`${e.fecha} ${e.inicio}`}>
+                        {adjustTime(e.inicio, datosUser?.idSede)}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </ThemeProvider>
                 {errorHorarioSeleccionado && horarioSeleccionado === '' && (
                   <FormHelperText error={errorHorarioSeleccionado}>
                     Seleccione fecha y horario
@@ -747,5 +756,10 @@ AppointmentSchedule.propTypes = {
   beneficioActivo: PropTypes.object,
   aceptarTerminos: PropTypes.func,
   aceptar: PropTypes.bool,
+  beneficioDisabled: PropTypes.bool,
+  especialistaDisabled: PropTypes.bool,
+  modalidadDisabled: PropTypes.bool,
+  horariosDisabled: PropTypes.bool,
+  calendarDisabled: PropTypes.bool,
   selectedDay: PropTypes.any,
 };
