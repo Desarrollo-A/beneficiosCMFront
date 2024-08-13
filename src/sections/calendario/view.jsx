@@ -9,8 +9,8 @@ import interactionPlugin from '@fullcalendar/interaction';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Dialog from '@mui/material/Dialog';
 import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
 import Container from '@mui/material/Container';
 import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
@@ -20,7 +20,6 @@ import { useResponsive } from 'src/hooks/use-responsive';
 
 import { fTimestamp } from 'src/utils/format-time';
 
-import { useGetNameUser } from 'src/api/user';
 import { useAuthContext } from 'src/auth/hooks';
 import { GetCustomEvents } from 'src/api/calendar-specialist';
 import { useGetHorariosPresenciales } from 'src/api/especialistas';
@@ -193,10 +192,6 @@ export default function CalendarioView() {
     horariosGet({ idEspecialista: user?.idUsuario });
   };
 
-  const [userData, setUserData] = useState('');
-
-  const { data: names, usersMutate } = useGetNameUser(user?.idUsuario);
-
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <Stack
@@ -247,7 +242,7 @@ export default function CalendarioView() {
 
       {user?.idRol === 3 ? (
         <>
-          <CalendarioEspecilista />
+          <CalendarioEspecilista labels={COLORS} />
 
           <HorarioPresencialDialog open={presencialDialog} onClose={onCloseHorariosDialog} />
         </>
@@ -329,14 +324,6 @@ export default function CalendarioView() {
           appointmentMutate={appointmentMutate}
         />
       </Dialog>
-
-      {/* <PresencialDialog
-        open={presencialDialog}
-        onClose={onCloseHorariosDialog}
-        // start={startPresencial}
-        // end={endPresencial}
-        // sede={sedePresencial}
-      /> */}
 
       <Stack
         style={{
