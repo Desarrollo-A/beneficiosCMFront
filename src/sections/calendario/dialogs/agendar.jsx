@@ -98,7 +98,14 @@ initialValue = initialValue.hour() < 15 ? initialValue : initialValue.add(1, 'da
 
 //---------------------------------------------------------
 
-export default function AgendarDialog({ open, currentEvent, onClose, selectedDate, appointmentMutate, maxWidth }) {
+export default function AgendarDialog({
+  open,
+  currentEvent,
+  onClose,
+  selectedDate,
+  appointmentMutate,
+  maxWidth,
+}) {
   const [selectedValues, setSelectedValues] = useState({
     beneficio: '',
     especialista: '',
@@ -139,6 +146,7 @@ export default function AgendarDialog({ open, currentEvent, onClose, selectedDat
   const [errorMessage, setErrorMessage] = useState('Formato de correo erróneo');
   const [errorEmail, setErrorEmail] = useState(false);
   const [sendEmails, setSendEmails] = useState(false);
+  const [selectedDay, setSelectedDay] = useState(null);
 
   const theme = useTheme();
 
@@ -159,6 +167,13 @@ export default function AgendarDialog({ open, currentEvent, onClose, selectedDat
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingEspecialidad, setIsLoadingEspecialidad] = useState(false);
   const [isLoadingModalidad, setIsLoadingModalidad] = useState(false);
+
+  const [beneficioDisabled, setBeneficioDisabled] = useState(false);
+  const [especialistaDisabled, setEspecialistaDisabled] = useState(false);
+  const [modalidadDisabled, setModalidadDisabled] = useState(false);
+  const [horariosDisabled, setHorariosDisabled] = useState(false);
+  const [cerrarDisabled, setCerrarDisabled] = useState(false);
+  const [calendarDisabled, setCalendarDisabled] = useState(false);
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -183,6 +198,12 @@ export default function AgendarDialog({ open, currentEvent, onClose, selectedDat
     if (selectedValues.especialista === '') return setErrorEspecialista(true);
     if (selectedValues.modalidad === '') return setErrorModalidad(true);
     if (horarioSeleccionado === '') return setErrorHorarioSeleccionado(true);
+    setBeneficioDisabled(true);
+    setEspecialistaDisabled(true);
+    setModalidadDisabled(true);
+    setHorariosDisabled(true);
+    setCalendarDisabled(true);
+    setCerrarDisabled(true);
     setBtnDisabled(true);
 
     const ahora = new Date();
@@ -467,6 +488,7 @@ export default function AgendarDialog({ open, currentEvent, onClose, selectedDat
     mutate(endpoints.citas.getCitas);
     mutate(endpoints.dashboard.getCountModalidades);
     mutate(endpoints.dashboard.getCountEstatusCitas);
+    setCerrarDisabled(false);
 
     /* *** PROCESO DE MUESTRA DE PREVIEW *** */
     const scheduledAppointment = await consultarCita(agendar.data, datosUser.idSede);
@@ -651,7 +673,7 @@ export default function AgendarDialog({ open, currentEvent, onClose, selectedDat
     return onClose();
   };
 
-  const pagarCitaPendiente = async () => {
+  const pagarCitaPendiente = async (cita) => {
     setBtnPayDisabled(true);
     /* VALIDAR SI ES GRATUITA LA CITA */
     let precio = 50;
@@ -659,7 +681,7 @@ export default function AgendarDialog({ open, currentEvent, onClose, selectedDat
 
     let nombreBeneficio = '';
     let abreviatura = '';
-    switch (currentEvent.idPuesto) {
+    switch (cita.idPuesto) {
       case 158:
         nombreBeneficio = 'quantum balance';
         abreviatura = 'QUAN';
@@ -682,17 +704,18 @@ export default function AgendarDialog({ open, currentEvent, onClose, selectedDat
 
     const ESTATUS_CITA = Object.freeze({
       PENDIENTE_PAGO: 6,
+      PROCESAND_PAGO: 10,
     });
 
     const DATOS_CITA = Object.freeze({
       TITULO: `Cita ${nombreBeneficio} - ${datosUser.nombre}`,
-      ID_ESPECIALISTA: currentEvent.idEspecialista,
+      ID_ESPECIALISTA: cita.idEspecialista,
       ID_USUARIO: datosUser.idUsuario,
     });
 
     const DATOS_PAGO = Object.freeze({
       FOLIO: `${DATOS_CITA.ID_USUARIO}${dayjs(new Date()).format('HHmmssYYYYMMDD')}`,
-      REFERENCIA: `U${DATOS_CITA.ID_USUARIO}-${abreviatura}-E${DATOS_CITA.ID_ESPECIALISTA}-C${currentEvent.id}`,
+      REFERENCIA: `U${DATOS_CITA.ID_USUARIO}-${abreviatura}-E${DATOS_CITA.ID_ESPECIALISTA}-C${cita.id}`,
       // 'U88-QUAN-E64-C65',
       // `U${DATOS_CITA.ID_USUARIO}-${abreviatura}-E${DATOS_CITA.ID_ESPECIALISTA}-C${agendar.data}}`,
       // Referencia: 'U(idUsuario)-(NUTR, PSIC, GUIA, QUAN)-E(idEspecialista)-C(IDCITA)'
@@ -713,13 +736,22 @@ export default function AgendarDialog({ open, currentEvent, onClose, selectedDat
       if (!resultadoPago) {
         const update = await updateStatusAppointment(
           DATOS_CITA.ID_USUARIO,
-          currentEvent.id,
+          cita.id,
           ESTATUS_CITA.PENDIENTE_PAGO
         );
         if (!update) console.error('La cita no se pudo actualizar para realizar el pago');
       }
-      if (resultadoPago) {
-        await actualizarFechaIntentoPago(DATOS_CITA.ID_USUARIO, currentEvent.id);
+      if (resultadoPago && cita.fechaIntentoPago == null) {
+        if (cita.fechaIntentoPago == null) {
+          await actualizarFechaIntentoPago(DATOS_CITA.ID_USUARIO, cita.id);
+        } else {
+          const update = await updateStatusAppointment(
+            DATOS_CITA.ID_USUARIO,
+            cita.id,
+            ESTATUS_CITA.PROCESAND_PAGO
+          );
+          if (!update) console.error('La cita no se pudo actualizar para realizar el pago');
+        }
       }
     }
 
@@ -739,7 +771,7 @@ export default function AgendarDialog({ open, currentEvent, onClose, selectedDat
         DATOS_PAGO.MONTO,
         METODO_PAGO.NO_APLICA,
         ESTATUS_PAGO.COBRADO,
-        currentEvent.id
+        cita.id
       );
 
       enqueueSnackbar('¡El pago de cita se ha realizado con exito!', {
@@ -764,6 +796,7 @@ export default function AgendarDialog({ open, currentEvent, onClose, selectedDat
     setHorarioSeleccionado('');
     setErrorHorarioSeleccionado(false);
     setHorariosDisponibles([]);
+    setSelectedDay(null);
 
     if (input === 'beneficio') {
       setErrorBeneficio(false); // Por si tiene error lo limpia
@@ -830,7 +863,7 @@ export default function AgendarDialog({ open, currentEvent, onClose, selectedDat
       /* ************************************* */
       setErrorEspecialista(false);
       const modalitiesData = await getModalities(datosUser.idSede, value, datosUser.idArea); // Modalidades input
-      setModalidades(modalitiesData?.data);
+
       if (modalitiesData.data.length > 0 && modalitiesData?.data.length === 1) {
         setSelectedValues({
           ...selectedValues,
@@ -845,8 +878,9 @@ export default function AgendarDialog({ open, currentEvent, onClose, selectedDat
           modalitiesData.data[0].tipoCita
         );
         setOficina(data);
-        getHorariosDisponibles(selectedValues.beneficio, value);
       }
+      setModalidades(modalitiesData?.data);
+      getHorariosDisponibles(selectedValues.beneficio, value);
     } else if (input === 'modalidad') {
       setSelectedValues({
         ...selectedValues,
@@ -891,6 +925,7 @@ export default function AgendarDialog({ open, currentEvent, onClose, selectedDat
       const diasDisponibles = await getDiasDisponibles(value.idEspecialista, datosUser.idSede);
       setDiasPresenciales(diasDisponibles.result ? diasDisponibles.data : []);
       /* ************************************* */
+      setSelectedDay(null);
     }
     setIsLoadingEspecialidad(false);
     setIsLoadingModalidad(false);
@@ -1064,13 +1099,27 @@ export default function AgendarDialog({ open, currentEvent, onClose, selectedDat
 
     const registrosCadaHora = getRegistrosEn1hora(registrosFiltrados);
 
-    // Resltado final de los horarios de todos los dias para agendar
-    setFechasDisponibles(registrosCadaHora);
+    // Retiramos los registros de las 3 proximas horas para que no las muestre.
+    const ahora = new Date();
+    const ahoraMasTresHoras = new Date(ahora.getTime() + 3 * 60 * 60 * 1000);
+
+    const fechaActual = ahora.toISOString().split('T')[0]; // Formato 'YYYY-MM-DD'
+    const horaLimite = ahoraMasTresHoras.toTimeString().split(' ')[0]; // Formato 'HH:MM:SS'
+
+    const registrosCadaHoraConMargen = registrosCadaHora.filter((registro) => {
+      if (registro.fecha === fechaActual) {
+        return !(registro.inicio <= horaLimite);
+      }
+      return true;
+    });
+
+    // Resultado final de los horarios de todos los dias para agendar
+    setFechasDisponibles(registrosCadaHoraConMargen);
 
     // ////////////////////////////////////////////////////////////////////////////////////////
     // Este proceso solo es para quitar en el calendario visualmente los dias que no están ///
     // ///////////////////////////////////////////////////////////////////////////////////////
-    const diasDisponibles = obtenerSoloFechas(registrosCadaHora);
+    const diasDisponibles = obtenerSoloFechas(registrosCadaHoraConMargen);
     setDiasHabilitados(diasDisponibles);
 
     const diasOcupadosFiltro = filtradoDias(todosLosDiasSiguientes, diasDisponibles);
@@ -1116,7 +1165,7 @@ export default function AgendarDialog({ open, currentEvent, onClose, selectedDat
 
   const handlePayment = (cita) => {
     if (cita.fechaIntentoPago == null || cita.fechaIntentoPago === 'NULL') {
-      pagarCitaPendiente();
+      pagarCitaPendiente(cita);
     } else {
       setCitaPayment([]);
       setConfirmDoblePago(true);
@@ -1127,6 +1176,7 @@ export default function AgendarDialog({ open, currentEvent, onClose, selectedDat
   const handleDateChange = (newDate) => {
     setErrorHorarioSeleccionado(false);
     setBtnDisabled(false);
+    setSelectedDay(newDate);
 
     // Bloque para obtener las horas del dia actual mas una cant de horas para validar registros del mismo dia actual.
     // 3 HORAS DE MARGEN PARA NO PENALIZARLOS.
@@ -2123,6 +2173,12 @@ export default function AgendarDialog({ open, currentEvent, onClose, selectedDat
                     beneficioActivo={beneficioActivo}
                     aceptarTerminos={onAceptar}
                     aceptar={aceptar}
+                    beneficioDisabled={beneficioDisabled}
+                    especialistaDisabled={especialistaDisabled}
+                    modalidadDisabled={modalidadDisabled}
+                    horariosDisabled={horariosDisabled}
+                    calendarDisabled={calendarDisabled}
+                    selectedDay={selectedDay}
                   />
                 )}
               </DialogContent>
@@ -2138,7 +2194,12 @@ export default function AgendarDialog({ open, currentEvent, onClose, selectedDat
                     : {}
                 }
               >
-                <Button variant="contained" color="error" onClick={onClose}>
+                <Button
+                  variant="contained"
+                  color="error"
+                  onClick={onClose}
+                  disabled={cerrarDisabled}
+                >
                   Cerrar
                 </Button>
                 {currentEvent?.id &&
@@ -2238,6 +2299,15 @@ export default function AgendarDialog({ open, currentEvent, onClose, selectedDat
             errorHorarioSeleccionado={errorHorarioSeleccionado}
             currentEvent={currentEvent}
             handleHorarioSeleccionado={handleHorarioSeleccionado}
+            beneficioActivo={beneficioActivo}
+            aceptarTerminos={onAceptar}
+            aceptar={aceptar}
+            beneficioDisabled={beneficioDisabled}
+            especialistaDisabled={especialistaDisabled}
+            modalidadDisabled={modalidadDisabled}
+            horariosDisabled={horariosDisabled}
+            calendarDisabled={calendarDisabled}
+            selectedDay={selectedDay}
           />
         </DialogContent>
         <DialogActions
@@ -2303,23 +2373,16 @@ export default function AgendarDialog({ open, currentEvent, onClose, selectedDat
       <ConfirmDoblePayment
         open={confirmDoblePago}
         onClose={() => setConfirmDoblePago(false)}
-        paymentFunc={pagarCitaPendiente}
+        paymentFunc={() => pagarCitaPendiente(currentEvent)}
         cita={citaPayment}
       />
 
-      <CalendarPreview event={event} open={open2} handleClose={handleClose} />
-      {/* {pendiente && openEvaluateDialog && (
-        <EvaluateDialog
-          open={openEvaluateDialog}
-          pendiente={pendiente}
-          mutate={() => {
-            setOpenEvaluateDialog(false);
-            appointmentMutate();
-            onClose();
-          }}
-          cerrar={() => setOpenEvaluateDialog(false)}
-        />
-      )} */}
+      <CalendarPreview
+        event={event}
+        open={open2}
+        handleClose={handleClose}
+        handlePayment={handlePayment}
+      />
     </Dialog>
   );
 }

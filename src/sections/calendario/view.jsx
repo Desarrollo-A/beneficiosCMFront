@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -17,14 +17,14 @@ import { useGetHorariosPresenciales } from 'src/api/especialistas';
 import { useGetAppointmentsByUser } from 'src/api/calendar-colaborador';
 
 import Iconify from 'src/components/iconify';
-import { Calendar, CalendarioEspelista } from 'src/components/calendar';
 import { useSettingsContext } from 'src/components/settings';
+import { Calendar, CalendarioEspelista } from 'src/components/calendar';
 
 import './style.css';
 import AgendarDialog from './dialogs/agendar';
 import { useEvent, useCalendar } from './hooks';
 import PresencialDialog from './dialogs/presencial';
-
+import FloatingCircleTimer from '../calendariobeneficiario/floating-circle-timer';
 //---------------------------------------------------------
 
 const COLORS = [
@@ -80,14 +80,14 @@ const defaultFilters = {
 //---------------------------------------------------------
 
 export default function CalendarioView() {
-  const settings = useSettingsContext()
-  const { user } = useAuthContext()
-  const smUp = useResponsive('up', 'sm')
+  const settings = useSettingsContext();
+  const { user } = useAuthContext();
+  const smUp = useResponsive('up', 'sm');
 
-  const [animate, setAnimate] = useState(false)
-  const [presencialDialog, setOpenPresencialDialog] = useState(false)
+  const [animate, setAnimate] = useState(false);
+  const [presencialDialog, setOpenPresencialDialog] = useState(false);
 
-  const agendarDialog = useBoolean()
+  const agendarDialog = useBoolean();
 
   const {
     // view,
@@ -102,9 +102,9 @@ export default function CalendarioView() {
     onClickEvent,
     selectedDate,
     selectEventId,
-  } = useCalendar()
+  } = useCalendar();
 
-  const [filters] = useState(defaultFilters)
+  const [filters] = useState(defaultFilters);
 
   const dateError =
     filters.startDate && filters.endDate
@@ -115,21 +115,31 @@ export default function CalendarioView() {
     data: beneficiarioEvents,
     appointmentLoading,
     appointmentMutate,
-  } = useGetAppointmentsByUser(date, user?.idUsuario, user?.idSede)
+  } = useGetAppointmentsByUser(date, user?.idUsuario, user?.idSede);
 
-  const { events: especialistaEvents, eventsLoading } = GetCustomEvents(date, user?.idUsuario, user?.idSede);
+  const { events: especialistaEvents, eventsLoading } = GetCustomEvents(
+    date,
+    user?.idUsuario,
+    user?.idSede
+  );
 
-  const { horarios, horariosGet, horariosLoading } = useGetHorariosPresenciales({ idEspecialista: user?.idUsuario })
+  const { horarios, horariosGet, horariosLoading } = useGetHorariosPresenciales({
+    idEspecialista: user?.idUsuario,
+  });
 
-  const events = [...beneficiarioEvents, ...especialistaEvents]
+  const events = [...beneficiarioEvents, ...especialistaEvents];
 
-  const currentEvent = useEvent(events, selectEventId, openForm)
+  const currentEvent = useEvent(events, selectEventId, openForm);
 
   const beneficiarioFiltered = applyFilter({
     inputData: events.concat(horarios),
     filters,
     dateError,
-  })
+  });
+
+  useEffect(() => {
+    appointmentMutate();
+  }, [appointmentMutate]);
 
   const handleClick = useCallback(() => {
     document.body.scrollTop = 0;
@@ -138,22 +148,37 @@ export default function CalendarioView() {
     setTimeout(() => {
       setAnimate(false);
     }, 500); // Duración de la animación en milisegundos
-  }, [])
+  }, []);
+
+  const renderFloatingCircleTimers = () =>
+    events
+      .filter(
+        (event) => event?.idDetalle === null && (event?.estatus === 6 || event?.estatus === 10)
+      )
+      .map((event, index) => (
+        <FloatingCircleTimer
+          key={event?.id}
+          benefit={event?.beneficio}
+          leftTime={event?.diferenciaEnMs}
+          appointmentMutate={appointmentMutate}
+          topOffset={index * 120} // Ajustar el espaciado vertical entre elementos
+        />
+      ));
 
   const addHorarioPresencial = () => {
-    setOpenPresencialDialog(true)
-  }
+    setOpenPresencialDialog(true);
+  };
 
   const onCloseHorariosDialog = () => {
-    setOpenPresencialDialog(false)
+    setOpenPresencialDialog(false);
 
-    horariosGet({ idEspecialista: user?.idUsuario })
-  }
+    horariosGet({ idEspecialista: user?.idUsuario });
+  };
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <Stack
-        direction={{ xs: "column", md: 'row' }}
+        direction={{ xs: 'column', md: 'row' }}
         alignItems="center"
         spacing={2}
         justifyContent="right"
@@ -161,12 +186,17 @@ export default function CalendarioView() {
           mb: { xs: 3, md: 5 },
         }}
       >
-        <Typography variant='h4'>Calendario</Typography>
+        <Typography variant="h4">Calendario</Typography>
         <Box sx={{ flex: 1 }} />
 
         {user?.idRol === 3 ? (
           <>
-            <Button color="inherit" variant="outlined" onClick={addHorarioPresencial} fullWidth={!smUp}>
+            <Button
+              color="inherit"
+              variant="outlined"
+              onClick={addHorarioPresencial}
+              fullWidth={!smUp}
+            >
               Establecer horario presencial
             </Button>
 
@@ -181,7 +211,6 @@ export default function CalendarioView() {
             </Button>
           </>
         ) : (
-
           <Button
             className={`ButtonCita ${animate ? 'animate' : ''}`}
             onClick={agendarDialog.onTrue}
@@ -195,9 +224,7 @@ export default function CalendarioView() {
       </Stack>
 
       {user?.idRol === 3 ? (
-
         <CalendarioEspelista />
-
       ) : (
         <Calendar
           select={handleClick}
@@ -206,9 +233,9 @@ export default function CalendarioView() {
           eventClick={onClickEvent}
           loading={appointmentLoading || eventsLoading || horariosLoading}
         />
-
       )}
 
+      {/* Dialog para el agendar cita */}
       <AgendarDialog
         maxWidth="md"
         open={agendarDialog.value}
@@ -218,6 +245,7 @@ export default function CalendarioView() {
         appointmentMutate={appointmentMutate}
       />
 
+      {/* Dialog para reagendar */}
       <AgendarDialog
         maxWidth="xs"
         open={openForm}
@@ -230,12 +258,29 @@ export default function CalendarioView() {
       <PresencialDialog
         open={presencialDialog}
         onClose={onCloseHorariosDialog}
-      // start={startPresencial}
-      // end={endPresencial}
-      // sede={sedePresencial}
+        // start={startPresencial}
+        // end={endPresencial}
+        // sede={sedePresencial}
       />
+
+      <Stack
+        style={{
+          position: 'fixed',
+          top: 0,
+          right: 0,
+          width: '200px' /* Ajusta el ancho según tus necesidades */,
+          height: '90' /* Hace que el componente tome el 100% de la altura de la pantalla */,
+          padding: '10px',
+          zIndex: 9999,
+          pointerEvents: 'none',
+          marginTop: '12px',
+          marginRight: '12px',
+        }}
+      >
+        {!eventsLoading && renderFloatingCircleTimers()}
+      </Stack>
     </Container>
-  )
+  );
 }
 
 //---------------------------------------------------------
@@ -262,4 +307,4 @@ const applyFilter = ({ inputData, filters, dateError }) => {
   }
 
   return inputData;
-}
+};

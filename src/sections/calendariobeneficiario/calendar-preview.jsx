@@ -1,11 +1,13 @@
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import Timeline from '@mui/lab/Timeline';
 import Dialog from '@mui/material/Dialog';
 import TimelineDot from '@mui/lab/TimelineDot';
 import { useTheme } from '@mui/material/styles';
+import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import TimelineContent from '@mui/lab/TimelineContent';
 import DialogContent from '@mui/material/DialogContent';
@@ -16,24 +18,16 @@ import { Grid, Stack, Button, Typography, DialogActions } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
 
-export default function CalendarPreview({ event, open, handleClose }) {
-
+export default function CalendarPreview({ event, open, handleClose, handlePayment }) {
+  const [loadingButton, setLoadingButton] = useState(false);
   const theme = useTheme();
 
   return (
-    <Dialog
-      open={open}
-      fullWidth
-      disableEnforceFocus
-      maxWidth="xs"
-      
-    >
+    <Dialog open={open} fullWidth disableEnforceFocus maxWidth="xs">
       <DialogTitle sx={{ p: { xs: 1, md: 1 } }}>
         <Stack spacing={1} sx={{ p: { xs: 1, md: 2 } }}>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Typography variant="h5">
-              DATOS DE CITA
-            </Typography>
+            <Typography variant="h5">DATOS DE CITA</Typography>
           </Stack>
           <Typography variant="subtitle1">
             {event?.start ? dayjs(event.start).format('dddd, DD MMMM YYYY') : 'Fecha desconocida'}
@@ -67,14 +61,9 @@ export default function CalendarPreview({ event, open, handleClose }) {
                 }}
               >
                 <TimelineItem>
-
                   <TimelineSeparator>
                     <TimelineDot className="icons">
-                      <Iconify
-                        icon="fluent:form-28-filled"
-                        width={30}
-                        sx={{ color: '#5551dd' }}
-                      />
+                      <Iconify icon="fluent:form-28-filled" width={30} sx={{ color: '#5551dd' }} />
                     </TimelineDot>
                     <TimelineConnector />
                   </TimelineSeparator>
@@ -159,20 +148,13 @@ export default function CalendarPreview({ event, open, handleClose }) {
                     ) : (
                       ''
                     )}
-
                   </TimelineContent>
                 </TimelineItem>
 
                 <TimelineItem>
-                  <TimelineSeparator >
-                    <TimelineDot
-                      className='icons'
-                    >
-                      <Iconify
-                        icon="mdi:account-circle"
-                        width={30}
-                        sx={{ color: '#c9a61d' }}
-                      />
+                  <TimelineSeparator>
+                    <TimelineDot className="icons">
+                      <Iconify icon="mdi:account-circle" width={30} sx={{ color: '#c9a61d' }} />
                     </TimelineDot>
                     <TimelineConnector />
                   </TimelineSeparator>
@@ -206,11 +188,7 @@ export default function CalendarPreview({ event, open, handleClose }) {
                 <TimelineItem>
                   <TimelineSeparator>
                     <TimelineDot className="icons">
-                      <Iconify
-                        icon="mdi:calendar-clock"
-                        width={30}
-                        sx={{ color: 'orange' }}
-                      />
+                      <Iconify icon="mdi:calendar-clock" width={30} sx={{ color: 'orange' }} />
                     </TimelineDot>
                     <TimelineConnector />
                   </TimelineSeparator>
@@ -221,8 +199,8 @@ export default function CalendarPreview({ event, open, handleClose }) {
                     <Typography variant="body2" sx={{ color: 'text.disabled' }} mb={3}>
                       {event?.id
                         ? `${dayjs(event?.start).format('HH:mm a')} - ${dayjs(event?.end).format(
-                          'HH:mm a'
-                        )}`
+                            'HH:mm a'
+                          )}`
                         : 'Fecha'}
                     </Typography>
                   </TimelineContent>
@@ -248,11 +226,7 @@ export default function CalendarPreview({ event, open, handleClose }) {
                 <TimelineItem>
                   <TimelineSeparator>
                     <TimelineDot className="icons">
-                      <Iconify
-                        icon="ic:outline-place"
-                        width={30}
-                        sx={{ color: '#084a73' }}
-                      />
+                      <Iconify icon="ic:outline-place" width={30} sx={{ color: '#084a73' }} />
                     </TimelineDot>
                     <TimelineConnector />
                   </TimelineSeparator>
@@ -261,9 +235,7 @@ export default function CalendarPreview({ event, open, handleClose }) {
                     <Typography variant="subtitle1">Ubicación</Typography>
 
                     <Typography variant="body2" sx={{ color: 'text.disabled' }} mb={3}>
-                      {event?.ubicación
-                        ? event?.ubicación
-                        : 'Ubicación desconocida'}
+                      {event?.ubicación ? event?.ubicación : 'Ubicación desconocida'}
                     </Typography>
                   </TimelineContent>
                 </TimelineItem>
@@ -271,11 +243,7 @@ export default function CalendarPreview({ event, open, handleClose }) {
                 <TimelineItem>
                   <TimelineSeparator>
                     <TimelineDot className="icons">
-                      <Iconify
-                        icon="ic:outline-email"
-                        width={30}
-                        sx={{ color: 'gray' }}
-                      />
+                      <Iconify icon="ic:outline-email" width={30} sx={{ color: 'gray' }} />
                     </TimelineDot>
                     <TimelineConnector />
                   </TimelineSeparator>
@@ -302,11 +270,7 @@ export default function CalendarPreview({ event, open, handleClose }) {
                 <TimelineItem>
                   <TimelineSeparator>
                     <TimelineDot className="icons">
-                      <Iconify
-                        icon="fa-solid:money-bill"
-                        width={30}
-                        sx={{ color: '#16d6d7' }}
-                      />
+                      <Iconify icon="fa-solid:money-bill" width={30} sx={{ color: '#16d6d7' }} />
                     </TimelineDot>
                     <TimelineConnector />
                   </TimelineSeparator>
@@ -315,13 +279,11 @@ export default function CalendarPreview({ event, open, handleClose }) {
                     <Typography variant="subtitle1">Pago</Typography>
 
                     <Typography variant="body2" sx={{ color: 'text.disabled' }} mb={3}>
-                      {event?.idDetalle === null ||
-                        event?.idDetalle === 0 ? (
+                      {event?.idDetalle === null || event?.idDetalle === 0 ? (
                         'Sin pago'
                       ) : (
                         <>
-                          {event?.estatusPago === 1 ||
-                            event?.estatusPago === 3
+                          {event?.estatusPago === 1 || event?.estatusPago === 3
                             ? 'Pago aprobado'
                             : 'Pago declinado'}
                         </>
@@ -329,18 +291,30 @@ export default function CalendarPreview({ event, open, handleClose }) {
                     </Typography>
                   </TimelineContent>
                 </TimelineItem>
-
               </Timeline>
-
             </Grid>
           </Grid>
         </Grid>
-
       </DialogContent>
       <DialogActions>
         <Button variant="contained" color="error" onClick={handleClose}>
           Cerrar
         </Button>
+        {event?.id && event?.estatus === 6 ? (
+          <LoadingButton
+            variant="contained"
+            color="success"
+            loading={loadingButton}
+            onClick={async () => {
+              setLoadingButton(true);
+              await handlePayment(event);
+              setLoadingButton(false);
+              handleClose();
+            }}
+          >
+            Pagar
+          </LoadingButton>
+        ) : null}
       </DialogActions>
     </Dialog>
   );
@@ -350,4 +324,5 @@ CalendarPreview.propTypes = {
   event: PropTypes.object,
   open: PropTypes.bool,
   handleClose: PropTypes.func,
+  handlePayment: PropTypes.func,
 };
