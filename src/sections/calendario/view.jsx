@@ -1,14 +1,6 @@
-import Calendar from '@fullcalendar/react';
-import listPlugin from '@fullcalendar/list';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import timelinePlugin from '@fullcalendar/timeline';
-import allLocales from '@fullcalendar/core/locales-all';
 import { useState, useEffect, useCallback } from 'react';
-import interactionPlugin from '@fullcalendar/interaction';
 
 import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -30,12 +22,11 @@ import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
 import { CalendarioEspecilista } from 'src/components/calendar';
 
-import './style.css';
 import { useEvent, useCalendar } from './hooks';
 import HorarioPresencialDialog from './dialogs/horario-presencial';
-import CalendarToolbar from '../calendariobeneficiario/calendar-toolbar';
-import CalendarDialog from '../calendariobeneficiario/dialogs/calendar-dialog';
-import FloatingCircleTimer from '../calendariobeneficiario/floating-circle-timer';
+import BeneficiaryCalendar from './beneficiary/beneficiary-calendar';
+import FloatingCircleTimer from './beneficiary/floating-circle-timer';
+import AppointmentScheduleDialog from './beneficiary/dialogs/appointment-scheduled-dialog';
 
 //---------------------------------------------------------
 
@@ -80,10 +71,11 @@ export default function CalendarioView() {
       ? filters.startDate.getTime() > filters.endDate.getTime()
       : false;
 
-  const {
-    data: beneficiarioEvents,
-    appointmentMutate,
-  } = useGetAppointmentsByUser(date, user?.idUsuario, user?.idSede);
+  const { data: beneficiarioEvents, appointmentMutate } = useGetAppointmentsByUser(
+    date,
+    user?.idUsuario,
+    user?.idSede
+  );
 
   const { events: especialistaEvents, eventsLoading } = GetCustomEvents(
     date,
@@ -192,52 +184,26 @@ export default function CalendarioView() {
       </Stack>
 
       {user?.idRol === 3 ? (
-        <>
-          <CalendarioEspecilista />
-
-          <HorarioPresencialDialog open={presencialDialog} onClose={onCloseHorariosDialog} />
-        </>
+        <CalendarioEspecilista />
       ) : (
-        <Card>
-            <CalendarToolbar
-              date={date}
-              view={view}
-              onNextDate={onDateNext}
-              onPrevDate={onDatePrev}
-              onToday={onDateToday}
-              onChangeView={onChangeView}
-            />
-            <Calendar
-              weekends
-              editable={false} // en false para prevenir un drag del evento
-              selectable
-              locales={allLocales}
-              locale="es"
-              fixedWeekCount={false}
-              showNonCurrentDates={false}
-              rerenderDelay={10}
-              allDayMaintainDuration
-              eventResizableFromStart
-              ref={calendarRef}
-              dayMaxEventRows={3}
-              eventDisplay="block"
-              events={beneficiarioFiltered}
-              headerToolbar={false}
-              select={handleClick}
-              eventClick={onClickEvent}
-              height={smUp ? 720 : 'auto'}
-              plugins={[
-                listPlugin,
-                dayGridPlugin,
-                timelinePlugin,
-                timeGridPlugin,
-                interactionPlugin,
-              ]}
-            />
-        </Card>
+        <BeneficiaryCalendar
+          date={date}
+          view={view}
+          onDateNext={onDateNext}
+          onDatePrev={onDatePrev}
+          onDateToday={onDateToday}
+          onChangeView={onChangeView}
+          calendarRef={calendarRef}
+          beneficiarioFiltered={beneficiarioFiltered}
+          handleClick={handleClick}
+          onClickEvent={onClickEvent}
+        />
       )}
 
-      {/* AgendarCita */}
+      {/* Modal para asignar Horarios Presenciales para el rol de especialista */}
+      <HorarioPresencialDialog open={presencialDialog} onClose={onCloseHorariosDialog} />
+
+      {/* Modal para AgendarCita */}
       <Dialog
         fullWidth
         maxWidth="md"
@@ -247,7 +213,7 @@ export default function CalendarioView() {
           exit: theme.transitions.duration.shortest - 1000,
         }}
       >
-        <CalendarDialog
+        <AppointmentScheduleDialog
           currentEvent={currentEvent}
           onClose={agendarDialog.onFalse}
           selectedDate={selectedDate}
@@ -255,7 +221,7 @@ export default function CalendarioView() {
         />
       </Dialog>
 
-      {/* Previsualizar datos de evento */}
+      {/* Modal para previsualizar datos de evento */}
       <Dialog
         fullWidth
         maxWidth="xs"
@@ -265,7 +231,7 @@ export default function CalendarioView() {
           exit: theme.transitions.duration.shortest - 1000,
         }}
       >
-        <CalendarDialog
+        <AppointmentScheduleDialog
           currentEvent={currentEvent}
           onClose={onCloseForm}
           selectedDate={selectedDate}
@@ -273,6 +239,7 @@ export default function CalendarioView() {
         />
       </Dialog>
 
+      {/* Visualizar los cronometros */}
       <Stack
         style={{
           position: 'fixed',

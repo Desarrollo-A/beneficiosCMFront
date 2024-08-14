@@ -2,62 +2,41 @@ import PropTypes from 'prop-types';
 import Calendar from '@fullcalendar/react';
 import listPlugin from '@fullcalendar/list';
 import dayGridPlugin from '@fullcalendar/daygrid';
-import timelinePlugin from '@fullcalendar/timeline';
 import timeGridPlugin from '@fullcalendar/timegrid';
+import timelinePlugin from '@fullcalendar/timeline';
 import allLocales from '@fullcalendar/core/locales-all';
 import interactionPlugin from '@fullcalendar/interaction';
 
 import Card from '@mui/material/Card';
 
-import { useResponsive } from 'src/hooks/use-responsive';
-
-// import AgendarDialog from 'src/sections/calendario/dialogs/agendar';
-
-import { useCalendar } from '../../hooks';
+import './style.css';
 import { StyledCalendar } from './styles';
 import CalendarToolbar from './calendar-toolbar';
 
-// ----------------------------------------------------------------------
-
-export default function CalendarView({
-  eventsLoading = false,
-  events = [],
-  select,
-  labels,
-  eventClick,
-  loading,
+export default function BeneficiaryCalendar({
+  date,
+  view,
+  onDateNext,
+  onDatePrev,
+  onDateToday,
+  onChangeView,
+  calendarRef,
+  beneficiarioFiltered,
+  handleClick,
+  onClickEvent,
+  smUp,
 }) {
-  const {
-    view,
-    date,
-    // openForm,
-    onDatePrev,
-    onDateNext,
-    // onCloseForm,
-    onDateToday,
-    calendarRef,
-    onChangeView,
-    // onClickEvent,
-    // selectedDate,
-    // selectEventId,
-  } = useCalendar();
-
-  const smUp = useResponsive('up', 'sm');
-
   return (
     <Card>
       <StyledCalendar>
         <CalendarToolbar
           date={date}
           view={view}
-          labels={labels}
-          onToday={onDateToday}
-          loading={loading}
           onNextDate={onDateNext}
           onPrevDate={onDatePrev}
+          onToday={onDateToday}
           onChangeView={onChangeView}
         />
-
         <Calendar
           weekends
           editable={false} // en false para prevenir un drag del evento
@@ -72,10 +51,10 @@ export default function CalendarView({
           ref={calendarRef}
           dayMaxEventRows={3}
           eventDisplay="block"
-          events={events}
+          events={beneficiarioFiltered}
           headerToolbar={false}
-          select={select}
-          eventClick={eventClick}
+          select={handleClick}
+          eventClick={onClickEvent}
           height={smUp ? 720 : 'auto'}
           plugins={[listPlugin, dayGridPlugin, timelinePlugin, timeGridPlugin, interactionPlugin]}
         />
@@ -84,11 +63,16 @@ export default function CalendarView({
   );
 }
 
-CalendarView.propTypes = {
-  eventsLoading: PropTypes.bool,
-  events: PropTypes.any,
-  select: PropTypes.any,
-  labels: PropTypes.any,
-  eventClick: PropTypes.func,
-  loading: PropTypes.bool,
+BeneficiaryCalendar.propTypes = {
+  date: PropTypes.any,
+  view: PropTypes.any,
+  onDateNext: PropTypes.any,
+  onDatePrev: PropTypes.any,
+  onDateToday: PropTypes.any,
+  onChangeView: PropTypes.any,
+  calendarRef: PropTypes.any,
+  beneficiarioFiltered: PropTypes.any,
+  handleClick: PropTypes.any,
+  onClickEvent: PropTypes.any,
+  smUp: PropTypes.any,
 };

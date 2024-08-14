@@ -8,7 +8,7 @@ import { Box, Stack, Button, Typography, DialogActions } from '@mui/material';
 
 import Image from 'src/components/image';
 
-export default function ConfirmDoblePayment({ open, onClose, paymentFunc }) {
+export default function ConfirmPaymentDialog({ open, onClose, paymentFunc }) {
   const theme = useTheme();
   return (
     <Dialog open={open} maxWidth="sm" disableEnforceFocus>
@@ -73,7 +73,7 @@ export default function ConfirmDoblePayment({ open, onClose, paymentFunc }) {
   );
 }
 
-ConfirmDoblePayment.propTypes = {
+ConfirmPaymentDialog.propTypes = {
   open: PropTypes.bool,
   onClose: PropTypes.func,
   paymentFunc: PropTypes.func,

@@ -37,8 +37,8 @@ import { getDocumento } from 'src/api/calendar-colaborador';
 
 import Iconify from 'src/components/iconify';
 
-import '../style.css';
-import ModalTerminos from './modal-terminos';
+import '../../styles/style.css';
+import TermsAndConditionsDialog from '../dialogs/terms-and-conditions-dialog';
 
 dayjs.locale('es');
 dayjs.extend(utc);
@@ -727,7 +727,7 @@ export default function AppointmentSchedule({
         </Stack>
       </Grid>
       <Dialog fullWidth maxWidth="lg" open={open}>
-        <ModalTerminos archivo={archivo} onClose={close} />
+        <TermsAndConditionsDialog archivo={archivo} onClose={close} />
       </Dialog>
     </Grid>
   );

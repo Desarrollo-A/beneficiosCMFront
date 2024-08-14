@@ -16,7 +16,7 @@ import Logo from 'src/components/logoMini';
 import SvgColor from 'src/components/svg-color';
 import { useSettingsContext } from 'src/components/settings';
 
-import PendingModalUser from 'src/sections/calendariobeneficiario/pendingModalUser';
+import PendingModalUser from 'src/sections/calendariobeneficiario-YANOES/pendingModalUser';
 import FinalizarCitaDialog from 'src/components/calendar/view/especialista/dialogs/finalizar-cita-dialog';
 
 import { NAV, HEADER } from '../config-layout';
@@ -52,7 +52,7 @@ export default function Header({ onOpenNav }) {
         </IconButton>
       )}
 
-      {datosUser?.idRol === 2 && <PendingModalUser idUsuario={datosUser?.idUsuario}/>}
+      {datosUser?.idRol === 2 && <PendingModalUser idUsuario={datosUser?.idUsuario} />}
       {datosUser?.idRol === 3 && <FinalizarCitaDialog />}
 
       <Stack
@@ -62,7 +62,7 @@ export default function Header({ onOpenNav }) {
         justifyContent="flex-end"
         spacing={{ xs: 0.5, sm: 1 }}
       >
-        <NotificationsPopover idUsuario={datosUser?.idUsuario}/>
+        <NotificationsPopover idUsuario={datosUser?.idUsuario} />
 
         <SettingsButton />
 

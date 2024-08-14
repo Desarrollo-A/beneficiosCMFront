@@ -18,7 +18,7 @@ import { Grid, Stack, Button, Typography, DialogActions } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
 
-export default function CalendarPreview({ event, open, handleClose, handlePayment }) {
+export default function AppointmentPreviewDialog({ event, open, handleClose, handlePayment }) {
   const [loadingButton, setLoadingButton] = useState(false);
   const theme = useTheme();
 
@@ -320,7 +320,7 @@ export default function CalendarPreview({ event, open, handleClose, handlePaymen
   );
 }
 
-CalendarPreview.propTypes = {
+AppointmentPreviewDialog.propTypes = {
   event: PropTypes.object,
   open: PropTypes.bool,
   handleClose: PropTypes.func,
