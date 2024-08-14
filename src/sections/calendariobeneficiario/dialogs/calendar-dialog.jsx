@@ -448,6 +448,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         await actualizarFechaIntentoPago(DATOS_CITA.ID_USUARIO, agendar.data);
       }
     }
+
     if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
       const METODO_PAGO = Object.freeze({
         NO_APLICA: 7,
@@ -1286,12 +1287,18 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   };
 
   const handleReSchedule = async () => {
-    setBtnDisabled(true);
     // Validaciones de inputs: Coloca leyenda de error debajo de cada input en caso que le falte cumplir con el valor
     if (selectedValues.beneficio === '') return setErrorBeneficio(true);
     if (selectedValues.especialista === '') return setErrorEspecialista(true);
     if (selectedValues.modalidad === '') return setErrorModalidad(true);
     if (horarioSeleccionado === '') return setErrorHorarioSeleccionado(true);
+    setBeneficioDisabled(true);
+    setEspecialistaDisabled(true);
+    setModalidadDisabled(true);
+    setHorariosDisabled(true);
+    setCalendarDisabled(true);
+    setCerrarDisabled(true);
+    setBtnDisabled(true);
 
     const ahora = new Date();
     const añoDate = ahora.getFullYear();
@@ -1387,7 +1394,6 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     } */
 
     await creaEvaluaciones(agendar.data);
-
     await evaluacionReagenda(agendar.data);
 
     const startDate = dayjs(horarioSeleccionado);
@@ -1438,9 +1444,9 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     enqueueSnackbar(agendar.msg, {
       variant: 'success',
     });
-    appointmentMutate();
     onClose();
     mutate(endpoints.encuestas.evaluacionEncuesta);
+    appointmentMutate();
     return setReschedule(false);
   };
 

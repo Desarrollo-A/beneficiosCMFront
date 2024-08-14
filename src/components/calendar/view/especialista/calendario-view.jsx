@@ -21,19 +21,19 @@ import { fTimestamp } from 'src/utils/format-time';
 
 import { useGetNameUser } from 'src/api/user';
 import { useAuthContext } from 'src/auth/hooks';
-import { dropUpdate, useGetMotivos, GetCustomEvents } from 'src/api/calendar-specialist';
-import { useGetSedesPresenciales, useGetHorariosPresenciales } from 'src/api/especialistas';
 import { useGetAppointmentsByUser } from 'src/api/calendar-colaborador';
+import { dropUpdate, useGetMotivos, GetCustomEvents } from 'src/api/calendar-specialist';
+import { /* useGetSedesPresenciales, */ useGetHorariosPresenciales } from 'src/api/especialistas';
 
 import { useSettingsContext } from 'src/components/settings';
 
-import CrearEventoDialog from './dialogs/crear-evento-dialog';
 import { StyledCalendar } from './styles';
 import CalendarToolbar from '../calendar-tool';
-import DatosEventoDialog from './dialogs/datos-evento-dialog';
 import { useEvent, useCalendar } from '../../hooks';
-
+import CrearEventoDialog from './dialogs/crear-evento-dialog';
+import DatosEventoDialog from './dialogs/datos-evento-dialog';
 import AgendarDialog from '../../../../sections/calendario/dialogs/agendar';
+
 // ----------------------------------------------------------------------
 
 const defaultFilters = {
@@ -46,7 +46,7 @@ const defaultFilters = {
 export default function CalendarioView({ labels }) {
   const { user } = useAuthContext();
 
-  const { sedes } = useGetSedesPresenciales({ idEspecialista: user?.idUsuario });
+  /* const { sedes } = useGetSedesPresenciales({ idEspecialista: user?.idUsuario }); */
 
   const smUp = useResponsive('up', 'sm');
   const settings = useSettingsContext();
