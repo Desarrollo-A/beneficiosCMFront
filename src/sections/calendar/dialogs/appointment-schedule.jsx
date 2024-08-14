@@ -37,7 +37,7 @@ import { getDocumento } from 'src/api/calendar-colaborador';
 
 import Iconify from 'src/components/iconify';
 
-import '../style.css';
+import '../styles/style.css';
 import ModalTerminos from './modal-terminos';
 
 dayjs.locale('es');

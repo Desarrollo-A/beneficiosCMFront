@@ -82,7 +82,7 @@ import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider from 'src/components/hook-form/form-provider';
 
-import '../style.css';
+import '../styles/style.css';
 import CalendarPreview from './calendar-preview';
 import AppointmentSchedule from './appointment-schedule';
 import ConfirmDoblePayment from './confirm-doble-payment';

@@ -46,10 +46,10 @@ import { useSnackbar } from 'src/components/snackbar';
 import { RHFTextField } from 'src/components/hook-form';
 import FormProvider from 'src/components/hook-form/form-provider';
 
-import '../style.css';
-import CancelarEventoDialog from './cancelar-evento-dialog';
+import '../../styles/style.css';
+import CancelEventDialog from './cancel-event-dialog';
 
-export default function DatosEventoDialog({
+export default function DataEventDialog({
   currentEvent,
   onClose,
   selectedDate,
@@ -646,7 +646,7 @@ export default function DatosEventoDialog({
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <CancelarEventoDialog
+        <CancelEventDialog
           type={type}
           currentEvent={currentEvent}
           pastCheck={pastCheck}
@@ -731,7 +731,7 @@ function dialogTitle(estatus, type) {
   }
 }
 
-DatosEventoDialog.propTypes = {
+DataEventDialog.propTypes = {
   currentEvent: PropTypes.object,
   onClose: PropTypes.func,
   reasons: PropTypes.any,

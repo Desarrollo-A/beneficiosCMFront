@@ -40,7 +40,7 @@ import FormProvider from 'src/components/hook-form/form-provider';
 import { RHFTextField, RHFAutocomplete } from 'src/components/hook-form';
 
 // const datosUser = JSON.parse(Base64.decode(localStorage.getItem('accessToken').split('.')[2]));
-export default function CrearEventoDialog({ currentEvent, onClose, userData, selectedDate, usersMutate }) {
+export default function CreateEventDialog({ currentEvent, onClose, userData, selectedDate, usersMutate }) {
   const { user } = useAuthContext(); // variable del la sesion del usuario
   dayjs.locale('es'); // valor para cambiar el idioma del dayjs
 
@@ -547,7 +547,7 @@ function userSelect(type, patient) {
   return selectedUser;
 }
 
-CrearEventoDialog.propTypes = {
+CreateEventDialog.propTypes = {
   currentEvent: PropTypes.object,
   onClose: PropTypes.func,
   userData: PropTypes.any,

@@ -5,7 +5,7 @@ import { Box, List, Stack, Button, Typography, DialogActions } from '@mui/materi
 
 //---------------------------------------------------------
 
-export default function LabelsDialog({ open, labels=[], onClose }) {
+export default function ColorsStatusDialog({ open, labels=[], onClose }) {
 
   return (
     <Dialog // dialog de confirmación de finalización
@@ -73,7 +73,7 @@ export default function LabelsDialog({ open, labels=[], onClose }) {
   );
 }
 
-LabelsDialog.propTypes = {
+ColorsStatusDialog.propTypes = {
   open: PropTypes.bool,
   onClose: PropTypes.func,
   labels: PropTypes.array,

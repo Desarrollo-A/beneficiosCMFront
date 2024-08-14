@@ -35,7 +35,7 @@ import {
 
 import Iconify from 'src/components/iconify';
 
-export default function CancelarEventoDialog({
+export default function CancelEventDialog({
   type,
   currentEvent,
   pastCheck,
@@ -456,7 +456,7 @@ function checkHour(start, end, cancelType) {
   return validation;
 }
 
-CancelarEventoDialog.propTypes = {
+CancelEventDialog.propTypes = {
   type: PropTypes.any,
   currentEvent: PropTypes.object,
   pastCheck: PropTypes.any,

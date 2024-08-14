@@ -26,12 +26,12 @@ import { dropUpdate, useGetMotivos, GetCustomEvents } from 'src/api/calendar-spe
 
 import { useSettingsContext } from 'src/components/settings';
 
-import { StyledCalendar } from './styles';
-import CalendarToolbar from '../calendar-tool';
-import { useEvent, useCalendar } from '../../hooks';
-import CrearEventoDialog from './dialogs/crear-evento-dialog';
-import DatosEventoDialog from './dialogs/datos-evento-dialog';
-import AgendarDialog from '../../../../sections/calendario/dialogs/agendar';
+import AgendarDialog from '../dialogs/agendar';
+import { useEvent, useCalendar } from '../hooks';
+import { StyledCalendar } from '../styles/styles';
+import CalendarToolbar from '../components/calendar-toolbar';
+import CreateEventDialog from './dialogs/create-event-dialog';
+import DataEventDialog from './dialogs/data-event-dialog';
 
 // ----------------------------------------------------------------------
 
@@ -84,6 +84,8 @@ export default function CalendarioView() {
   const { horarios } = useGetHorariosPresenciales({ idEspecialista: user?.idUsuario });
 
   const currentEvent = useEvent(events, selectEventId, openForm);
+
+  console.log(openForm)
 
   const dataFiltered = applyFilter({
     inputData: events.concat(horarios),
@@ -178,7 +180,7 @@ export default function CalendarioView() {
         </StyledCalendar>
       </Card>
 
-      {currentEvent?.idEspecialista !== user?.idUsuario? (
+      {currentEvent?.idEspecialista !== user?.idUsuario &&(
         <AgendarDialog
           maxWidth="xs"
           open={openForm}
@@ -187,7 +189,9 @@ export default function CalendarioView() {
           selectedDate={selectedDate}
           appointmentMutate={appointmentMutate}
         />
-      ) : (
+      )} 
+
+      {currentEvent?.idEspecialista === user?.idUsuario &&(
         <Dialog
           fullWidth
           maxWidth={modalSize}
@@ -198,7 +202,7 @@ export default function CalendarioView() {
           }}
         >
           {currentEvent?.id ? (
-            <DatosEventoDialog
+            <DataEventDialog
               currentEvent={currentEvent}
               onClose={onCloseForm}
               selectedDate={selectedDate}
@@ -206,7 +210,7 @@ export default function CalendarioView() {
               reasons={reasons}
             />
           ) : (
-            <CrearEventoDialog
+            <CreateEventDialog
               onClose={onCloseForm}
               userData={userData}
               usersMutate={usersMutate}

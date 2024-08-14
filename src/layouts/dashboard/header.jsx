@@ -17,7 +17,7 @@ import SvgColor from 'src/components/svg-color';
 import { useSettingsContext } from 'src/components/settings';
 
 import PendingModalUser from 'src/sections/calendariobeneficiario/pendingModalUser';
-import FinalizarCitaDialog from 'src/components/calendar/view/especialista/dialogs/finalizar-cita-dialog';
+import EndAppointmentDialog from 'src/sections/calendar/specialist/dialogs/end-appointment-dialog';
 
 import { NAV, HEADER } from '../config-layout';
 import SettingsButton from '../common/settings-button';
@@ -53,7 +53,7 @@ export default function Header({ onOpenNav }) {
       )}
 
       {datosUser?.idRol === 2 && <PendingModalUser idUsuario={datosUser?.idUsuario}/>}
-      {datosUser?.idRol === 3 && <FinalizarCitaDialog />}
+      {datosUser?.idRol === 3 && <EndAppointmentDialog />}
 
       <Stack
         flexGrow={1}

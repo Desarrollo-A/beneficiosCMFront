@@ -2,7 +2,7 @@ import { Helmet } from "react-helmet-async";
 
 import { useSession } from 'src/hooks/use-session';
 
-import { CalendarioView } from "src/sections/calendario";
+import { CalendarView } from "src/sections/calendar";
 
 export default function CalendarioPage(){
     useSession()
@@ -13,7 +13,7 @@ export default function CalendarioPage(){
                 <title>Calendario</title>
             </Helmet>
 
-            <CalendarioView />
+            <CalendarView />
         </>
     );
 }

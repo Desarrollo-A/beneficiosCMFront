@@ -28,12 +28,11 @@ import { useGetAppointmentsByUser } from 'src/api/calendar-colaborador';
 
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
-import { CalendarioEspecilista } from 'src/components/calendar';
 
-import './style.css';
 import { useEvent, useCalendar } from './hooks';
+import CalendarToolbar from './components/calendar-toolbar';
 import HorarioPresencialDialog from './dialogs/horario-presencial';
-import CalendarToolbar from '../calendariobeneficiario/calendar-toolbar';
+import CalendarEpecialistView from './specialist/calendar-especialist-view';
 import CalendarDialog from '../calendariobeneficiario/dialogs/calendar-dialog';
 import FloatingCircleTimer from '../calendariobeneficiario/floating-circle-timer';
 
@@ -47,7 +46,7 @@ const defaultFilters = {
 
 //---------------------------------------------------------
 
-export default function CalendarioView() {
+export default function CalendarView() {
   const theme = useTheme();
   const settings = useSettingsContext();
   const { user } = useAuthContext();
@@ -193,7 +192,7 @@ export default function CalendarioView() {
 
       {user?.idRol === 3 ? (
         <>
-          <CalendarioEspecilista />
+          <CalendarEpecialistView />
 
           <HorarioPresencialDialog open={presencialDialog} onClose={onCloseHorariosDialog} />
         </>
