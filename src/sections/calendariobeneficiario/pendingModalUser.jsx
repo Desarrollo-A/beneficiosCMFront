@@ -36,10 +36,9 @@ import {
 
 import Iconify from 'src/components/iconify';
 
-import CalendarPreview from 'src/sections/calendariobeneficiario/calendar-preview';
-
 import EvaluateDialog from './evaluate-dialog';
-import ConfirmDoblePayment from './confirm-doble-payment';
+import CalendarPreview from './dialogs/calendar-preview';
+import ConfirmDoblePayment from './dialogs/confirm-doble-payment';
 
 export default function PendingModalUser({ idUsuario }) {
   const [open, setOpen] = useState(true); // En true para abrir el modal

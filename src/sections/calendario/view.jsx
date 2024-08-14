@@ -1,3 +1,4 @@
+import Calendar from '@fullcalendar/react';
 import listPlugin from '@fullcalendar/list';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -27,65 +28,17 @@ import { useGetAppointmentsByUser } from 'src/api/calendar-colaborador';
 
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
-
-import { StyledCalendar } from '../calendariobeneficiario/styles';
-import { Calendar, CalendarioEspecilista } from 'src/components/calendar';
+import { CalendarioEspecilista } from 'src/components/calendar';
 
 import './style.css';
-import AgendarDialog from './dialogs/agendar';
 import { useEvent, useCalendar } from './hooks';
-import CalendarDialog from '../calendariobeneficiario/calendar-dialog';
-import CalendarToolbar from '../calendariobeneficiario/calendar-toolbar';
-
+import { StyledCalendar } from '../calendariobeneficiario/styles';
 import HorarioPresencialDialog from './dialogs/horario-presencial';
-
-// import PresencialDialog from './dialogs/presencial';
+import CalendarToolbar from '../calendariobeneficiario/calendar-toolbar';
+import CalendarDialog from '../calendariobeneficiario/dialogs/calendar-dialog';
 import FloatingCircleTimer from '../calendariobeneficiario/floating-circle-timer';
+
 //---------------------------------------------------------
-
-const COLORS = [
-  {
-    color: '#ffa500',
-    text: 'Cita por asistir',
-  },
-  {
-    color: '#ff0000',
-    text: 'Cita cancelada colaborador / especialista',
-  },
-  {
-    color: '#808080',
-    text: 'Cita penalizada',
-  },
-  {
-    color: '#008000',
-    text: 'Cita finalizada',
-  },
-  {
-    color: '#ff4d67',
-    text: 'Cita con falta justificada',
-  },
-  {
-    color: '#00ffff',
-    text: 'Cita pendiente de pago',
-  },
-
-  {
-    color: 'pink',
-    text: 'Cita con pago pendiente expirado',
-  },
-  {
-    color: '#ffe800',
-    text: 'Primera cita',
-  },
-  {
-    color: '#0000ff',
-    text: 'Cita en línea',
-  },
-  {
-    color: '#33105D',
-    text: 'Cita en proceso de pago',
-  },
-];
 
 const defaultFilters = {
   colors: [],
@@ -140,7 +93,7 @@ export default function CalendarioView() {
     user?.idSede
   );
 
-  const { horarios, horariosGet, horariosLoading } = useGetHorariosPresenciales({
+  const { horarios, horariosGet /* horariosLoading */ } = useGetHorariosPresenciales({
     idEspecialista: user?.idUsuario,
   });
 
@@ -168,7 +121,7 @@ export default function CalendarioView() {
   }, []);
 
   const renderFloatingCircleTimers = () =>
-    events
+    beneficiarioEvents
       .filter(
         (event) => event?.idDetalle === null && (event?.estatus === 6 || event?.estatus === 10)
       )
@@ -242,7 +195,7 @@ export default function CalendarioView() {
 
       {user?.idRol === 3 ? (
         <>
-          <CalendarioEspecilista labels={COLORS} />
+          <CalendarioEspecilista />
 
           <HorarioPresencialDialog open={presencialDialog} onClose={onCloseHorariosDialog} />
         </>
@@ -252,7 +205,7 @@ export default function CalendarioView() {
             <CalendarToolbar
               date={date}
               view={view}
-              loading={eventsLoading}
+              loading={appointmentLoading}
               onNextDate={onDateNext}
               onPrevDate={onDatePrev}
               onToday={onDateToday}

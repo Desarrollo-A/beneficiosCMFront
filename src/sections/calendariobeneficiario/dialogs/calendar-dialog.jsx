@@ -14,7 +14,6 @@ import { Grid } from '@mui/material';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/system/Stack';
 import Timeline from '@mui/lab/Timeline';
-import Dialog from '@mui/material/Dialog';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import TimelineDot from '@mui/lab/TimelineDot';
@@ -82,9 +81,11 @@ import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider from 'src/components/hook-form/form-provider';
 
-import './style.css';
+import '../style.css';
+import ConfirmAction from './confirm-action';
 import CalendarPreview from './calendar-preview';
-import AppointmentSchedule from './appointment-schedule';
+import ReescheduleDialog from './reeschedule-dialog';
+import AppointmentSchedule from '../appointment-schedule';
 import ConfirmDoblePayment from './confirm-doble-payment';
 
 dayjs.locale('es');
@@ -2237,7 +2238,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
         </FormProvider>
       )}
 
-      {/* REAGENDAR CITA */}
+      {/* REAGENDAR CITA 
       <Dialog
         fullWidth
         maxWidth="md"
@@ -2320,38 +2321,49 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
           )}
         </DialogActions>
       </Dialog>
+      */}
 
-      <Dialog open={confirmCancel} maxWidth="sm">
-        <DialogContent>
-          <Stack
-            direction="row"
-            justifyContent="center"
-            useFlexGap
-            flexWrap="wrap"
-            sx={{ pt: { xs: 1, md: 2 }, pb: { xs: 1, md: 2 } }}
-          >
-            <Typography color="red" sx={{ mt: 1, mb: 1 }}>
-              <strong>¡ATENCIÓN!</strong>
-            </Typography>
-          </Stack>
+      <ReescheduleDialog
+        open={reschedule}
+        onClose={() => setReschedule(false)}
+        selectedValues={selectedValues}
+        handleChange={handleChange}
+        beneficios={beneficios}
+        errorBeneficio={errorBeneficio}
+        especialistas={especialistas}
+        errorEspecialista={errorEspecialista}
+        modalidades={modalidades}
+        errorModalidad={errorModalidad}
+        oficina={oficina}
+        isLoading={isLoading}
+        isLoadingEspecialidad={isLoadingEspecialidad}
+        isLoadingModalidad={isLoadingModalidad}
+        handleDateChange={handleDateChange}
+        shouldDisableDate={shouldDisableDate}
+        horariosDisponibles={horariosDisponibles}
+        horarioSeleccionado={horarioSeleccionado}
+        errorHorarioSeleccionado={errorHorarioSeleccionado}
+        currentEvent={currentEvent}
+        handleHorarioSeleccionado={handleHorarioSeleccionado}
+        beneficioActivo={beneficioActivo}
+        aceptarTerminos={onAceptar}
+        aceptar={aceptar}
+        beneficioDisabled={beneficioDisabled}
+        especialistaDisabled={especialistaDisabled}
+        modalidadDisabled={modalidadDisabled}
+        horariosDisabled={horariosDisabled}
+        calendarDisabled={calendarDisabled}
+        selectedDay={selectedDay}
+        handleReSchedule={handleReSchedule}
+        btnDisabled={btnDisabled}
+      />
 
-          <Typography>¿Está seguro de cancelar la cita?</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button variant="contained" color="error" onClick={() => setConfirmCancel(false)}>
-            Cerrar
-          </Button>
-          <LoadingButton
-            variant="contained"
-            color="success"
-            onClick={onCancel}
-            loading={btnConfirmAction}
-            autoFocus
-          >
-            Aceptar
-          </LoadingButton>
-        </DialogActions>
-      </Dialog>
+      <ConfirmAction
+        open={confirmCancel}
+        onClose={() => setConfirmCancel(false)}
+        onCancel={onCancel}
+        btnConfirmAction={btnConfirmAction}
+      />
 
       <ConfirmDoblePayment
         open={confirmDoblePago}

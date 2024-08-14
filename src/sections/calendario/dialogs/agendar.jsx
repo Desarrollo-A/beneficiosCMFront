@@ -112,8 +112,6 @@ export default function AgendarDialog({
     modalidad: '',
   });
 
-console.log(currentEvent)
-  
   const [open2, setOpen2] = useState(false);
   const [confirmCancel, setConfirmCancel] = useState(false);
   const [reschedule, setReschedule] = useState(false);

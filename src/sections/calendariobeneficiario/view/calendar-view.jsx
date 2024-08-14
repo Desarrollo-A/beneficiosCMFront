@@ -28,9 +28,9 @@ import { useSettingsContext } from 'src/components/settings';
 
 import '../style.css';
 import { StyledCalendar } from '../styles';
-import CalendarDialog from '../calendar-dialog';
 import { useEvent, useCalendar } from '../hooks';
 import CalendarToolbar from '../calendar-toolbar';
+import CalendarDialog from '../dialogs/calendar-dialog';
 import FloatingCircleTimer from '../floating-circle-timer';
 
 // ----------------------------------------------------------------------

@@ -43,7 +43,7 @@ const defaultFilters = {
 };
 
 // ----------------------------------------------------------------------
-export default function CalendarioView({labels}) {
+export default function CalendarioView({ labels }) {
   const { user } = useAuthContext();
 
   const { sedes } = useGetSedesPresenciales({ idEspecialista: user?.idUsuario });
