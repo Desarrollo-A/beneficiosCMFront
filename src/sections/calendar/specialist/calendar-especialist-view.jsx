@@ -27,7 +27,7 @@ import { dropUpdate, useGetMotivos, GetCustomEvents } from 'src/api/calendar-spe
 import { useSettingsContext } from 'src/components/settings';
 
 import AgendarDialog from '../dialogs/agendar';
-import { useEvent, useCalendar } from '../hooks';
+import { useEvent, useCalendar } from './hooks';
 import { StyledCalendar } from '../styles/styles';
 import CalendarToolbar from '../components/calendar-toolbar';
 import CreateEventDialog from './dialogs/create-event-dialog';
@@ -180,7 +180,7 @@ export default function CalendarioView() {
         </StyledCalendar>
       </Card>
 
-      {currentEvent?.idEspecialista !== user?.idUsuario &&(
+      {currentEvent?.idEspecialista !== user?.idUsuario ?(
         <AgendarDialog
           maxWidth="xs"
           open={openForm}
@@ -189,9 +189,7 @@ export default function CalendarioView() {
           selectedDate={selectedDate}
           appointmentMutate={appointmentMutate}
         />
-      )} 
-
-      {currentEvent?.idEspecialista === user?.idUsuario &&(
+      ):(
         <Dialog
           fullWidth
           maxWidth={modalSize}
