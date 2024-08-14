@@ -62,7 +62,7 @@ export default function Header({ onOpenNav }) {
         justifyContent="flex-end"
         spacing={{ xs: 0.5, sm: 1 }}
       >
-        <NotificationsPopover idUsuario={datosUser?.idUsuario}/>
+        <NotificationsPopover idUsuario={datosUser?.idUsuario} />
 
         <SettingsButton />
 
