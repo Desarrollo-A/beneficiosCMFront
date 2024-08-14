@@ -37,13 +37,8 @@ import { getDocumento } from 'src/api/calendar-colaborador';
 
 import Iconify from 'src/components/iconify';
 
-<<<<<<<< HEAD:src/sections/calendar/dialogs/appointment-schedule.jsx
-import '../styles/style.css';
+import './style.css';
 import ModalTerminos from './modal-terminos';
-========
-import '../../styles/style.css';
-import TermsAndConditionsDialog from '../dialogs/terms-and-conditions-dialog';
->>>>>>>> origin/unificacionCalendarioArt:src/sections/calendario/beneficiary/components/appointment-schedule.jsx
 
 dayjs.locale('es');
 dayjs.extend(utc);
@@ -732,7 +727,7 @@ export default function AppointmentSchedule({
         </Stack>
       </Grid>
       <Dialog fullWidth maxWidth="lg" open={open}>
-        <TermsAndConditionsDialog archivo={archivo} onClose={close} />
+        <ModalTerminos archivo={archivo} onClose={close} />
       </Dialog>
     </Grid>
   );

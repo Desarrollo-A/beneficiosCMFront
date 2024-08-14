@@ -1,6 +1,13 @@
-import { useState, useEffect, useCallback } from 'react';
+import Calendar from '@fullcalendar/react';
+import { useState, useEffect, useCallback } from 'react'; // => request placed at the top
+import listPlugin from '@fullcalendar/list';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import timelinePlugin from '@fullcalendar/timeline';
+import allLocales from '@fullcalendar/core/locales-all';
+import interactionPlugin from '@fullcalendar/interaction';
 
-import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -14,22 +21,19 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import { fTimestamp } from 'src/utils/format-time';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { GetCustomEvents } from 'src/api/calendar-specialist';
-import { useGetHorariosPresenciales } from 'src/api/especialistas';
 import { useGetAppointmentsByUser } from 'src/api/calendar-colaborador';
 
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
 
-import { useEvent, useCalendar } from './hooks';
-import BeneficiaryCalendar from './beneficiary/beneficiary-calendar';
-import PresencialDialog from './specialist/dialogs/horario-presencial';
-import CalendarEpecialistView from './specialist/calendar-especialist-view';
-import FloatingCircleTimer from '../calendariobeneficiario/floating-circle-timer';
-import AppointmentScheduleDialog from './beneficiary/dialogs/appointment-scheduled-dialog';
+import '../style.css';
+import { StyledCalendar } from '../styles';
+import { useEvent, useCalendar } from '../hooks';
+import CalendarToolbar from '../calendar-toolbar';
+import CalendarDialog from '../dialogs/calendar-dialog';
+import FloatingCircleTimer from '../floating-circle-timer';
 
-
-//---------------------------------------------------------
+// ----------------------------------------------------------------------
 
 const defaultFilters = {
   colors: [],
@@ -37,18 +41,22 @@ const defaultFilters = {
   endDate: null,
 };
 
-//---------------------------------------------------------
+// ----------------------------------------------------------------------
 
 export default function CalendarView() {
   const theme = useTheme();
+  const dialog = useBoolean();
+
+  const { user: datosUser } = useAuthContext();
+
   const settings = useSettingsContext();
-  const { user } = useAuthContext();
   const smUp = useResponsive('up', 'sm');
+  const [filters] = useState(defaultFilters);
 
-  const [animate, setAnimate] = useState(false);
-  const [presencialDialog, setOpenPresencialDialog] = useState(false);
-
-  const agendarDialog = useBoolean();
+  const dateError =
+    filters.startDate && filters.endDate
+      ? filters.startDate.getTime() > filters.endDate.getTime()
+      : false;
 
   const {
     view,
@@ -65,34 +73,16 @@ export default function CalendarView() {
     selectEventId,
   } = useCalendar();
 
-  const [filters] = useState(defaultFilters);
-
-  const dateError =
-    filters.startDate && filters.endDate
-      ? filters.startDate.getTime() > filters.endDate.getTime()
-      : false;
-
   const {
-    data: beneficiarioEvents,
+    data: events,
+    appointmentLoading: eventsLoading,
     appointmentMutate,
-  } = useGetAppointmentsByUser(date, user?.idUsuario, user?.idSede);
-
-  const { events: especialistaEvents, eventsLoading } = GetCustomEvents(
-    date,
-    user?.idUsuario,
-    user?.idSede
-  );
-
-  const { horarios, horariosGet } = useGetHorariosPresenciales({
-    idEspecialista: user?.idUsuario,
-  });
-
-  const events = [...beneficiarioEvents, ...especialistaEvents];
+  } = useGetAppointmentsByUser(date, datosUser?.idUsuario, datosUser?.idSede);
 
   const currentEvent = useEvent(events, selectEventId, openForm);
 
-  const beneficiarioFiltered = applyFilter({
-    inputData: events.concat(horarios),
+  const dataFiltered = applyFilter({
+    inputData: events,
     filters,
     dateError,
   });
@@ -100,6 +90,8 @@ export default function CalendarView() {
   useEffect(() => {
     appointmentMutate();
   }, [appointmentMutate]);
+
+  const [animate, setAnimate] = useState(false);
 
   const handleClick = useCallback(() => {
     document.body.scrollTop = 0;
@@ -111,7 +103,7 @@ export default function CalendarView() {
   }, []);
 
   const renderFloatingCircleTimers = () =>
-    beneficiarioEvents
+    events
       .filter(
         (event) => event?.idDetalle === null && (event?.estatus === 6 || event?.estatus === 10)
       )
@@ -121,108 +113,95 @@ export default function CalendarView() {
           benefit={event?.beneficio}
           leftTime={event?.diferenciaEnMs}
           appointmentMutate={appointmentMutate}
-          topOffset={index * 1} // Ajustar el espaciado vertical entre elementos
+          topOffset={index * 120} // Ajustar el espaciado vertical entre elementos
         />
       ));
 
-  const addHorarioPresencial = () => {
-    setOpenPresencialDialog(true);
-  };
-
-  const onCloseHorariosDialog = () => {
-    setOpenPresencialDialog(false);
-
-    horariosGet({ idEspecialista: user?.idUsuario });
-  };
-
   return (
-    <Container maxWidth={settings.themeStretch ? false : 'xl'}>
-      <Stack
-        direction={{ xs: 'column', md: 'row' }}
-        alignItems="center"
-        spacing={2}
-        justifyContent="right"
-        sx={{
-          mb: { xs: 3, md: 5 },
-        }}
-      >
-        <Typography variant="h4">Calendario</Typography>
-        <Box sx={{ flex: 1 }} />
-
-        {user?.idRol === 3 ? (
-          <>
-            <Button
-              color="inherit"
-              variant="outlined"
-              onClick={addHorarioPresencial}
-              fullWidth={!smUp}
-            >
-              Establecer horario presencial
-            </Button>
-
-            <Button
-              className={`ButtonCita ${animate ? 'animate' : ''}`}
-              onClick={agendarDialog.onTrue}
-              id="animateElement"
-              fullWidth={!smUp}
-            >
-              <span>Agendar nueva cita</span>
-              <Iconify icon="carbon:add-filled" />
-            </Button>
-          </>
-        ) : (
+    <>
+      <Container maxWidth={settings.themeStretch ? false : 'xl'}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          sx={{
+            mb: { xs: 3, md: 5 },
+          }}
+        >
+          <Typography variant="h4">Calendario</Typography>
           <Button
             className={`ButtonCita ${animate ? 'animate' : ''}`}
-            onClick={agendarDialog.onTrue}
+            onClick={dialog.onTrue}
             id="animateElement"
-            fullWidth={!smUp}
+            sx={{ backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : 'white' }}
           >
             <span>Agendar nueva cita</span>
             <Iconify icon="carbon:add-filled" />
           </Button>
-        )}
-      </Stack>
+        </Stack>
 
-      {user?.idRol === 3 ? (
-        <>
-          <CalendarEpecialistView />
+        {/* Calendario */}
+        <Card>
+          <StyledCalendar>
+            <CalendarToolbar
+              date={date}
+              view={view}
+              loading={eventsLoading}
+              onNextDate={onDateNext}
+              onPrevDate={onDatePrev}
+              onToday={onDateToday}
+              onChangeView={onChangeView}
+            />
+            <Calendar
+              weekends
+              editable={false} // en false para prevenir un drag del evento
+              selectable
+              locales={allLocales}
+              locale="es"
+              fixedWeekCount={false}
+              showNonCurrentDates={false}
+              rerenderDelay={10}
+              allDayMaintainDuration
+              eventResizableFromStart
+              ref={calendarRef}
+              dayMaxEventRows={3}
+              eventDisplay="block"
+              events={dataFiltered}
+              headerToolbar={false}
+              select={handleClick}
+              eventClick={onClickEvent}
+              height={smUp ? 720 : 'auto'}
+              plugins={[
+                listPlugin,
+                dayGridPlugin,
+                timelinePlugin,
+                timeGridPlugin,
+                interactionPlugin,
+              ]}
+            />
+          </StyledCalendar>
+        </Card>
+      </Container>
 
-          <PresencialDialog open={presencialDialog} onClose={onCloseHorariosDialog} />
-        </>
-      ) : (
-        <BeneficiaryCalendar
-          date={date}
-          view={view}
-          onDateNext={onDateNext}
-          onDatePrev={onDatePrev}
-          onDateToday={onDateToday}
-          onChangeView={onChangeView}
-          calendarRef={calendarRef}
-          beneficiarioFiltered={beneficiarioFiltered}
-          handleClick={handleClick}
-          onClickEvent={onClickEvent}
-        />
-      )}
-
-      {/* Modal para AgendarCita */}
+      {/* AgendarCita */}
       <Dialog
         fullWidth
         maxWidth="md"
-        open={agendarDialog.value}
+        open={dialog.value}
         transitionDuration={{
           enter: theme.transitions.duration.shortest,
           exit: theme.transitions.duration.shortest - 1000,
         }}
       >
-        <AppointmentScheduleDialog
+        <CalendarDialog
           currentEvent={currentEvent}
-          onClose={agendarDialog.onFalse}
+          onClose={dialog.onFalse}
           selectedDate={selectedDate}
           appointmentMutate={appointmentMutate}
         />
       </Dialog>
 
-      {/* Modal para previsualizar datos de evento */}
+      {/* Previsualizar datos de evento */}
       <Dialog
         fullWidth
         maxWidth="xs"
@@ -232,7 +211,7 @@ export default function CalendarView() {
           exit: theme.transitions.duration.shortest - 1000,
         }}
       >
-        <AppointmentScheduleDialog
+        <CalendarDialog
           currentEvent={currentEvent}
           onClose={onCloseForm}
           selectedDate={selectedDate}
@@ -256,11 +235,11 @@ export default function CalendarView() {
       >
         {!eventsLoading && renderFloatingCircleTimers()}
       </Stack>
-    </Container>
+    </>
   );
 }
 
-//---------------------------------------------------------
+// ----------------------------------------------------------------------
 
 const applyFilter = ({ inputData, filters, dateError }) => {
   const { colors, startDate, endDate } = filters;

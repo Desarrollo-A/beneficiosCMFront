@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 
-import { CalendarView } from 'src/sections/calendariobeneficiario-YANOES/view';
+import { CalendarView } from 'src/sections/calendariobeneficiario/view';
 
 // ----------------------------------------------------------------------
 

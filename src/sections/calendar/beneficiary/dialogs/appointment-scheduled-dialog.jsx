@@ -14,7 +14,6 @@ import { Grid } from '@mui/material';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/system/Stack';
 import Timeline from '@mui/lab/Timeline';
-import Dialog from '@mui/material/Dialog';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import TimelineDot from '@mui/lab/TimelineDot';
@@ -82,10 +81,12 @@ import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider from 'src/components/hook-form/form-provider';
 
-import '../styles/style.css';
-import CalendarPreview from './calendar-preview';
-import AppointmentSchedule from './appointment-schedule';
-import ConfirmDoblePayment from './confirm-doble-payment';
+import '../style.css';
+import ConfirmAction from './confirm-cancel-dialog';
+import ReescheduleDialog from './reeschedule-dialog';
+import ConfirmDoblePayment from './confirm-payment-dialog';
+import CalendarPreview from './appointment-preview-dialog';
+import AppointmentSchedule from '../components/appointment-schedule';
 
 dayjs.locale('es');
 dayjs.extend(utc);
@@ -96,22 +97,17 @@ let initialValue = dayjs().tz('America/Mexico_City'); // Objeto con todo los dat
 const lastDayOfNextMonth = initialValue.add(2, 'month').startOf('month').subtract(1, 'day');
 initialValue = initialValue.hour() < 15 ? initialValue : initialValue.add(1, 'day');
 
-//---------------------------------------------------------
-
-export default function AgendarDialog({
-  open,
+export default function AppointmentScheduleDialog({
   currentEvent,
   onClose,
   selectedDate,
   appointmentMutate,
-  maxWidth,
 }) {
   const [selectedValues, setSelectedValues] = useState({
     beneficio: '',
     especialista: '',
     modalidad: '',
   });
-
   const [open2, setOpen2] = useState(false);
   const [confirmCancel, setConfirmCancel] = useState(false);
   const [reschedule, setReschedule] = useState(false);
@@ -457,6 +453,7 @@ export default function AgendarDialog({
         await actualizarFechaIntentoPago(DATOS_CITA.ID_USUARIO, agendar.data);
       }
     }
+
     if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
       const METODO_PAGO = Object.freeze({
         NO_APLICA: 7,
@@ -1295,12 +1292,18 @@ export default function AgendarDialog({
   };
 
   const handleReSchedule = async () => {
-    setBtnDisabled(true);
     // Validaciones de inputs: Coloca leyenda de error debajo de cada input en caso que le falte cumplir con el valor
     if (selectedValues.beneficio === '') return setErrorBeneficio(true);
     if (selectedValues.especialista === '') return setErrorEspecialista(true);
     if (selectedValues.modalidad === '') return setErrorModalidad(true);
     if (horarioSeleccionado === '') return setErrorHorarioSeleccionado(true);
+    setBeneficioDisabled(true);
+    setEspecialistaDisabled(true);
+    setModalidadDisabled(true);
+    setHorariosDisabled(true);
+    setCalendarDisabled(true);
+    setCerrarDisabled(true);
+    setBtnDisabled(true);
 
     const ahora = new Date();
     const añoDate = ahora.getFullYear();
@@ -1396,7 +1399,6 @@ export default function AgendarDialog({
     } */
 
     await creaEvaluaciones(agendar.data);
-
     await evaluacionReagenda(agendar.data);
 
     const startDate = dayjs(horarioSeleccionado);
@@ -1447,9 +1449,9 @@ export default function AgendarDialog({
     enqueueSnackbar(agendar.msg, {
       variant: 'success',
     });
-    appointmentMutate();
     onClose();
     mutate(endpoints.encuestas.evaluacionEncuesta);
+    appointmentMutate();
     return setReschedule(false);
   };
 
@@ -1591,15 +1593,7 @@ export default function AgendarDialog({
   }, [benefits]);
 
   return (
-    <Dialog
-      fullWidth
-      maxWidth={maxWidth}
-      open={open}
-      transitionDuration={{
-        enter: theme.transitions.duration.shortest,
-        exit: theme.transitions.duration.shortest - 1000,
-      }}
-    >
+    <>
       {open2 === false && (
         <FormProvider methods={methods} onSubmit={onSubmit}>
           {currentEvent?.id && (
@@ -2255,121 +2249,48 @@ export default function AgendarDialog({
         </FormProvider>
       )}
 
-      {/* REAGENDAR CITA */}
-      <Dialog
-        fullWidth
-        maxWidth="md"
+      {/* Modal para reagendar */}
+      <ReescheduleDialog
         open={reschedule}
-        aria-labelledby="alert-dialog-title1"
-        aria-describedby="alert-dialog-description1"
-      >
-        <DialogContent
-          sx={
-            // !currentEvent?.id && selectedValues.modalidad ?
-            {
-              p: { xs: 1, md: 1 },
-              background: {
-                xs: 'linear-gradient(180deg, #2c3239 54%, white 46%)',
-                md: 'linear-gradient(90deg, #2c3239 50%, white 50%)',
-              },
-              position: 'relative',
-              display: { xs: 'inline-table' },
-            }
-            //  : { p: { xs: 1, md: 2 } }
-          }
-          direction="row"
-          justifycontent="space-between"
-        >
-          <AppointmentSchedule
-            selectedValues={selectedValues}
-            handleChange={handleChange}
-            beneficios={beneficios}
-            errorBeneficio={errorBeneficio}
-            especialistas={especialistas}
-            errorEspecialista={errorEspecialista}
-            modalidades={modalidades}
-            errorModalidad={errorModalidad}
-            oficina={oficina}
-            isLoading={isLoading}
-            isLoadingEspecialidad={isLoadingEspecialidad}
-            isLoadingModalidad={isLoadingModalidad}
-            handleDateChange={handleDateChange}
-            shouldDisableDate={shouldDisableDate}
-            horariosDisponibles={horariosDisponibles}
-            horarioSeleccionado={horarioSeleccionado}
-            errorHorarioSeleccionado={errorHorarioSeleccionado}
-            currentEvent={currentEvent}
-            handleHorarioSeleccionado={handleHorarioSeleccionado}
-            beneficioActivo={beneficioActivo}
-            aceptarTerminos={onAceptar}
-            aceptar={aceptar}
-            beneficioDisabled={beneficioDisabled}
-            especialistaDisabled={especialistaDisabled}
-            modalidadDisabled={modalidadDisabled}
-            horariosDisabled={horariosDisabled}
-            calendarDisabled={calendarDisabled}
-            selectedDay={selectedDay}
-          />
-        </DialogContent>
-        <DialogActions
-          sx={
-            // !currentEvent?.id && selectedValues.modalidad ?
-            {
-              background: {
-                xs: 'white',
-                md: 'linear-gradient(90deg, #2c3239 50%, white 50%)',
-              },
-            }
-            //    : {}
-          }
-        >
-          <Button variant="contained" color="error" onClick={() => setReschedule(false)}>
-            Cerrar
-          </Button>
-          {currentEvent?.id && (
-            <LoadingButton
-              variant="contained"
-              color="success"
-              onClick={handleReSchedule}
-              loading={btnDisabled}
-            >
-              Reagendar
-            </LoadingButton>
-          )}
-        </DialogActions>
-      </Dialog>
+        onClose={() => setReschedule(false)}
+        selectedValues={selectedValues}
+        handleChange={handleChange}
+        beneficios={beneficios}
+        errorBeneficio={errorBeneficio}
+        especialistas={especialistas}
+        errorEspecialista={errorEspecialista}
+        modalidades={modalidades}
+        errorModalidad={errorModalidad}
+        oficina={oficina}
+        isLoading={isLoading}
+        isLoadingEspecialidad={isLoadingEspecialidad}
+        isLoadingModalidad={isLoadingModalidad}
+        handleDateChange={handleDateChange}
+        shouldDisableDate={shouldDisableDate}
+        horariosDisponibles={horariosDisponibles}
+        horarioSeleccionado={horarioSeleccionado}
+        errorHorarioSeleccionado={errorHorarioSeleccionado}
+        currentEvent={currentEvent}
+        handleHorarioSeleccionado={handleHorarioSeleccionado}
+        beneficioActivo={beneficioActivo}
+        aceptarTerminos={onAceptar}
+        aceptar={aceptar}
+        beneficioDisabled={beneficioDisabled}
+        especialistaDisabled={especialistaDisabled}
+        modalidadDisabled={modalidadDisabled}
+        horariosDisabled={horariosDisabled}
+        calendarDisabled={calendarDisabled}
+        selectedDay={selectedDay}
+        handleReSchedule={handleReSchedule}
+        btnDisabled={btnDisabled}
+      />
 
-      <Dialog open={confirmCancel} maxWidth="sm">
-        <DialogContent>
-          <Stack
-            direction="row"
-            justifyContent="center"
-            useFlexGap
-            flexWrap="wrap"
-            sx={{ pt: { xs: 1, md: 2 }, pb: { xs: 1, md: 2 } }}
-          >
-            <Typography color="red" sx={{ mt: 1, mb: 1 }}>
-              <strong>¡ATENCIÓN!</strong>
-            </Typography>
-          </Stack>
-
-          <Typography>¿Está seguro de cancelar la cita?</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button variant="contained" color="error" onClick={() => setConfirmCancel(false)}>
-            Cerrar
-          </Button>
-          <LoadingButton
-            variant="contained"
-            color="success"
-            onClick={onCancel}
-            loading={btnConfirmAction}
-            autoFocus
-          >
-            Aceptar
-          </LoadingButton>
-        </DialogActions>
-      </Dialog>
+      <ConfirmAction
+        open={confirmCancel}
+        onClose={() => setConfirmCancel(false)}
+        onCancel={onCancel}
+        btnConfirmAction={btnConfirmAction}
+      />
 
       <ConfirmDoblePayment
         open={confirmDoblePago}
@@ -2384,15 +2305,13 @@ export default function AgendarDialog({
         handleClose={handleClose}
         handlePayment={handlePayment}
       />
-    </Dialog>
+    </>
   );
 }
 
-AgendarDialog.propTypes = {
+AppointmentScheduleDialog.propTypes = {
   currentEvent: PropTypes.object,
   onClose: PropTypes.func,
   selectedDate: PropTypes.instanceOf(Date),
   appointmentMutate: PropTypes.func,
-  open: PropTypes.bool,
-  maxWidth: PropTypes.number,
 };

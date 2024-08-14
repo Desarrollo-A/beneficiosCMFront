@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography';
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetHorariosPresenciales } from 'src/api/especialistas'
 
-import { Calendar } from 'src/components/calendar'
+// import { Calendar } from 'src/components/calendar'
 import { useSettingsContext } from 'src/components/settings';
 
 import AgendaDialog from './agenda-dialog';
@@ -75,11 +75,11 @@ export default function AgendaView(){
           </Button>
         </Stack>
         <Card>
-          <Calendar
+          {/* <Calendar
             onSelectRange={onSelectRange}
             onClickEvent={onClickEvent}
             events={horarios}
-          />
+          /> */}
         </Card>
         <AgendaDialog
           open={openDialog}

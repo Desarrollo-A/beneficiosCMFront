@@ -81,19 +81,12 @@ import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider from 'src/components/hook-form/form-provider';
 
-<<<<<<<< HEAD:src/sections/calendar/dialogs/agendar.jsx
-import '../styles/style.css';
-import CalendarPreview from './calendar-preview';
-import AppointmentSchedule from './appointment-schedule';
-import ConfirmDoblePayment from './confirm-doble-payment';
-========
 import '../style.css';
-import ConfirmAction from './confirm-cancel-dialog';
+import ConfirmAction from './confirm-action';
+import CalendarPreview from './calendar-preview';
 import ReescheduleDialog from './reeschedule-dialog';
-import ConfirmDoblePayment from './confirm-payment-dialog';
-import CalendarPreview from './appointment-preview-dialog';
-import AppointmentSchedule from '../components/appointment-schedule';
->>>>>>>> origin/unificacionCalendarioArt:src/sections/calendario/beneficiary/dialogs/appointment-scheduled-dialog.jsx
+import AppointmentSchedule from '../appointment-schedule';
+import ConfirmDoblePayment from './confirm-doble-payment';
 
 dayjs.locale('es');
 dayjs.extend(utc);
@@ -104,12 +97,7 @@ let initialValue = dayjs().tz('America/Mexico_City'); // Objeto con todo los dat
 const lastDayOfNextMonth = initialValue.add(2, 'month').startOf('month').subtract(1, 'day');
 initialValue = initialValue.hour() < 15 ? initialValue : initialValue.add(1, 'day');
 
-export default function AppointmentScheduleDialog({
-  currentEvent,
-  onClose,
-  selectedDate,
-  appointmentMutate,
-}) {
+export default function CalendarDialog({ currentEvent, onClose, selectedDate, appointmentMutate }) {
   const [selectedValues, setSelectedValues] = useState({
     beneficio: '',
     especialista: '',
@@ -2256,7 +2244,91 @@ export default function AppointmentScheduleDialog({
         </FormProvider>
       )}
 
-      {/* Modal para reagendar */}
+      {/* REAGENDAR CITA 
+      <Dialog
+        fullWidth
+        maxWidth="md"
+        open={reschedule}
+        aria-labelledby="alert-dialog-title1"
+        aria-describedby="alert-dialog-description1"
+      >
+        <DialogContent
+          sx={
+            // !currentEvent?.id && selectedValues.modalidad ?
+            {
+              p: { xs: 1, md: 1 },
+              background: {
+                xs: 'linear-gradient(180deg, #2c3239 54%, white 46%)',
+                md: 'linear-gradient(90deg, #2c3239 50%, white 50%)',
+              },
+              position: 'relative',
+              display: { xs: 'inline-table' },
+            }
+            //  : { p: { xs: 1, md: 2 } }
+          }
+          direction="row"
+          justifycontent="space-between"
+        >
+          <AppointmentSchedule
+            selectedValues={selectedValues}
+            handleChange={handleChange}
+            beneficios={beneficios}
+            errorBeneficio={errorBeneficio}
+            especialistas={especialistas}
+            errorEspecialista={errorEspecialista}
+            modalidades={modalidades}
+            errorModalidad={errorModalidad}
+            oficina={oficina}
+            isLoading={isLoading}
+            isLoadingEspecialidad={isLoadingEspecialidad}
+            isLoadingModalidad={isLoadingModalidad}
+            handleDateChange={handleDateChange}
+            shouldDisableDate={shouldDisableDate}
+            horariosDisponibles={horariosDisponibles}
+            horarioSeleccionado={horarioSeleccionado}
+            errorHorarioSeleccionado={errorHorarioSeleccionado}
+            currentEvent={currentEvent}
+            handleHorarioSeleccionado={handleHorarioSeleccionado}
+            beneficioActivo={beneficioActivo}
+            aceptarTerminos={onAceptar}
+            aceptar={aceptar}
+            beneficioDisabled={beneficioDisabled}
+            especialistaDisabled={especialistaDisabled}
+            modalidadDisabled={modalidadDisabled}
+            horariosDisabled={horariosDisabled}
+            calendarDisabled={calendarDisabled}
+            selectedDay={selectedDay}
+          />
+        </DialogContent>
+        <DialogActions
+          sx={
+            // !currentEvent?.id && selectedValues.modalidad ?
+            {
+              background: {
+                xs: 'white',
+                md: 'linear-gradient(90deg, #2c3239 50%, white 50%)',
+              },
+            }
+            //    : {}
+          }
+        >
+          <Button variant="contained" color="error" onClick={() => setReschedule(false)}>
+            Cerrar
+          </Button>
+          {currentEvent?.id && (
+            <LoadingButton
+              variant="contained"
+              color="success"
+              onClick={handleReSchedule}
+              loading={btnDisabled}
+            >
+              Reagendar
+            </LoadingButton>
+          )}
+        </DialogActions>
+      </Dialog>
+      */}
+
       <ReescheduleDialog
         open={reschedule}
         onClose={() => setReschedule(false)}
@@ -2316,7 +2388,7 @@ export default function AppointmentScheduleDialog({
   );
 }
 
-AppointmentScheduleDialog.propTypes = {
+CalendarDialog.propTypes = {
   currentEvent: PropTypes.object,
   onClose: PropTypes.func,
   selectedDate: PropTypes.instanceOf(Date),
