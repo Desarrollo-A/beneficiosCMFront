@@ -220,4 +220,87 @@
 .notificar:hover p::before {
   width: 100%;
 }
+.base-timer {
+  position: relative;
+  width: 100px; /* Tamaño reducido */
+  height: 100px;
+}
+
+.base-timer__svg {
+  transform: scaleX(-1);
+}
+
+.base-timer__circle {
+  fill: none;
+  stroke: none;
+}
+
+.base-timer__path-elapsed {
+  stroke-width: 5px;
+  stroke: grey;
+}
+
+.base-timer__path-remaining {
+  stroke-width: 5px;
+  stroke-linecap: round;
+  transform: rotate(90deg);
+  transform-origin: center;
+  transition: 1s linear all;
+  fill-rule: nonzero;
+  stroke: currentColor;
+}
+
+.base-timer__path-remaining.green {
+  color: rgb(65, 184, 131);
+}
+
+.base-timer__path-remaining.orange {
+  color: orange;
+}
+
+.base-timer__path-remaining.red {
+  color: red;
+}
+
+.base-timer__label {
+  position: absolute;
+  width: 100px; /* Ajustado al tamaño del temporizador */
+  height: 100px;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px; /* Tamaño de fuente reducido */
+  animation: fadeInOut 0.5s ease-in-out; /* Animación suave en el cambio de número */
+}
+
+.base-timer__label_text {
+  position: absolute;
+  width: 100px; /* Ajustado al tamaño del temporizador */
+  height: 100px;
+  top: 65px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px; /* Tamaño de fuente reducido */
+}
+
+/* Animación de entrada/salida */
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+
+
 

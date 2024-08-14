@@ -32,7 +32,6 @@ import { CalendarioEspecilista } from 'src/components/calendar';
 
 import './style.css';
 import { useEvent, useCalendar } from './hooks';
-import { StyledCalendar } from '../calendariobeneficiario/styles';
 import HorarioPresencialDialog from './dialogs/horario-presencial';
 import CalendarToolbar from '../calendariobeneficiario/calendar-toolbar';
 import CalendarDialog from '../calendariobeneficiario/dialogs/calendar-dialog';
@@ -83,7 +82,6 @@ export default function CalendarioView() {
 
   const {
     data: beneficiarioEvents,
-    appointmentLoading,
     appointmentMutate,
   } = useGetAppointmentsByUser(date, user?.idUsuario, user?.idSede);
 
@@ -93,7 +91,7 @@ export default function CalendarioView() {
     user?.idSede
   );
 
-  const { horarios, horariosGet /* horariosLoading */ } = useGetHorariosPresenciales({
+  const { horarios, horariosGet } = useGetHorariosPresenciales({
     idEspecialista: user?.idUsuario,
   });
 
@@ -131,7 +129,7 @@ export default function CalendarioView() {
           benefit={event?.beneficio}
           leftTime={event?.diferenciaEnMs}
           appointmentMutate={appointmentMutate}
-          topOffset={index * 120} // Ajustar el espaciado vertical entre elementos
+          topOffset={index * 1} // Ajustar el espaciado vertical entre elementos
         />
       ));
 
@@ -201,11 +199,9 @@ export default function CalendarioView() {
         </>
       ) : (
         <Card>
-          <StyledCalendar>
             <CalendarToolbar
               date={date}
               view={view}
-              loading={appointmentLoading}
               onNextDate={onDateNext}
               onPrevDate={onDatePrev}
               onToday={onDateToday}
@@ -238,7 +234,6 @@ export default function CalendarioView() {
                 interactionPlugin,
               ]}
             />
-          </StyledCalendar>
         </Card>
       )}
 

@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import PropTypes from 'prop-types';
 import Calendar from '@fullcalendar/react';
 import listPlugin from '@fullcalendar/list';
 import { enqueueSnackbar } from 'notistack';
@@ -21,18 +20,17 @@ import { fTimestamp } from 'src/utils/format-time';
 
 import { useGetNameUser } from 'src/api/user';
 import { useAuthContext } from 'src/auth/hooks';
-import { dropUpdate, useGetMotivos, GetCustomEvents } from 'src/api/calendar-specialist';
-import { useGetSedesPresenciales, useGetHorariosPresenciales } from 'src/api/especialistas';
+import { useGetHorariosPresenciales } from 'src/api/especialistas';
 import { useGetAppointmentsByUser } from 'src/api/calendar-colaborador';
+import { dropUpdate, useGetMotivos, GetCustomEvents } from 'src/api/calendar-specialist';
 
 import { useSettingsContext } from 'src/components/settings';
 
-import CrearEventoDialog from './dialogs/crear-evento-dialog';
 import { StyledCalendar } from './styles';
 import CalendarToolbar from '../calendar-tool';
-import DatosEventoDialog from './dialogs/datos-evento-dialog';
 import { useEvent, useCalendar } from '../../hooks';
-
+import CrearEventoDialog from './dialogs/crear-evento-dialog';
+import DatosEventoDialog from './dialogs/datos-evento-dialog';
 import AgendarDialog from '../../../../sections/calendario/dialogs/agendar';
 // ----------------------------------------------------------------------
 
@@ -43,10 +41,8 @@ const defaultFilters = {
 };
 
 // ----------------------------------------------------------------------
-export default function CalendarioView({ labels }) {
+export default function CalendarioView() {
   const { user } = useAuthContext();
-
-  const { sedes } = useGetSedesPresenciales({ idEspecialista: user?.idUsuario });
 
   const smUp = useResponsive('up', 'sm');
   const settings = useSettingsContext();
@@ -55,8 +51,6 @@ export default function CalendarioView({ labels }) {
   const [userData, setUserData] = useState('');
   const { data: reasons } = useGetMotivos(user?.idPuesto);
   const theme = useTheme();
-
-  const [presencialDialog, setOpenPresencialDialog] = useState(false);
 
   const dateError =
     filters.startDate && filters.endDate
@@ -86,11 +80,7 @@ export default function CalendarioView({ labels }) {
 
   const { events, eventsLoading } = GetCustomEvents(date, user?.idUsuario, user?.idSede);
 
-  const { horarios, horariosGet } = useGetHorariosPresenciales({ idEspecialista: user?.idUsuario });
-
-  const [startPresencial] = useState(new Date());
-  const [endPresencial] = useState(new Date());
-  const [sedePresencial] = useState();
+  const { horarios } = useGetHorariosPresenciales({ idEspecialista: user?.idUsuario });
 
   const currentEvent = useEvent(events, selectEventId, openForm);
 
@@ -140,15 +130,7 @@ export default function CalendarioView({ labels }) {
   const modalSize =
     statusSizeMap[currentEvent?.estatus] || statusSizeMap[currentEvent?.type] || 'xs';
 
-  const onCloseHorariosDialog = () => {
-    setOpenPresencialDialog(false);
-
-    horariosGet({ idEspecialista: user?.idUsuario });
-  };
-
   const {
-    data: beneficiarioEvents,
-    appointmentLoading,
     appointmentMutate,
   } = useGetAppointmentsByUser(date, user?.idUsuario, user?.idSede);
 
@@ -195,7 +177,16 @@ export default function CalendarioView({ labels }) {
         </StyledCalendar>
       </Card>
 
-      {currentEvent?.idEspecialista === user?.idUsuario ? (
+      {currentEvent?.idEspecialista !== user?.idUsuario? (
+        <AgendarDialog
+          maxWidth="xs"
+          open={openForm}
+          currentEvent={currentEvent}
+          onClose={onCloseForm}
+          selectedDate={selectedDate}
+          appointmentMutate={appointmentMutate}
+        />
+      ) : (
         <Dialog
           fullWidth
           maxWidth={modalSize}
@@ -222,15 +213,6 @@ export default function CalendarioView({ labels }) {
             />
           )}
         </Dialog>
-      ) : (
-        <AgendarDialog
-          maxWidth="xs"
-          open={openForm}
-          currentEvent={currentEvent}
-          onClose={onCloseForm}
-          selectedDate={selectedDate}
-          appointmentMutate={appointmentMutate}
-        />
       )}
     </Container>
   );
@@ -261,7 +243,3 @@ function applyFilter({ inputData, filters, dateError }) {
 
   return inputData;
 }
-
-CalendarioView.propTypes = {
-  labels: PropTypes.any,
-};
