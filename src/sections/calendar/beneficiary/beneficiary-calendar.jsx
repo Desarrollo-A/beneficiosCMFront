@@ -9,9 +9,9 @@ import interactionPlugin from '@fullcalendar/interaction';
 
 import Card from '@mui/material/Card';
 
-import './style.css';
-import { StyledCalendar } from './styles';
-import CalendarToolbar from './calendar-toolbar';
+import '../styles/style.css';
+import { StyledCalendar } from '../styles/styles';
+import CalendarToolbar from '../components/calendar-toolbar';
 
 export default function BeneficiaryCalendar({
   date,
