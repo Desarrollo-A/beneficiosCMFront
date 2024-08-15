@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 
-import { CalendarView } from 'src/sections/calendariobeneficiario/view';
+// import { CalendarView } from 'src/sections/calendariobeneficiario/view';
 
 // ----------------------------------------------------------------------
 
@@ -11,7 +11,7 @@ export default function CalendarPage() {
         <title>Calendario</title>
       </Helmet>
 
-      <CalendarView />
+      {/* <CalendarView /> */}
     </>
   );
 }

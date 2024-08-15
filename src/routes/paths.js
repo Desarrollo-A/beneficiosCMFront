@@ -11,7 +11,7 @@ const MOCK_TITLE = _postTitles[2];
 const ROOTS = {
   AUTH: `${import.meta.env.BASE_URL}auth`,
   AUTH_DEMO: '/auth-demo',
-  DASHBOARD: `${import.meta.env.BASE_URL}dashboard`,
+  DASHBOARD: `${import.meta.env.BASE_URL}beneficios`,
 };
 
 // ----------------------------------------------------------------------

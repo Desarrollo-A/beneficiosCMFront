@@ -8,6 +8,7 @@ import { LoadingScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
 // CITAS
+const EvaluacionCitasPage = lazy(() => import('src/pages/beneficios/evaluacion-citas-view'));
 const CitasPage = lazy(() => import('src/pages/beneficios/citas'));
 // REPORTES
 const HistorialReportesPage = lazy(() => import('src/pages/beneficios/reportes/historial-reportes'));
@@ -39,6 +40,7 @@ const OverviewBankingPage = lazy(() => import('src/pages/beneficios/banking'));
 const OverviewBookingPage = lazy(() => import('src/pages/beneficios/booking'));
 const OverviewFilePage = lazy(() => import('src/pages/beneficios/file'));
 const CalendarioPage = lazy(() => import('src/pages/beneficios/calendario'));
+const CalendarioEspePage = lazy(() => import('src/pages/beneficios/calendario_espe'));
 // PRODUCT
 const ProductDetailsPage = lazy(() => import('src/pages/beneficios/product/details'));
 const ProductListPage = lazy(() => import('src/pages/beneficios/product/list'));
@@ -91,11 +93,13 @@ const PermissionDeniedPage = lazy(() => import('src/pages/beneficios/permission'
 // const BlankPage = lazy(() => import('src/pages/beneficios/blank'));
 const BlankPage = lazy(() => import('src/sections/_examples/extra/upload-view'));
 
+// const AgendaPage = lazy(() => import('src/pages/beneficios/agenda'))
+
 // ----------------------------------------------------------------------
 
-export const dashboardRoutes = [
+export const beneficiosRoutes = [
   {
-    path: `${import.meta.env.BASE_URL}dashboard`,
+    path: `${import.meta.env.BASE_URL}beneficios`,
     element: (
       <AuthGuard>
         <DashboardLayout>
@@ -157,6 +161,7 @@ export const dashboardRoutes = [
       { path: 'booking', element: <OverviewBookingPage /> },
       { path: 'file', element: <OverviewFilePage /> },
       { path: 'calendario', element: <CalendarioPage /> },
+      { path: 'calendarioespecialista', element: <CalendarioEspePage /> },
       {
         path: 'user',
         children: [
@@ -240,6 +245,7 @@ export const dashboardRoutes = [
       { path: 'kanban', element: <KanbanPage /> },
       { path: 'permission', element: <PermissionDeniedPage /> },
       { path: 'blank', element: <BlankPage /> },
+      { path: 'evaluacioncitas', element: <EvaluacionCitasPage /> },
       { path: 'citas', element: <CitasPage /> },
     ],
   },
