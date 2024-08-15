@@ -6,7 +6,11 @@ import { useTheme } from '@mui/material/styles';
 
 import { doEventCancelaCitas } from 'src/api/calendar-colaborador';
 
+import '../styles/style.css';
+
 export default function FloatingCircleTimer({ benefit, leftTime, appointmentMutate, topOffset }) {
+  const x = topOffset + 0.2;
+
   const theme = useTheme();
 
   const [time, setTime] = useState(leftTime);
@@ -59,8 +63,8 @@ export default function FloatingCircleTimer({ benefit, leftTime, appointmentMuta
       className="fade-in"
       style={{
         position: 'fixed',
-        bottom: '20px',
-        right: '20px',
+        bottom: `${x * 150}px`,
+        right: '0px',
         display: time > 0 ? 'block' : 'none',
         zIndex: 9999,
         textAlign: 'center',
@@ -69,9 +73,6 @@ export default function FloatingCircleTimer({ benefit, leftTime, appointmentMuta
       <div
         className="base-timer"
         style={{
-          position: 'fixed',
-          bottom: '20px',
-          right: '10px',
           display: time > 0 ? 'block' : 'none',
           zIndex: 9999,
           textAlign: 'center',
@@ -96,15 +97,15 @@ export default function FloatingCircleTimer({ benefit, leftTime, appointmentMuta
         </svg>
         <span
           className="base-timer__label"
-          style={{ color: theme.palette.mode === 'dark' ? 'black' : 'white' }}
+          sx={{ color: theme.palette.mode === 'dark' ? 'black' : 'white' }}
         >
           {formatTime(time)}
         </span>
         <span
           className="base-timer__label_text"
-          style={{ color: theme.palette.mode === 'dark' ? 'black' : 'white' }}
+          sx={{ color: theme.palette.mode === 'dark' ? 'black' : 'white' }}
         >
-          Tiempo restante para pago de cita
+          Tiempo restante de pago {benefit}
         </span>
       </div>
     </div>

@@ -26,12 +26,12 @@ import { dropUpdate, useGetMotivos, GetCustomEvents } from 'src/api/calendar-spe
 
 import { useSettingsContext } from 'src/components/settings';
 
-import AgendarDialog from '../dialogs/agendar';
 import { useEvent, useCalendar } from './hooks';
 import { StyledCalendar } from '../styles/styles';
 import DataEventDialog from './dialogs/data-event-dialog';
 import CalendarToolbar from '../components/calendar-toolbar';
 import CreateEventDialog from './dialogs/create-event-dialog';
+import AppointmentScheduleDialog from '../beneficiary/dialogs/appointment-scheduled-dialog';
 
 // ----------------------------------------------------------------------
 
@@ -84,8 +84,6 @@ export default function CalendarioView() {
   const { horarios } = useGetHorariosPresenciales({ idEspecialista: user?.idUsuario });
 
   const currentEvent = useEvent(events, selectEventId, openForm);
-
-  console.log(openForm)
 
   const dataFiltered = applyFilter({
     inputData: events.concat(horarios),
@@ -208,14 +206,24 @@ export default function CalendarioView() {
           )}
         </Dialog>
       ) : (
-        <AgendarDialog
-          maxWidth="xs"
+        <Dialog
+          fullWidth
+          maxWidth={modalSize}
           open={openForm}
-          currentEvent={currentEvent}
-          onClose={onCloseForm}
-          selectedDate={selectedDate}
-          appointmentMutate={appointmentMutate}
-        />
+          transitionDuration={{
+            enter: theme.transitions.duration.shortest,
+            exit: theme.transitions.duration.shortest - 1000,
+          }}
+        >
+          <AppointmentScheduleDialog
+            maxWidth="xs"
+            open={openForm}
+            currentEvent={currentEvent}
+            onClose={onCloseForm}
+            selectedDate={selectedDate}
+            appointmentMutate={appointmentMutate}
+          />
+        </Dialog>
       )}
     </Container>
   );

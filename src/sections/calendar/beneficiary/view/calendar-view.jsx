@@ -31,7 +31,7 @@ import { StyledCalendar } from '../styles';
 import { useEvent, useCalendar } from '../hooks';
 import CalendarToolbar from '../calendar-toolbar';
 import CalendarDialog from '../dialogs/appointment-scheduled-dialog';
-import FloatingCircleTimer from '../floating-circle-timer';
+import FloatingCircleTimer from '../../components/floating-circle-timer';
 
 // ----------------------------------------------------------------------
 

@@ -23,9 +23,9 @@ import { useSettingsContext } from 'src/components/settings';
 
 import { useEvent, useCalendar } from './hooks';
 import BeneficiaryCalendar from './beneficiary/beneficiary-calendar';
+import FloatingCircleTimer from './components/floating-circle-timer';
 import PresencialDialog from './specialist/dialogs/horario-presencial';
 import CalendarEpecialistView from './specialist/calendar-especialist-view';
-import FloatingCircleTimer from '../calendariobeneficiario/floating-circle-timer';
 import AppointmentScheduleDialog from './beneficiary/dialogs/appointment-scheduled-dialog';
 
 //---------------------------------------------------------
@@ -121,7 +121,7 @@ export default function CalendarView() {
           benefit={event?.beneficio}
           leftTime={event?.diferenciaEnMs}
           appointmentMutate={appointmentMutate}
-          topOffset={index * 1} // Ajustar el espaciado vertical entre elementos
+          topOffset={index}
         />
       ));
 
