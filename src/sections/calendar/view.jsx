@@ -198,7 +198,7 @@ export default function CalendarView() {
           onDateToday={onDateToday}
           onChangeView={onChangeView}
           calendarRef={calendarRef}
-          beneficiarioFiltered={beneficiarioEvents}
+          beneficiarioFiltered={beneficiarioFiltered}
           handleClick={handleClick}
           onClickEvent={onClickEvent}
           smUp={smUp}

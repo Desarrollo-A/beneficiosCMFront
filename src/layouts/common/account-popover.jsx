@@ -1,5 +1,5 @@
 import { m } from 'framer-motion';
-import { useGoogleLogin } from '@react-oauth/google';
+// import { useGoogleLogin } from '@react-oauth/google';
 // import { useGoogleOneTapLogin } from '@react-oauth/google';
 
 import Box from '@mui/material/Box';
@@ -62,12 +62,14 @@ export default function AccountPopover() {
     router.push(path);
   };
 
+  /*
   const login = useGoogleLogin({
     onSuccess: (tokenResponse) => console.log(tokenResponse),
     scope:
       'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events',
     flow: 'auth-code',
   });
+  */
 
   if (userData) {
     return (
@@ -93,6 +95,7 @@ export default function AccountPopover() {
             </Typography>
           </Box>
 
+          {/*  
           <Divider sx={{ borderStyle: 'dashed' }} />
 
           <Box sx={{ p: 1, mb: 1, mt: 0 }}>
@@ -100,7 +103,7 @@ export default function AccountPopover() {
           </Box>
 
           <Divider sx={{ borderStyle: 'dashed' }} />
-
+*/}
           <Stack sx={{ p: 1 }}>
             {OPTIONS.map((option) => (
               <MenuItem key={option.label} onClick={() => handleClickItem(option.linkTo)}>
