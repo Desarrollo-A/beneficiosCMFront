@@ -71,7 +71,7 @@ export default function AgendaView(){
         >
           <Typography variant="h4"> </Typography>
           <Button color="inherit" variant="outlined" onClick={addEvent}>
-            Establecer horario presencial
+            Establecer horario presenciala
           </Button>
         </Stack>
         <Card>

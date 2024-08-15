@@ -165,7 +165,7 @@ export default function CalendarioView() {
         >
           <Typography variant="h4"> </Typography>
           <Button color="inherit" variant="outlined" onClick={addHorarioPresencial}>
-            Establecer horario presencial
+            Establecer horario presenciala
           </Button>
         </Stack>
       ) : null}

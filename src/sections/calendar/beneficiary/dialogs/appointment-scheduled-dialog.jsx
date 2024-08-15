@@ -1666,7 +1666,7 @@ export default function AppointmentScheduleDialog({
                   <>
                     <Grid container direction="column" justifyContent="space-between">
                       <Grid item container direction="row" spacing={1} sx={{ width: '100%' }}>
-                        <Grid xs={12}>
+                        <Grid xs={12} item>
                           <Timeline
                             sx={{
                               m: 0,
@@ -2291,6 +2291,7 @@ export default function AppointmentScheduleDialog({
         onClose={() => setConfirmCancel(false)}
         onCancel={onCancel}
         btnConfirmAction={btnConfirmAction}
+        appointmentMutate={appointmentMutate}
       />
 
       <ConfirmDoblePayment

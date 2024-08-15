@@ -49,7 +49,7 @@ export default function AppointmentPreviewDialog({ event, open, handleClose, han
       >
         <Grid container direction="column" justifyContent="space-between">
           <Grid item container direction="row" spacing={1} sx={{ width: '100%' }}>
-            <Grid xs={12}>
+            <Grid xs={12} item>
               <Timeline
                 sx={{
                   m: 0,

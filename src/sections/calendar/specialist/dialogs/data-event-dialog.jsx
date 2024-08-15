@@ -230,6 +230,15 @@ export default function DataEventDialog({
     setOpen2(false);
   };
 
+  let backColor = ''
+
+  if(type === 'date' && theme.palette.mode === 'dark'){
+    backColor = '#25303d'
+  }
+  else if(type === 'date'){
+    backColor =  '#f6f7f8'
+  }
+
   return (
     <>
       <FormProvider methods={methods} onSubmit={onSubmit}>
@@ -279,7 +288,7 @@ export default function DataEventDialog({
 
         <DialogContent
           style={{ maxHeight: currentEvent?.id ? '400px' : '600px', overflowY: currentEvent?.id ? 'auto' : 'hidden' }}
-          sx={{ p: { xs: 1, md: 2 }, backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f6f7f8' }}>
+          sx={{ p: { xs: 1, md: 2 }, backgroundColor: backColor }}>
 
           {type === 'cancel' ? (
             <>
@@ -377,7 +386,7 @@ export default function DataEventDialog({
                 spacing={1}
                 sx={{ width: '100%' }}
               >
-                <Grid xs={12}>
+                <Grid xs={12} item>
 
                   <Timeline
                     sx={{
