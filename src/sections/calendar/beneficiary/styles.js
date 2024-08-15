@@ -6,8 +6,9 @@ export const StyledCalendar = styled('div')(({ theme }) => ({
   width: 'calc(100% + 2px)',
   marginLeft: -1,
   marginBottom: -1,
-  '.fc-event': { // estilo para que el cursor sea siempre pointer sobre el evento
-    cursor: 'pointer'
+  '.fc-event': {
+    // estilo para que el cursor sea siempre pointer sobre el evento
+    cursor: 'pointer',
   },
   '& .fc': {
     '--fc-border-color': alpha(theme.palette.grey[500], 0.16),

@@ -48,5 +48,5 @@ ConfirmCancelDialog.propTypes = {
   open: PropTypes.bool,
   onClose: PropTypes.func,
   onCancel: PropTypes.func,
-  btnConfirmAction: PropTypes.func,
+  btnConfirmAction: PropTypes.bool,
 };

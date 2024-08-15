@@ -28,7 +28,6 @@ import PresencialDialog from './specialist/dialogs/horario-presencial';
 import CalendarEpecialistView from './specialist/calendar-especialist-view';
 import AppointmentScheduleDialog from './beneficiary/dialogs/appointment-scheduled-dialog';
 
-
 //---------------------------------------------------------
 
 const defaultFilters = {
@@ -72,10 +71,11 @@ export default function CalendarView() {
       ? filters.startDate.getTime() > filters.endDate.getTime()
       : false;
 
-  const {
-    data: beneficiarioEvents,
-    appointmentMutate,
-  } = useGetAppointmentsByUser(date, user?.idUsuario, user?.idSede);
+  const { data: beneficiarioEvents, appointmentMutate } = useGetAppointmentsByUser(
+    date,
+    user?.idUsuario,
+    user?.idSede
+  );
 
   const { events: especialistaEvents, eventsLoading } = GetCustomEvents(
     date,
@@ -201,6 +201,7 @@ export default function CalendarView() {
           beneficiarioFiltered={beneficiarioEvents}
           handleClick={handleClick}
           onClickEvent={onClickEvent}
+          smUp={smUp}
         />
       )}
 

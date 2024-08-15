@@ -6,14 +6,13 @@ import { useTheme } from '@mui/material/styles';
 
 import { doEventCancelaCitas } from 'src/api/calendar-colaborador';
 
-import '../styles/style.css'
+import '../styles/style.css';
 
 export default function FloatingCircleTimer({ benefit, leftTime, appointmentMutate, topOffset }) {
-
   const x = topOffset + 0.2;
 
   const theme = useTheme();
-  
+
   const [time, setTime] = useState(leftTime);
   const [dashArray, setDashArray] = useState('283 283'); // Valor inicial para el SVG
 
@@ -56,27 +55,30 @@ export default function FloatingCircleTimer({ benefit, leftTime, appointmentMuta
   const calculateColor = () => {
     if (time <= leftTime * 0.25) return 'red';
     if (time <= leftTime * 0.5) return 'orange';
-    return 'green'; 
-  }; 
+    return 'green';
+  };
 
   return (
     <div
       className="fade-in"
       style={{
         position: 'fixed',
-        bottom: `${x * 150}px`, 
+        bottom: `${x * 150}px`,
         right: '0px',
         display: time > 0 ? 'block' : 'none',
         zIndex: 9999,
         textAlign: 'center',
       }}
     >
-      <div className="base-timer" style={{
-        display: time > 0 ? 'block' : 'none',
-        zIndex: 9999,
-        textAlign: 'center',
-        margin: '10px'
-      }}>
+      <div
+        className="base-timer"
+        style={{
+          display: time > 0 ? 'block' : 'none',
+          zIndex: 9999,
+          textAlign: 'center',
+          margin: '10px',
+        }}
+      >
         <svg className="base-timer__svg" viewBox="0 0 100 100">
           <g className="base-timer__circle">
             <circle className="base-timer__path-elapsed" cx="50" cy="50" r="45" />
@@ -93,11 +95,17 @@ export default function FloatingCircleTimer({ benefit, leftTime, appointmentMuta
             />
           </g>
         </svg>
-        <span className="base-timer__label" sx={{ color: theme.palette.mode === 'dark' ? 'black' : 'white' }}>
+        <span
+          className="base-timer__label"
+          sx={{ color: theme.palette.mode === 'dark' ? 'black' : 'white' }}
+        >
           {formatTime(time)}
         </span>
-        <span className="base-timer__label_text" sx={{ color: theme.palette.mode === 'dark' ? 'black' : 'white' }}>
-          Tiempo restante pago {benefit}
+        <span
+          className="base-timer__label_text"
+          sx={{ color: theme.palette.mode === 'dark' ? 'black' : 'white' }}
+        >
+          Tiempo restante de pago {benefit}
         </span>
       </div>
     </div>
