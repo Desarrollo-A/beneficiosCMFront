@@ -8,7 +8,7 @@ import { doEventCancelaCitas } from 'src/api/calendar-colaborador';
 
 import '../styles/style.css';
 
-export default function FloatingCircleTimer({ benefit, leftTime, appointmentMutate, topOffset }) {
+export default function FloatingCircleTimer({ benefit, leftTime, appointmentMutate, topOffset, type }) {
   const x = topOffset + 0.2;
 
   const theme = useTheme();
@@ -97,7 +97,7 @@ export default function FloatingCircleTimer({ benefit, leftTime, appointmentMuta
         </svg>
         <span
           className="base-timer__label"
-          sx={{ color: theme.palette.mode === 'dark' ? 'black' : 'white' }}
+          
         >
           {formatTime(time)}
         </span>
@@ -117,4 +117,5 @@ FloatingCircleTimer.propTypes = {
   leftTime: PropTypes.number,
   topOffset: PropTypes.number,
   appointmentMutate: PropTypes.func,
+  type:PropTypes.any,
 };

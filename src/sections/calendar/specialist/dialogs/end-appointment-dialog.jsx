@@ -14,6 +14,7 @@ import {
   Button,
   Select,
   Divider,
+  Tooltip,
   ListItem,
   MenuItem,
   TextField,
@@ -96,12 +97,15 @@ export default function EndAppointmentDialog() {
               sx={{ width: '50%', marginLeft: '1em' }}
               primaryTypographyProps={{ fontSize: '14px' }}
             />
+            <Tooltip title="Finalizar cita">
             <IconButton
               onClick={() => handleEnd(pending)}
               sx={{ alignItems: 'inherit', padding: 0 }}
+              className="buttonActions"
             >
-              <Iconify icon="solar:archive-minimalistic-bold" />
+              <Iconify icon="solar:archive-minimalistic-bold" className="bell"/>
             </IconButton>
+            </Tooltip>
           </ListItem>
           <Divider />
         </Stack>

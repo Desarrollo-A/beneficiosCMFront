@@ -365,12 +365,13 @@ export default function PendingModalUser({ idUsuario }) {
                   secondaryAction={
                     <>
                       <Tooltip title="Cancelar cita">
-                        <IconButton onClick={() => handleCancel(pendientes?.data?.pago[key])}>
-                          <Iconify icon="solar:trash-bin-trash-bold" />
+                        <IconButton className="buttonActions" onClick={() => handleCancel(pendientes?.data?.pago[key])}>
+                          <Iconify className="bell" icon="solar:trash-bin-trash-bold" />
                         </IconButton>
                       </Tooltip>
-                      <Tooltip title="Pagar">
+                      <Tooltip className="buttonActions" title="Pagar">
                         <IconButton
+                          className="bell"
                           onClick={() => {
                             handlePayment(pendientes?.data.pago[key]);
                           }}

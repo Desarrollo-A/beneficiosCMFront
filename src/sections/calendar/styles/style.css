@@ -14,12 +14,10 @@
   gap: 10px;
   padding: 0px 15px;
   border: none;
-  color: black;
   position: relative;
   cursor: pointer;
   font-weight: 700;
   transition-duration: .2s;
-  background-color: var(--ch-black);
 }
 
 .ButtonCita:before,
@@ -301,4 +299,46 @@
     opacity: 0;
     transform: scale(0.95);
   }
+}
+
+.buttonActions {
+  transition-duration: .8s;
+}
+
+
+.buttonActions:hover .bell {
+  animation: bellRing 0.9s both;
+}
+
+@keyframes bellRing {
+  0%,
+  100% {
+    transform-origin: top;
+  }
+
+  15% {
+    transform: rotateZ(10deg);
+  }
+
+  30% {
+    transform: rotateZ(-10deg);
+  }
+
+  45% {
+    transform: rotateZ(5deg);
+  }
+
+  60% {
+    transform: rotateZ(-5deg);
+  }
+
+  75% {
+    transform: rotateZ(2deg);
+  }
+}
+
+.dynamic-text-color {
+  mix-blend-mode: difference;
+  filter: invert(1);
+  color: black; /* Color de texto inicial */
 }
