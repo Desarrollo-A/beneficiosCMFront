@@ -7,16 +7,53 @@ import { Box, List, Stack, Button, Typography, DialogActions } from '@mui/materi
 
 export default function ColorsStatusDialog({ open, labels=[], onClose }) {
 
+  const colors = [
+    {
+      color: '#ffa500',
+      opacity: 0.25,
+      text: 'Cita por asistir',
+    },
+    {
+      color: '#ff0000',
+      text: 'Cita cancelada colaborador / especialista',
+    },
+    {
+      color: '#808080',
+      text: 'Cita penalizada',
+    },
+    {
+      color: '#008000',
+      text: 'Cita finalizada',
+    },
+    {
+      color: '#ff4d67',
+      text: 'Cita con falta justificada',
+    },
+    {
+      color: '#00ffff',
+      text: 'Cita pendiente de pago',
+    },
+
+    {
+      color: '#ff0000',
+      text: 'Cita con pago pendiente expirado',
+    },
+    {
+      color: '#ffe800',
+      text: 'Primera cita',
+    },
+    {
+      color: '#0000ff',
+      text: 'Cita en línea',
+    },
+    {
+      color: '#33105D',
+      text: 'Cita en proceso de pago',
+    },
+  ];
+
   return (
-    <Dialog // dialog de confirmación de finalización
-      open={open}
-      fullWidth
-      maxWidth="xs"
-      
-      onClose={onClose}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
-    >
+    <>
       <DialogTitle align="center">Colores de estatus </DialogTitle>
       <DialogContent>
         <Stack>
@@ -28,7 +65,7 @@ export default function ColorsStatusDialog({ open, labels=[], onClose }) {
               },
             }}
           >
-            {labels.map((color, index) => (
+            {colors.map((color, index) => (
               <Stack
                 direction="row"
                 alignItems="center"
@@ -69,7 +106,7 @@ export default function ColorsStatusDialog({ open, labels=[], onClose }) {
           Cerrar
         </Button>
       </DialogActions>
-    </Dialog>
+    </>
   );
 }
 
