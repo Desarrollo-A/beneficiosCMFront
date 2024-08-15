@@ -21,8 +21,7 @@ import { fTimestamp } from 'src/utils/format-time';
 import { useGetNameUser } from 'src/api/user';
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetHorariosPresenciales } from 'src/api/especialistas';
-import { useGetAppointmentsByUser } from 'src/api/calendar-colaborador';
-import { dropUpdate, useGetMotivos, GetCustomEvents } from 'src/api/calendar-specialist';
+import { reRender, dropUpdate, useGetMotivos , GetCustomEvents } from 'src/api/calendar-specialist';
 
 import { useSettingsContext } from 'src/components/settings';
 
@@ -131,9 +130,6 @@ export default function CalendarioView() {
   const modalSize =
     statusSizeMap[currentEvent?.estatus] || statusSizeMap[currentEvent?.type] || 'xs';
 
-  const {
-    appointmentMutate,
-  } = useGetAppointmentsByUser(date, user?.idUsuario, user?.idSede);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
@@ -221,7 +217,7 @@ export default function CalendarioView() {
             currentEvent={currentEvent}
             onClose={onCloseForm}
             selectedDate={selectedDate}
-            appointmentMutate={appointmentMutate}
+            appointmentMutate={reRender}
           />
         </Dialog>
       )}
