@@ -1606,7 +1606,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
                             .subtract(3, 'hour')
                             .format('YYYY-MM-DD HH:mm:ss') &&
                           currentEvent?.estatus === 1 && (
-                            <Tooltip title="Reagendar cita">
+                            <Tooltip title="Reagendar a">
                               <IconButton
                                 className="buttonActions"
                                 onClick={() => rescheduleAppointment()}

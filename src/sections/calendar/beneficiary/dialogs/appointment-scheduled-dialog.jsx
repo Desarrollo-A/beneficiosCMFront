@@ -900,6 +900,7 @@ export default function AppointmentScheduleDialog({
       });
       const data = await getSpecialists(value.idSede, value.idArea, value.idPuesto);
       setEspecialistas(data?.data);
+      
       const modalitiesData = await getModalities(
         value.idSede,
         value.idEspecialista,

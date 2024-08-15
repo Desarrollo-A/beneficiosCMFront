@@ -43,8 +43,6 @@ export default function ReescheduleDialog({
   btnDisabled,
 }) {
 
-console.log(especialistas)
-
   return (
     <Dialog
       fullWidth
