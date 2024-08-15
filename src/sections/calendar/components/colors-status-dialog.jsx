@@ -5,8 +5,7 @@ import { Box, List, Stack, Button, Typography, DialogActions, ThemeProvider } fr
 
 //---------------------------------------------------------
 
-export default function ColorsStatusDialog({ open, labels=[], onClose }) {
-
+export default function ColorsStatusDialog({ open, labels = [], onClose }) {
   const colors = [
     {
       color: '#ffeac2',
@@ -50,7 +49,7 @@ export default function ColorsStatusDialog({ open, labels=[], onClose }) {
       text: 'Cita en proceso de pago',
     },
   ];
-// const colors = [
+  // const colors = [
   //   {
   //     color: '#ffeac2',
   //     text: 'Cita por asistir',
@@ -98,9 +97,11 @@ export default function ColorsStatusDialog({ open, labels=[], onClose }) {
     <>
       <DialogTitle align="center">Colores de estatus </DialogTitle>
       <DialogContent>
-        <Stack sx={{
-            p: { xs: 1, md: 2 }            
-          }}>
+        <Stack
+          sx={{
+            p: { xs: 1, md: 2 },
+          }}
+        >
           <List
             sx={{
               pl: 1,
@@ -123,30 +124,30 @@ export default function ColorsStatusDialog({ open, labels=[], onClose }) {
                 }}
               >
                 <ThemeProvider
-      theme={{
-        palette: {
-          primary: {
-            main: color.color,
-            dark: '#0066CC',
-          },
-        },
-      }}
-    >
-      <Box
-        sx={{
-          width: 100,minWidth: 60,
-                    maxWidth: 60,
-                    
-                    minHeight: 30,
-                    maxHeight: 30,
-                    height: 30,
-                    borderRadius: 20,
-          
-          bgcolor: 'primary.main',
-          
-        }}
-      />
-    </ThemeProvider>
+                  theme={{
+                    palette: {
+                      primary: {
+                        main: color.color,
+                        dark: '#0066CC',
+                      },
+                    },
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: 100,
+                      minWidth: 60,
+                      maxWidth: 60,
+
+                      minHeight: 30,
+                      maxHeight: 30,
+                      height: 30,
+                      borderRadius: 20,
+
+                      bgcolor: color.color,
+                    }}
+                  />
+                </ThemeProvider>
                 <Typography>{color.text}</Typography>
               </Stack>
             ))}
