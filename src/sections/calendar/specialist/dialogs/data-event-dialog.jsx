@@ -299,7 +299,7 @@ export default function DataEventDialog({
           }}
           sx={{
             p: { xs: 1, md: 2 },
-            backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f6f7f8',
+            backgroundColor: backColor,
           }}
         >
           {type === 'cancel' ? (
