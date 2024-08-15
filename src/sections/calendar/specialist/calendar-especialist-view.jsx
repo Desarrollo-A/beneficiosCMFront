@@ -73,6 +73,7 @@ export default function CalendarioView() {
     openForm,
     onCloseForm,
     //
+    labels,
     selectEventId,
     selectedDate,
     selectedEnd,
@@ -142,6 +143,7 @@ export default function CalendarioView() {
             onNextDate={onDateNext}
             onPrevDate={onDatePrev}
             onToday={onDateToday}
+            labels={labels}
             onChangeView={onChangeView}
           />
 
