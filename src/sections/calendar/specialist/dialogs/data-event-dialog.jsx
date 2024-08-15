@@ -242,6 +242,15 @@ export default function DataEventDialog({
     setOpen2(false);
   };
 
+  let backColor = ''
+
+  if(type === 'date' && theme.palette.mode === 'dark'){
+    backColor = '#25303d'
+  }
+  else if(type === 'date'){
+    backColor =  '#f6f7f8'
+  }
+
   return (
     <>
       <FormProvider methods={methods} onSubmit={onSubmit}>
@@ -290,7 +299,7 @@ export default function DataEventDialog({
           }}
           sx={{
             p: { xs: 1, md: 2 },
-            backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f6f7f8',
+            backgroundColor: backColor,
           }}
         >
           {type === 'cancel' ? (

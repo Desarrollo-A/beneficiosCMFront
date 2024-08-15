@@ -2291,6 +2291,7 @@ export default function AppointmentScheduleDialog({
         onClose={() => setConfirmCancel(false)}
         onCancel={onCancel}
         btnConfirmAction={btnConfirmAction}
+        appointmentMutate={appointmentMutate}
       />
 
       <ConfirmDoblePayment
