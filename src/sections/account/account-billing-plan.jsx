@@ -56,7 +56,7 @@ export default function AccountBillingPlan({ cardList, addressBook, plans }) {
   }, []);
 
   const renderPlans = plans.map((plan) => (
-    <Grid xs={12} md={4} key={plan.subscription}>
+    <Grid item xs={12} md={4} key={plan.subscription}>
       <Stack
         component={Paper}
         variant="outlined"
@@ -125,19 +125,19 @@ export default function AccountBillingPlan({ cardList, addressBook, plans }) {
 
         <Stack spacing={2} sx={{ p: 3, pt: 0, typography: 'body2' }}>
           <Grid container spacing={{ xs: 0.5, md: 2 }}>
-            <Grid xs={12} md={4} sx={{ color: 'text.secondary' }}>
+            <Grid item xs={12} md={4} sx={{ color: 'text.secondary' }}>
               Plan
             </Grid>
-            <Grid xs={12} md={8} sx={{ typography: 'subtitle2', textTransform: 'capitalize' }}>
+            <Grid item xs={12} md={8} sx={{ typography: 'subtitle2', textTransform: 'capitalize' }}>
               {selectedPlan || '-'}
             </Grid>
           </Grid>
 
           <Grid container spacing={{ xs: 0.5, md: 2 }}>
-            <Grid xs={12} md={4} sx={{ color: 'text.secondary' }}>
+            <Grid item xs={12} md={4} sx={{ color: 'text.secondary' }}>
               Billing name
             </Grid>
-            <Grid xs={12} md={8}>
+            <Grid item xs={12} md={8}>
               <Button
                 onClick={openAddress.onTrue}
                 endIcon={<Iconify width={16} icon="eva:arrow-ios-downward-fill" />}
@@ -149,28 +149,28 @@ export default function AccountBillingPlan({ cardList, addressBook, plans }) {
           </Grid>
 
           <Grid container spacing={{ xs: 0.5, md: 2 }}>
-            <Grid xs={12} md={4} sx={{ color: 'text.secondary' }}>
+            <Grid item xs={12} md={4} sx={{ color: 'text.secondary' }}>
               Billing address
             </Grid>
-            <Grid xs={12} md={8} sx={{ color: 'text.secondary' }}>
+            <Grid item xs={12} md={8} sx={{ color: 'text.secondary' }}>
               {selectedAddress?.fullAddress}
             </Grid>
           </Grid>
 
           <Grid container spacing={{ xs: 0.5, md: 2 }}>
-            <Grid xs={12} md={4} sx={{ color: 'text.secondary' }}>
+            <Grid item xs={12} md={4} sx={{ color: 'text.secondary' }}>
               Billing phone number
             </Grid>
-            <Grid xs={12} md={8} sx={{ color: 'text.secondary' }}>
+            <Grid item xs={12} md={8} sx={{ color: 'text.secondary' }}>
               {selectedAddress?.phoneNumber}
             </Grid>
           </Grid>
 
           <Grid container spacing={{ xs: 0.5, md: 2 }}>
-            <Grid xs={12} md={4} sx={{ color: 'text.secondary' }}>
+            <Grid item xs={12} md={4} sx={{ color: 'text.secondary' }}>
               Payment method
             </Grid>
-            <Grid xs={12} md={8}>
+            <Grid item xs={12} md={8}>
               <Button
                 onClick={openCards.onTrue}
                 endIcon={<Iconify width={16} icon="eva:arrow-ios-downward-fill" />}

@@ -80,7 +80,7 @@ export default function AccountNotifications() {
       <Stack component={Card} spacing={3} sx={{ p: 3 }}>
         {NOTIFICATIONS.map((notification) => (
           <Grid key={notification.subheader} container spacing={3}>
-            <Grid xs={12} md={4}>
+            <Grid item xs={12} md={4}>
               <ListItemText
                 primary={notification.subheader}
                 secondary={notification.caption}
@@ -89,7 +89,7 @@ export default function AccountNotifications() {
               />
             </Grid>
 
-            <Grid xs={12} md={8}>
+            <Grid item xs={12} md={8}>
               <Stack spacing={1} sx={{ p: 3, borderRadius: 2, bgcolor: 'background.neutral' }}>
                 <Controller
                   name="selected"

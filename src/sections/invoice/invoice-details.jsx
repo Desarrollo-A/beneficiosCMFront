@@ -93,7 +93,7 @@ export default function InvoiceDetails({ invoice }) {
 
   const renderFooter = (
     <Grid container>
-      <Grid xs={12} md={9} sx={{ py: 3 }}>
+      <Grid item xs={12} md={9} sx={{ py: 3 }}>
         <Typography variant="subtitle2">NOTES</Typography>
 
         <Typography variant="body2">
@@ -101,7 +101,7 @@ export default function InvoiceDetails({ invoice }) {
         </Typography>
       </Grid>
 
-      <Grid xs={12} md={3} sx={{ py: 3, textAlign: 'right' }}>
+      <Grid item xs={12} md={3} sx={{ py: 3, textAlign: 'right' }}>
         <Typography variant="subtitle2">Have a Question?</Typography>
 
         <Typography variant="body2">support@minimals.cc</Typography>

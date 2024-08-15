@@ -11,8 +11,6 @@ import Typography from '@mui/material/Typography';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 
-import { fTimestamp } from 'src/utils/format-time';
-
 import { useAuthContext } from 'src/auth/hooks';
 import { GetCustomEvents } from 'src/api/calendar-specialist';
 import { useGetHorariosPresenciales } from 'src/api/especialistas';
@@ -29,12 +27,6 @@ import CalendarEpecialistView from './specialist/calendar-especialist-view';
 import AppointmentScheduleDialog from './beneficiary/dialogs/appointment-scheduled-dialog';
 
 //---------------------------------------------------------
-
-const defaultFilters = {
-  colors: [],
-  startDate: null,
-  endDate: null,
-};
 
 //---------------------------------------------------------
 
@@ -64,13 +56,6 @@ export default function CalendarView() {
     selectEventId,
   } = useCalendar();
 
-  const [filters] = useState(defaultFilters);
-
-  const dateError =
-    filters.startDate && filters.endDate
-      ? filters.startDate.getTime() > filters.endDate.getTime()
-      : false;
-
   const { data: beneficiarioEvents, appointmentMutate } = useGetAppointmentsByUser(
     date,
     user?.idUsuario,
@@ -83,19 +68,13 @@ export default function CalendarView() {
     user?.idSede
   );
 
-  const { horarios, horariosGet } = useGetHorariosPresenciales({
+  const { horariosGet } = useGetHorariosPresenciales({
     idEspecialista: user?.idUsuario,
   });
 
   const events = [...beneficiarioEvents, ...especialistaEvents];
 
   const currentEvent = useEvent(events, selectEventId, openForm);
-
-  const beneficiarioFiltered = applyFilter({
-    inputData: events.concat(horarios),
-    filters,
-    dateError,
-  });
 
   useEffect(() => {
     appointmentMutate();
@@ -198,7 +177,7 @@ export default function CalendarView() {
           onDateToday={onDateToday}
           onChangeView={onChangeView}
           calendarRef={calendarRef}
-          beneficiarioFiltered={beneficiarioFiltered}
+          beneficiarioFiltered={beneficiarioEvents}
           handleClick={handleClick}
           onClickEvent={onClickEvent}
           smUp={smUp}
@@ -262,27 +241,3 @@ export default function CalendarView() {
 }
 
 //---------------------------------------------------------
-
-const applyFilter = ({ inputData, filters, dateError }) => {
-  const { colors, startDate, endDate } = filters;
-
-  const stabilizedThis = inputData.map((el, index) => [el, index]);
-
-  inputData = stabilizedThis.map((el) => el[0]);
-
-  if (colors.length) {
-    inputData = inputData.filter((event) => colors.includes(event.color));
-  }
-
-  if (!dateError) {
-    if (startDate && endDate) {
-      inputData = inputData.filter(
-        (event) =>
-          fTimestamp(event.start) >= fTimestamp(startDate) &&
-          fTimestamp(event.end) <= fTimestamp(endDate)
-      );
-    }
-  }
-
-  return inputData;
-};

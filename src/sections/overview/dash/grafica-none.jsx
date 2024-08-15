@@ -6,26 +6,30 @@ import Typography from '@mui/material/Typography';
 // ----------------------------------------------------------------------
 
 export default function GraficaNone({ title, description, action, img, ...other }) {
-
   return (
     <Grid container spacing={2} sx={{ p: 0 }}>
-      <Grid xs={12} sm={12} md={12}>
-      <Typography variant="h5" sx={{ mb: 0, whiteSpace: 'pre-line', textAlign: 'center' }}>
+      <Grid item xs={12} sm={12} md={12}>
+        <Typography variant="h5" sx={{ mb: 0, whiteSpace: 'pre-line', textAlign: 'center' }}>
           {title}
         </Typography>
       </Grid>
 
       {img && (
-        <Grid xs={12} sm={12} md={12} sx={{
-          p: { xs: 5, md: 3 },
-          maxWidth: 300,
-          mx: 'auto',
-        }}>
+        <Grid
+          item
+          xs={12}
+          sm={12}
+          md={12}
+          sx={{
+            p: { xs: 5, md: 3 },
+            maxWidth: 300,
+            mx: 'auto',
+          }}
+        >
           {img}
         </Grid>
       )}
     </Grid>
-    
   );
 }
 

@@ -104,21 +104,33 @@ export default function DataEventDialog({
     if (eventReasons?.length > 0) {
       items = eventReasons.map((er) => (
         <Tooltip title={er.nombre} key={er.idOpcion}>
-           <Typography variant="body2" sx={{
-            color: 'text.disabled',
-            whiteSpace: 'normal',
-            wordBreak: 'break-word',
-          }} mb={3}>{er.nombre}</Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.disabled',
+              whiteSpace: 'normal',
+              wordBreak: 'break-word',
+            }}
+            mb={3}
+          >
+            {er.nombre}
+          </Typography>
         </Tooltip>
       ));
     } else {
       items = (
         <Tooltip title="Sin motivos de cita">
-           <Typography variant="body2" sx={{
-            color: 'text.disabled',
-            whiteSpace: 'normal',
-            wordBreak: 'break-word',
-          }} mb={3}>Sin motivos de cita</Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.disabled',
+              whiteSpace: 'normal',
+              wordBreak: 'break-word',
+            }}
+            mb={3}
+          >
+            Sin motivos de cita
+          </Typography>
         </Tooltip>
       );
     }
@@ -242,26 +254,20 @@ export default function DataEventDialog({
   return (
     <>
       <FormProvider methods={methods} onSubmit={onSubmit}>
-
         <DialogTitle sx={{ p: { xs: 1, md: 1 } }}>
           <Stack spacing={1} sx={{ p: { xs: 1, md: 2 } }}>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <Typography variant="h5">
-                {dialogTitle(currentEvent?.estatus, type)}
-              </Typography>
+            <Stack direction="row" justifyContent="space-between" alignItems="center">
+              <Typography variant="h5">{dialogTitle(currentEvent?.estatus, type)}</Typography>
               {currentEvent?.id && (currentEvent?.estatus === 1 || currentEvent?.estatus === 6) && (
                 <Stack direction="row" spacing={1}>
-                  {(currentEvent?.estatus === 1 || currentEvent?.estatus === 6) && type === 'date' && (
-                    <Tooltip title="Finalizar cita">
-                      <IconButton className="buttonActions" onClick={handleOpen}>
-                        <Iconify icon="solar:archive-minimalistic-bold" />
-                      </IconButton>
-                    </Tooltip>
-                  )}
+                  {(currentEvent?.estatus === 1 || currentEvent?.estatus === 6) &&
+                    type === 'date' && (
+                      <Tooltip title="Finalizar cita">
+                        <IconButton className="buttonActions" onClick={handleOpen}>
+                          <Iconify icon="solar:archive-minimalistic-bold" />
+                        </IconButton>
+                      </Tooltip>
+                    )}
                   {type === 'cancel' && !pastCheck && (
                     <Tooltip
                       title={currentEvent?.type === 'date' ? 'Cancelar cita' : 'Eliminar horario'}
@@ -287,9 +293,15 @@ export default function DataEventDialog({
         </DialogTitle>
 
         <DialogContent
-          style={{ maxHeight: currentEvent?.id ? '400px' : '600px', overflowY: currentEvent?.id ? 'auto' : 'hidden' }}
-          sx={{ p: { xs: 1, md: 2 }, backgroundColor: backColor }}>
-
+          style={{
+            maxHeight: currentEvent?.id ? '400px' : '600px',
+            overflowY: currentEvent?.id ? 'auto' : 'hidden',
+          }}
+          sx={{
+            p: { xs: 1, md: 2 },
+            backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f6f7f8',
+          }}
+        >
           {type === 'cancel' ? (
             <>
               <Stack
@@ -374,20 +386,9 @@ export default function DataEventDialog({
           )}
 
           {type === 'date' && (
-            <Grid
-              container
-              direction="column"
-              justifyContent="space-between"
-            >
-              <Grid
-                item
-                container
-                direction="row"
-                spacing={1}
-                sx={{ width: '100%' }}
-              >
-                <Grid xs={12} item>
-
+            <Grid container direction="column" justifyContent="space-between">
+              <Grid item container direction="row" spacing={1} sx={{ width: '100%' }}>
+                <Grid item xs={12}>
                   <Timeline
                     sx={{
                       m: 0,
@@ -398,17 +399,10 @@ export default function DataEventDialog({
                       },
                     }}
                   >
-
-                    <TimelineItem  >
-                      <TimelineSeparator >
-                        <TimelineDot
-                          className='icons'
-                        >
-                          <Iconify
-                            icon="mdi:account-circle"
-                            width={30}
-                            sx={{ color: '#c9a61d' }}
-                          />
+                    <TimelineItem>
+                      <TimelineSeparator>
+                        <TimelineDot className="icons">
+                          <Iconify icon="mdi:account-circle" width={30} sx={{ color: '#c9a61d' }} />
                         </TimelineDot>
                         <TimelineConnector />
                       </TimelineSeparator>
@@ -422,16 +416,10 @@ export default function DataEventDialog({
                       </TimelineContent>
                     </TimelineItem>
 
-                    <TimelineItem  >
-                      <TimelineSeparator >
-                        <TimelineDot
-                          className='icons'
-                        >
-                          <Iconify
-                            icon="mdi:phone"
-                            width={30}
-                            sx={{ color: '#3399ff' }}
-                          />
+                    <TimelineItem>
+                      <TimelineSeparator>
+                        <TimelineDot className="icons">
+                          <Iconify icon="mdi:phone" width={30} sx={{ color: '#3399ff' }} />
                         </TimelineDot>
                         <TimelineConnector />
                       </TimelineSeparator>
@@ -445,13 +433,11 @@ export default function DataEventDialog({
                       </TimelineContent>
                     </TimelineItem>
 
-                    <TimelineItem  >
-                      <TimelineSeparator >
-                        <TimelineDot
-                          className='icons'
-                        >
+                    <TimelineItem>
+                      <TimelineSeparator>
+                        <TimelineDot className="icons">
                           <Iconify
-                            className='icons'
+                            className="icons"
                             icon="mdi:calendar-clock"
                             width={30}
                             sx={{ color: 'orange' }}
@@ -470,16 +456,10 @@ export default function DataEventDialog({
                       </TimelineContent>
                     </TimelineItem>
 
-                    <TimelineItem  >
-                      <TimelineSeparator >
-                        <TimelineDot
-                          className='icons'
-                        >
-                          <Iconify
-                            icon="mdi:earth"
-                            width={30}
-                            sx={{ color: '#1ac949' }}
-                          />
+                    <TimelineItem>
+                      <TimelineSeparator>
+                        <TimelineDot className="icons">
+                          <Iconify icon="mdi:earth" width={30} sx={{ color: '#1ac949' }} />
                         </TimelineDot>
                         <TimelineConnector />
                       </TimelineSeparator>
@@ -493,16 +473,10 @@ export default function DataEventDialog({
                       </TimelineContent>
                     </TimelineItem>
 
-                    <TimelineItem  >
-                      <TimelineSeparator >
-                        <TimelineDot
-                          className='icons'
-                        >
-                          <Iconify
-                            icon="ic:outline-place"
-                            width={30}
-                            sx={{ color: '#084a73' }}
-                          />
+                    <TimelineItem>
+                      <TimelineSeparator>
+                        <TimelineDot className="icons">
+                          <Iconify icon="ic:outline-place" width={30} sx={{ color: '#084a73' }} />
                         </TimelineDot>
                         <TimelineConnector />
                       </TimelineSeparator>
@@ -516,16 +490,10 @@ export default function DataEventDialog({
                       </TimelineContent>
                     </TimelineItem>
 
-                    <TimelineItem  >
-                      <TimelineSeparator >
-                        <TimelineDot
-                          className='icons'
-                        >
-                          <Iconify
-                            icon="ic:outline-email"
-                            width={30}
-                            sx={{ color: 'gray' }}
-                          />
+                    <TimelineItem>
+                      <TimelineSeparator>
+                        <TimelineDot className="icons">
+                          <Iconify icon="ic:outline-email" width={30} sx={{ color: 'gray' }} />
                         </TimelineDot>
                         <TimelineConnector />
                       </TimelineSeparator>
@@ -542,38 +510,38 @@ export default function DataEventDialog({
                     </TimelineItem>
 
                     {currentEvent?.fechasFolio && (
-                    <TimelineItem  >
-                      <TimelineSeparator >
-                        <TimelineDot
-                          className='icons'
-                        >
-                          <Iconify
-                            icon="mdi:clock-remove-outline"
-                            width={30}
-                            sx={{ color: 'red' }}
-                          />
-                        </TimelineDot>
-                        <TimelineConnector />
-                      </TimelineSeparator>
+                      <TimelineItem>
+                        <TimelineSeparator>
+                          <TimelineDot className="icons">
+                            <Iconify
+                              icon="mdi:clock-remove-outline"
+                              width={30}
+                              sx={{ color: 'red' }}
+                            />
+                          </TimelineDot>
+                          <TimelineConnector />
+                        </TimelineSeparator>
 
-                      <TimelineContent>
-                        <Typography variant="subtitle1">Cancelación</Typography>
+                        <TimelineContent>
+                          <Typography variant="subtitle1">Cancelación</Typography>
 
-                        {fechasFolio.map((fecha, i) => [
-                          i > 0 && '',
-                          <Typography key={i} style={{ textDecoration: 'line-through' }} fontSize="90%">
-                            {fecha}
-                          </Typography>,
-                        ])}
-                      </TimelineContent>
-                    </TimelineItem>
+                          {fechasFolio.map((fecha, i) => [
+                            i > 0 && '',
+                            <Typography
+                              key={i}
+                              style={{ textDecoration: 'line-through' }}
+                              fontSize="90%"
+                            >
+                              {fecha}
+                            </Typography>,
+                          ])}
+                        </TimelineContent>
+                      </TimelineItem>
                     )}
 
-                    <TimelineItem  >
-                      <TimelineSeparator >
-                        <TimelineDot
-                          className='icons'
-                        >
+                    <TimelineItem>
+                      <TimelineSeparator>
+                        <TimelineDot className="icons">
                           <Iconify
                             icon="solar:chat-round-line-outline"
                             width={30}
@@ -589,7 +557,6 @@ export default function DataEventDialog({
                       </TimelineContent>
                     </TimelineItem>
                   </Timeline>
-
                 </Grid>
               </Grid>
             </Grid>

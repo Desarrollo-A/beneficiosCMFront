@@ -29,7 +29,6 @@ import FormProvider, { RHFTextField } from 'src/components/hook-form';
 // ----------------------------------------------------------------------
 
 export default function ModalAgregarFaqs({ open, onClose }) {
-
   const { enqueueSnackbar } = useSnackbar();
 
   const { user } = useAuthContext();
@@ -44,12 +43,12 @@ export default function ModalAgregarFaqs({ open, onClose }) {
 
   const NewUserSchema = Yup.object().shape({
     descripcion: Yup.string().required('El campo es requerido'),
-    titulo: Yup.string().required('El campo es requerido')
+    titulo: Yup.string().required('El campo es requerido'),
   });
 
   const defaultValues = useMemo(
     () => ({
-      modificadoPor: idUsr
+      modificadoPor: idUsr,
     }),
     [idUsr]
   );
@@ -66,12 +65,11 @@ export default function ModalAgregarFaqs({ open, onClose }) {
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
-
-    const idRol = { rol }
+    const idRol = { rol };
 
     const dataValue = {
       ...idRol,
-      ...data
+      ...data,
     };
 
     try {
@@ -89,10 +87,8 @@ export default function ModalAgregarFaqs({ open, onClose }) {
         enqueueSnackbar(create.msj, { variant: 'error' });
       }
     } catch (error) {
-
-      console.error("Error en handleSubmit:", error);
+      console.error('Error en handleSubmit:', error);
       enqueueSnackbar(`Error en registrar los datos`, { variant: 'danger' });
-
     }
   });
 
@@ -107,67 +103,57 @@ export default function ModalAgregarFaqs({ open, onClose }) {
       }}
     >
       <FormProvider methods={methods} onSubmit={onSubmit}>
-      <Stack spacing={1} >
-      
-        <DialogTitle>
-          Registrar FAQ
-        </DialogTitle>
-
-        <DialogContent>
+        <Stack spacing={1}>
+          <DialogTitle>Registrar FAQ</DialogTitle>
 
           <DialogContent>
+            <DialogContent>
+              <Box mb={2} />
 
-            <Box mb={2} />
+              <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label">Rol</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={rol}
+                  label="Rol"
+                  onChange={handleChange}
+                >
+                  <MenuItem value={2}>Colaborador</MenuItem>
+                  <MenuItem value={3}>Especialista</MenuItem>
+                  <MenuItem value={4}>Administrador</MenuItem>
+                </Select>
+              </FormControl>
 
-            <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">Rol</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={rol}
-                label="Rol"
-                onChange={handleChange}
-              >
-                <MenuItem value={2}>Colaborador</MenuItem>
-                <MenuItem value={3}>Especialista</MenuItem>
-                <MenuItem value={4}>Administrador</MenuItem>
-              </Select>
-            </FormControl>
+              <Box mb={2} />
 
-            <Box mb={2} />
+              <Grid item xs={12} md={6}>
+                <RHFTextField name="titulo" label="Título" multiline rows={1} />
+              </Grid>
 
-            <Grid xs={12} md={6}>
-              <RHFTextField name="titulo" label="Título" multiline rows={1} />
-            </Grid>
+              <Box mb={2} />
 
-            <Box mb={2} />
-
-            <Grid xs={12} md={6}>
-              <RHFTextField name="descripcion" label="Descripcion" multiline rows={4} />
-            </Grid>
-
+              <Grid item xs={12} md={6}>
+                <RHFTextField name="descripcion" label="Descripcion" multiline rows={4} />
+              </Grid>
+            </DialogContent>
           </DialogContent>
+        </Stack>
 
-        </DialogContent>
-        
-      </Stack>
-
-      <DialogActions>
-        <Button variant="contained" color="error" onClick={onClose}>
-          Cerrar
-        </Button>
-        <LoadingButton type="submit" variant="contained" color="success" loading={isSubmitting}>
-          Guardar
-        </LoadingButton>
-      </DialogActions>
+        <DialogActions>
+          <Button variant="contained" color="error" onClick={onClose}>
+            Cerrar
+          </Button>
+          <LoadingButton type="submit" variant="contained" color="success" loading={isSubmitting}>
+            Guardar
+          </LoadingButton>
+        </DialogActions>
       </FormProvider>
-
     </Dialog>
-
   );
 }
 
 ModalAgregarFaqs.propTypes = {
   onClose: PropTypes.func,
-  open: PropTypes.bool
+  open: PropTypes.bool,
 };
