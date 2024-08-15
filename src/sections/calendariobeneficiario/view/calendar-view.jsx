@@ -26,12 +26,13 @@ import { useGetAppointmentsByUser } from 'src/api/calendar-colaborador';
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
 
+import FloatingCircleTimer from 'src/sections/calendar/beneficiary/floating-circle-timer';
+
 import '../style.css';
 import { StyledCalendar } from '../styles';
 import { useEvent, useCalendar } from '../hooks';
 import CalendarToolbar from '../calendar-toolbar';
 import CalendarDialog from '../dialogs/calendar-dialog';
-import FloatingCircleTimer from '../floating-circle-timer';
 
 // ----------------------------------------------------------------------
 

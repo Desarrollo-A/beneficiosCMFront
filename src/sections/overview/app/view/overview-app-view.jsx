@@ -34,7 +34,7 @@ export default function OverviewAppView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <Grid container spacing={3}>
-        <Grid xs={12} md={8}>
+        <Grid item xs={12} md={8}>
           <AppWelcome
             title={`Welcome back 👋 \n ${user?.displayName}`}
             description="If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything."
@@ -47,11 +47,11 @@ export default function OverviewAppView() {
           />
         </Grid>
 
-        <Grid xs={12} md={4}>
+        <Grid item xs={12} md={4}>
           <AppFeatured list={_appFeatured} />
         </Grid>
 
-        <Grid xs={12} md={4}>
+        <Grid item xs={12} md={4}>
           <AppWidgetSummary
             title="Total Active Users"
             percent={2.6}
@@ -62,7 +62,7 @@ export default function OverviewAppView() {
           />
         </Grid>
 
-        <Grid xs={12} md={4}>
+        <Grid item xs={12} md={4}>
           <AppWidgetSummary
             title="Total Installed"
             percent={0.2}
@@ -74,7 +74,7 @@ export default function OverviewAppView() {
           />
         </Grid>
 
-        <Grid xs={12} md={4}>
+        <Grid item xs={12} md={4}>
           <AppWidgetSummary
             title="Total Downloads"
             percent={-0.1}
@@ -86,7 +86,7 @@ export default function OverviewAppView() {
           />
         </Grid>
 
-        <Grid xs={12} md={6} lg={4}>
+        <Grid item xs={12} md={6} lg={4}>
           <AppCurrentDownload
             title="Current Download"
             chart={{
@@ -100,7 +100,7 @@ export default function OverviewAppView() {
           />
         </Grid>
 
-        <Grid xs={12} md={6} lg={8}>
+        <Grid item xs={12} md={6} lg={8}>
           <AppAreaInstalled
             title="Area Installed"
             subheader="(+43%) than last year"
@@ -151,7 +151,7 @@ export default function OverviewAppView() {
           />
         </Grid>
 
-        <Grid xs={12} lg={8}>
+        <Grid item xs={12} lg={8}>
           <AppNewInvoice
             title="New Invoice"
             tableData={_appInvoices}
@@ -165,19 +165,19 @@ export default function OverviewAppView() {
           />
         </Grid>
 
-        <Grid xs={12} md={6} lg={4}>
+        <Grid item xs={12} md={6} lg={4}>
           <AppTopRelated title="Top Related Applications" list={_appRelated} />
         </Grid>
 
-        <Grid xs={12} md={6} lg={4}>
+        <Grid item xs={12} md={6} lg={4}>
           <AppTopInstalledCountries title="Top Installed Countries" list={_appInstalled} />
         </Grid>
 
-        <Grid xs={12} md={6} lg={4}>
+        <Grid item xs={12} md={6} lg={4}>
           <AppTopAuthors title="Top Authors" list={_appAuthors} />
         </Grid>
 
-        <Grid xs={12} md={6} lg={4}>
+        <Grid item xs={12} md={6} lg={4}>
           <Stack spacing={3}>
             <AppWidget
               title="Conversion"
