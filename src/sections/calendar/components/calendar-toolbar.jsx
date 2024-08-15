@@ -144,7 +144,19 @@ export default function CalendarToolbar({
           </Grid>
 
           {/* Aquí deberías ajustar el componente ColorsDialog según tus necesidades */}
-          <ColorsDialog open={open} labels={labels} onClose={() => handleClose()} />
+          <Dialog // dialog de confirmación de finalización
+            open={open}
+            fullWidth
+            maxWidth="xs"
+
+            
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <ColorsDialog
+              onClose={() => handleClose()}
+            />
+          </Dialog>
 
           {loading && (
             <LinearProgress
@@ -206,7 +218,7 @@ export default function CalendarToolbar({
             fullWidth
             maxWidth="xs"
 
-            onClose={() => handleClose()}
+            
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >

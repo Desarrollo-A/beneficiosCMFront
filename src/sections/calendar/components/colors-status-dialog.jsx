@@ -10,6 +10,7 @@ export default function ColorsStatusDialog({ open, labels=[], onClose }) {
   const colors = [
     {
       color: '#ffa500',
+      opacity: 0.25,
       text: 'Cita por asistir',
     },
     {
