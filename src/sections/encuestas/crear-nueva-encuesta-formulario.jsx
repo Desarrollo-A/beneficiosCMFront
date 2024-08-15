@@ -36,14 +36,13 @@ import InvoiceNewEditDetails from './crear-nueva-ecuesta-detalles';
 // ----------------------------------------------------------------------
 
 export default function InvoiceNewEditForm() {
-
   const { user } = useAuthContext();
 
   const { enqueueSnackbar } = useSnackbar();
 
   const insertData = useInsert(endpoints.encuestas.encuestaCreate);
 
-  const { tipoEncData } = useGetGeneral(endpoints.encuestas.tipoEncuesta, "tipoEncData");
+  const { tipoEncData } = useGetGeneral(endpoints.encuestas.tipoEncuesta, 'tipoEncData');
 
   const [btnLoad, setBtnLoad] = useState(false);
 
@@ -58,7 +57,7 @@ export default function InvoiceNewEditForm() {
 
   const defaultValues = useMemo(
     () => ({
-      area: user?.idPuesto
+      area: user?.idPuesto,
     }),
     [user?.idPuesto]
   );
@@ -85,12 +84,11 @@ export default function InvoiceNewEditForm() {
   const rol = user?.idRol;
 
   const handleCreateAndSend = handleSubmit(async (data, est) => {
-
-    const estatus = { estatus: est }
+    const estatus = { estatus: est };
 
     const dataValue = {
       ...estatus,
-      ...data
+      ...data,
     };
 
     if (!isEmpty(dataValue.items)) {
@@ -110,37 +108,30 @@ export default function InvoiceNewEditForm() {
           mutate(endpoints.encuestas.getEstatusUno);
 
           setBtnLoad(false);
-
         } else {
           enqueueSnackbar(insert.msj, { variant: 'error' });
 
           setBtnLoad(false);
         }
-
       } catch (error) {
         console.error(error);
         loadingSend.onFalse();
 
         setBtnLoad(false);
       }
-
     } else {
-      enqueueSnackbar("Faltan datos", { variant: 'error' });
+      enqueueSnackbar('Faltan datos', { variant: 'error' });
 
       setBtnLoad(false);
     }
-
   });
 
   const confirm = useBoolean();
 
   return (
     <FormProvider methods={methods} key={formKey}>
-
       <Card>
-
         <Box sx={{ p: 3 }}>
-
           <Typography variant="h6" sx={{ color: 'text.disabled', mb: 3 }}>
             Preguntas:
           </Typography>
@@ -149,12 +140,12 @@ export default function InvoiceNewEditForm() {
             sx={{
               p: 2.5,
               pr: { xs: 2.5, md: 2.5 },
-            }} divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3}>
-
+            }}
+            divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />}
+            spacing={3}
+          >
             <Grid container spacing={3} disableEqualOverflow>
-
-              <Grid xs={12} md={12}>
-                
+              <Grid item xs={12} md={12}>
                 {rol === 4 ? (
                   <RHFSelect
                     name="tipoEncuesta"
@@ -162,36 +153,26 @@ export default function InvoiceNewEditForm() {
                     label="Tipo de encuesta"
                     InputLabelProps={{ shrink: true }}
                   >
-
                     {tipoEncData.map((res) => (
-                      <MenuItem
-                        key={res.id}
-                        value={res.id}
-                      >
+                      <MenuItem key={res.id} value={res.id}>
                         {res.nombre}
                       </MenuItem>
                     ))}
                   </RHFSelect>
-                ) : (
-                  null
-                )}
+                ) : null}
               </Grid>
 
-              <Grid xs={12}>
+              <Grid item xs={12}>
                 <Divider sx={{ my: 1, borderStyle: 'dashed' }} />
               </Grid>
-
             </Grid>
           </Stack>
-
         </Box>
 
         <InvoiceNewEditDetails />
-
       </Card>
 
       <Stack justifyContent="flex-end" direction="row" spacing={2} sx={{ mt: 3 }}>
-
         <LoadingButton
           size="large"
           variant="contained"
@@ -211,26 +192,33 @@ export default function InvoiceNewEditForm() {
         title="¿Deseas activar la encuesta?"
         action={
           <>
-            <Button variant="contained" color="error" loading={btnLoad} onClick={() => {
-              setBtnLoad(true);
-              confirm.onFalse();
-              handleCreateAndSend(0);
-            }}>
+            <Button
+              variant="contained"
+              color="error"
+              loading={btnLoad}
+              onClick={() => {
+                setBtnLoad(true);
+                confirm.onFalse();
+                handleCreateAndSend(0);
+              }}
+            >
               No
             </Button>
-            <Button variant="contained" color="success" onClick={() => {
-              handleCreateAndSend(1);
-              confirm.onFalse();
-            }}>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={() => {
+                handleCreateAndSend(1);
+                confirm.onFalse();
+              }}
+            >
               Si
             </Button>
           </>
         }
       />
-
-    </FormProvider >
+    </FormProvider>
   );
 }
 
-InvoiceNewEditForm.propTypes = {
-};
+InvoiceNewEditForm.propTypes = {};

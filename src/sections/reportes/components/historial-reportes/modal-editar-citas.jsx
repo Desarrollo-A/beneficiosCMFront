@@ -20,7 +20,7 @@ import { useAuthContext } from 'src/auth/hooks';
 import { updateObservaciones } from 'src/api/reportes';
 
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, { RHFUpload, RHFTextField  } from 'src/components/hook-form';
+import FormProvider, { RHFUpload, RHFTextField } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 
@@ -28,15 +28,15 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
   const { enqueueSnackbar } = useSnackbar();
 
   const { user } = useAuthContext();
-  
-  // const updateObservacion = useUpdate(endpoints.reportes.observacion); 
+
+  // const updateObservacion = useUpdate(endpoints.reportes.observacion);
 
   const idUsr = user?.idUsuario;
 
   const NewUserSchema = Yup.object().shape({
     descripcion: Yup.string().required('El campo es requerido'),
     idCita: Yup.string().required('El campo es requerido'),
-    archivo: Yup.mixed().nullable()
+    archivo: Yup.mixed().nullable(),
   });
 
   const defaultValues = useMemo(
@@ -46,8 +46,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
       estatus: currentUser?.estatus || '',
       modificadoPor: currentUser?.modificadoPor || idUsr,
       ests: currentUser?.modificadoPor || 5,
-      archivo:  null,
-      
+      archivo: null,
     }),
     [currentUser, idUsr]
   );
@@ -65,7 +64,6 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
-
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
       reset();
@@ -80,12 +78,9 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
         enqueueSnackbar(update.msj, { variant: 'error' });
       }
     } catch (error) {
-
-      console.error("Error en handleSubmit:", error);
+      console.error('Error en handleSubmit:', error);
       enqueueSnackbar(`Error en actualizar los datos`, { variant: 'danger' });
-
     }
-    
   });
 
   const handleDrop = useCallback(
@@ -117,27 +112,22 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
         sx: { maxWidth: 720 },
       }}
     >
-
-
       <FormProvider methods={methods} onSubmit={onSubmit}>
-
         <DialogTitle>Justificación de penalización</DialogTitle>
 
         <DialogContent>
-
           ¿Estás seguro que deseas justificar la cita seleccionada?
           <Box mb={2} />
-          <Grid xs={12} md={6}>
+          <Grid item xs={12} md={6}>
             <RHFTextField name="descripcion" label="Observaciones" multiline rows={4} />
           </Grid>
-
         </DialogContent>
 
         <RHFTextField name="idCita" value={idCita} style={{ display: 'none' }} />
 
-        <Grid xs={12} md={6} sx={{p:3}}>
+        <Grid item xs={12} md={6} sx={{ p: 3 }}>
           <RHFUpload
-            name='archivo'
+            name="archivo"
             onDrop={handleDrop}
             onDelete={handleRemoveFile}
             accept={{ '*': [] }}
@@ -153,10 +143,8 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
             Guardar
           </LoadingButton>
         </DialogActions>
-
       </FormProvider>
     </Dialog>
-
   );
 }
 

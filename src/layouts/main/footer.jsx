@@ -96,7 +96,7 @@ export default function Footer() {
             md: 'space-between',
           }}
         >
-          <Grid xs={8} md={3}>
+          <Grid item xs={8} md={3}>
             <Typography
               variant="body2"
               sx={{
@@ -131,7 +131,7 @@ export default function Footer() {
             </Stack>
           </Grid>
 
-          <Grid xs={12} md={6}>
+          <Grid item xs={12} md={6}>
             <Stack spacing={5} direction={{ xs: 'column', md: 'row' }}>
               {LINKS.map((list) => (
                 <Stack

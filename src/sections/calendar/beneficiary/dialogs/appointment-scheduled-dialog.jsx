@@ -900,7 +900,7 @@ export default function AppointmentScheduleDialog({
       });
       const data = await getSpecialists(value.idSede, value.idArea, value.idPuesto);
       setEspecialistas(data?.data);
-      
+
       const modalitiesData = await getModalities(
         value.idSede,
         value.idEspecialista,
@@ -1666,7 +1666,7 @@ export default function AppointmentScheduleDialog({
                   <>
                     <Grid container direction="column" justifyContent="space-between">
                       <Grid item container direction="row" spacing={1} sx={{ width: '100%' }}>
-                        <Grid xs={12}>
+                        <Grid item xs={12}>
                           <Timeline
                             sx={{
                               m: 0,
