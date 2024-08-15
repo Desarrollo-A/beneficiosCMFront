@@ -6,7 +6,11 @@ import { useTheme } from '@mui/material/styles';
 
 import { doEventCancelaCitas } from 'src/api/calendar-colaborador';
 
+import '../styles/style.css'
+
 export default function FloatingCircleTimer({ benefit, leftTime, appointmentMutate, topOffset }) {
+
+  const x = topOffset + 0.2;
 
   const theme = useTheme();
   
@@ -52,29 +56,26 @@ export default function FloatingCircleTimer({ benefit, leftTime, appointmentMuta
   const calculateColor = () => {
     if (time <= leftTime * 0.25) return 'red';
     if (time <= leftTime * 0.5) return 'orange';
-    return 'green';
-  };
+    return 'green'; 
+  }; 
 
   return (
     <div
-    className="fade-in"
+      className="fade-in"
       style={{
         position: 'fixed',
-        bottom: '20px',
-        right: '20px',
-        display: time > 0 ? 'block' : 'none',
-        zIndex: 9999,
-        textAlign: 'center'
-      }}
-    >
-      <div className="base-timer"  style={{
-        position: 'fixed',
-        bottom: '20px',
-        right: '10px', 
+        bottom: `${x * 150}px`, 
+        right: '0px',
         display: time > 0 ? 'block' : 'none',
         zIndex: 9999,
         textAlign: 'center',
-        margin:'10px'
+      }}
+    >
+      <div className="base-timer" style={{
+        display: time > 0 ? 'block' : 'none',
+        zIndex: 9999,
+        textAlign: 'center',
+        margin: '10px'
       }}>
         <svg className="base-timer__svg" viewBox="0 0 100 100">
           <g className="base-timer__circle">
@@ -92,14 +93,13 @@ export default function FloatingCircleTimer({ benefit, leftTime, appointmentMuta
             />
           </g>
         </svg>
-        <span className="base-timer__label" style={{color: theme.palette.mode === 'dark' ? 'black' : 'white'}}>
+        <span className="base-timer__label" sx={{ color: theme.palette.mode === 'dark' ? 'black' : 'white' }}>
           {formatTime(time)}
-          </span>
-        <span className="base-timer__label_text" style={{color: theme.palette.mode === 'dark' ? 'black' : 'white'}}>
-          Tiempo restante para pago de cita
+        </span>
+        <span className="base-timer__label_text" sx={{ color: theme.palette.mode === 'dark' ? 'black' : 'white' }}>
+          Tiempo restante pago {benefit}
         </span>
       </div>
-      
     </div>
   );
 }
