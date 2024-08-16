@@ -70,14 +70,14 @@ export default function DataEventDialog({
   const [dateTitle, setDateTitle] = useState(dayjs(selectedDate).format('dddd, DD MMMM YYYY'));
   const pastCheck = selectedDate < new Date(); // checar si la fecha del evento es inferior a la fecha actual
   const disableInputs = (currentEvent?.estatus !== 1 && currentEvent?.estatus !== 6) || pastCheck; // deshabilitar inputs
-  const allDay =
-    dayjs(currentEvent?.start).format('YYYY/MM/DD') < dayjs(currentEvent?.end).format('YYYY/MM/DD');
+  const allDay = dayjs(currentEvent?.start).format('YYYY/MM/DD') < dayjs(currentEvent?.end).format('YYYY/MM/DD');
   const [defaultInicio, setDefaultInicio] = useState(selectedDate);
   const [defaultFecha, setDefaultFecha] = useState(selectedEnd);
   const [defaultEnd, setDefaultEnd] = useState(dayjs(currentEvent.end).$d);
   const { data: eventReasons } = useGetEventReasons(
     currentEvent?.type === 'date' ? currentEvent?.id : 0
   );
+  const [rescheduleNow, setReschedule] = useState(false);
   const formSchema = yup.object().shape({
     title: type === 'cancel' ? yup.string().max(100).required('Se necesita el título').trim() : '', // maximo de caracteres para el titulo 100
     start: !allDay ? yup.date().required() : '',
@@ -231,8 +231,14 @@ export default function DataEventDialog({
   };
 
   const handleOpen = () => {
+    setReschedule(false);
     setOpen2(true);
   };
+
+  const openReschedule = () => {
+    setReschedule(true);
+    setOpen2(true)
+  }
 
   const handleClose = () => {
     setOpen(false);
@@ -262,11 +268,19 @@ export default function DataEventDialog({
                 <Stack direction="row" spacing={1}>
                   {(currentEvent?.estatus === 1 || currentEvent?.estatus === 6) &&
                     type === 'date' && (
-                      <Tooltip  title="Finalizar cita">
+                      <Stack direction="row">
+                        <Tooltip  title="Reagendar cita">
+                          <IconButton className="buttonActions" onClick={openReschedule}>
+                            <Iconify icon="fluent-mdl2:date-time-12" className="bell" />
+                          </IconButton>
+                        </Tooltip>
+                      
+                        <Tooltip  title="Finalizar cita">
                         <IconButton className="buttonActions" onClick={handleOpen}>
                           <Iconify icon="solar:archive-minimalistic-bold" className="bell"/>
                         </IconButton>
                       </Tooltip>
+                    </Stack>
                     )}
                   {type === 'cancel' && !pastCheck && (
                     <Tooltip
@@ -280,8 +294,6 @@ export default function DataEventDialog({
                 </Stack>
               )}
             </Stack>
-
-            <Typography variant="subtitle1">{dateTitle}</Typography>
 
             {type === 'cancel' && (
               <Stack spacing={3} sx={{ p: { xs: 1, md: 2 } }}>
@@ -624,6 +636,7 @@ export default function DataEventDialog({
       >
         <CancelEventDialog
           type={type}
+          rescheduleNow={rescheduleNow}
           currentEvent={currentEvent}
           pastCheck={pastCheck}
           reasons={reasons}
