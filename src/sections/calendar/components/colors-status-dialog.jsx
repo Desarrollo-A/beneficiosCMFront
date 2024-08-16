@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { Dialog, DialogTitle, DialogContent } from '@material-ui/core';
+import { DialogTitle, DialogContent } from '@material-ui/core';
 
 import { Box, List, Stack, Button, Typography, DialogActions, ThemeProvider } from '@mui/material';
 
