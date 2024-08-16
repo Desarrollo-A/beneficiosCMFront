@@ -262,9 +262,9 @@ export default function DataEventDialog({
                 <Stack direction="row" spacing={1}>
                   {(currentEvent?.estatus === 1 || currentEvent?.estatus === 6) &&
                     type === 'date' && (
-                      <Tooltip title="Finalizar cita">
+                      <Tooltip  title="Finalizar cita">
                         <IconButton className="buttonActions" onClick={handleOpen}>
-                          <Iconify icon="solar:archive-minimalistic-bold" />
+                          <Iconify icon="solar:archive-minimalistic-bold" className="bell"/>
                         </IconButton>
                       </Tooltip>
                     )}
@@ -272,8 +272,8 @@ export default function DataEventDialog({
                     <Tooltip
                       title={currentEvent?.type === 'date' ? 'Cancelar cita' : 'Eliminar horario'}
                     >
-                      <IconButton onClick={handleClickOpen}>
-                        <Iconify icon="solar:trash-bin-trash-bold" />
+                      <IconButton className="buttonActions" onClick={handleClickOpen}>
+                        <Iconify icon="solar:trash-bin-trash-bold" className="bell"/>
                       </IconButton>
                     </Tooltip>
                   )}

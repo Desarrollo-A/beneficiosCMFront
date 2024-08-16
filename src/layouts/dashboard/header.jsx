@@ -16,7 +16,7 @@ import Logo from 'src/components/logoMini';
 import SvgColor from 'src/components/svg-color';
 import { useSettingsContext } from 'src/components/settings';
 
-import PendingModalUser from 'src/sections/calendariobeneficiario/pendingModalUser';
+import PendingModalUser from 'src/sections/calendar/beneficiary/pendingModalUser';
 import EndAppointmentDialog from 'src/sections/calendar/specialist/dialogs/end-appointment-dialog';
 
 import { NAV, HEADER } from '../config-layout';
