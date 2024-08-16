@@ -8,19 +8,24 @@ import { LoadingScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
 // CITAS
-const EvaluacionCitasPage = lazy(() => import('src/pages/beneficios/evaluacion-citas-view'));
 const CitasPage = lazy(() => import('src/pages/beneficios/citas'));
 // REPORTES
-const HistorialReportesPage = lazy(() => import('src/pages/beneficios/reportes/historial-reportes'));
+const HistorialReportesPage = lazy(
+  () => import('src/pages/beneficios/reportes/historial-reportes')
+);
 const ReportePacientesPage = lazy(() => import('src/pages/beneficios/reportes/reporte-pacientes'));
-const DemandaBeneficiosPage = lazy(() => import('src/pages/beneficios/reportes/demanda-beneficios'));
+const DemandaBeneficiosPage = lazy(
+  () => import('src/pages/beneficios/reportes/demanda-beneficios')
+);
 // OVERVIEW
 const DashPage = lazy(() => import('src/pages/beneficios/dash'));
 // ENCUESTAS
 const EncuestasPage = lazy(() => import('src/pages/beneficios/encuestas/encuestas-view'));
 const CrearEncuestaPage = lazy(() => import('src/pages/beneficios/encuestas/crear-view'));
 const VerEncuestasPage = lazy(() => import('src/pages/beneficios/encuestas/ver-view'));
-const VerEncuestaDetallePage = lazy(() => import('src/pages/beneficios/encuestas/ver-detalle-view'));
+const VerEncuestaDetallePage = lazy(
+  () => import('src/pages/beneficios/encuestas/ver-detalle-view')
+);
 // GESTOR
 const AtencionXsedePage = lazy(() => import('src/pages/beneficios/gestor/atencionXsede-view'));
 /* const AtencionPorSedePage = lazy(() => import('src/pages/beneficios/gestor/atencion-por-sede')); */
@@ -40,7 +45,6 @@ const OverviewBankingPage = lazy(() => import('src/pages/beneficios/banking'));
 const OverviewBookingPage = lazy(() => import('src/pages/beneficios/booking'));
 const OverviewFilePage = lazy(() => import('src/pages/beneficios/file'));
 const CalendarioPage = lazy(() => import('src/pages/beneficios/calendario'));
-const CalendarioEspePage = lazy(() => import('src/pages/beneficios/calendario_espe'));
 // PRODUCT
 const ProductDetailsPage = lazy(() => import('src/pages/beneficios/product/details'));
 const ProductListPage = lazy(() => import('src/pages/beneficios/product/list'));
@@ -150,7 +154,7 @@ export const beneficiosRoutes = [
         path: 'ayuda',
         children: [
           { path: 'ayuda', element: <AyudaPage /> },
-          { path: 'gestor', element: <GestorAyudaPage /> }
+          { path: 'gestor', element: <GestorAyudaPage /> },
         ],
       },
       { path: 'dash', element: <DashPage /> },
@@ -161,7 +165,6 @@ export const beneficiosRoutes = [
       { path: 'booking', element: <OverviewBookingPage /> },
       { path: 'file', element: <OverviewFilePage /> },
       { path: 'calendario', element: <CalendarioPage /> },
-      { path: 'calendarioespecialista', element: <CalendarioEspePage /> },
       {
         path: 'user',
         children: [
@@ -245,7 +248,6 @@ export const beneficiosRoutes = [
       { path: 'kanban', element: <KanbanPage /> },
       { path: 'permission', element: <PermissionDeniedPage /> },
       { path: 'blank', element: <BlankPage /> },
-      { path: 'evaluacioncitas', element: <EvaluacionCitasPage /> },
       { path: 'citas', element: <CitasPage /> },
     ],
   },
