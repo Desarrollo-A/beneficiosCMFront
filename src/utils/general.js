@@ -160,19 +160,19 @@ export const horaCancunAEstandar = (fechaStr) => {
 };
 
 export const horaACdmx = (horaInicio, horaFinal, idSede) => {
-  let hora_inicio = dayjs(horaInicio).format('HH:mm:ss');
+  let hora_inicio = dayjs(horaInicio).format('HH:mm:ss')
   let hora_final = dayjs(horaFinal).format('HH:mm:ss')
 
   if(idSede === 9){ // cancun
-    hora_inicio = dayjs(horaInicio).subtract(1, 'hour').format('HH:mm:ss');
+    hora_inicio = dayjs(horaInicio).subtract(1, 'hour').format('HH:mm:ss')
     hora_final = dayjs(horaFinal).subtract(1, 'hour').format('HH:mm:ss')
   }
-  else if(idSede === 7){ // cancun
-    hora_inicio = dayjs(horaInicio).subtract(1, 'hour').format('HH:mm:ss');
-    hora_final = dayjs(horaFinal).subtract(1, 'hour').format('HH:mm:ss')
+  else if(idSede === 11){ // tijuana
+    hora_inicio = dayjs(horaTijuanaAEstandar(horaInicio)).format('HH:mm:ss')
+    hora_final = dayjs(horaTijuanaAEstandar(horaInicio)).format('HH:mm:ss')
   }
 
-  return [{hora_inicio, hora_final}];
+  return [{hora_inicio, hora_final}]
 };
 
 export const toLocalISOString = (date) => {
