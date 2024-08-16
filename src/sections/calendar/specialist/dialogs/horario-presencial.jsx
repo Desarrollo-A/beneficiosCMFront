@@ -28,8 +28,8 @@ import { RHFSelect, RHFHidden, RHFDatePicker } from 'src/components/hook-form';
 export default function PresencialDialog({ open, onClose, id, sede, ...props }) {
   const theme = useTheme();
 
-  const start = new Date()
-  const end = new Date()
+  const start = new Date();
+  const end = new Date();
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -63,11 +63,10 @@ export default function PresencialDialog({ open, onClose, id, sede, ...props }) 
 
   const {
     handleSubmit,
-    formState: { isSubmitting }
+    formState: { isSubmitting },
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
-
     const response = await setHorarioPresencial(data);
 
     if (!response.result) {
@@ -118,11 +117,12 @@ export default function PresencialDialog({ open, onClose, id, sede, ...props }) 
                 <MenuItem key={0} value={0}>
                   Limpiar
                 </MenuItem>
-                {sedes?.length && sedes.map((s, index) => (
-                  <MenuItem key={index} value={s.value}>
-                    {s.label}
-                  </MenuItem>
-                ))}
+                {sedes?.length &&
+                  sedes.map((s, index) => (
+                    <MenuItem key={index} value={s.value}>
+                      {s.label}
+                    </MenuItem>
+                  ))}
               </RHFSelect>
             </Stack>
           </Stack>

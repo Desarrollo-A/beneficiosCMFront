@@ -68,9 +68,11 @@ export default function CalendarView() {
     user?.idSede
   );
 
-  const { horariosGet } = useGetHorariosPresenciales({
+  const { horarios, horariosGet } = useGetHorariosPresenciales({
     idEspecialista: user?.idUsuario,
   });
+
+  console.log('horarios', horarios);
 
   const events = [...beneficiarioEvents, ...especialistaEvents];
 
@@ -130,14 +132,16 @@ export default function CalendarView() {
 
         {user?.idRol === 3 ? (
           <>
-            <Button
-              color="inherit"
-              variant="outlined"
-              onClick={addHorarioPresencial}
-              fullWidth={!smUp}
-            >
-              Establecer horario presencial
-            </Button>
+            {new Set(horarios?.map((item) => item.sede)).size > 1 && (
+              <Button
+                color="inherit"
+                variant="outlined"
+                onClick={addHorarioPresencial}
+                fullWidth={!smUp}
+              >
+                Establecer horario presencial
+              </Button>
+            )}
 
             <Button
               className={`ButtonCita ${animate ? 'animate' : ''}`}
