@@ -23,6 +23,7 @@ import {
 } from '@mui/material';
 
 import { fDate } from 'src/utils/format-time';
+import { horaACdmx } from 'src/utils/general';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { getHorario } from 'src/api/calendar-colaborador';
@@ -139,13 +140,14 @@ export default function CancelEventDialog({
 
   const cancelEvent = async () => {
     let resp = '';
-
+    const horario = horaACdmx(horaInicio, horaFinal, user?.idSede) // se regresa un arreglo
+    
     const eventData = {
       // se da el formato juntando la fecha elegida y la hora que se elige con los minutos
       idCancelar: currentEvent?.id,
       title: `Cita con ${currentEvent?.nombre}`,
-      hora_inicio: dayjs(horaInicio).format('HH:mm:ss'),
-      hora_final: dayjs(horaFinal).format('HH:mm:ss'),
+      hora_inicio: horario[0].hora_inicio,
+      hora_final: horario[0].hora_final,
       fechaInicio: fDate(fecha),
       paciente: currentEvent?.idPaciente,
       idDetalle: currentEvent?.idDetalle,
