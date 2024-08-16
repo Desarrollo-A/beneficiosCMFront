@@ -68,6 +68,7 @@ export default function FloatingCircleTimer({ benefit, leftTime, appointmentMuta
         display: time > 0 ? 'block' : 'none',
         zIndex: 9999,
         textAlign: 'center',
+
       }}
     >
       <div
@@ -97,12 +98,11 @@ export default function FloatingCircleTimer({ benefit, leftTime, appointmentMuta
         </svg>
         <span
           className="base-timer__label"
-          
         >
           {formatTime(time)}
         </span>
         <span
-          className="base-timer__label_text"
+          className={theme.palette.mode === 'dark' ? 'base-timer__label_text' : 'base-timer__label_text bordered-text'}
           sx={{ color: theme.palette.mode === 'dark' ? 'black' : 'white' }}
         >
           Tiempo restante de pago {benefit}

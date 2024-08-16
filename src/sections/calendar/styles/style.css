@@ -228,6 +228,8 @@
 
 .base-timer__svg {
   transform: scaleX(-1);
+  background-color: rgb(86, 86, 86);
+  border-radius: 100%;
 }
 
 .base-timer__circle {
@@ -237,7 +239,7 @@
 
 .base-timer__path-elapsed {
   stroke-width: 5px;
-  stroke: grey;
+  stroke: #ffffff;
 }
 
 .base-timer__path-remaining {
@@ -263,7 +265,9 @@
 }
 
 .base-timer__label {
+  font-family: 'Digital-7', monospace;
   position: absolute;
+  color: white;
   width: 100px; /* Ajustado al tamaño del temporizador */
   height: 100px;
   top: 0;
@@ -341,4 +345,12 @@
   mix-blend-mode: difference;
   filter: invert(1);
   color: black; /* Color de texto inicial */
+}
+
+.bordered-text {
+  text-shadow: 
+    0.47px 0.47px 0 #ffff,  
+    -0.47px -0.47px 0 #ffff,  
+    0.47px -0.47px 0 #ffff,  
+    -0.47px 0.47px 0 #ffff; /* Color del borde */
 }
