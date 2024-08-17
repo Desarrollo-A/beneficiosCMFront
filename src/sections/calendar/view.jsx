@@ -134,7 +134,7 @@ export default function CalendarView() {
 
         {user?.idRol === 3 ? (
           <>
-            {new Set(horarios?.map((item) => item.sede)).size > 1 && (
+            {new Set(horarios?.map((item) => item?.sede)).size > 1 && (
               <Button
                 color="inherit"
                 variant="outlined"

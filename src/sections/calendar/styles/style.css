@@ -344,13 +344,5 @@
 .dynamic-text-color {
   mix-blend-mode: difference;
   filter: invert(1);
-  color: black; /* Color de texto inicial */
-}
-
-.bordered-text {
-  text-shadow: 
-    0.47px 0.47px 0 #ffff,  
-    -0.47px -0.47px 0 #ffff,  
-    0.47px -0.47px 0 #ffff,  
-    -0.47px 0.47px 0 #ffff; /* Color del borde */
+  color: rgb(0, 0, 0); /* Color de texto inicial */
 }
