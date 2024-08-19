@@ -95,7 +95,7 @@ export default function FloatingCircleTimer({ benefit, leftTime, appointmentMuta
         <span className="base-timer__label" style={{color: theme.palette.mode === 'dark' ? 'black' : 'white'}}>
           {formatTime(time)}
           </span>
-        <span className="base-timer__label_text" style={{color: theme.palette.mode === 'dark' ? 'black' : 'white'}}>
+        <span className="base-timer__label_text" style={{color: theme.palette.mode === 'dark' ? 'rgb(65, 184, 131)' : 'white'}}>
           Tiempo restante para pago de cita
         </span>
       </div>

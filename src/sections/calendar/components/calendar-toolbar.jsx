@@ -40,6 +40,7 @@ export default function CalendarToolbar({
   onToday,
   onNextDate,
   onPrevDate,
+  labels,
   onChangeView,
   onOpenFilters,
 }) {
@@ -142,16 +143,19 @@ export default function CalendarToolbar({
             </Grid>
           </Grid>
 
-          <Dialog
+          {/* Aquí deberías ajustar el componente ColorsDialog según tus necesidades */}
+          <Dialog // dialog de confirmación de finalización
             open={open}
             fullWidth
             maxWidth="xs"
-            onClose={() => handleClose()}
+
+            
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            {/* Aquí deberías ajustar el componente ColorsDialog según tus necesidades */}
-            <ColorsDialog onClose={() => handleClose()} />
+            <ColorsDialog
+              onClose={() => handleClose()}
+            />
           </Dialog>
 
           {loading && (
@@ -214,7 +218,7 @@ export default function CalendarToolbar({
             fullWidth
             maxWidth="xs"
 
-            onClose={() => handleClose()}
+            
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
@@ -271,5 +275,6 @@ CalendarToolbar.propTypes = {
   onOpenFilters: PropTypes.func,
   onPrevDate: PropTypes.func,
   onToday: PropTypes.func,
+  labels: PropTypes.any,
   view: PropTypes.oneOf(['dayGridMonth', 'timeGridWeek', 'timeGridDay', 'listWeek']),
 };

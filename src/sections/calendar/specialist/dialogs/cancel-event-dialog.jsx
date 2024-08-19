@@ -19,10 +19,11 @@ import {
   FormControl,
   Autocomplete,
   DialogActions,
-  DialogContent,
+  DialogContent
 } from '@mui/material';
 
 import { fDate } from 'src/utils/format-time';
+import { horaACdmx } from 'src/utils/general';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { getHorario } from 'src/api/calendar-colaborador';
@@ -43,6 +44,7 @@ export default function CancelEventDialog({
   onClose,
   close,
   selectedDate,
+  rescheduleNow // valor para cuando se selecciona reagenda bool
 }) {
   const { user } = useAuthContext(); // variable del la sesion del usuario
   dayjs.locale('es'); // valor para cambiar el idioma del dayjs
@@ -53,7 +55,7 @@ export default function CancelEventDialog({
   const [horaInicio, setHoraInicio] = useState(null);
   const [horaFinal, setHoraFinal] = useState(null);
   const [dateTitle, setDateTitle] = useState(dayjs(selectedDate).format('dddd, DD MMMM YYYY'));
-  const selectedReason = validateSelect(type, reason, cancelType, horaInicio, horaFinal);
+  const selectedReason = validateSelect(type, reason, cancelType, horaInicio, horaFinal, rescheduleNow);
   const [btnLoading, setBtnLoading] = useState(false);
 
   const [hrInicio, setHrInicio] = useState('');
@@ -94,11 +96,11 @@ export default function CancelEventDialog({
     horaFinal: hrFinal,
   };
 
-  const esp = {
-    // idioma de los botones
+  const esp = { // idioma datepicker
     okButtonLabel: 'Seleccionar',
     cancelButtonLabel: 'Cancelar',
     datePickerToolbarTitle: 'Selecciona una fecha',
+    timePickerToolbarTitle: 'Selecciona una hora'
   };
 
   const handleAssist = (event) => {
@@ -138,13 +140,14 @@ export default function CancelEventDialog({
 
   const cancelEvent = async () => {
     let resp = '';
-
+    const horario = horaACdmx(horaInicio, horaFinal, user?.idSede) // se regresa un arreglo
+    
     const eventData = {
       // se da el formato juntando la fecha elegida y la hora que se elige con los minutos
       idCancelar: currentEvent?.id,
       title: `Cita con ${currentEvent?.nombre}`,
-      hora_inicio: dayjs(horaInicio).format('HH:mm:ss'),
-      hora_final: dayjs(horaFinal).format('HH:mm:ss'),
+      hora_inicio: horario[0].hora_inicio,
+      hora_final: horario[0].hora_final,
       fechaInicio: fDate(fecha),
       paciente: currentEvent?.idPaciente,
       idDetalle: currentEvent?.idDetalle,
@@ -165,21 +168,27 @@ export default function CancelEventDialog({
       modalidad: currentEvent?.modalidad,
     };
     
-    switch (cancelType) {
-      case 8:
-        resp = await reschedule(eventData, eventData.idDetalle, cancelType, user, defaultHour);
-        break;
-
-      default:
-        resp = await cancelAppointment(
-          currentEvent,
-          currentEvent?.id,
-          cancelType,
-          user?.idUsuario,
-          user.idSede
-        );
-        break;
+    if(rescheduleNow){
+      resp = await reschedule(eventData, eventData.idDetalle, 8, user, defaultHour); // se manda un 8 directamente en caso de ser reagenda directo
     }
+    else{
+      switch (cancelType) { // se puede remover para que solo sea la función de reschedule
+        case 8:
+          resp = await reschedule(eventData, eventData.idDetalle, cancelType, user, defaultHour);
+          break;
+  
+        default:
+          resp = await cancelAppointment(
+            currentEvent,
+            currentEvent?.id,
+            cancelType,
+            user?.idUsuario,
+            user.idSede
+          );
+          break;
+      }
+    }
+    
 
     if (resp.result) {
       enqueueSnackbar(resp.msg);
@@ -194,18 +203,24 @@ export default function CancelEventDialog({
 
   const handleSubmit = () => {
     setBtnLoading(true);
-    switch (assist) {
-      case 0:
-        cancelEvent();
-        break;
-      case 1:
-        endEvent();
-        break;
 
-      default:
-        setBtnLoading(false);
-        enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
-        break;
+    if(rescheduleNow){
+      cancelEvent();
+    }
+    else{
+      switch (assist) {
+        case 0:
+          cancelEvent();
+          break;
+        case 1:
+          endEvent();
+          break;
+  
+        default:
+          setBtnLoading(false);
+          enqueueSnackbar('Ha ocurrido un error', { variant: 'error' });
+          break;
+      }
     }
   };
 
@@ -223,172 +238,181 @@ export default function CancelEventDialog({
             <strong>¡ATENCIÓN!</strong>
           </Typography>
         </Stack>
-        <Typography>¿Seguro que quieres finalizar la cita?</Typography>
-        <Stack spacing={4} sx={{ pt: { xs: 1, md: 4 } }}>
-          <Box sx={{ minWidth: 120 }}>
-            <FormControl fullWidth>
-              <InputLabel id="assist-label">Asistencia</InputLabel>
-              <Select
-                id="assist"
-                name="assist"
-                labelId="assist-label"
-                value={assist}
-                label="Asistencia"
-                onChange={handleAssist}
-              >
-                {pastCheck && currentEvent?.estatus === 1 && (
-                  <MenuItem value={1}>Asistencia</MenuItem>
-                )}
-
-                <MenuItem value={0}>Inasistencia</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-          {assist === 1 && (
-            <FormControl fullWidth>
-              <Autocomplete
-                id="motivos"
-                name="motivos"
-                openText="Abrir"
-                ListboxProps={{ style: { maxHeight: 200 } }}
-                clearText="Borrar"
-                noOptionsText="Sin opciones"
-                multiple
-                getOptionDisabled={(
-                  option // deshabilita las opciones que ya hayan sido seleccionadas
-                ) => reason.some((selectedOption) => selectedOption.value === option.value)}
-                onChange={(event, value) => {
-                  setReason(value);
-                }}
-                options={reasons.map((rea) => ({ label: rea.nombre, value: rea.idOpcion }))}
-                renderTags={(value, getTagProps) =>
-                  value.map((option, index) => (
-                    <Chip
-                      sx={{
-                        backgroundColor: '#e0e0e0',
-                        borderRadius: '20px',
-                        alignItems: 'center',
-                        alignContent: 'center',
-                        justifyContent: 'center',
-                      }}
-                      deleteIcon={
-                        <Stack
-                          style={{
-                            width: '30px',
-                            height: '20px',
-                            display: 'flex',
-                            alignItems: 'center',
-                          }}
-                        >
-                          <Iconify
-                            icon="typcn:delete-outline"
-                            sx={{
-                              color: 'black',
-                            }}
-                          />
-                        </Stack>
-                      }
-                      variant="outlined"
-                      label={option.label}
-                      {...getTagProps({ index })}
-                    />
-                  ))
-                }
-                renderInput={(params) => (
-                  <TextField
-                    variant="outlined"
-                    {...params}
-                    label="Selecciona los motivos de la cita"
-                    style={{ maxHeight: '150px' }}
-                  />
-                )}
-              />
-            </FormControl>
-          )}
-          {assist === 0 && (
+        {rescheduleNow ? ( // solo para la visualización de cuando se pica en reagendar o no
+          ''
+        ) : (
+          <Stack spacing={3} sx={{ pt: { xs: 1, md: 2} }}>
+            <Typography>¿Seguro que quieres finalizar la cita?</Typography>
             <Box sx={{ minWidth: 120 }}>
               <FormControl fullWidth>
-                <InputLabel id="cancel-label">Tipo de cancelación</InputLabel>
+                <InputLabel id="assist-label">Asistencia</InputLabel>
                 <Select
-                  id="cancelType"
-                  name="cancelType"
-                  labelId="cancel-label"
-                  value={cancelType}
-                  label="Tipo de cancelación"
-                  onChange={handleCancel}
+                  id="assist"
+                  name="assist"
+                  labelId="assist-label"
+                  value={assist}
+                  label="Asistencia"
+                  onChange={handleAssist}
                 >
-                  <MenuItem value={7}>Cancelado por especialista</MenuItem>
-                  {currentEvent?.estatus === 1 && !pastCheck && (
-                    <MenuItem value={8}>Reagendar</MenuItem>
-                  )}
                   {pastCheck && currentEvent?.estatus === 1 && (
-                    <MenuItem value={3}>Penalizar</MenuItem>
+                    <MenuItem value={1}>Asistencia</MenuItem>
                   )}
+
+                  <MenuItem value={0}>Inasistencia</MenuItem>
                 </Select>
               </FormControl>
             </Box>
-          )}
-        </Stack>
-        {cancelType === 8 && (
-          <Stack>
-            <Stack direction="row" sx={{ p: 1, mb: 2, mt: 5 }}>
-              <Typography variant="subtitle1">{dateTitle}</Typography>
-            </Stack>
-
-            <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns} localeText={esp}>
-              <MobileDatePicker
-                label="Fecha"
-                sx={{ width: '100%' }}
-                value={fecha}
-                minDate={new Date()}
-                onChange={(value) => {
-                  setFecha(value);
-                  setDateTitle(dayjs(value).format('dddd, DD MMMM YYYY')); // al momento de cambiar el valor en el input, cambia el valor del titulo
-                }}
-                shouldDisableDate={(value) => {
-                  const dayOfWeek = dayjs(value).day();
-                  if (dayOfWeek === 0) {
-                    return true;
-                  }
-                  
-                  if(dayOfWeek === 6){
-                    if(sabado === 0){
-                    return true; 
-
-                    }
-                  }
-                  return false;
-                }}
-              />
-            </LocalizationProvider>
-
-            <Stack direction="row" justifyContent="space-between" spacing={2} sx={{ mt: 2 }}>
-              <LocalizationProvider localeText={esp}>
-                <MobileTimePicker
-                  sx={{ width: '100%' }}
-                  label="Hora de inicio"
-                  value={horaInicio}
-                  onChange={(value) => {
-                    handleHourChange(value);
+            {assist === 1 && (
+              <FormControl fullWidth>
+                <Autocomplete
+                  id="motivos"
+                  name="motivos"
+                  openText="Abrir"
+                  ListboxProps={{ style: { maxHeight: 200 } }}
+                  clearText="Borrar"
+                  noOptionsText="Sin opciones"
+                  multiple
+                  getOptionDisabled={(
+                    option // deshabilita las opciones que ya hayan sido seleccionadas
+                  ) => reason.some((selectedOption) => selectedOption.value === option.value)}
+                  onChange={(event, value) => {
+                    setReason(value);
                   }}
+                  options={reasons.map((rea) => ({ label: rea.nombre, value: rea.idOpcion }))}
+                  renderTags={(value, getTagProps) =>
+                    value.map((option, index) => (
+                      <Chip
+                        sx={{
+                          backgroundColor: '#e0e0e0',
+                          borderRadius: '20px',
+                          alignItems: 'center',
+                          alignContent: 'center',
+                          justifyContent: 'center',
+                        }}
+                        deleteIcon={
+                          <Stack
+                            style={{
+                              width: '30px',
+                              height: '20px',
+                              display: 'flex',
+                              alignItems: 'center',
+                            }}
+                          >
+                            <Iconify
+                              icon="typcn:delete-outline"
+                              sx={{
+                                color: 'black',
+                              }}
+                            />
+                          </Stack>
+                        }
+                        variant="outlined"
+                        label={option.label}
+                        {...getTagProps({ index })}
+                      />
+                    ))
+                  }
+                  renderInput={(params) => (
+                    <TextField
+                      variant="outlined"
+                      {...params}
+                      label="Selecciona los motivos de la cita"
+                      style={{ maxHeight: '150px' }}
+                    />
+                  )}
                 />
+              </FormControl>
+            )}
+            {assist === 0 && (
+              <Box sx={{ minWidth: 120 }}>
+                <FormControl fullWidth>
+                  <InputLabel id="cancel-label">Tipo de cancelación</InputLabel>
+                  <Select
+                    id="cancelType"
+                    name="cancelType"
+                    labelId="cancel-label"
+                    value={cancelType}
+                    label="Tipo de cancelación"
+                    onChange={handleCancel}
+                  >
+                    <MenuItem value={7}>Cancelado por especialista</MenuItem>
+                    {/* {currentEvent?.estatus === 1 && !pastCheck && ( // opcion  de reagendar remover
+                    <MenuItem value={8}>Reagendar</MenuItem>
+                  )} */}
+                    {pastCheck && currentEvent?.estatus === 1 && (
+                      <MenuItem value={3}>Penalizar</MenuItem>
+                    )}
+                  </Select>
+                </FormControl>
+              </Box>
+            )}
+          </Stack>
+        )}
+        {cancelType === 8 ||
+          (rescheduleNow && (
+            <Stack>
+              <Stack spacing={3} sx={{ p: 1, mb: 2, mt: 0 }}>
+                <Typography>Reagendar cita de colaborador</Typography>
+                <Typography variant="subtitle1">{dateTitle}</Typography>
+              </Stack>
 
-                <MobileTimePicker
+              <LocalizationProvider
+                adapterLocale={es}
+                dateAdapter={AdapterDateFns}
+                localeText={esp}
+              >
+                <MobileDatePicker
+                  label="Fecha"
                   sx={{ width: '100%' }}
-                  label="Hora de finalización"
-                  value={horaFinal}
-                  disabled={type === 'date'}
-                  slotProps={{
-                    textField: {
-                      error: hourError.result,
-                      helperText: hourError.result && hourError.msg,
-                    },
+                  value={fecha}
+                  minDate={new Date()}
+                  onChange={(value) => {
+                    setFecha(value);
+                    setDateTitle(dayjs(value).format('dddd, DD MMMM YYYY')); // al momento de cambiar el valor en el input, cambia el valor del titulo
+                  }}
+                  shouldDisableDate={(value) => {
+                    const dayOfWeek = dayjs(value).day();
+                    if (dayOfWeek === 0) {
+                      return true;
+                    }
+
+                    if (dayOfWeek === 6) {
+                      if (sabado === 0) {
+                        return true;
+                      }
+                    }
+                    return false;
                   }}
                 />
               </LocalizationProvider>
+
+              <Stack direction="row" justifyContent="space-between" spacing={2} sx={{ mt: 2 }}>
+                <LocalizationProvider adapterLocale={es} localeText={esp}>
+                  <MobileTimePicker
+                    sx={{ width: '100%' }}
+                    label="Hora de inicio"
+                    value={horaInicio}
+                    onChange={(value) => {
+                      handleHourChange(value);
+                    }}
+                  />
+
+                  <MobileTimePicker
+                    sx={{ width: '100%' }}
+                    label="Hora de finalización"
+                    value={horaFinal}
+                    disabled={type === 'date'}
+                    slotProps={{
+                      textField: {
+                        error: hourError.result,
+                        helperText: hourError.result && hourError.msg,
+                      },
+                    }}
+                  />
+                </LocalizationProvider>
+              </Stack>
             </Stack>
-          </Stack>
-        )}
+          ))}
       </DialogContent>
       <DialogActions>
         <Button variant="contained" color="error" onClick={onClose}>
@@ -410,7 +434,7 @@ export default function CancelEventDialog({
   );
 }
 
-function validateSelect(type, reason, cancelType, horaInicio, horaFinal) {
+function validateSelect(type, reason, cancelType, horaInicio, horaFinal, rescheduleNow) {
   let validation = true;
 
   if (type === 'date' && (reason.length > 0 || cancelType)) {
@@ -423,6 +447,9 @@ function validateSelect(type, reason, cancelType, horaInicio, horaFinal) {
         validation = false;
         break;
     }
+  }
+  else if(rescheduleNow){ // validacion para cuando se selecciona reagenda 
+    if(horaInicio || horaFinal) validation = false;
   }
 
   return validation;
@@ -464,4 +491,5 @@ CancelEventDialog.propTypes = {
   onClose: PropTypes.func,
   close: PropTypes.func,
   selectedDate: PropTypes.any,
+  rescheduleNow: PropTypes.any
 };

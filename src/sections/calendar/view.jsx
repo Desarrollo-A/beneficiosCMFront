@@ -19,6 +19,7 @@ import { useGetAppointmentsByUser } from 'src/api/calendar-colaborador';
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
 
+import './styles/style.css';
 import { useEvent, useCalendar } from './hooks';
 import BeneficiaryCalendar from './beneficiary/beneficiary-calendar';
 import FloatingCircleTimer from './components/floating-circle-timer';
@@ -98,6 +99,7 @@ export default function CalendarView() {
         <FloatingCircleTimer
           key={event?.id}
           benefit={event?.beneficio}
+          type={event?.tipoCita}
           leftTime={event?.diferenciaEnMs}
           appointmentMutate={appointmentMutate}
           topOffset={index}
@@ -130,7 +132,7 @@ export default function CalendarView() {
 
         {user?.idRol === 3 ? (
           <>
-            {new Set(horarios?.map((item) => item.sede)).size > 1 && (
+            {new Set(horarios?.map((item) => item?.sede)).size > 1 && (
               <Button
                 color="inherit"
                 variant="outlined"
@@ -146,6 +148,7 @@ export default function CalendarView() {
               onClick={agendarDialog.onTrue}
               id="animateElement"
               fullWidth={!smUp}
+              sx={{ backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : 'white' }}
             >
               <span>Agendar nueva cita</span>
               <Iconify icon="carbon:add-filled" />
@@ -157,6 +160,7 @@ export default function CalendarView() {
             onClick={agendarDialog.onTrue}
             id="animateElement"
             fullWidth={!smUp}
+            sx={{ backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : 'white' }}
           >
             <span>Agendar nueva cita</span>
             <Iconify icon="carbon:add-filled" />
