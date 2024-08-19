@@ -1056,7 +1056,7 @@ export async function reschedulee(eventData, idDetalle, cancelType, datosUser, d
 
 // ----------------------------------------------------------------------
 
-export async function reschedule(eventData, idDetalle, cancelType, datosUser, defaultHour) {
+export async function reschedule(eventData, idDetalle, cancelType, datosUser, defaultHour) {  
   let response = '';
   const { fundacion } = eventData; // para verificar si es fundacion Lamat
   let sede = eventData?.sede || 'virtual';
@@ -1207,11 +1207,13 @@ export async function reschedule(eventData, idDetalle, cancelType, datosUser, de
     correo: [organizador],
     idUsuario: datosUser?.idUsuario,
   };
+console.log(eventData.hora_inicio); 
+console.log(eventData.hora_final); 
 
   if (
     !(
-      eventData.hora_inicio >= defaultHour.horaInicio &&
-      eventData.hora_final <= defaultHour.horaFinal &&
+      eventData.hora_inicio >= defaultHour.horaInicio.split('.')[0] &&
+      eventData.hora_final <= defaultHour.horaFinal.split('.')[0] &&
       eventData.hora_final > eventData.hora_inicio
     )
   ) {
