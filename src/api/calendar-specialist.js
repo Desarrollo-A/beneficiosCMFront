@@ -1207,8 +1207,7 @@ export async function reschedule(eventData, idDetalle, cancelType, datosUser, de
     correo: [organizador],
     idUsuario: datosUser?.idUsuario,
   };
-console.log(eventData.hora_inicio); 
-console.log(eventData.hora_final); 
+
 
   if (
     !(
