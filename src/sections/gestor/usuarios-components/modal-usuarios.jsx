@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import { mutate } from 'swr';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 import { useState, useEffect } from 'react';
@@ -23,15 +24,13 @@ import { useBoolean } from 'src/hooks/use-boolean';
 
 import { endpoints } from 'src/utils/axios';
 
+import { useGetGeneral } from 'src/api/general';
+import { useInsert } from 'src/api/verificacion';
 import { getDecodedPassAdmin } from 'src/api/perfil';
-import { useSnackbar } from 'src/components/snackbar';
-import { useGetGeneral, useInsertGeneral } from 'src/api/general';
 
 import Iconify from 'src/components/iconify';
-import FormProvider, {
-  RHFTextField,
-  RHFSelect
-} from 'src/components/hook-form';
+import { useSnackbar } from 'src/components/snackbar';
+import FormProvider, { RHFSelect, RHFTextField } from 'src/components/hook-form';
 // ----------------------------------------------------------------------
 
 export default function ModalUsuarios({
@@ -46,18 +45,17 @@ export default function ModalUsuarios({
   departamento,
   area,
   puesto,
-  sede, 
+  sede,
   rol,
   permisos_id,
-  idRol
- }) {
-
+  idRol,
+}) {
   const { enqueueSnackbar } = useSnackbar();
 
   const schema = Yup.object().shape({
     // id: Yup.number(),
     // permisos_id: Yup.number(),
-  })
+  });
 
   const methods = useForm({
     resolver: yupResolver(schema),
@@ -70,12 +68,13 @@ export default function ModalUsuarios({
 
   const passwordOld = useBoolean();
 
-  const [ passDecode, setPassDecode ] = useState('');
+  const [passDecode, setPassDecode] = useState('');
 
-  const { permisos } = useGetGeneral(endpoints.gestor.permisos, "permisos");
-  const insertData = useInsertGeneral(endpoints.gestor.save_permisos)
+  const { permisos } = useGetGeneral(endpoints.gestor.permisos, 'permisos');
 
-  const usuario = passDecode ? passDecode?.find(u => u.idUsuario === id) : '';
+  const insertData = useInsert(endpoints.gestor.save_permisos);
+
+  const usuario = passDecode ? passDecode?.find((u) => u.idUsuario === id) : '';
   const pw = usuario ? usuario.password : null;
 
   const onSubmit = handleSubmit(async (data) => {
@@ -84,23 +83,24 @@ export default function ModalUsuarios({
     const dataValue = {
       id,
       permisos_id: data.permisos_id,
-    }
-    
-    const response = await insertData(dataValue)
+    };
+
+    const response = await insertData(dataValue);
     // console.log(response)
 
-    enqueueSnackbar(response.msg, {variant: response.status});
+    enqueueSnackbar(response.msg, { variant: response.status });
 
-    if(response.status === 'success'){
-      onClose()
+    if (response.status === 'success') {
+      onClose();
+      mutate(endpoints.gestor.getUsuarios);
     }
   });
 
   useEffect(() => {
-    const getPassword = async() => {
+    const getPassword = async () => {
       const pass = await getDecodedPassAdmin();
       setPassDecode(pass.data);
-    }
+    };
     getPassword();
   }, []);
 
@@ -114,9 +114,7 @@ export default function ModalUsuarios({
         sx: { maxWidth: 1080 },
       }}
     >
-
-      <Stack spacing={1} >
-
+      <Stack spacing={1}>
         <DialogTitle>
           Datos de usuario
           <Box>
@@ -126,7 +124,7 @@ export default function ModalUsuarios({
           </Box>
         </DialogTitle>
 
-        <FormProvider methods={methods} >
+        <FormProvider methods={methods}>
           <DialogContent>
             <Stack
               spacing={2}
@@ -136,48 +134,62 @@ export default function ModalUsuarios({
               }}
             >
               <Grid container spacing={3} disableEqualOverflow>
-                <Grid xs={3} md={3}>
+                <Grid item xs={3} md={3}>
                   <RHFTextField name="id" label="Id" value={id} disabled />
                 </Grid>
-                <Grid xs={3} md={3}>
-                  <RHFTextField name="numEmpleado" label="Número de empleado" value={numEmpleado} disabled />
+                <Grid item xs={3} md={3}>
+                  <RHFTextField
+                    name="numEmpleado"
+                    label="Número de empleado"
+                    value={numEmpleado}
+                    disabled
+                  />
                 </Grid>
-                <Grid xs={3} md={3}>
+                <Grid item xs={3} md={3}>
                   <RHFTextField name="contrato" label="Contrato" value={contrato} disabled />
                 </Grid>
-                <Grid xs={3} md={3}>
+                <Grid item xs={3} md={3}>
                   <RHFTextField name="rol" label="Rol" value={rol} disabled />
                 </Grid>
-                <Grid xs={4} md={4}>
+                <Grid item xs={4} md={4}>
                   <RHFTextField name="correo" label="Correo" value={correo} disabled />
                 </Grid>
-                <Grid xs={4} md={4}>
-                {passDecode ? (
-                  <RHFTextField
-                    name="oldPassword"
-                    type={passwordOld.value ? 'text' : 'password'}
-                    label="Contraseña"
-                    value={pw}
-                    disabled
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton onClick={passwordOld.onToggle} edge="end">
-                            <Iconify icon={passwordOld.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                ):(
-                  <Grid xs={4} md={4}>
-                    <LinearProgress />
-                  </Grid>
-                )}
+                <Grid item xs={4} md={4}>
+                  {passDecode ? (
+                    <RHFTextField
+                      name="oldPassword"
+                      type={passwordOld.value ? 'text' : 'password'}
+                      label="Contraseña"
+                      value={pw}
+                      disabled
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton onClick={passwordOld.onToggle} edge="end">
+                              <Iconify
+                                icon={
+                                  passwordOld.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'
+                                }
+                              />
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  ) : (
+                    <Grid item xs={4} md={4}>
+                      <LinearProgress />
+                    </Grid>
+                  )}
                 </Grid>
 
-                <Grid xs={4} md={4}>
-                  <RHFSelect name="permisos_id" label="Permisos adicionales" value={permisos_id} disabled={idRol !== 4}>
+                <Grid item xs={4} md={4}>
+                  <RHFSelect
+                    name="permisos_id"
+                    label="Permisos adicionales"
+                    value={permisos_id}
+                    disabled={idRol !== 4}
+                  >
                     <MenuItem value="">Ninguno</MenuItem>
                     {permisos.map((option, index) => (
                       <MenuItem key={index} value={option.value}>
@@ -186,28 +198,29 @@ export default function ModalUsuarios({
                     ))}
                   </RHFSelect>
                 </Grid>
-                
               </Grid>
             </Stack>
           </DialogContent>
-
         </FormProvider>
-
       </Stack>
 
       <DialogActions>
         <Button variant="contained" color="error" onClick={onClose}>
           Cerrar
         </Button>
-        {idRol === 4 &&
-          <LoadingButton type="submit" variant="contained" color="primary" loading={isSubmitting} onClick={onSubmit} >
+        {idRol === 4 && (
+          <LoadingButton
+            type="submit"
+            variant="contained"
+            color="primary"
+            loading={isSubmitting}
+            onClick={onSubmit}
+          >
             Guardar
           </LoadingButton>
-        }
+        )}
       </DialogActions>
-
     </Dialog>
-
   );
 }
 

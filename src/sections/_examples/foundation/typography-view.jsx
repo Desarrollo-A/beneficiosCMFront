@@ -74,11 +74,11 @@ export default function TypographyView() {
 
       <Container sx={{ my: 10 }}>
         <Grid container rowSpacing={5}>
-          <Grid xs={12} md={3}>
+          <Grid item xs={12} md={3}>
             <Typography variant="h6">Default Text</Typography>
           </Grid>
 
-          <Grid xs={12} md={9}>
+          <Grid item xs={12} md={9}>
             <Stack spacing={3}>
               {TYPOGRAPHYS.map((font) => (
                 <BlockVariant key={font.variant} font={font} />
@@ -86,11 +86,11 @@ export default function TypographyView() {
             </Stack>
           </Grid>
 
-          <Grid xs={12} md={3}>
+          <Grid item xs={12} md={3}>
             <Typography variant="h6">Colors Text</Typography>
           </Grid>
 
-          <Grid xs={12} md={9}>
+          <Grid item xs={12} md={9}>
             <Stack spacing={3}>
               {['primary', 'secondary', 'disabled'].map((color) => (
                 <Paper key={color} variant="outlined" sx={{ p: 3, borderRadius: 1 }}>

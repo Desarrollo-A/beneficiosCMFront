@@ -166,18 +166,26 @@ export default function NotificationItem({ notification }) {
       <Box
         sx={{
           top: 26,
-          width: 8,
-          height: 8,
+          width: 10,  
+          height: 36, 
           right: 40,
           borderRadius: '50%',
           position: 'absolute',
         }}
         className="fade-in"
       >
-        <IconButton color="error" onClick={() => {
-          handleDeleteNt(notification.id)
-        }}>
-          <Iconify icon="typcn:delete" />
+        <IconButton
+          color="error"
+          onClick={() => {
+            handleDeleteNt(notification.id);
+          }}
+          sx={{ padding: 0 }}
+        >
+          <Iconify
+            icon="typcn:delete"
+            width="29px"
+            height="29px"
+          />
         </IconButton>
       </Box>
     );

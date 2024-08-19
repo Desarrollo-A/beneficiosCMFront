@@ -8,92 +8,88 @@ import { LoadingScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
 // CITAS
-const EvaluacionCitasPage = lazy(() => import('src/pages/dashboard/evaluacion-citas-view'));
-const CitasPage = lazy(() => import('src/pages/dashboard/citas'));
+const CitasPage = lazy(() => import('src/pages/beneficios/citas'));
 // REPORTES
-const HistorialReportesPage = lazy(() => import('src/pages/dashboard/reportes/historial-reportes'));
-const ReportePacientesPage = lazy(() => import('src/pages/dashboard/reportes/reporte-pacientes'));
-const DemandaBeneficiosPage = lazy(() => import('src/pages/dashboard/reportes/demanda-beneficios'));
+const HistorialReportesPage = lazy(() => import('src/pages/beneficios/reportes/historial-reportes'));
+const ReportePacientesPage = lazy(() => import('src/pages/beneficios/reportes/reporte-pacientes'));
+const DemandaBeneficiosPage = lazy(() => import('src/pages/beneficios/reportes/demanda-beneficios'));
 // OVERVIEW
-const DashPage = lazy(() => import('src/pages/dashboard/dash'));
+const DashPage = lazy(() => import('src/pages/beneficios/dash'));
 // ENCUESTAS
-const EncuestasPage = lazy(() => import('src/pages/dashboard/encuestas/encuestas-view'));
-const CrearEncuestaPage = lazy(() => import('src/pages/dashboard/encuestas/crear-view'));
-const VerEncuestasPage = lazy(() => import('src/pages/dashboard/encuestas/ver-view'));
-const VerEncuestaDetallePage = lazy(() => import('src/pages/dashboard/encuestas/ver-detalle-view'));
+const EncuestasPage = lazy(() => import('src/pages/beneficios/encuestas/encuestas-view'));
+const CrearEncuestaPage = lazy(() => import('src/pages/beneficios/encuestas/crear-view'));
+const VerEncuestasPage = lazy(() => import('src/pages/beneficios/encuestas/ver-view'));
+const VerEncuestaDetallePage = lazy(() => import('src/pages/beneficios/encuestas/ver-detalle-view'));
 // GESTOR
-const AtencionXsedePage = lazy(() => import('src/pages/dashboard/gestor/atencionXsede-view'));
-/* const AtencionPorSedePage = lazy(() => import('src/pages/dashboard/gestor/atencion-por-sede')); */
-const HorariosEspePage = lazy(() => import('src/pages/dashboard/gestor/horariosEspe-view'));
-const EstatusPuestosPage = lazy(() => import('src/pages/dashboard/gestor/estausPuestos-view'));
-const SedesPage = lazy(() => import('src/pages/dashboard/gestor/sedes-view'));
-const UsuariosPage = lazy(() => import('src/pages/dashboard/gestor/usuarios-view'));
+const AtencionXsedePage = lazy(() => import('src/pages/beneficios/gestor/atencionXsede-view'));
+/* const AtencionPorSedePage = lazy(() => import('src/pages/beneficios/gestor/atencion-por-sede')); */
+const HorariosEspePage = lazy(() => import('src/pages/beneficios/gestor/horariosEspe-view'));
+const EstatusPuestosPage = lazy(() => import('src/pages/beneficios/gestor/estausPuestos-view'));
+const SedesPage = lazy(() => import('src/pages/beneficios/gestor/sedes-view'));
+const UsuariosPage = lazy(() => import('src/pages/beneficios/gestor/usuarios-view'));
 // ----------------------------------------------------------------------
 // AYUDA
-const AyudaPage = lazy(() => import('src/pages/dashboard/ayuda/ayuda-view'));
-const GestorAyudaPage = lazy(() => import('src/pages/dashboard/ayuda/gestorAyuda-view'));
+const AyudaPage = lazy(() => import('src/pages/beneficios/ayuda/ayuda-view'));
+const GestorAyudaPage = lazy(() => import('src/pages/beneficios/ayuda/gestorAyuda-view'));
 // AVISOS DE PRIVACIDAD
-const AvisosDePrivacidad = lazy(() => import('src/pages/dashboard/privacidad/aviso-privacidad'));
-const OverviewEcommercePage = lazy(() => import('src/pages/dashboard/ecommerce'));
-const OverviewAnalyticsPage = lazy(() => import('src/pages/dashboard/analytics'));
-const OverviewBankingPage = lazy(() => import('src/pages/dashboard/banking'));
-const OverviewBookingPage = lazy(() => import('src/pages/dashboard/booking'));
-const OverviewFilePage = lazy(() => import('src/pages/dashboard/file'));
-const CalendarioPage = lazy(() => import('src/pages/dashboard/calendario'));
-const CalendarioEspePage = lazy(() => import('src/pages/dashboard/calendario_espe'));
+const AvisosDePrivacidad = lazy(() => import('src/pages/beneficios/privacidad/aviso-privacidad'));
+const OverviewEcommercePage = lazy(() => import('src/pages/beneficios/ecommerce'));
+const OverviewAnalyticsPage = lazy(() => import('src/pages/beneficios/analytics'));
+const OverviewBankingPage = lazy(() => import('src/pages/beneficios/banking'));
+const OverviewBookingPage = lazy(() => import('src/pages/beneficios/booking'));
+const OverviewFilePage = lazy(() => import('src/pages/beneficios/file'));
+const CalendarioPage = lazy(() => import('src/pages/beneficios/calendario'));
 // PRODUCT
-const ProductDetailsPage = lazy(() => import('src/pages/dashboard/product/details'));
-const ProductListPage = lazy(() => import('src/pages/dashboard/product/list'));
-const ProductCreatePage = lazy(() => import('src/pages/dashboard/product/new'));
-const ProductEditPage = lazy(() => import('src/pages/dashboard/product/edit'));
+const ProductDetailsPage = lazy(() => import('src/pages/beneficios/product/details'));
+const ProductListPage = lazy(() => import('src/pages/beneficios/product/list'));
+const ProductCreatePage = lazy(() => import('src/pages/beneficios/product/new'));
+const ProductEditPage = lazy(() => import('src/pages/beneficios/product/edit'));
 // ORDER
-const OrderListPage = lazy(() => import('src/pages/dashboard/order/list'));
-const OrderDetailsPage = lazy(() => import('src/pages/dashboard/order/details'));
+const OrderListPage = lazy(() => import('src/pages/beneficios/order/list'));
+const OrderDetailsPage = lazy(() => import('src/pages/beneficios/order/details'));
 // INVOICE
-const InvoiceListPage = lazy(() => import('src/pages/dashboard/invoice/list'));
-const InvoiceDetailsPage = lazy(() => import('src/pages/dashboard/invoice/details'));
-const InvoiceCreatePage = lazy(() => import('src/pages/dashboard/invoice/new'));
-const InvoiceEditPage = lazy(() => import('src/pages/dashboard/invoice/edit'));
+const InvoiceListPage = lazy(() => import('src/pages/beneficios/invoice/list'));
+const InvoiceDetailsPage = lazy(() => import('src/pages/beneficios/invoice/details'));
+const InvoiceCreatePage = lazy(() => import('src/pages/beneficios/invoice/new'));
+const InvoiceEditPage = lazy(() => import('src/pages/beneficios/invoice/edit'));
 // USER
-const UserCardsPage = lazy(() => import('src/pages/dashboard/user/cards'));
-const UserListPage = lazy(() => import('src/pages/dashboard/user/list'));
-const UserAccountPage = lazy(() => import('src/pages/dashboard/user/account'));
-const UserCreatePage = lazy(() => import('src/pages/dashboard/user/new'));
-const UserEditPage = lazy(() => import('src/pages/dashboard/user/edit'));
+const UserCardsPage = lazy(() => import('src/pages/beneficios/user/cards'));
+const UserListPage = lazy(() => import('src/pages/beneficios/user/list'));
+const UserAccountPage = lazy(() => import('src/pages/beneficios/user/account'));
+const UserCreatePage = lazy(() => import('src/pages/beneficios/user/new'));
+const UserEditPage = lazy(() => import('src/pages/beneficios/user/edit'));
 
-const PerfilPage = lazy(() => import('src/pages/dashboard/usuarios/perfil'));
+const PerfilPage = lazy(() => import('src/pages/beneficios/usuarios/perfil'));
 
 // BLOG
-const BlogPostsPage = lazy(() => import('src/pages/dashboard/post/list'));
-const BlogPostPage = lazy(() => import('src/pages/dashboard/post/details'));
-const BlogNewPostPage = lazy(() => import('src/pages/dashboard/post/new'));
-const BlogEditPostPage = lazy(() => import('src/pages/dashboard/post/edit'));
+const BlogPostsPage = lazy(() => import('src/pages/beneficios/post/list'));
+const BlogPostPage = lazy(() => import('src/pages/beneficios/post/details'));
+const BlogNewPostPage = lazy(() => import('src/pages/beneficios/post/new'));
+const BlogEditPostPage = lazy(() => import('src/pages/beneficios/post/edit'));
 // JOB
-const JobDetailsPage = lazy(() => import('src/pages/dashboard/job/details'));
-const JobListPage = lazy(() => import('src/pages/dashboard/job/list'));
-const JobCreatePage = lazy(() => import('src/pages/dashboard/job/new'));
-const JobEditPage = lazy(() => import('src/pages/dashboard/job/edit'));
+const JobDetailsPage = lazy(() => import('src/pages/beneficios/job/details'));
+const JobListPage = lazy(() => import('src/pages/beneficios/job/list'));
+const JobCreatePage = lazy(() => import('src/pages/beneficios/job/new'));
+const JobEditPage = lazy(() => import('src/pages/beneficios/job/edit'));
 // TOUR
-const TourDetailsPage = lazy(() => import('src/pages/dashboard/tour/details'));
-const TourListPage = lazy(() => import('src/pages/dashboard/tour/list'));
-const TourCreatePage = lazy(() => import('src/pages/dashboard/tour/new'));
-const TourEditPage = lazy(() => import('src/pages/dashboard/tour/edit'));
+const TourDetailsPage = lazy(() => import('src/pages/beneficios/tour/details'));
+const TourListPage = lazy(() => import('src/pages/beneficios/tour/list'));
+const TourCreatePage = lazy(() => import('src/pages/beneficios/tour/new'));
+const TourEditPage = lazy(() => import('src/pages/beneficios/tour/edit'));
 // Test
-const TestInsertBatch = lazy(() => import('src/pages/dashboard/usuarios/new'));
+const TestInsertBatch = lazy(() => import('src/pages/beneficios/usuarios/new'));
 // FILE MANAGER
-const FileManagerPage = lazy(() => import('src/pages/dashboard/file-manager'));
+const FileManagerPage = lazy(() => import('src/pages/beneficios/file-manager'));
 // APP
-const ChatPage = lazy(() => import('src/pages/dashboard/chat'));
-const MailPage = lazy(() => import('src/pages/dashboard/mail'));
-const CalendarPage = lazy(() => import('src/pages/dashboard/calendar'));
-const KanbanPage = lazy(() => import('src/pages/dashboard/kanban'));
+const ChatPage = lazy(() => import('src/pages/beneficios/chat'));
+const MailPage = lazy(() => import('src/pages/beneficios/mail'));
+const CalendarPage = lazy(() => import('src/pages/beneficios/calendar'));
+const KanbanPage = lazy(() => import('src/pages/beneficios/kanban'));
 // TEST RENDER PAGE BY ROLE
-const PermissionDeniedPage = lazy(() => import('src/pages/dashboard/permission'));
+const PermissionDeniedPage = lazy(() => import('src/pages/beneficios/permission'));
 // BLANK PAGE
-// const BlankPage = lazy(() => import('src/pages/dashboard/blank'));
+// const BlankPage = lazy(() => import('src/pages/beneficios/blank'));
 const BlankPage = lazy(() => import('src/sections/_examples/extra/upload-view'));
-
-// const AgendaPage = lazy(() => import('src/pages/dashboard/agenda'))
 
 // ----------------------------------------------------------------------
 
@@ -161,7 +157,6 @@ export const dashboardRoutes = [
       { path: 'booking', element: <OverviewBookingPage /> },
       { path: 'file', element: <OverviewFilePage /> },
       { path: 'calendario', element: <CalendarioPage /> },
-      { path: 'calendarioespecialista', element: <CalendarioEspePage /> },
       {
         path: 'user',
         children: [
@@ -245,7 +240,6 @@ export const dashboardRoutes = [
       { path: 'kanban', element: <KanbanPage /> },
       { path: 'permission', element: <PermissionDeniedPage /> },
       { path: 'blank', element: <BlankPage /> },
-      { path: 'evaluacioncitas', element: <EvaluacionCitasPage /> },
       { path: 'citas', element: <CitasPage /> },
     ],
   },

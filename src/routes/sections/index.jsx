@@ -12,6 +12,7 @@ import { authRoutes } from './auth';
 import { mainRoutes } from './main';
 // import { authDemoRoutes } from './auth-demo';
 import { dashboardRoutes } from './dashboard';
+import { beneficiosRoutes } from './beneficios';
 import { componentsRoutes } from './components';
 
 // const JwtLoginPage = lazy(() => import('src/pages/auth/jwt/login'));
@@ -46,6 +47,9 @@ export default function Router() {
 
     // Dashboard routes
     ...dashboardRoutes,
+
+    // Beneficios routes
+    ...beneficiosRoutes,
 
     // Main routes
     ...mainRoutes,

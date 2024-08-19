@@ -35,7 +35,7 @@ export default function TableRowUsuarios({ row, idRol, close, onEditRow }) {
     
   } = row;
 
-  console.log(idRol)
+  console.log(row)
 
   const quickEditar = useBoolean();
 
@@ -44,7 +44,7 @@ export default function TableRowUsuarios({ row, idRol, close, onEditRow }) {
   const popover = usePopover();
 
   const handleClose = () => {
-    onEditRow()
+    // onEditRow()
     
     quickEditar.onFalse()
   }

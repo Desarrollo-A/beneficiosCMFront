@@ -24,6 +24,8 @@ import NotificationPush from './notification-push';
 
 // eslint-disable-next-line
 import addNotification from 'react-push-notification';
+
+import './style.css';
 // ----------------------------------------------------------------------
 
 export default function NotificationsPopover({ idUsuario }) {
@@ -65,7 +67,7 @@ export default function NotificationsPopover({ idUsuario }) {
       )}
 
       {!smUp && (
-        <IconButton onClick={drawer.onFalse}>
+        <IconButton onClick={drawer.onFalse} >
           <Iconify icon="mingcute:close-line" />
         </IconButton>
       )}
@@ -91,9 +93,10 @@ export default function NotificationsPopover({ idUsuario }) {
         variants={varHover(1.05)}
         color={drawer.value ? 'primary' : 'default'}
         onClick={drawer.onTrue}
+        className="buttonActions"
       >
         <Badge badgeContent={notifications.length} color="primary">
-          <Iconify icon="solar:bell-bing-bold-duotone" width={24} />
+          <Iconify icon="solar:bell-bing-bold-duotone" className="bell" width={24} />
         </Badge>
       </IconButton>
       <Drawer

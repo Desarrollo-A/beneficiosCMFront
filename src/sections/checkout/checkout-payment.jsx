@@ -94,7 +94,7 @@ export default function CheckoutPayment() {
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
-        <Grid xs={12} md={8}>
+        <Grid item xs={12} md={8}>
           <CheckoutDelivery onApplyShipping={checkout.onApplyShipping} options={DELIVERY_OPTIONS} />
 
           <CheckoutPaymentMethods
@@ -113,7 +113,7 @@ export default function CheckoutPayment() {
           </Button>
         </Grid>
 
-        <Grid xs={12} md={4}>
+        <Grid item xs={12} md={4}>
           <CheckoutBillingInfo billing={checkout.billing} onBackStep={checkout.onBackStep} />
 
           <CheckoutSummary

@@ -198,6 +198,7 @@ export const endpoints = {
     getLastAppointment: 'CalendarioController/getLastAppointment',
     updateAppointment: 'CalendarioController/updateAppointmentData',
     updateStatusAppointment: 'CalendarioController/updateStatusAppointmentData',
+    doEventCancelaCitas: 'CalendarioController/eventCancelaCitasSinPago',
     updateDetail: 'CalendarioController/updateDetallePaciente',
     getPendientes: 'CalendarioController/getPendientes',
     cancelAppointment: 'CalendarioController/cancelAppointmentUser',
@@ -336,7 +337,7 @@ export const endpoints = {
   },
   notificacion: {
     getNotificacion: '/NotificacionController/getNotificacion',
-    deleteNotificacion: '/NotificacionController/deleteNotificacion'
+    deleteNotificacion: '/NotificacionController/deleteNotificacion',
   },
   sedes: {
     list: '/sedes/list',

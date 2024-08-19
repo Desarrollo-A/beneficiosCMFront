@@ -90,7 +90,6 @@ export default function AvisoPrivacidadGeneral() {
     setEspecialidadSelector(event);
     setDetalleEspecialidad({ id: event.idOpcion, nombre: event.nombre });
     try {
-
       setLoading(true);
       const respuesta = await getAvisoPrivacidad(event.idOpcion);
       if (respuesta.length >= 1) {
@@ -189,7 +188,7 @@ export default function AvisoPrivacidadGeneral() {
           });
           setPropiedadesIFrame({
             visualize: 'block',
-            rutaArchivo: `${HOST}/dist/documentos/avisos-privacidad/${respuesta[0].expediente}`,  // `${HOST}/documentos/archivo/${respuesta[0].expediente}`,
+            rutaArchivo: `${HOST}/dist/documentos/avisos-privacidad/${respuesta[0].expediente}`, // `${HOST}/documentos/archivo/${respuesta[0].expediente}`,
             tituloEspecialidad: respuesta[0].nombreEspecialidad,
             idDocumento: respuesta[0].idDocumento,
           });
@@ -240,7 +239,7 @@ export default function AvisoPrivacidadGeneral() {
           body: formData,
           headers: {
             Token: accessToken,
-          }
+          },
         })
           .then((response) => response.json())
           .then((data) => {
@@ -265,7 +264,7 @@ export default function AvisoPrivacidadGeneral() {
     return (
       <Container maxWidth={settings.themeStretch ? false : 'lg'} style={{ paddingTop: '2%' }}>
         <Grid container spacing={2}>
-          <Grid xs={12}>
+          <Grid item xs={12}>
             <form onSubmit={manejarEnvioFormulario}>
               <Stack direction="row" justifyContent="center">
                 <Typography>{nombreArchivo}</Typography>
@@ -345,7 +344,7 @@ export default function AvisoPrivacidadGeneral() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <Grid container spacing={2}>
-          <Grid xs={12}>
+          <Grid item xs={12}>
             <h3>Políticas de privacidad</h3>
             <FormControl fullWidth>
               <InputLabel id="demo-simple-select-label">Tipo especialidad</InputLabel>
@@ -360,41 +359,46 @@ export default function AvisoPrivacidadGeneral() {
               >
                 {!isEmpty(especialidadesDisponibles) ? (
                   especialidadesDisponibles.map((elemento, index) =>
-                    user?.idPuesto === elemento?.idPuesto || user?.idRol === 2 || user?.idRol === 4 ? (
+                    user?.idPuesto === elemento?.idPuesto ||
+                    user?.idRol === 2 ||
+                    user?.idRol === 4 ? (
                       <MenuItem value={elemento} key={elemento.idOpcion}>
                         {elemento.nombre}
                       </MenuItem>
                     ) : null
                   )
                 ) : (
-                      <Grid style={{ paddingTop: '2%' }}>
-                        <LinearProgress />
-                        <Box mb={3} />
-                      </Grid>
+                  <Grid style={{ paddingTop: '2%' }}>
+                    <LinearProgress />
+                    <Box mb={3} />
+                  </Grid>
                 )}
               </Select>
             </FormControl>
           </Grid>
         </Grid>
 
-        {loading && <Grid container spacing={2} style={{ height: '60vh' }}>
-          <Grid xs={12} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <CircularProgress size={50} />
+        {loading && (
+          <Grid container spacing={2} style={{ height: '60vh' }}>
+            <Grid
+              xs={12}
+              style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+            >
+              <CircularProgress size={50} />
+            </Grid>
           </Grid>
-        </Grid>}
+        )}
       </Container>
 
-      {loading === false ? visorPdfFile : null }
+      {loading === false ? visorPdfFile : null}
 
       {loading === false ? (
-      <VisorPdf
-        datos={propiedadesIFrame}
-        enviarDatosAlPadre={manejarBanderaDesdeHijo}
-        idPuesto={especialidadSelector.idPuesto}
-      /> 
-      ):(
-        null
-      )}
+        <VisorPdf
+          datos={propiedadesIFrame}
+          enviarDatosAlPadre={manejarBanderaDesdeHijo}
+          idPuesto={especialidadSelector.idPuesto}
+        />
+      ) : null}
     </>
   );
 }
