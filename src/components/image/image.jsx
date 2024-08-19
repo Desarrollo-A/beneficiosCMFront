@@ -68,7 +68,7 @@ const Image = forwardRef(
         effect={disabledEffect ? undefined : effect}
         useIntersectionObserver={useIntersectionObserver}
         wrapperClassName={wrapperClassName || 'component-image-wrapper'}
-        placeholderSrc={disabledEffect ? `${import.meta.env.BASE_URL}assets/transparent.png` : `${import.meta.env.BASE_URL}/assets/placeholder.svg`}
+        // placeholderSrc={disabledEffect ? `${import.meta.env.BASE_URL}assets/transparent.png` : `${import.meta.env.BASE_URL}/assets/placeholder.svg`} // dejo de funcionar
         //
         sx={{
           width: 1,
