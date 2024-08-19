@@ -76,7 +76,6 @@ const resetForm = () => {
 };
 
 const onSubmit = handleSubmit(async (data) => {
-  console.log("Form Data:", data);
 
   const newData = encuestaData.map((item, index) => {
     const respKey = `resp_${index}`;

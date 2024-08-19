@@ -63,7 +63,7 @@ import {
   getDiasDisponibles,
   // getCitasSinEvaluar,
   getBeneficioActivo,
-  // getCitasFinalizadas,
+  getCitasFinalizadas,
   updateDetailPacient,
   getHorariosOcupados,
   getSedesPresenciales,
@@ -71,6 +71,7 @@ import {
   getOficinaByAtencion,
   registrarDetalleDePago,
   updateStatusAppointment,
+  retrieveCancelAppointment,
   insertGoogleCalendarEvent,
   updateGoogleCalendarEvent,
   deleteGoogleCalendarEvent,
@@ -1309,19 +1310,45 @@ export default function AppointmentScheduleDialog({
     const ahora = new Date();
     const añoDate = ahora.getFullYear();
     const horasARestar =
-      ahora >= inicioHorarioVerano(añoDate) && ahora <= finHorarioVerano(añoDate) ? 1 : 2;
+    ahora >= inicioHorarioVerano(añoDate) && ahora <= finHorarioVerano(añoDate) ? 1 : 2;
     ahora.setHours(ahora.getHours() - horasARestar);
 
-    // const año = horarioSeleccionado.substring(0, 4);
-    // const mes = horarioSeleccionado.substring(5, 7);
+    const año = horarioSeleccionado.substring(0, 4);
+    const mes = horarioSeleccionado.substring(5, 7);
     // const dia = horarioSeleccionado.substring(8, 10);
 
-    const checkInvoiceDetail = await checkInvoice(currentEvent.idDetalle);
+    const checkInvoiceDetail = await checkInvoice(currentEvent.idDetalle, selectedValues.beneficio);
 
     if (!checkInvoiceDetail.result) {
       enqueueSnackbar('¡No puedes reagendar más veces esta cita!', {
         variant: 'error',
       });
+      return onClose();
+    }
+
+    // SE COMENTARON LAS VALIDACIONES DEBIDO A QUE ESTAS REGLAS YA NO VAN A APLICAR
+    const citasSinFinalizar = await getCitasSinFinalizar(
+      datosUser.idUsuario,
+      selectedValues.beneficio
+    );
+
+    // Si tiene citas en proceso no lo tengo que dejar agendar citas
+    if (citasSinFinalizar.result) {
+      enqueueSnackbar('Ya tienes una cita en proceso de este beneficio', {
+        variant: 'error',
+      });
+      return onClose();
+    }
+
+    const citasFinalizadas = await getCitasFinalizadas(datosUser.idUsuario, mes, año);
+
+    if (citasFinalizadas.result === true && citasFinalizadas?.data.length >= 3) {
+      enqueueSnackbar(
+        'Ya cuentas con la cantidad máxima de beneficios brindados en el mes seleccionado',
+        {
+          variant: 'error',
+        }
+      );
       return onClose();
     }
 
@@ -1333,32 +1360,6 @@ export default function AppointmentScheduleDialog({
       });
       return onClose();
     }
-
-    // SE COMENTARON LAS VALIDACIONES DEBIDO A QUE ESTAS REGLAS YA NO VAN A APLICAR
-    // const citasSinFinalizar = await getCitasSinFinalizar(
-    //   datosUser.idUsuario,
-    //   selectedValues.beneficio
-    // );
-
-    // // Si tiene citas en proceso no lo tengo que dejar agendar citas
-    // if (citasSinFinalizar.result) {
-    //   enqueueSnackbar('Ya tienes una cita en proceso de este beneficio', {
-    //     variant: 'error',
-    //   });
-    //   return onClose();
-    // }
-
-    // const citasFinalizadas = await getCitasFinalizadas(datosUser.idUsuario, mes, año);
-
-    // if (citasFinalizadas.result === true && citasFinalizadas?.data.length >= 3) {
-    //   enqueueSnackbar(
-    //     'Ya cuentas con la cantidad máxima de beneficios brindados en el mes seleccionado',
-    //     {
-    //       variant: 'error',
-    //     }
-    //   );
-    //   return onClose();
-    // }
 
     let nombreBeneficio = '';
     switch (selectedValues.beneficio) {
@@ -1393,11 +1394,19 @@ export default function AppointmentScheduleDialog({
       1
     );
 
-    /* if (!agendar.result) {
+    if (!agendar.result) { // se usa para regresar a su estatus anterior la cita cancelada
+      const retiveCancel = await retrieveCancelAppointment(currentEvent, currentEvent.id, 8, datosUser.idUsuario);
+
+      if (!retiveCancel.result) {
+        return enqueueSnackbar(agendar.msg, {
+          variant: 'error',
+        });
+      }
+      
       return enqueueSnackbar(agendar.msg, {
-        variant: 'error',getCitasSinEvaluarUsuario
+        variant: 'error',
       });
-    } */
+    }
 
     await creaEvaluaciones(agendar.data);
     await evaluacionReagenda(agendar.data);

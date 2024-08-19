@@ -630,6 +630,21 @@ export function cancelAppointment(currentEvent, id, cancelType, idUsuario) {
   return cancel;
 }
 
+export function retrieveCancelAppointment(currentEvent, id, cancelType, idUsuario) {
+  const URL = [endpoints.calendario.retrieveCancelAppointment];
+  const data = {
+    idCita: id,
+    startStamp: dayjs(currentEvent.start).format('YYYY/MM/DD HH:mm:ss'),
+    start: currentEvent.start,
+    tipo: cancelType,
+    modificadoPor: idUsuario,
+    estatusCita: currentEvent.estatus
+  };
+  const cancel = fetcherPost(URL, data);
+
+  return cancel;
+}
+
 export async function consultarCita(idCita, idSede) {
   const URL = [endpoints.calendarioColaborador.getCitaById];
   const cita = await fetcherPost(URL, { idCita });
