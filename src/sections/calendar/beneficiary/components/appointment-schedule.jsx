@@ -7,7 +7,7 @@ import utc from 'dayjs/plugin/utc';
 import { useState, useEffect } from 'react';
 import timezone from 'dayjs/plugin/timezone';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
-import { parse, format, addHours, subHours } from 'date-fns';
+
 // import { Marker, GoogleMap, LoadScript } from '@react-google-maps/api';
 
 import Box from '@mui/material/Box';
@@ -32,14 +32,13 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
-import { useAuthContext } from 'src/auth/hooks';
 import { getDocumento } from 'src/api/calendar-colaborador';
 
 import Iconify from 'src/components/iconify';
 
 import '../../styles/style.css';
 import TermsAndConditionsDialog from '../dialogs/terms-and-conditions-dialog';
-import { finHorarioVerano, inicioHorarioVerano } from 'src/utils/general';
+
 
 dayjs.locale('es');
 dayjs.extend(utc);
@@ -121,7 +120,6 @@ export default function AppointmentSchedule({
     width: '100%',
   }; */
 
-  const { user: datosUser } = useAuthContext();
   /*   const [address, setAddress] = useState(''); */
 
   useEffect(() => {
@@ -144,118 +142,13 @@ export default function AppointmentSchedule({
     }
   }, [beneficioActivo?.beneficio]);
 
-  /*   useEffect(() => {
-    if (!isEmpty(oficina)) {
-      if (oficina?.result !== false) {
-        setAddress(oficina?.data[0]?.ubicación ? oficina?.data[0]?.ubicación : '');
-      }
-    }
-  }, [oficina]); */
 
   const [openWindow, setOpenWindow] = useState(false);
-
-  /*   const handleClickOpen = () => {
-    setOpenMap(true);
-  }; */
-
-  /*   const handleClose = () => {
-    setOpenMap(false);
-  }; */
-
-  /*   const handleWindowActive = () => {
-    setOpenWindow(true);
-  }; */
 
   const handleWindowClose = () => {
     setOpenWindow(false);
   };
 
-  /*   const [coordinates, setCoordinates] = useState(null); */
-
-  /*  useEffect(() => {
-    if (address !== '') {
-      const fetchCoordinates = async () => {
-        try {
-          const response = await axios.get(`
-        https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${
-          import.meta.env.VITE_GOOGLE_MAPS_API_KEY
-        }
-        `);
-
-          if (response.data.results[0]?.geometry) {
-            setCoordinates(response.data.results[0]?.geometry.location);
-          } else {
-            // console.log('No se encontraron coordenadas para esta dirección');
-          }
-        } catch (error) {
-          console.error('Error al obtener las coordenadas', error);
-        }
-      };
-      fetchCoordinates();
-    }
-  }, [address]); */
-
-  // Función para determinar si es horario de verano
-  const isDaylightSavingTime = (date) => {
-    const year = date.getFullYear();
-    const startDST = new Date(year, 2, 31 - new Date(year, 2, 31).getDay());
-    const endDST = new Date(year, 9, 31 - new Date(year, 9, 31).getDay());
-
-    return date >= startDST && date < endDST;
-  };
-
-  const adjustTime = (time, idSede) => {
-    // El formato del tiempo completo
-    const parsedTime = parse(time, "yyyy-MM-dd'T'HH:mm:ss", new Date());
-
-    const sedeEsp = especialistas.find(
-      (especialista) => especialista.id === selectedValues.especialista
-    );
-    const idSedeEsp = sedeEsp.idsede;
-    let adjustedTime;
-
-    // Validaciones según las diferentes zonas horarias
-    if (idSede === idSedeEsp) {
-      // Misma zona horaria, no hay ajuste necesario
-      return format(parsedTime, 'HH:mm:ss');
-    }
-
-    const hoy = new Date(time);
-    const año = hoy.getFullYear();
-
-    // Paciente en CDMX, especialista en Tijuana
-    if (idSede !== 11 && idSede !== 9 && idSedeEsp === 11) {
-      const diferencia = hoy >= inicioHorarioVerano(año) && hoy <= finHorarioVerano(año) ? 1 : 2;
-      adjustedTime = parsedTime.setHours(parsedTime.getHours() + diferencia);
-    }
-    // Paciente en CDMX, especialista en Cancun
-    if (idSede !== 11 && idSede !== 9 && idSedeEsp === 9) {
-      const diferencia = -1;
-      adjustedTime = parsedTime.setHours(parsedTime.getHours() + diferencia);
-    }
-    // Paciente en Cancún, especialista en CDMX
-    if (idSede === 9 && idSedeEsp !== 11 && idSedeEsp !== 9) {
-      const diferencia = 1;
-      adjustedTime = parsedTime.setHours(parsedTime.getHours() + diferencia);
-    }
-    // Paciente en Cancún, especialista en Tijuana
-    if (idSede === 9 && idSedeEsp === 11) {
-      const diferencia = hoy >= inicioHorarioVerano(año) && hoy <= finHorarioVerano(año) ? 2 : 3;
-      adjustedTime = parsedTime.setHours(parsedTime.getHours() + diferencia);
-    }
-    // Paciente en Tijuana, especialista en CDMX
-    if (idSede === 11 && idSedeEsp !== 9 && idSedeEsp !== 11) {
-      const diferencia = hoy >= inicioHorarioVerano(año) && hoy <= finHorarioVerano(año) ? 1 : 2;
-      adjustedTime = parsedTime.setHours(parsedTime.getHours() - diferencia);
-    }
-    // Paciente en Tijuana, especialista en  Cancún
-    if (idSede === 11 && idSedeEsp === 9) {
-      const diferencia = hoy >= inicioHorarioVerano(año) && hoy <= finHorarioVerano(año) ? 2 : 3;
-      adjustedTime = parsedTime.setHours(parsedTime.getHours() + -diferencia);
-    }
-
-    return format(adjustedTime, 'HH:mm:ss'); // Devolvemos el tiempo ajustado formateado
-  };
 
   return (
     <Grid sx={{ display: { xs: 'block', sm: 'flex', md: 'flex' } }}>
@@ -728,7 +621,7 @@ export default function AppointmentSchedule({
                   >
                     {horariosDisponibles.map((e, index) => (
                       <MenuItem key={e.inicio} value={`${e.fecha} ${e.inicio}`}>
-                        {/* adjustTime(`${e.fecha}T${e.inicio}`, datosUser?.idSede) */ e.inicio}
+                        {e.inicio}
                       </MenuItem>
                     ))}
                   </Select>
