@@ -210,8 +210,10 @@ export default function AppointmentSchedule({
     let adjustedTime;
 
     if (idSede === 9) {
+      // cANCUN
       adjustedTime = addHours(parsedTime, 1);
     } else if (idSede === 11) {
+      // TIJUANA
       adjustedTime = isDST ? subHours(parsedTime, 2) : subHours(parsedTime, 1);
     } else {
       adjustedTime = parsedTime;

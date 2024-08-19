@@ -72,8 +72,6 @@ export default function CalendarView() {
     idEspecialista: user?.idUsuario,
   });
 
-  console.log('horarios', horarios);
-
   const events = [...beneficiarioEvents, ...especialistaEvents];
 
   const currentEvent = useEvent(events, selectEventId, openForm);
