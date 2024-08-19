@@ -1317,30 +1317,31 @@ export default function AppointmentScheduleDialog({
     }
 
     // SE COMENTARON LAS VALIDACIONES DEBIDO A QUE ESTAS REGLAS YA NO VAN A APLICAR
-    const citasSinFinalizar = await getCitasSinFinalizar(
-      datosUser.idUsuario,
-      selectedValues.beneficio
-    );
+    // const citasSinFinalizar = await getCitasSinFinalizar(
+    //   currentEvent.id,
+    //   datosUser.idUsuario,
+    //   selectedValues.beneficio
+    // );
 
-    // Si tiene citas en proceso no lo tengo que dejar agendar citas
-    if (citasSinFinalizar.result) {
-      enqueueSnackbar('Ya tienes una cita en proceso de este beneficio', {
-        variant: 'error',
-      });
-      return onClose();
-    }
+    // // Si tiene citas en proceso no lo tengo que dejar agendar citas
+    // if (citasSinFinalizar.result) {
+    //   enqueueSnackbar('Ya tienes una cita en proceso de este beneficio', {
+    //     variant: 'error',
+    //   });
+    //   return onClose();
+    // }
 
-    const citasFinalizadas = await getCitasFinalizadas(datosUser.idUsuario, mes, año);
+    // const citasFinalizadas = await getCitasFinalizadas(datosUser.idUsuario, mes, año);
 
-    if (citasFinalizadas.result === true && citasFinalizadas?.data.length >= 3) {
-      enqueueSnackbar(
-        'Ya cuentas con la cantidad máxima de beneficios brindados en el mes seleccionado',
-        {
-          variant: 'error',
-        }
-      );
-      return onClose();
-    }
+    // if (citasFinalizadas.result === true && citasFinalizadas?.data.length >= 2) {
+    //   enqueueSnackbar(
+    //     'Ya cuentas con la cantidad máxima de beneficios brindados en el mes seleccionado',
+    //     {
+    //       variant: 'error',
+    //     }
+    //   );
+    //   return onClose();
+    // }
 
     const cancel = await cancelAppointment(currentEvent, currentEvent.id, 8, datosUser.idUsuario);
 
