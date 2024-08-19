@@ -34,6 +34,7 @@ import TimelineItem, { timelineItemClasses } from '@mui/lab/TimelineItem';
 
 import { endpoints } from 'src/utils/axios';
 import {
+  horaCancun,
   horaTijuana,
   generarFechas,
   finHorarioVerano,
@@ -310,9 +311,7 @@ export default function AppointmentScheduleDialog({
     // Evento de google
     let newGoogleEvent = null;
     const organizador = datosUser.correo;
-    const correosNotificar = [
-      organizador
-    ];
+    const correosNotificar = [organizador];
     if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
       const startDate = dayjs(horarioSeleccionado);
       const endDate = startDate.add(1, 'hour');
@@ -1030,7 +1029,9 @@ export default function AppointmentScheduleDialog({
       especialista,
       datosUser.idUsuario,
       initialValue.format('YYYY-MM-DD'),
-      lastDayOfNextMonth.format('YYYY-MM-DD')
+      lastDayOfNextMonth.format('YYYY-MM-DD'),
+      datosUser.idSede,
+      sedeEsp.data[0].idsede
     );
 
     // Dias laborables con horario.
@@ -1167,6 +1168,9 @@ export default function AppointmentScheduleDialog({
     if (datosUser.idSede === 11) {
       ahora = horaTijuana(ahora);
     }
+    if (datosUser.idSede === 9) {
+      ahora = horaCancun(ahora);
+    }
 
     const horaActual = ((ahora.getHours() + 3) % 24).toString().padStart(2, '0');
     const minutosActuales = ahora.getMinutes().toString().padStart(2, '0');
@@ -1247,6 +1251,7 @@ export default function AppointmentScheduleDialog({
     modalidad,
     estatusCita
   ) => {
+    const idSedeEsp = await getSedeEsp(especialista);
     const registrarCita = await crearCita(
       titulo,
       especialista,
@@ -1261,7 +1266,8 @@ export default function AppointmentScheduleDialog({
       idUsuario,
       detallePago,
       idGoogleEvent,
-      modalidad
+      modalidad,
+      idSedeEsp
     );
     if (registrarCita.result) {
       const updateDetail = await updateDetailPacient(datosUser.idUsuario, beneficio);
@@ -1589,11 +1595,7 @@ export default function AppointmentScheduleDialog({
                     {currentEvent?.id ? (
                       <>
                         DATOS DE CITA&nbsp;
-                        <Typography
-                          variant="body2"
-                          color="text.disabled"
-                          component="span"
-                        >
+                        <Typography variant="body2" color="text.disabled" component="span">
                           #{currentEvent.id}
                         </Typography>
                       </>
@@ -1644,17 +1646,17 @@ export default function AppointmentScheduleDialog({
                 sx={
                   !currentEvent?.id && selectedValues.modalidad
                     ? {
-                      p: { xs: 1, md: 2 },
-                      background: {
-                        xs: 'linear-gradient(180deg, #2c3239 54%, white 46%)',
-                        md: 'linear-gradient(90deg, #2c3239 50%, white 50%)',
-                      },
-                      backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f6f7f8',
-                    }
+                        p: { xs: 1, md: 2 },
+                        background: {
+                          xs: 'linear-gradient(180deg, #2c3239 54%, white 46%)',
+                          md: 'linear-gradient(90deg, #2c3239 50%, white 50%)',
+                        },
+                        backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f6f7f8',
+                      }
                     : {
-                      p: { xs: 1, md: 2 },
-                      backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f6f7f8',
-                    }
+                        p: { xs: 1, md: 2 },
+                        backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f6f7f8',
+                      }
                 }
                 direction="row"
                 justifycontent="space-between"
@@ -1836,8 +1838,8 @@ export default function AppointmentScheduleDialog({
                                 <Typography variant="body2" sx={{ color: 'text.disabled' }} mb={3}>
                                   {currentEvent?.id
                                     ? `${dayjs(currentEvent?.start).format('HH:mm a')} - ${dayjs(
-                                      currentEvent?.end
-                                    ).format('HH:mm a')}`
+                                        currentEvent?.end
+                                      ).format('HH:mm a')}`
                                     : 'Fecha'}
                                 </Typography>
                               </TimelineContent>
@@ -1931,12 +1933,12 @@ export default function AppointmentScheduleDialog({
 
                                 <Typography variant="body2" sx={{ color: 'text.disabled' }} mb={3}>
                                   {currentEvent?.idDetalle === null ||
-                                    currentEvent?.idDetalle === 0 ? (
+                                  currentEvent?.idDetalle === 0 ? (
                                     'Sin pago'
                                   ) : (
                                     <>
                                       {currentEvent?.estatusPago === 1 ||
-                                        currentEvent?.estatusPago === 3
+                                      currentEvent?.estatusPago === 3
                                         ? 'Pago aprobado'
                                         : 'Pago declinado'}
                                     </>
@@ -2179,11 +2181,11 @@ export default function AppointmentScheduleDialog({
                 sx={
                   !currentEvent?.id && selectedValues.modalidad
                     ? {
-                      background: {
-                        xs: 'white',
-                        md: 'linear-gradient(90deg, #2c3239 50%, white 50%)',
-                      },
-                    }
+                        background: {
+                          xs: 'white',
+                          md: 'linear-gradient(90deg, #2c3239 50%, white 50%)',
+                        },
+                      }
                     : {}
                 }
               >
@@ -2196,7 +2198,7 @@ export default function AppointmentScheduleDialog({
                   Cerrar
                 </Button>
                 {currentEvent?.id &&
-                  (currentEvent?.estatus === 6 || currentEvent?.estatus === 10) ? (
+                (currentEvent?.estatus === 6 || currentEvent?.estatus === 10) ? (
                   <LoadingButton
                     variant="contained"
                     color="success"
