@@ -125,8 +125,7 @@ export const estaEntre = (fecha, fechaInicio, fechaFin) => {
 export const horaTijuana = (fechaStr) => {
   const fecha = new Date(fechaStr);
   const año = fecha.getFullYear();
-  const horasARestar =
-    fecha >= inicioHorarioVerano(año) && fecha <= finHorarioVerano(año) ? 1 : 2;
+  const horasARestar = fecha >= inicioHorarioVerano(año) && fecha <= finHorarioVerano(año) ? 1 : 2;
   fecha.setHours(fecha.getHours() - horasARestar);
 
   return fecha;
@@ -135,9 +134,26 @@ export const horaTijuana = (fechaStr) => {
 export const horaTijuanaAEstandar = (fechaStr) => {
   const fecha = new Date(fechaStr);
   const año = fecha.getFullYear();
-  const horasASumar =
-    fecha >= inicioHorarioVerano(año) && fecha <= finHorarioVerano(año) ? 1 : 2;
+  const horasASumar = fecha >= inicioHorarioVerano(año) && fecha <= finHorarioVerano(año) ? 1 : 2;
   fecha.setHours(fecha.getHours() + horasASumar);
+
+  return fecha;
+};
+
+export const horaTijuanaACancun = (fechaStr) => {
+  const fecha = new Date(fechaStr);
+  const año = fecha.getFullYear();
+  const horasASumar = fecha >= inicioHorarioVerano(año) && fecha <= finHorarioVerano(año) ? 2 : 3;
+  fecha.setHours(fecha.getHours() + horasASumar);
+
+  return fecha;
+};
+
+export const horaCancunATijuana = (fechaStr) => {
+  const fecha = new Date(fechaStr);
+  const año = fecha.getFullYear();
+  const horasASumar = fecha >= inicioHorarioVerano(año) && fecha <= finHorarioVerano(año) ? 2 : 3;
+  fecha.setHours(fecha.getHours() - horasASumar);
 
   return fecha;
 };
@@ -150,7 +166,6 @@ export const horaCancun = (fechaStr) => {
   return fecha;
 };
 
-
 export const horaCancunAEstandar = (fechaStr) => {
   const fecha = new Date(fechaStr);
   const horasARestar = 1;
@@ -160,19 +175,20 @@ export const horaCancunAEstandar = (fechaStr) => {
 };
 
 export const horaACdmx = (horaInicio, horaFinal, idSede) => {
-  let hora_inicio = dayjs(horaInicio).format('HH:mm:ss')
-  let hora_final = dayjs(horaFinal).format('HH:mm:ss')
+  let hora_inicio = dayjs(horaInicio).format('HH:mm:ss');
+  let hora_final = dayjs(horaFinal).format('HH:mm:ss');
 
-  if(idSede === 9){ // cancun
-    hora_inicio = dayjs(horaInicio).subtract(1, 'hour').format('HH:mm:ss')
-    hora_final = dayjs(horaFinal).subtract(1, 'hour').format('HH:mm:ss')
+  if (idSede === 9) {
+    // cancun
+    hora_inicio = dayjs(horaInicio).subtract(1, 'hour').format('HH:mm:ss');
+    hora_final = dayjs(horaFinal).subtract(1, 'hour').format('HH:mm:ss');
+  } else if (idSede === 11) {
+    // tijuana
+    hora_inicio = dayjs(horaTijuanaAEstandar(horaInicio)).format('HH:mm:ss');
+    hora_final = dayjs(horaTijuanaAEstandar(horaFinal)).format('HH:mm:ss');
   }
-  else if(idSede === 11){ // tijuana
-    hora_inicio = dayjs(horaTijuanaAEstandar(horaInicio)).format('HH:mm:ss')
-    hora_final = dayjs(horaTijuanaAEstandar(horaFinal)).format('HH:mm:ss')
-  }
-    
-  return [{hora_inicio, hora_final}]
+
+  return [{ hora_inicio, hora_final }];
 };
 
 export const toLocalISOString = (date) => {
@@ -229,6 +245,49 @@ export const obtenerFechasConHoras = (folios) => {
   });
 
   return fechasEnDate;
+};
+
+export const ajustarHorario = (item, horasDeDiferencia) => {
+  const ajustarHoras = (hora, horas) => {
+    const nuevaHora = new Date(`1970-01-01T${hora}Z`);
+    nuevaHora.setHours(nuevaHora.getHours() + horas);
+    return nuevaHora.toISOString().substring(11, 19);
+  };
+
+  return {
+    ...item,
+    horaInicio: ajustarHoras(item.horaInicio, horasDeDiferencia),
+    horaFin: ajustarHoras(item.horaFin, horasDeDiferencia),
+    horaInicioSabado: item.horaInicioSabado
+      ? ajustarHoras(item.horaInicioSabado, horasDeDiferencia)
+      : null,
+    horaFinSabado: item.horaFinSabado ? ajustarHoras(item.horaFinSabado, horasDeDiferencia) : null,
+  };
+};
+
+// Función que ajusta las fechas de inicio y fin de una cita
+export const ajustarFechasCita = (item, diferenciaHoras) => {
+  const ajustarHoras = (fecha, horas) => {
+    // Reemplaza el espacio por una T y elimina los milisegundos para asegurar un formato compatible
+    const fechaFormateada = fecha.replace(' ', 'T').split('.')[0];
+
+    // Crear un objeto Date con el formato ISO
+    const nuevaFecha = new Date(`${fechaFormateada}Z`); // Agregar 'Z' para tratar como UTC
+
+    // Ajustar la hora
+    nuevaFecha.setHours(nuevaFecha.getHours() + horas);
+
+    // Obtener la fecha en formato de cadena
+    const value = nuevaFecha.toISOString().replace('T', ' ').substring(0, 19);
+
+    return value;
+  };
+
+  return {
+    ...item,
+    fechaInicio: ajustarHoras(item.fechaInicio, diferenciaHoras),
+    fechaFinal: ajustarHoras(item.fechaFinal, diferenciaHoras),
+  };
 };
 
 export const parseStartDate = (value, originalValue) => originalValue.toISOString();

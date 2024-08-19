@@ -7,8 +7,12 @@ import { endpoints, fetcherPost } from 'src/utils/axios';
 import {
   horaCancun,
   horaTijuana,
+  ajustarHorario,
   toLocalISOString,
   finHorarioVerano,
+  ajustarFechasCita,
+  horaTijuanaACancun,
+  horaCancunATijuana,
   inicioHorarioVerano,
   horaCancunAEstandar,
   horaTijuanaAEstandar,
@@ -70,12 +74,42 @@ export function getModalitiesBene(sede, especialista, area) {
 }
 
 // Trae el horario de un beneficio
-export async function getHorario(beneficio, especialista, idSede, idSedeEsp) {
+export async function getHorarioII(beneficio, especialista, idSede, idSedeEsp) {
   const URL = [endpoints.calendarioColaborador.getHorarioBeneficio];
   const horario = await fetcherPost(URL, { beneficio, especialista });
 
   let dataModificada = horario.data;
 
+  // Paciente en CDMX, especialista en Tijuana o cancun
+  if (idSede === 11 && idSedeEsp !== 11) {
+    const hoy = new Date();
+    const año = hoy.getFullYear();
+
+    const horasARestar = hoy >= inicioHorarioVerano(año) && hoy <= finHorarioVerano(año) ? 1 : 2;
+    dataModificada = dataModificada.map((item) => {
+      const horaInicio = new Date(`1970-01-01T${item.horaInicio}Z`);
+      const tempTime = horaInicio.getHours() - horasARestar;
+      horaInicio.setHours(tempTime);
+      const horaFin = new Date(`1970-01-01T${item.horaFin}Z`);
+      horaFin.setHours(horaFin.getHours() - horasARestar);
+      const horaInicioSabado = new Date(`1970-01-01T${item.horaInicioSabado}Z`);
+      horaInicioSabado.setHours(horaInicioSabado.getHours() - horasARestar);
+      const horaFinSabado = new Date(`1970-01-01T${item.horaFinSabado}Z`);
+      horaFinSabado.setHours(horaFinSabado.getHours() - horasARestar);
+
+      return {
+        ...item,
+        horaInicio: horaInicio.toISOString().substring(11, 19),
+        horaFin: horaFin.toISOString().substring(11, 19),
+        horaInicioSabado: item.horaInicioSabado
+          ? horaInicioSabado.toISOString().substring(11, 19)
+          : null,
+        horaFinSabado: item.horaFinSabado ? horaFinSabado.toISOString().substring(11, 19) : null,
+      };
+    });
+    horario.data = dataModificada;
+  }
+  /*
   if (idSede === 11 && idSede !== idSedeEsp) {
     const hoy = new Date();
     const año = hoy.getFullYear();
@@ -105,10 +139,7 @@ export async function getHorario(beneficio, especialista, idSede, idSedeEsp) {
     horario.data = dataModificada;
   }
   if (idSede === 9 && idSede !== idSedeEsp) {
-    const hoy = new Date();
-    const año = hoy.getFullYear();
-
-    const horasASumar = hoy >= inicioHorarioVerano(año) && hoy <= finHorarioVerano(año) ? 1 : 2;
+    const horasASumar = 1;
     dataModificada = dataModificada.map((item) => {
       const horaInicio = new Date(`1970-01-01T${item.horaInicio}Z`);
       const tempTime = horaInicio.getHours() + horasASumar;
@@ -131,18 +162,109 @@ export async function getHorario(beneficio, especialista, idSede, idSedeEsp) {
       };
     });
     horario.data = dataModificada;
-  }
+  } */
 
   return horario;
 }
 
+export async function getHorario(beneficio, especialista, idSede, idSedeEsp) {
+  const URL = [endpoints.calendarioColaborador.getHorarioBeneficio];
+  const horario = await fetcherPost(URL, { beneficio, especialista });
+
+  let dataModificada = horario.data;
+
+  // Validaciones según las diferentes zonas horarias
+  if (idSede === idSedeEsp) {
+    // Misma zona horaria, no hay ajuste necesario
+    return horario;
+  }
+
+  // Paciente en CDMX, especialista en Tijuana
+  if (idSede !== 11 && idSede !== 9 && idSedeEsp === 11) {
+    const hoy = new Date();
+    const año = hoy.getFullYear();
+    const diferencia = hoy >= inicioHorarioVerano(año) && hoy <= finHorarioVerano(año) ? 1 : 2;
+    dataModificada = dataModificada.map((item) => ajustarHorario(item, diferencia));
+  }
+  // Paciente en CDMX, especialista en Cancun
+  if (idSede !== 11 && idSede !== 9 && idSedeEsp === 9) {
+    dataModificada = dataModificada.map((item) => ajustarHorario(item, -1));
+  }
+  // Paciente en Cancún, especialista en CDMX
+  if (idSede === 9 && idSedeEsp !== 11 && idSedeEsp !== 9) {
+    dataModificada = dataModificada.map((item) => ajustarHorario(item, 1));
+  }
+  // Paciente en Cancún, especialista en Tijuana
+  if (idSede === 9 && idSedeEsp === 11) {
+    const hoy = new Date();
+    const año = hoy.getFullYear();
+    const diferencia = hoy >= inicioHorarioVerano(año) && hoy <= finHorarioVerano(año) ? 2 : 3;
+    dataModificada = dataModificada.map((item) => ajustarHorario(item, diferencia));
+  }
+  // Paciente en Tijuana, especialista en CDMX
+  if (idSede === 11 && idSedeEsp !== 9 && idSedeEsp !== 11) {
+    const hoy = new Date();
+    const año = hoy.getFullYear();
+    const diferencia = hoy >= inicioHorarioVerano(año) && hoy <= finHorarioVerano(año) ? 1 : 2;
+    dataModificada = dataModificada.map((item) => ajustarHorario(item, -diferencia));
+  }
+  // Paciente en Tijuana, especialista en  Cancún
+  if (idSede === 11 && idSedeEsp === 9) {
+    const hoy = new Date();
+    const año = hoy.getFullYear();
+    const diferencia = hoy >= inicioHorarioVerano(año) && hoy <= finHorarioVerano(año) ? 2 : 3;
+    dataModificada = dataModificada.map((item) => ajustarHorario(item, -diferencia));
+  }
+
+  horario.data = dataModificada;
+  return horario;
+}
+
+/*
 // Trae los horarios ocupados de especialista seleccionado y del usuario para ver disponibilidad en horario
-export function getHorariosOcupados(especialista, usuario, fechaInicio, fechaFin) {
+export function getHorariosOcupados(especialista, usuario, fechaInicio, fechaFin, idSede, idSedeEsp) {
   const URL = [endpoints.calendarioColaborador.getAllEventsWithRange];
   const horarios = fetcherPost(URL, { especialista, usuario, fechaInicio, fechaFin });
 
   if (horarios?.data?.length > 0) {
     horarios.data = horarios.data.map((item) => ({ ...item, id: item.id.toString() }));
+  }
+
+  return horarios;
+} */
+
+// Función para obtener los horarios ocupados y aplicar el ajuste horario
+export async function getHorariosOcupados(especialista, usuario, fechaInicio, fechaFin, idSede) {
+  const URL = [endpoints.calendarioColaborador.getAllEventsWithRange];
+  const horarios = await fetcherPost(URL, { especialista, usuario, fechaInicio, fechaFin });
+
+  if (horarios?.data?.length > 0) {
+    horarios.data = horarios.data.map((item) => {
+      let diferencia = 0;
+
+      // Paciente en Cancún
+      if (idSede === 9) {
+        diferencia = 1; // Cancún va 1 hora adelantado
+      }
+
+      // Paciente en Tijuana
+      if (idSede === 11) {
+        const hoy = new Date(item.fechaInicio);
+        const año = hoy.getFullYear();
+        diferencia = hoy >= inicioHorarioVerano(año) && hoy <= finHorarioVerano(año) ? -1 : -2; // Tijuana está 1 o 2 horas detrás según el horario de verano
+      }
+
+      // Ajustar las fechas de inicio y fin
+      const fechaInicioAjustada = ajustarFechasCita(item, diferencia).fechaInicio;
+      const fechaFinalAjustada = ajustarFechasCita(item, diferencia).fechaFinal;
+
+      return {
+        ...item,
+        id: item.id.toString(),
+        fechaInicio: fechaInicioAjustada,
+        fechaFinal: fechaFinalAjustada,
+      };
+    });
   }
 
   return horarios;
@@ -446,10 +568,54 @@ export function crearCita(
   modificadoPor,
   detallePago,
   idGoogleEvent,
-  modalidad
+  modalidad,
+  idSedeEsp
 ) {
   const URL_CITA = [endpoints.calendarioColaborador.createAppointment];
 
+  // Validaciones según las diferentes zonas horarias
+  if (idSede === idSedeEsp) {
+    // fechaInicio = fechaInicio;
+  }
+
+  // Paciente en CDMX, especialista en Tijuana
+  if (idSede !== 11 && idSede !== 9 && idSedeEsp === 11) {
+    let horaConvertida = horaTijuanaAEstandar(fechaInicio); // Se le resta 1
+    horaConvertida = toLocalISOString(horaConvertida);
+    fechaInicio = horaConvertida.slice(0, 19).replace('T', ' ');
+  }
+  // Paciente en CDMX, especialista en Cancun
+  if (idSede !== 11 && idSede !== 9 && idSedeEsp === 9) {
+    let horaConvertida = horaCancunAEstandar(fechaInicio);
+    horaConvertida = toLocalISOString(horaConvertida);
+    fechaInicio = horaConvertida.slice(0, 19).replace('T', ' ');
+  }
+  // Paciente en Cancún, especialista en CDMX
+  if (idSede === 9 && idSedeEsp !== 11 && idSedeEsp !== 9) {
+    let horaConvertida = horaCancunAEstandar(fechaInicio);
+    horaConvertida = toLocalISOString(horaConvertida);
+    fechaInicio = horaConvertida.slice(0, 19).replace('T', ' ');
+  }
+  // Paciente en Cancún, especialista en Tijuana
+  if (idSede === 9 && idSedeEsp === 11) {
+    let horaConvertida = horaTijuanaACancun(fechaInicio);
+    horaConvertida = toLocalISOString(horaConvertida);
+    fechaInicio = horaConvertida.slice(0, 19).replace('T', ' ');
+  }
+  // Paciente en Tijuana, especialista en CDMX
+  if (idSede === 11 && idSedeEsp !== 9 && idSedeEsp !== 11) {
+    let horaConvertida = horaTijuanaAEstandar(fechaInicio);
+    horaConvertida = toLocalISOString(horaConvertida);
+    fechaInicio = horaConvertida.slice(0, 19).replace('T', ' ');
+  }
+  // Paciente en Tijuana, especialista en  Cancún
+  if (idSede === 11 && idSedeEsp === 9) {
+    let horaConvertida = horaCancunATijuana(fechaInicio);
+    horaConvertida = toLocalISOString(horaConvertida);
+    fechaInicio = horaConvertida.slice(0, 19).replace('T', ' ');
+  }
+
+  /*
   let horaDeTijuana = horaTijuanaAEstandar(fechaInicio);
   horaDeTijuana = toLocalISOString(horaDeTijuana);
   horaDeTijuana = horaDeTijuana.slice(0, 19).replace('T', ' ');
@@ -459,6 +625,7 @@ export function crearCita(
   horaDeCancun = toLocalISOString(horaDeCancun);
   horaDeCancun = horaDeCancun.slice(0, 19).replace('T', ' ');
   fechaInicio = idSede !== 9 ? fechaInicio : horaDeCancun;
+  */
 
   const axs = fetcherPost(URL_CITA, {
     titulo,

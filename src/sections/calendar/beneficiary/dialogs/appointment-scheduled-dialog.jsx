@@ -34,6 +34,7 @@ import TimelineItem, { timelineItemClasses } from '@mui/lab/TimelineItem';
 
 import { endpoints } from 'src/utils/axios';
 import {
+  horaCancun,
   horaTijuana,
   generarFechas,
   finHorarioVerano,
@@ -310,26 +311,8 @@ export default function AppointmentScheduleDialog({
 
     // Evento de google
     let newGoogleEvent = null;
-    let organizador = datosUser.correo;
-    let correosNotificar = [
-      organizador, // datosUser.correo Sustituir correo de analista
-      // 'programador.analista34@ciudadmaderas.com',
-      // 'programador.analista32@ciudadmaderas.com',
-      // 'programador.analista12@ciudadmaderas.com',
-      // 'tester.ti3@ciudadmaderas.com',
-      // algun correo de especialista
-    ];
-
-    if (datosUser.correo === null) {
-      organizador = 'programador.analista34@ciudadmaderas.com'; // especialista
-      correosNotificar = [
-        organizador, // datosUser.correo Sustituir correo de analista
-        // 'programador.analista36@ciudadmaderas.com',
-        // 'programador.analista34@ciudadmaderas.com',
-        // 'programador.analista32@ciudadmaderas.com',
-        // 'tester.ti3@ciudadmaderas.com',
-      ];
-    }
+    const organizador = datosUser.correo;
+    const correosNotificar = [organizador];
     if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
       const startDate = dayjs(horarioSeleccionado);
       const endDate = startDate.add(1, 'hour');
@@ -503,7 +486,7 @@ export default function AppointmentScheduleDialog({
 
     // Evento de google
     let sentEmail = null;
-    if (datosUser.tipoPuesto.toLowerCase() === 'operativa' && datosUser.correo) {
+    if (datosUser.correo) {
       sentEmail = await sendMail(
         scheduledAppointment.data[0],
         1,
@@ -1047,7 +1030,9 @@ export default function AppointmentScheduleDialog({
       especialista,
       datosUser.idUsuario,
       initialValue.format('YYYY-MM-DD'),
-      lastDayOfNextMonth.format('YYYY-MM-DD')
+      lastDayOfNextMonth.format('YYYY-MM-DD'),
+      datosUser.idSede,
+      sedeEsp.data[0].idsede
     );
 
     // Dias laborables con horario.
@@ -1184,6 +1169,9 @@ export default function AppointmentScheduleDialog({
     if (datosUser.idSede === 11) {
       ahora = horaTijuana(ahora);
     }
+    if (datosUser.idSede === 9) {
+      ahora = horaCancun(ahora);
+    }
 
     const horaActual = ((ahora.getHours() + 3) % 24).toString().padStart(2, '0');
     const minutosActuales = ahora.getMinutes().toString().padStart(2, '0');
@@ -1264,6 +1252,7 @@ export default function AppointmentScheduleDialog({
     modalidad,
     estatusCita
   ) => {
+    const idSedeEsp = await getSedeEsp(especialista);
     const registrarCita = await crearCita(
       titulo,
       especialista,
@@ -1278,7 +1267,8 @@ export default function AppointmentScheduleDialog({
       idUsuario,
       detallePago,
       idGoogleEvent,
-      modalidad
+      modalidad,
+      idSedeEsp
     );
     if (registrarCita.result) {
       const updateDetail = await updateDetailPacient(datosUser.idUsuario, beneficio);
@@ -1611,7 +1601,16 @@ export default function AppointmentScheduleDialog({
               <Stack spacing={1} sx={{ p: { xs: 1, md: 2 } }}>
                 <Stack direction="row" justifyContent="space-between" alignItems="center">
                   <Typography variant="h5">
-                    {currentEvent?.id ? 'DATOS DE CITA' : 'AGENDAR CITA'}
+                    {currentEvent?.id ? (
+                      <>
+                        DATOS DE CITA&nbsp;
+                        <Typography variant="body2" color="text.disabled" component="span">
+                          #{currentEvent.id}
+                        </Typography>
+                      </>
+                    ) : (
+                      'AGENDAR CITA'
+                    )}
                   </Typography>
                   {currentEvent?.id &&
                     (currentEvent?.estatus === 1 || currentEvent?.estatus === 6) && (

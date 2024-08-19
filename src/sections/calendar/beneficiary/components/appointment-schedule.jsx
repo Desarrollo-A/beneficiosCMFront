@@ -39,6 +39,7 @@ import Iconify from 'src/components/iconify';
 
 import '../../styles/style.css';
 import TermsAndConditionsDialog from '../dialogs/terms-and-conditions-dialog';
+import { finHorarioVerano, inicioHorarioVerano } from 'src/utils/general';
 
 dayjs.locale('es');
 dayjs.extend(utc);
@@ -204,20 +205,56 @@ export default function AppointmentSchedule({
   };
 
   const adjustTime = (time, idSede) => {
-    const parsedTime = parse(time, 'HH:mm:ss', new Date());
-    const now = new Date();
-    const isDST = isDaylightSavingTime(now);
+    // El formato del tiempo completo
+    const parsedTime = parse(time, "yyyy-MM-dd'T'HH:mm:ss", new Date());
+
+    const sedeEsp = especialistas.find(
+      (especialista) => especialista.id === selectedValues.especialista
+    );
+    const idSedeEsp = sedeEsp.idsede;
     let adjustedTime;
 
-    if (idSede === 9) {
-      adjustedTime = addHours(parsedTime, 1);
-    } else if (idSede === 11) {
-      adjustedTime = isDST ? subHours(parsedTime, 2) : subHours(parsedTime, 1);
-    } else {
-      adjustedTime = parsedTime;
+    // Validaciones según las diferentes zonas horarias
+    if (idSede === idSedeEsp) {
+      // Misma zona horaria, no hay ajuste necesario
+      return format(parsedTime, 'HH:mm:ss');
     }
 
-    return format(adjustedTime, 'HH:mm:ss');
+    const hoy = new Date(time);
+    const año = hoy.getFullYear();
+
+    // Paciente en CDMX, especialista en Tijuana
+    if (idSede !== 11 && idSede !== 9 && idSedeEsp === 11) {
+      const diferencia = hoy >= inicioHorarioVerano(año) && hoy <= finHorarioVerano(año) ? 1 : 2;
+      adjustedTime = parsedTime.setHours(parsedTime.getHours() + diferencia);
+    }
+    // Paciente en CDMX, especialista en Cancun
+    if (idSede !== 11 && idSede !== 9 && idSedeEsp === 9) {
+      const diferencia = -1;
+      adjustedTime = parsedTime.setHours(parsedTime.getHours() + diferencia);
+    }
+    // Paciente en Cancún, especialista en CDMX
+    if (idSede === 9 && idSedeEsp !== 11 && idSedeEsp !== 9) {
+      const diferencia = 1;
+      adjustedTime = parsedTime.setHours(parsedTime.getHours() + diferencia);
+    }
+    // Paciente en Cancún, especialista en Tijuana
+    if (idSede === 9 && idSedeEsp === 11) {
+      const diferencia = hoy >= inicioHorarioVerano(año) && hoy <= finHorarioVerano(año) ? 2 : 3;
+      adjustedTime = parsedTime.setHours(parsedTime.getHours() + diferencia);
+    }
+    // Paciente en Tijuana, especialista en CDMX
+    if (idSede === 11 && idSedeEsp !== 9 && idSedeEsp !== 11) {
+      const diferencia = hoy >= inicioHorarioVerano(año) && hoy <= finHorarioVerano(año) ? 1 : 2;
+      adjustedTime = parsedTime.setHours(parsedTime.getHours() - diferencia);
+    }
+    // Paciente en Tijuana, especialista en  Cancún
+    if (idSede === 11 && idSedeEsp === 9) {
+      const diferencia = hoy >= inicioHorarioVerano(año) && hoy <= finHorarioVerano(año) ? 2 : 3;
+      adjustedTime = parsedTime.setHours(parsedTime.getHours() + -diferencia);
+    }
+
+    return format(adjustedTime, 'HH:mm:ss'); // Devolvemos el tiempo ajustado formateado
   };
 
   return (
@@ -691,7 +728,7 @@ export default function AppointmentSchedule({
                   >
                     {horariosDisponibles.map((e, index) => (
                       <MenuItem key={e.inicio} value={`${e.fecha} ${e.inicio}`}>
-                        {adjustTime(e.inicio, datosUser?.idSede)}
+                        {/* adjustTime(`${e.fecha}T${e.inicio}`, datosUser?.idSede) */ e.inicio}
                       </MenuItem>
                     ))}
                   </Select>

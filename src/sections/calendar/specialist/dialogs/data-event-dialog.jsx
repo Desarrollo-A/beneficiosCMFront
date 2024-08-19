@@ -250,11 +250,11 @@ export default function DataEventDialog({
 
   let backColor = ''
 
-  if(type === 'date' && theme.palette.mode === 'dark'){
+  if (type === 'date' && theme.palette.mode === 'dark') {
     backColor = '#25303d'
   }
-  else if(type === 'date'){
-    backColor =  '#f6f7f8'
+  else if (type === 'date') {
+    backColor = '#f6f7f8'
   }
 
   return (
@@ -263,31 +263,44 @@ export default function DataEventDialog({
         <DialogTitle sx={{ p: { xs: 1, md: 1 } }}>
           <Stack spacing={1} sx={{ p: { xs: 1, md: 2 } }}>
             <Stack direction="row" justifyContent="space-between" alignItems="center">
-              <Typography variant="h5">{dialogTitle(currentEvent?.estatus, type)}</Typography>
+
+              <Typography variant="h5">
+                {dialogTitle(currentEvent?.estatus, type)}&nbsp;
+                {type === 'date' && (
+                  <Typography
+                    variant="body2"
+                    color="text.disabled"
+                    component="span"
+                  >
+                    #{currentEvent.id}
+                  </Typography>
+                )}
+              </Typography>
+
               {currentEvent?.id && (currentEvent?.estatus === 1 || currentEvent?.estatus === 6) && (
                 <Stack direction="row" spacing={1}>
                   {(currentEvent?.estatus === 1 || currentEvent?.estatus === 6) &&
                     type === 'date' && (
                       <Stack direction="row">
-                        <Tooltip  title="Reagendar cita">
+                        <Tooltip title="Reagendar cita">
                           <IconButton className="buttonActions" onClick={openReschedule}>
                             <Iconify icon="fluent-mdl2:date-time-12" className="bell" />
                           </IconButton>
                         </Tooltip>
-                      
-                        <Tooltip  title="Finalizar cita">
-                        <IconButton className="buttonActions" onClick={handleOpen}>
-                          <Iconify icon="solar:archive-minimalistic-bold" className="bell"/>
-                        </IconButton>
-                      </Tooltip>
-                    </Stack>
+
+                        <Tooltip title="Finalizar cita">
+                          <IconButton className="buttonActions" onClick={handleOpen}>
+                            <Iconify icon="solar:archive-minimalistic-bold" className="bell" />
+                          </IconButton>
+                        </Tooltip>
+                      </Stack>
                     )}
                   {type === 'cancel' && !pastCheck && (
                     <Tooltip
                       title={currentEvent?.type === 'date' ? 'Cancelar cita' : 'Eliminar horario'}
                     >
                       <IconButton className="buttonActions" onClick={handleClickOpen}>
-                        <Iconify icon="solar:trash-bin-trash-bold" className="bell"/>
+                        <Iconify icon="solar:trash-bin-trash-bold" className="bell" />
                       </IconButton>
                     </Tooltip>
                   )}
@@ -536,17 +549,16 @@ export default function DataEventDialog({
 
                         <TimelineContent>
                           <Typography variant="subtitle1">Cancelación</Typography>
-
-                          {fechasFolio.map((fecha, i) => [
-                            i > 0 && '',
+                          {fechasFolio.map((fecha, i) => (
                             <Typography
+                              variant="body2"
+                              sx={{ color: 'text.disabled' }}
                               key={i}
                               style={{ textDecoration: 'line-through' }}
-                              fontSize="90%"
                             >
                               {fecha}
-                            </Typography>,
-                          ])}
+                            </Typography>
+                          ))}
                         </TimelineContent>
                       </TimelineItem>
                     )}
