@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 
+import { IconButton } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
@@ -11,6 +12,7 @@ import { horaCancun, horaTijuana, formatearDosFechaAUna } from 'src/utils/genera
 import { useAuthContext } from 'src/auth/hooks';
 
 import Label from 'src/components/label';
+import Iconify from 'src/components/iconify';
 
 import UserQuickEditForm from './modal-editar-citas';
 import ModalJustificacion from './modal-justificacion';
@@ -32,6 +34,7 @@ export default function FilasTabla({ row, selected, rol, rel }) {
     numEmpleado,
     paciente,
     estatus,
+    estatusCita,
     horario,
     observaciones,
     sexo,
@@ -39,7 +42,7 @@ export default function FilasTabla({ row, selected, rol, rel }) {
     metodoPago,
     tipoCita,
     monto,
-    pagoGenerado,
+    fechaPago,
     color,
     usuario, 
     archivo,
@@ -55,6 +58,7 @@ export default function FilasTabla({ row, selected, rol, rel }) {
       partes[1].replace(/(\d{2}:\d{2})$/, `${partes[0].slice(0, 11)}$1`)
     ); // El de las 10
 
+
     let horaDeTijuana = horaTijuana(fechaHoraInicio);
     let horaDeCancun = horaCancun(fechaHoraInicio);
     const fechaInicio = user?.idSede === 11 ? horaDeTijuana : horaDeCancun;
@@ -67,7 +71,6 @@ export default function FilasTabla({ row, selected, rol, rel }) {
 
   return (
     <>
-
       <TableRow hover selected={selected}>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{idColab}</TableCell>
@@ -110,11 +113,11 @@ export default function FilasTabla({ row, selected, rol, rel }) {
           }}>{motivoCita}</TableCell>
         </Tooltip>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{pagoGenerado}</TableCell>
-
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{metodoPago}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{monto}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fechaPago}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{tipoCita}</TableCell>
 
@@ -134,7 +137,7 @@ export default function FilasTabla({ row, selected, rol, rel }) {
           }
         </TableCell>
 
-        {/* {estatusCita === 3 && (observaciones === null || observaciones === "") && rol === 4 ? (
+        {estatusCita === 3 && (observaciones === null || observaciones === "") && rol === 4 ? (
           <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }} >
             <Tooltip title="Justificar" placement="top" arrow>
               <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>
@@ -145,9 +148,9 @@ export default function FilasTabla({ row, selected, rol, rel }) {
           </TableCell>
         ) : (
           null
-        )} */}
+        )} 
 
-        {/* {estatusCita === 5 && archivo !== null && rol === 4 ? (
+         {estatusCita === 5 && archivo !== null && rol === 4 ? (
           <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }} >
             <Tooltip title="Ver justificación" placement="top" arrow>
               <IconButton color={modalJust.value ? 'inherit' : 'default'} onClick={modalJust.onTrue}>
@@ -158,7 +161,7 @@ export default function FilasTabla({ row, selected, rol, rel }) {
           </TableCell>
         ) : (
           null
-        )} */}
+        )}
 
       </TableRow>
 
