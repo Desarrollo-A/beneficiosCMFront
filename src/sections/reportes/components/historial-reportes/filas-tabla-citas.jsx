@@ -73,7 +73,7 @@ export default function FilasTabla({ row, selected, rol, rel }) {
     <>
       <TableRow hover selected={selected}>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{idColab}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{idCita}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{usuario}</TableCell>
 

@@ -72,10 +72,11 @@ function handleDownloadExcel(dataFiltered, rol) {
     {
       sheet: "Historial Reportes",
       columns: [
+        { label: "ID CITA", value: "idCita" },
         { label: "NO.EMPLEADO (ESPECIALISTA)", value: "numEspecialista" },
         { label: "NOMBRE ESPECIALISTA", value: "especialista" },
         { label: "TIPO DE CONSULTA", value: "PENDIENTE" },
-        { label: "ESTATUS DE LA CITA", value: "estatusCita" },
+        { label: "ESTATUS DE LA CITA", value: "nombreEstatusCita" },
         { label: "NO. EMPLEADO", value: "numEmpleado" },
         { label: "NOMBRE COMPLETO", value: "paciente" },
         { label: "DEPARTAMENTO", value: "depto" },
