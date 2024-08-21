@@ -217,7 +217,7 @@ export default function HistorialReportesView() {
       : false;
 
   const TABLE_BASE = [
-    { id: '', label: 'ID' },
+    { id: '', label: 'ID Cita' },
     { id: '', label: 'Usuario' },
     { id: '', label: 'Especialista' },
     { id: '', label: 'Número de empleado' },
