@@ -125,6 +125,7 @@ export function useGetHorariosPresenciales(object) {
   return memoizedValue;
 }
 
+
 // ----------------------------------------------------------------------
 
 export function useGetDiasPresenciales(object) {

@@ -180,6 +180,7 @@ export const endpoints = {
     insertGoogleId: 'CalendarioController/insertGoogleId',
     updateGoogleEvent: 'CalendarioController/updateGoogleEvent',
     deleteGoogleEvent: 'CalendarioController/deleteGoogleEvent',
+    AtencionesPresenciales: 'CalendarioController/getAtencionesPresenciales',
   },
   calendarioColaborador: {
     isPrimeraCita: 'CalendarioController/isPrimeraCita',
