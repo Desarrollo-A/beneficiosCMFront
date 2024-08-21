@@ -111,7 +111,7 @@ export default function GraficaMetasArea() {
           margin: '20px',
         }}
       >
-        <Grid item md={6} xs={12}>
+        <Grid md={6} xs={12}>
           <FormControl
             sx={{
               width: '100%',
@@ -135,7 +135,7 @@ export default function GraficaMetasArea() {
           </FormControl>
         </Grid>
 
-        <Grid item md={6} xs={12}>
+        <Grid md={6} xs={12}>
           <FormControl
             sx={{
               width: '100%',

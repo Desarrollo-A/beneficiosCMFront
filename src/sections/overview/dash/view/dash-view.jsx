@@ -118,7 +118,7 @@ export default function DashView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <Grid container spacing={3}>
-        <Grid item xs={12} md={8}>
+        <Grid xs={12} md={8}>
           <AppWelcome
             title={
               user?.sexo === 'M'
@@ -129,12 +129,12 @@ export default function DashView() {
           />
         </Grid>
 
-        <Grid item xs={12} md={4}>
+        <Grid xs={12} md={4}>
           <AppFeatured />
         </Grid>
 
         {rol === 4 ? (
-          <Grid item xs={12} md={12} lg={12}>
+          <Grid xs={12} md={12} lg={12}>
             <GraficaDemandaDepartamento
               title="Demanda de beneficios"
               beneficios={especialistasData}
@@ -144,7 +144,7 @@ export default function DashView() {
 
         {rol === 4 || rol === 3 ? (
           <>
-            <Grid item xs={12} md={6} lg={4}>
+            <Grid xs={12} md={6} lg={4}>
               <AppCurrentDownload
                 title="Total pacientes"
                 chart={{
@@ -205,7 +205,7 @@ export default function DashView() {
               />
             </Grid>
 
-            <Grid item xs={12} sm={12} md={8}>
+            <Grid xs={12} sm={12} md={8}>
               <GraficaEstatusCitas
                 title="Estatus de citas"
                 beneficios={especialistasData}
@@ -242,7 +242,7 @@ export default function DashView() {
         ) : null}
 
         {rol === 4 || rol === 3 ? (
-          <Grid item xs={12} sm={12} md={12}>
+          <Grid xs={12} sm={12} md={12}>
             <GraficaEncuestas
               user={user}
               _es={_es}
@@ -268,7 +268,7 @@ export default function DashView() {
             ctDisponiblesData.length > 0 ? (
               <>
                 {asistenciaData.map((i, index) => (
-                  <Grid item xs={12} sm={6} md={3} key={index} className="fade-in">
+                  <Grid xs={12} sm={6} md={3} key={index} className="fade-in">
                     <WidgetConteo
                       title="Total citas asistidas"
                       total={i.asistencia}
@@ -284,7 +284,7 @@ export default function DashView() {
                 ))}
 
                 {canceladaData.map((i, index) => (
-                  <Grid item xs={12} sm={6} md={3} key={index} className="fade-in">
+                  <Grid xs={12} sm={6} md={3} key={index} className="fade-in">
                     <WidgetConteo
                       title="Total citas canceladas"
                       total={i.cancelada}
@@ -300,7 +300,7 @@ export default function DashView() {
                 ))}
 
                 {penalizadaData.map((i, index) => (
-                  <Grid item xs={12} sm={6} md={3} key={index} className="fade-in">
+                  <Grid xs={12} sm={6} md={3} key={index} className="fade-in">
                     <WidgetConteo
                       title="Total citas penalizadas"
                       total={i.penalizada}
@@ -317,7 +317,7 @@ export default function DashView() {
                 ))}
 
                 {ctDisponiblesData.map((i, index) => (
-                  <Grid item xs={12} sm={6} md={3} key={index} className="fade-in">
+                  <Grid xs={12} sm={6} md={3} key={index} className="fade-in">
                     <WidgetConteo
                       title="Citas disponibles del mes presente"
                       total={2 - i.total < 0 ? 0 : 2 - i.total}
@@ -334,22 +334,22 @@ export default function DashView() {
               </>
             ) : (
               <>
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid xs={12} sm={6} md={3}>
                   <WidgetConteo
                     sx={{ backgroundColor: '#ECECEC', animation: 'pulse 1.5s infinite' }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid xs={12} sm={6} md={3}>
                   <WidgetConteo
                     sx={{ backgroundColor: '#ECECEC', animation: 'pulse 1.5s infinite' }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid xs={12} sm={6} md={3}>
                   <WidgetConteo
                     sx={{ backgroundColor: '#ECECEC', animation: 'pulse 1.5s infinite' }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid xs={12} sm={6} md={3}>
                   <WidgetConteo
                     sx={{ backgroundColor: '#ECECEC', animation: 'pulse 1.5s infinite' }}
                   />
