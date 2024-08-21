@@ -11,9 +11,9 @@ import { PATH_AFTER_LOGIN } from 'src/config-global';
 import { authRoutes } from './auth';
 import { mainRoutes } from './main';
 // import { authDemoRoutes } from './auth-demo';
+import { raizRoutes } from './raiz';
 import { dashboardRoutes } from './dashboard';
 import { beneficiosRoutes } from './beneficios';
-import { componentsRoutes } from './components';
 
 // const JwtLoginPage = lazy(() => import('src/pages/auth/jwt/login'));
 
@@ -55,7 +55,7 @@ export default function Router() {
     ...mainRoutes,
 
     // Components routes
-    ...componentsRoutes,
+    ...raizRoutes,
 
     // No match 404
     { path: '*', element: <Navigate to="/404" replace /> },
