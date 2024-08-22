@@ -57,7 +57,6 @@ import {
   getSpecialists,
   useGetBenefits,
   _isPrimeraCita,
-  lastAppointment,
   getCitasSinPagar,
   getAtencionXSede,
   cancelAppointment,
@@ -798,37 +797,6 @@ export default function AppointmentScheduleDialog({
         setEspecialistas([]);
       } else {
         setEspecialistas(especialistasRS?.data);
-      }
-      // HACER PROCESO DE DETALLE PACIENTE
-      const datosUltimaCita = await lastAppointment(datosUser.idUsuario, value);
-      if (datosUltimaCita.result) {
-        const data = await getOficinaByAtencion(
-          datosUser.idSede,
-          value,
-          datosUltimaCita.data[0].idEspecialista,
-          datosUltimaCita.data[0].tipoCita
-        );
-        setOficina(data); // Asignamos la oficina donde va a ser.
-        // Traemos los horarios disponibles para citas
-        getHorariosDisponibles(value, datosUltimaCita.data[0].idEspecialista);
-        /* ************************************* */
-        // Traemos cuantas sedes tiene el especialista
-        const sedesEspecialista = await getSedesPresenciales(
-          datosUltimaCita.data[0].idEspecialista
-        );
-        setSedesAtencionEspecialista(sedesEspecialista.result ? sedesEspecialista.data : []);
-        const diasDisponibles = await getDiasDisponibles(
-          datosUltimaCita.data[0].idEspecialista,
-          datosUser.idSede
-        );
-        setDiasPresenciales(diasDisponibles.result ? diasDisponibles.data : []);
-        /* ************************************* */
-        // Asignamos valores a los inputs
-        setSelectedValues({
-          beneficio: value,
-          especialista: datosUltimaCita.data[0].idEspecialista,
-          modalidad: datosUltimaCita.data[0].tipoCita,
-        }); // Asignamos valores
       }
     } else if (input === 'especialista') {
       setIsLoadingModalidad(true);
