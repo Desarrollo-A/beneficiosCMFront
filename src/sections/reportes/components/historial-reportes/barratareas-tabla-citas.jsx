@@ -22,13 +22,12 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { endpoints } from 'src/utils/axios';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { usePostSelect, usePostIngresos, usePostPacientes } from 'src/api/reportes';
-import { BookingIllustration, CheckInIllustration } from 'src/assets/illustrations';
+import { BookingIllustration } from 'src/assets/illustrations';
+import { usePostSelect, usePostPacientes } from 'src/api/reportes';
 
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
-import WidgetIngresos from './widget-ingresos';
 import WidgetPacientes from './widget-pacientes';
 
 // ----------------------------------------------------------------------
@@ -160,8 +159,6 @@ export default function BarraTareasTabla({
 
   const { cPaciData } = usePostPacientes(dt, endpoints.reportes.getCierrePacientes, 'cPaciData');
 
-  const { cIngreData } = usePostIngresos(dt, endpoints.reportes.getCierreIngresos, 'cIngreData');
-
   const { espData } = usePostSelect(dt, endpoints.reportes.getSelectEspe, 'espData');
 
   /* const handleFilterName = useCallback(
@@ -247,8 +244,6 @@ export default function BarraTareasTabla({
 
   const _pa = cPaciData.flatMap((i) => i.TotalPacientes);
 
-  const _in = cIngreData.flatMap((i) => i.TotalIngreso);
-
   const SPACING = 3;
 
   return (
@@ -261,21 +256,12 @@ export default function BarraTareasTabla({
         }}
       >
         <Grid container spacing={SPACING} disableEqualOverflow>
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={12}>
             <WidgetPacientes
               title="Total de pacientes"
               total={_pa}
               length={_pa.length}
               icon={<BookingIllustration />}
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <WidgetIngresos
-              title="Total de ingresos"
-              total={currenTypeUsers === 0 || currenTypeUsers === 2 ? _in : [0]}
-              length={_in.length}
-              icon={<CheckInIllustration />}
             />
           </Grid>
         </Grid>

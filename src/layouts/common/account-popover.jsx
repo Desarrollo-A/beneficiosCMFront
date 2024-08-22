@@ -53,7 +53,7 @@ export default function AccountPopover() {
       router.replace(import.meta.env.BASE_URL);
     } catch (error) {
       console.error(error);
-      enqueueSnackbar('Unable to logout!', { variant: 'error' });
+      enqueueSnackbar('Errror al cerrar sesión!', { variant: 'error' });
     }
   };
 

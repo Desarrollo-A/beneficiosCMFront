@@ -1,4 +1,5 @@
 import { mutate } from 'swr';
+import { useEffect } from 'react';
 
 import Accordion from '@mui/material/Accordion';
 import Typography from '@mui/material/Typography';
@@ -20,7 +21,9 @@ export default function FaqsList() {
 
   const rol = user?.idRol;
 
-  mutate(endpoints.ayuda.getFaqs);
+  useEffect(() => {
+    mutate(endpoints.ayuda.getFaqs);
+  }, [])
 
   const { faqsData } = useGetGeneral(endpoints.ayuda.getFaqs, "faqsData");
 

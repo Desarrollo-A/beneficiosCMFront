@@ -237,7 +237,7 @@ export default function AnalyticsConversionRates({ title, subheader, beneficios,
               margin: '20px',
             }}
           >
-            <Grid item md={6} xs={12}>
+            <Grid md={6} xs={12}>
               <FormControl
                 sx={{
                   width: '100%',
@@ -267,7 +267,7 @@ export default function AnalyticsConversionRates({ title, subheader, beneficios,
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item md={6} xs={12}>
+            <Grid md={6} xs={12}>
               <FormControl
                 sx={{
                   width: '100%',
@@ -299,7 +299,7 @@ export default function AnalyticsConversionRates({ title, subheader, beneficios,
               </FormControl>
             </Grid>
 
-            <Grid item md={6} xs={12}>
+            <Grid md={6} xs={12}>
               <FormControl
                 sx={{
                   width: '100%',
@@ -330,7 +330,7 @@ export default function AnalyticsConversionRates({ title, subheader, beneficios,
               </FormControl>
             </Grid>
 
-            <Grid item md={6} xs={12}>
+            <Grid md={6} xs={12}>
               <FormControl
                 sx={{
                   width: '100%',
@@ -365,7 +365,7 @@ export default function AnalyticsConversionRates({ title, subheader, beneficios,
           <Grid container spacing={2}>
             {!isEmpty(demandaData) ? (
               <>
-                <Grid item xs={12} md={6} lg={8}>
+                <Grid xs={12} md={6} lg={8}>
                   <Chart
                     dir="ltr"
                     type="bar"
@@ -375,7 +375,7 @@ export default function AnalyticsConversionRates({ title, subheader, beneficios,
                     height={300}
                   />
                 </Grid>
-                <Grid item xs={12} md={6} lg={4}>
+                <Grid xs={12} md={6} lg={4}>
                   <StyledChart
                     dir="ltr"
                     type="pie"

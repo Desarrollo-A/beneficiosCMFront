@@ -61,8 +61,8 @@ export default function Manuales() {
           }}
           className="fade-in"
         >
-          {data.map((category) =>
-            rol === category.idRol ? <CardDesktop category={category} /> : null
+          {data.map((category, index) =>
+            rol === category.idRol ? <CardDesktop key={index} category={category} /> : null
           )}
         </Box>
 
@@ -70,13 +70,13 @@ export default function Manuales() {
     ) : (
       <>
         <Grid container spacing={2} justifyContent="center" alignItems="center">
-          <Grid item md={4} xs={12}>
+          <Grid md={4} xs={12}>
             <Box sx={{ borderRadius: 2, backgroundColor: "#ECECEC", animation: 'pulse 1.5s infinite', p: 5 }} />
           </Grid>
-          <Grid item md={4} xs={12}>
+          <Grid md={4} xs={12}>
             <Box sx={{ borderRadius: 2, backgroundColor: "#ECECEC", animation: 'pulse 1.5s infinite', p: 5 }} />
           </Grid>
-          <Grid item md={4} xs={12}>
+          <Grid md={4} xs={12}>
             <Box sx={{ borderRadius: 2, backgroundColor: "#ECECEC", animation: 'pulse 1.5s infinite', p: 5 }} />
           </Grid>
         </Grid>

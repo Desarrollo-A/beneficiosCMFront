@@ -72,25 +72,24 @@ function handleDownloadExcel(dataFiltered, rol) {
     {
       sheet: "Historial Reportes",
       columns: [
-        { label: "ID", value: "idColab" },
-        { label: "Usuario", value: "usuario" },
-        { label: "Especialista", value: "especialista" },
-        { label: "Número de empleado", value: "numEmpleado" },
-        { label: "Paciente", value: "paciente" },
-        { label: "Oficina", value: "oficina" },
-        { label: "Departamento", value: "depto" },
-        { label: "Área", value: "narea" },
-        { label: "Puesto", value: "npuesto" },
-        { label: "Sede", value: "sede" },
-        { label: "Modalidad", value: "modalidad" },
-        { label: "Sexo", value: "sexo" },
-        { label: "Motivo consulta", value: "motivoCita" },
-        { label: "Pago generado", value: "pagoGenerado" },
-        { label: "Método de pago", value: "metodoPago" },
-        { label: "Monto", value: "monto" },
-        { label: "Tipo cita", value: "tipoCita" },
-        { label: "Estatus", value: "estatus" },
-        { label: "Horario cita", value: "horario" },
+        { label: "ID CITA", value: "idCita" },
+        { label: "NO.EMPLEADO (ESPECIALISTA)", value: "numEspecialista" },
+        { label: "NOMBRE ESPECIALISTA", value: "especialista" },
+        { label: "TIPO DE CONSULTA", value: "PENDIENTE" },
+        { label: "ESTATUS DE LA CITA", value: "nombreEstatusCita" },
+        { label: "NO. EMPLEADO", value: "numEmpleado" },
+        { label: "NOMBRE COMPLETO", value: "paciente" },
+        { label: "DEPARTAMENTO", value: "depto" },
+        { label: "PUESTO", value: "npuesto" },
+        { label: "SEDE", value: "sede" },
+        { label: "OFICINA", value: "oficina" },
+        { label: "FECHA DE SESIÓN", value: "horario" },
+        { label: "HORA INICIO", value: "fechaInicio" },
+        { label: "HORA FIN", value: "fechaFinal" },
+        { label: "PAGO (CANTIDAD)", value: "monto" },
+        { label: "MÉTODO DE PAGO", value: "metodoPago" },
+        { label: "FECHA DE PAGO", value: "fechaPago" },
+        { label: "NO. CONSULTA", value: "numCita" },
       ],
       content: dataFiltered,
     },
@@ -156,7 +155,7 @@ export default function HistorialReportesView() {
   let header = [];
 
   const headerBase = ["ID", "Usuario", "Especialista", "Número de empleado", "Paciente", "Oficina", "Departamento", "Área", "Puesto", "Sede",
-    "Modalidad", "Sexo", "Motivo consulta", "Pago Generado", "Método de pago", "Monto", "Tipo cita", "Estatus", "Horario cita"];
+    "Modalidad", "Sexo", "Motivo consulta", "Método de pago", "Monto", "Tipo cita", "Estatus", "Horario cita"];
 
   const [dataValue, setReportData] = useState(0);
 
@@ -218,7 +217,7 @@ export default function HistorialReportesView() {
       : false;
 
   const TABLE_BASE = [
-    { id: '', label: 'ID' },
+    { id: '', label: 'ID Cita' },
     { id: '', label: 'Usuario' },
     { id: '', label: 'Especialista' },
     { id: '', label: 'Número de empleado' },
@@ -231,9 +230,9 @@ export default function HistorialReportesView() {
     { id: '', label: 'Modalidad' },
     { id: '', label: 'Sexo' },
     { id: '', label: 'Motivo Consulta' },
-    { id: '', label: 'Pago generado' },
     { id: '', label: 'Método de pago' },
     { id: '', label: 'Monto' },
+    { id: '', label: 'Fecha de pago' },
     { id: '', label: 'Tipo cita' },
     { id: '', label: 'Estatus' },
     { id: '', label: 'Horario cita' },
@@ -555,8 +554,8 @@ function applyFilter({ inputData, comparator, filters, dateError, rol }) {
     if (startDate && endDate) {
       inputData = inputData.filter(
         (order) =>
-          fTimestamp(order.fechaCreacion) >= fTimestamp(startDate) &&
-          fTimestamp(order.fechaCreacion) <= fTimestamp(endDateF)
+          fTimestamp(order.fechaInicio) >= fTimestamp(startDate) &&
+          fTimestamp(order.fechaInicio) <= fTimestamp(endDateF)
       );
     }
   }

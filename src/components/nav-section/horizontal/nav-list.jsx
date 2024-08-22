@@ -14,7 +14,9 @@ import NavItem from './nav-item';
 // ----------------------------------------------------------------------
 
 const icon = (name) => (
-  <SvgColor src= {`${import.meta.env.BASE_URL}assets/icons/navbar/${name}.svg`}  sx={{ width: 1, height: 1 }} />
+  <>
+    {name && <SvgColor src= {`${import.meta.env.BASE_URL}assets/icons/navbar/${name}.svg`}  sx={{ width: 1, height: 1 }} />}
+  </>
 );
 
 export default function NavList({ data, depth, slotProps }) {

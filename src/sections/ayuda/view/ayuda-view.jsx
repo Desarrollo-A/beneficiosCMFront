@@ -66,7 +66,7 @@ export default function AyudaView() {
           </Box>
         </>
       ) : (
-        <Grid item md={12} xs={12}>
+        <Grid md={12} xs={12}>
           <Box sx={{ borderRadius: 2, backgroundColor: "#ECECEC", animation: 'pulse 1.5s infinite', p: 5 }} />
         </Grid>
       )}

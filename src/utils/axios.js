@@ -223,7 +223,6 @@ export const endpoints = {
     getEstatusPaciente: '/GeneralController/getEstatusPaciente',
     updateEstatusPaciente: '/GeneralController/updateEstatusPaciente',
     getCierrePacientes: '/ReportesController/getCierrePacientes',
-    getCierreIngresos: '/ReportesController/getCierreIngresos',
     getSelectEspe: '/ReportesController/getSelectEspe',
     getEspeUser: '/ReportesController/getEspeUser',
     demandaDepartamentos: '/ReportesController/demandaDepartamentos',
