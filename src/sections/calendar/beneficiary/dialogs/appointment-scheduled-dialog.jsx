@@ -216,8 +216,10 @@ export default function AppointmentScheduleDialog({
     // *** VALIDAMOS SI TIENE CITAS SIN FINALIZAR ***
     const citasSinFinalizar = await getCitasSinFinalizar(
       datosUser.idUsuario,
-      selectedValues.beneficio
+      selectedValues.beneficio,
+      0
     );
+
     if (citasSinFinalizar.result) {
       enqueueSnackbar('Ya tienes una cita en proceso de este beneficio', {
         variant: 'danger',
@@ -1327,10 +1329,11 @@ export default function AppointmentScheduleDialog({
     // SE COMENTARON LAS VALIDACIONES DEBIDO A QUE ESTAS REGLAS YA NO VAN A APLICAR
     // const citasSinFinalizar = await getCitasSinFinalizar(
     //   datosUser.idUsuario,
-    //   selectedValues.beneficio
+    //   selectedValues.beneficio,
+    //   currentEvent.id
     // );
 
-    // // Si tiene citas en proceso no lo tengo que dejar agendar citas
+    // Si tiene citas en proceso no lo tengo que dejar agendar citas
     // if (citasSinFinalizar.result) {
     //   enqueueSnackbar('Ya tienes una cita en proceso de este beneficio', {
     //     variant: 'error',
