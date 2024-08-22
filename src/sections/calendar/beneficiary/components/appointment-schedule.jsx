@@ -121,7 +121,6 @@ export default function AppointmentSchedule({
   }; */
 
   /*   const [address, setAddress] = useState(''); */
-console.log(beneficioActivo);
 
   useEffect(() => {
     switch (beneficioActivo?.beneficio) {
@@ -136,11 +135,6 @@ console.log(beneficioActivo);
       case 686:
         setNombreEspecialidad('Guía espiritual');
         break;
-
-      case 158:
-        setNombreEspecialidad('Quantum balance');
-      break;
-
 
       default:
         setNombreEspecialidad('ERROR');
