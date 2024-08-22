@@ -27,25 +27,22 @@ export default function FilasTabla({ row, selected, rol, rel }) {
     especialista,
     oficina,
     depto,
-    narea,
     npuesto,
     sede,
-    modalidad,
     numEmpleado,
     paciente,
     estatus,
     estatusCita,
     horario,
     observaciones,
-    sexo,
-    motivoCita,
     metodoPago,
-    tipoCita,
     monto,
     fechaPago,
     color,
     usuario, 
     archivo,
+    numEspecialista,
+    numCita
   } = row;
     const quickEdit = useBoolean();
     const modalJust = useBoolean();
@@ -72,103 +69,89 @@ export default function FilasTabla({ row, selected, rol, rel }) {
   return (
     <>
       <TableRow hover selected={selected}>
-
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{idCita}</TableCell>
+
+        {rol !== 3 ? <TableCell sx={{ whiteSpace: 'nowrap' }}>{numEspecialista}</TableCell> : null}
+
+        {rol !== 3 ? <TableCell sx={{ whiteSpace: 'nowrap' }}>{especialista}</TableCell> : null}
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{usuario}</TableCell>
 
-        {rol !== 3 ? (
+        <TableCell>
+          <Label variant="soft" sx={{ backgroundColor: `${color}0f`, color }}>
+            {estatus}
+          </Label>
+        </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{especialista}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{numEmpleado}</TableCell>
 
-        ):(
-          null
-        )}
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }} >{numEmpleado}</TableCell>
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }} >{paciente}</TableCell>
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{oficina}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{paciente}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{depto}</TableCell>
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{narea}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{npuesto}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{sede}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{modalidad}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{oficina}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{sexo}</TableCell>
-
-        <Tooltip title={motivoCita.length > 19 ? motivoCita : ''} placement="top" arrow>
-          <TableCell sx={{
-            textOverflow: 'ellipsis',
-            overflow: 'hidden',
-            whiteSpace: 'nowrap',
-            minWidth: '200px',
-            maxWidth: '100px', 
-          }}>{motivoCita}</TableCell>
-        </Tooltip>
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{metodoPago}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {(user?.idSede === 11 || user?.idSede === 9) && user?.idSede === idColab
+            ? formatearDosFechaAUna(fechaInicio, fechaFin)
+            : horario}
+        </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{monto}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fechaPago}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{metodoPago}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{tipoCita}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fechaPago}</TableCell>       
 
-        <TableCell>
-          <Label
-            variant="soft"
-            sx={{backgroundColor: `${color}0f`, color}}
-          >
-            {estatus}
-          </Label>
-        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{numCita}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {(user?.idSede === 11 || user?.idSede === 9) && user?.idSede === idColab ? 
-            (formatearDosFechaAUna(fechaInicio, fechaFin)) :
-            horario
-          }
-        </TableCell>
-
-        {estatusCita === 3 && (observaciones === null || observaciones === "") && rol === 4 ? (
-          <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }} >
+        {estatusCita === 3 && (observaciones === null || observaciones === '') && rol === 4 ? (
+          <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
             <Tooltip title="Justificar" placement="top" arrow>
-              <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>
+              <IconButton
+                color={quickEdit.value ? 'inherit' : 'default'}
+                onClick={quickEdit.onTrue}
+              >
                 <Iconify icon="material-symbols:comment-outline" />
               </IconButton>
             </Tooltip>
-
           </TableCell>
-        ) : (
-          null
-        )} 
+        ) : null}
 
-         {estatusCita === 5 && archivo !== null && rol === 4 ? (
-          <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }} >
+        {estatusCita === 5 && archivo !== null && rol === 4 ? (
+          <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
             <Tooltip title="Ver justificación" placement="top" arrow>
-              <IconButton color={modalJust.value ? 'inherit' : 'default'} onClick={modalJust.onTrue}>
-                <Iconify icon="solar:eye-bold-duotone"/>
+              <IconButton
+                color={modalJust.value ? 'inherit' : 'default'}
+                onClick={modalJust.onTrue}
+              >
+                <Iconify icon="solar:eye-bold-duotone" />
               </IconButton>
             </Tooltip>
-
           </TableCell>
-        ) : (
-          null
-        )}
-
+        ) : null}
       </TableRow>
 
-      <UserQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} idCita={idCita} row={row} rel={rel} />
+      <UserQuickEditForm
+        currentUser={row}
+        open={quickEdit.value}
+        onClose={quickEdit.onFalse}
+        idCita={idCita}
+        row={row}
+        rel={rel}
+      />
 
-      <ModalJustificacion open={modalJust.value} onClose={modalJust.onFalse} idCita={idCita} observacion={observaciones} archivo={archivo}/>
-
+      <ModalJustificacion
+        open={modalJust.value}
+        onClose={modalJust.onFalse}
+        idCita={idCita}
+        observacion={observaciones}
+        archivo={archivo}
+      />
     </>
   );
 }
