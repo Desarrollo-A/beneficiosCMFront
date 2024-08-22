@@ -20,7 +20,7 @@ export default function InvoiceCreateView() {
             name: 'Encuestas',
           },
           {
-            name: 'Crear encuesta',
+            name: 'Crear encuestaa',
           },
          /*  {
             name: 'New Invoice',

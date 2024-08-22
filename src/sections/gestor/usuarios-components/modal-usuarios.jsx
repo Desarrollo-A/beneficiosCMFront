@@ -134,10 +134,10 @@ export default function ModalUsuarios({
               }}
             >
               <Grid container spacing={3} disableEqualOverflow>
-                <Grid item xs={3} md={3}>
+                <Grid xs={3} md={3}>
                   <RHFTextField name="id" label="Id" value={id} disabled />
                 </Grid>
-                <Grid item xs={3} md={3}>
+                <Grid xs={3} md={3}>
                   <RHFTextField
                     name="numEmpleado"
                     label="Número de empleado"
@@ -145,16 +145,16 @@ export default function ModalUsuarios({
                     disabled
                   />
                 </Grid>
-                <Grid item xs={3} md={3}>
+                <Grid xs={3} md={3}>
                   <RHFTextField name="contrato" label="Contrato" value={contrato} disabled />
                 </Grid>
-                <Grid item xs={3} md={3}>
+                <Grid xs={3} md={3}>
                   <RHFTextField name="rol" label="Rol" value={rol} disabled />
                 </Grid>
-                <Grid item xs={4} md={4}>
+                <Grid xs={4} md={4}>
                   <RHFTextField name="correo" label="Correo" value={correo} disabled />
                 </Grid>
-                <Grid item xs={4} md={4}>
+                <Grid xs={4} md={4}>
                   {passDecode ? (
                     <RHFTextField
                       name="oldPassword"
@@ -177,23 +177,23 @@ export default function ModalUsuarios({
                       }}
                     />
                   ) : (
-                    <Grid item xs={4} md={4}>
+                    <Grid xs={4} md={4}>
                       <LinearProgress />
                     </Grid>
                   )}
                 </Grid>
 
-                <Grid item xs={4} md={4}>
+                <Grid xs={4} md={4}>
                   <RHFSelect
                     name="permisos_id"
                     label="Permisos adicionales"
-                    value={permisos_id}
+                    value={permisos_id || ''}
                     disabled={idRol !== 4}
                   >
-                    <MenuItem value="">Ninguno</MenuItem>
+                    <MenuItem value={undefined}>Ninguno</MenuItem>
                     {permisos.map((option, index) => (
-                      <MenuItem key={index} value={option.value}>
-                        {option.label}
+                      <MenuItem key={index} value={option?.value}>
+                        {option?.label}
                       </MenuItem>
                     ))}
                   </RHFSelect>

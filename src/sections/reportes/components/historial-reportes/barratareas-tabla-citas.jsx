@@ -256,7 +256,7 @@ export default function BarraTareasTabla({
         }}
       >
         <Grid container spacing={SPACING} disableEqualOverflow>
-          <Grid item xs={12} md={12}>
+          <Grid xs={12} md={12}>
             <WidgetPacientes
               title="Total de pacientes"
               total={_pa}

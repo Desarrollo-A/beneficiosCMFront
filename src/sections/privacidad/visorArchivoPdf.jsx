@@ -62,7 +62,7 @@ export default function AvisoPrivacidadGeneral({ datos, enviarDatosAlPadre, idPu
         maxWidth={settings.themeStretch ? false : 'lg'}
         style={{ display: datos.visualize, paddingTop: '1%' }}
       >
-        <Grid item xs={10}>
+        <Grid xs={10}>
           <Stack
             direction="row"
             justifyContent="right"
