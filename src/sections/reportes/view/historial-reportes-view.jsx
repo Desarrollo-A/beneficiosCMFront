@@ -218,26 +218,22 @@ export default function HistorialReportesView() {
 
   const TABLE_BASE = [
     { id: '', label: 'ID Cita' },
-    { id: '', label: 'Usuario' },
-    { id: '', label: 'Especialista' },
     { id: '', label: 'Número de empleado' },
+    { id: '', label: 'Especialista' },
+    { id: '', label: 'Usuario'},
+    { id: '', label: 'Estatus' },
+    { id: '', label: 'No. empleado' },
     { id: '', label: 'Paciente' },
-    { id: '', label: 'Oficina' },
     { id: '', label: 'Departamento' },
-    { id: '', label: 'Área' },
     { id: '', label: 'Puesto' },
     { id: '', label: 'Sede' },
-    { id: '', label: 'Modalidad' },
-    { id: '', label: 'Sexo' },
-    { id: '', label: 'Motivo Consulta' },
+    { id: '', label: 'Oficina' },
+    { id: '', label: 'Fecha de sesión' },
+    { id: '', label: 'Pago(Cantidad)' },
     { id: '', label: 'Método de pago' },
-    { id: '', label: 'Monto' },
     { id: '', label: 'Fecha de pago' },
-    { id: '', label: 'Tipo cita' },
-    { id: '', label: 'Estatus' },
-    { id: '', label: 'Horario cita' },
-    { id: '' },
-    /* { id: '', width: 88 }, */
+    { id: '', label: 'No. de consulta'},
+    { id: '', label: ''}
   ];
 
   if (rol === 3) {

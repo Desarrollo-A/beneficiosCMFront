@@ -115,13 +115,6 @@ export default function AppointmentSchedule({
     setOpen(false);
   };
 
-  /*   const mapStyles = {
-    height: '60vh',
-    width: '100%',
-  }; */
-
-  /*   const [address, setAddress] = useState(''); */
-
   useEffect(() => {
     switch (beneficioActivo?.beneficio) {
       case 537:
