@@ -287,9 +287,9 @@ export function _isPrimeraCita(usuario, beneficio) {
 }
 
 // Traer las citas sin finalizar o pendientes del beneficio
-export function getCitasSinFinalizar(usuario, beneficio) {
+export function getCitasSinFinalizar(usuario, beneficio, idCita) {
   const URL = [endpoints.calendarioColaborador.getCitasSinFinalizar];
-  const cita = fetcherPost(URL, { usuario, beneficio });
+  const cita = fetcherPost(URL, { usuario, beneficio, idCita });
 
   return cita;
 }
