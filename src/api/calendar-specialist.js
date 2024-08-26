@@ -84,17 +84,16 @@ export function GetCustomEvents(current, idUsuario, idSede) {
   }, [month]);
 
   const memoizedValue = useMemo(() => {
-
     const events = data?.events?.map((event) => {
-      if(event.type === 'date'){
+      if (event.type === 'date') {
         let startConverted = idSede === 11 ? horaTijuana(event.start) : horaCancun(event.start);
         startConverted = toLocalISOString(startConverted);
         startConverted = startConverted.slice(0, 19).replace('T', ' ');
-        const inicioCita = ((idSede === 11 || idSede === 9)) ? startConverted : event.start;
+        const inicioCita = idSede === 11 || idSede === 9 ? startConverted : event.start;
         let endConverted = idSede === 11 ? horaTijuana(event.end) : horaCancun(event.end);
         endConverted = toLocalISOString(endConverted);
         endConverted = endConverted.slice(0, 19).replace('T', ' ');
-        const finCita = ((idSede === 11 || idSede === 9)) ? endConverted : event.end;
+        const finCita = idSede === 11 || idSede === 9 ? endConverted : event.end;
         const fechasCitasReagendadas = obtenerFechasConHoras(event.fechasFolio);
         let fechas = '';
         fechasCitasReagendadas?.forEach((fecha) => {
@@ -118,58 +117,56 @@ export function GetCustomEvents(current, idUsuario, idSede) {
           fechasFolio: fechas || event.fechasFolio,
         };
       }
-      
+
       let startConverted = idSede === 11 ? horaTijuana(event.start) : horaCancun(event.start);
-        startConverted = toLocalISOString(startConverted);
-        startConverted = startConverted.slice(0, 19).replace('T', ' ');
-        const inicioCita = ((idSede === 11 || idSede === 9)) ? startConverted : event.start;
+      startConverted = toLocalISOString(startConverted);
+      startConverted = startConverted.slice(0, 19).replace('T', ' ');
+      const inicioCita = idSede === 11 || idSede === 9 ? startConverted : event.start;
 
-        
-        function sumarRestarHora(fecha) {
-          // Convertir la fecha a un objeto Date
-          const fechaObjeto = new Date(fecha);
-        
-          if (idSede === 9) {
-            fechaObjeto.setUTCHours(fechaObjeto.getUTCHours() + 1);
-          } else if (idSede === 11) {
-            fechaObjeto.setUTCHours(fechaObjeto.getUTCHours() - 1);
-          }
-        
-           // Función auxiliar para formatear con ceros a la izquierda
-          const pad = (num, size) => String(num).padStart(size, '0');
+      function sumarRestarHora(fecha) {
+        // Convertir la fecha a un objeto Date
+        const fechaObjeto = new Date(fecha);
 
-          // Obtener y formatear los componentes de la fecha y la hora
-          const fechaFormateada = `${fechaObjeto.getFullYear()}-${pad(fechaObjeto.getMonth() + 1, 2)}-${pad(fechaObjeto.getDate(), 2)} ${pad(fechaObjeto.getHours(), 2)}:${pad(fechaObjeto.getMinutes(), 2)}:${pad(fechaObjeto.getSeconds(), 2)}.${pad(fechaObjeto.getMilliseconds(), 3)}`;
-
-          return fechaFormateada;
+        if (idSede === 9) {
+          fechaObjeto.setUTCHours(fechaObjeto.getUTCHours() + 1);
+        } else if (idSede === 11) {
+          fechaObjeto.setUTCHours(fechaObjeto.getUTCHours() - 1);
         }
 
-        const finCita = sumarRestarHora(event.end);
+        // Función auxiliar para formatear con ceros a la izquierda
+        const pad = (num, size) => String(num).padStart(size, '0');
 
-        const fechasCitasReagendadas = obtenerFechasConHoras(event.fechasFolio);
-        let fechas = '';
-        fechasCitasReagendadas?.forEach((fecha) => {
-          const fechaInicioCita = idSede === 11 ? horaTijuana(fecha) : horaCancun(fecha);
-          fechas +=
-            fechas === ''
-              ? `${dayjs(fechaInicioCita).format('DD / MM / YYYY')} A las ${dayjs(
-                  fechaInicioCita
-                ).format('HH:mm')} horas.`
-              : `,${dayjs(fechaInicioCita).format('DD / MM / YYYY')} A las ${dayjs(
-                  fechaInicioCita
-                ).format('HH:mm')} horas.`;
-        });
+        // Obtener y formatear los componentes de la fecha y la hora
+        const fechaFormateada = `${fechaObjeto.getFullYear()}-${pad(fechaObjeto.getMonth() + 1, 2)}-${pad(fechaObjeto.getDate(), 2)} ${pad(fechaObjeto.getHours(), 2)}:${pad(fechaObjeto.getMinutes(), 2)}:${pad(fechaObjeto.getSeconds(), 2)}.${pad(fechaObjeto.getMilliseconds(), 3)}`;
 
-        return {
-          ...event,
-          textColor: event?.tipoCita === 1 && event?.estatus === 1 ? 'yellow' : event?.color,
-          type: event?.type,
-          fechaInicio: inicioCita,
-          start: inicioCita,
-          end: finCita,
-          fechasFolio: fechas || event.fechasFolio,
-        };
-    
+        return fechaFormateada;
+      }
+
+      const finCita = sumarRestarHora(event.end);
+
+      const fechasCitasReagendadas = obtenerFechasConHoras(event.fechasFolio);
+      let fechas = '';
+      fechasCitasReagendadas?.forEach((fecha) => {
+        const fechaInicioCita = idSede === 11 ? horaTijuana(fecha) : horaCancun(fecha);
+        fechas +=
+          fechas === ''
+            ? `${dayjs(fechaInicioCita).format('DD / MM / YYYY')} A las ${dayjs(
+                fechaInicioCita
+              ).format('HH:mm')} horas.`
+            : `,${dayjs(fechaInicioCita).format('DD / MM / YYYY')} A las ${dayjs(
+                fechaInicioCita
+              ).format('HH:mm')} horas.`;
+      });
+
+      return {
+        ...event,
+        textColor: event?.tipoCita === 1 && event?.estatus === 1 ? 'yellow' : event?.color,
+        type: event?.type,
+        fechaInicio: inicioCita,
+        start: inicioCita,
+        end: finCita,
+        fechasFolio: fechas || event.fechasFolio,
+      };
     });
 
     return {
@@ -343,25 +340,25 @@ export async function createAppointment(eventData, modalitie, datosUser, default
   let especialidad = '';
   let sede = modalitie?.sede || 'virtual';
   let oficina = modalitie?.oficina || 'virtual';
-  const precio = 0.00;
 
   /* const organizador = eventData.paciente.correo
     ? 'programador.analista36@ciudadmaderas.com'
     : 'programador.analista12@ciudadmaderas.com'; */
   const organizador = eventData.paciente.correo; // Variable correcta
-  
-  const correosNotificar = /* eventData.paciente.correo */
-    /* ?  */[
-        {
-          email: datosUser.correo, // 'programador.analista32@ciudadmaderas.com' Sustituir correo
-          responseStatus: 'accepted',
-        },
-        /* {
+
+  const correosNotificar =
+    /* eventData.paciente.correo */
+    /* ?  */ [
+      {
+        email: datosUser.correo, // 'programador.analista32@ciudadmaderas.com' Sustituir correo
+        responseStatus: 'accepted',
+      },
+      /* {
           email: 'programador.analista12@ciudadmaderas.com', // eventData.paciente.correo Sustituir correo
           responseStatus: 'accepted',
         }, */
-      ]
-    /* : [
+    ];
+  /* : [
         {
           email: 'programador.analista36@ciudadmaderas.com', // eventData.paciente.correo Sustituir correo
           responseStatus: 'accepted',
@@ -560,7 +557,7 @@ export async function createAppointment(eventData, modalitie, datosUser, default
         folio: `${eventData.paciente.idUsuario}${dayjs(new Date()).format('HHmmssYYYYMMDD')}`,
         referencia: `U${eventData.paciente.idUsuario}-${abreviatura}-E${datosUser.idPuesto}-C${create.data}`,
         concepto: 1, // 1: citas
-        cantidad: precio,
+        cantidad: 50.0,
         metodoPago: 7, // 7: No aplica (gratis)
         estatusPago: 1, // 1:cobrado
         idCita: create.data,
@@ -718,7 +715,6 @@ export async function updateAppointment(eventData, idUsuario, idSede) {
 // ----------------------------------------------------------------------
 
 export async function cancelAppointment(currentEvent, id, cancelType, idUsuario, idSede) {
-  
   const startStamp = dayjs(currentEvent.start).format('YYYY/MM/DD HH:mm:ss');
   let tituloEmail = '';
   let imagen = '';
@@ -789,7 +785,7 @@ export async function cancelAppointment(currentEvent, id, cancelType, idUsuario,
     fetcherPost(delete_google_event, eventGoogleData);
   }
 
-  return delDate; 
+  return delDate;
 }
 
 // ----------------------------------------------------------------------
@@ -849,7 +845,7 @@ export async function endAppointment(currentEvent, reason, idUsuario) {
     horaInicio: dayjs(currentEvent?.start).format('HH:mm A'),
     horaFinal: dayjs(currentEvent?.end).format('HH:mm A'),
     view: 'email-end',
-    correo: [currentEvent?.correo], /* ['programador.analista36@ciudadmaderas.com'], */ 
+    correo: [currentEvent?.correo] /* ['programador.analista36@ciudadmaderas.com'], */,
     link: 'https://beneficiosmaderas.gphsis.com/',
     idUsuario,
   };
@@ -933,17 +929,17 @@ export async function reschedulee(eventData, idDetalle, cancelType, datosUser, d
   const organizador = eventData.paciente.correo;
 
   const correosNotificar = /* eventData?.correo
-    ?  */[
-        {
-          email: eventData.paciente.correo, // eventData.paciente.correo Sustituir correo
-          responseStatus: 'accepted',
-        },
-        /* {
+    ?  */ [
+    {
+      email: eventData.paciente.correo, // eventData.paciente.correo Sustituir correo
+      responseStatus: 'accepted',
+    },
+    /* {
           email: 'programador.analista12@ciudadmaderas.com', // eventData.paciente.correo Sustituir correo
           responseStatus: 'accepted',
         }, */
-      ]
-    /* : [
+  ];
+  /* : [
         {
           email: 'programador.analista36@ciudadmaderas.com', // eventData.paciente.correo Sustituir correo
           responseStatus: 'accepted',
@@ -1012,7 +1008,7 @@ export async function reschedulee(eventData, idDetalle, cancelType, datosUser, d
     horaInicioOld: dayjs(eventData.oldEventStart).format('HH:mm: a'),
     horaFinalOld: dayjs(eventData.oldEventEnd).format('HH:mm: a'),
     view: 'email-reschedule',
-    correo: [eventData?.correo], /* ['programador.analista36@ciudadmaderas.com'], */
+    correo: [eventData?.correo] /* ['programador.analista36@ciudadmaderas.com'], */,
     idUsuario: datosUser?.idUsuario,
   };
 
@@ -1068,8 +1064,8 @@ export async function reschedule(eventData, idDetalle, cancelType, datosUser, de
     {
       email: datosUser.correo, // eventData.paciente.correo Sustituir correo
       responseStatus: 'accepted',
-    }
-  ]
+    },
+  ];
 
   let fechaInicioCita = eventData?.fechaInicio; // todo tipo date
   let fechaFinCita = eventData?.hora_inicio; // todo tipo date
