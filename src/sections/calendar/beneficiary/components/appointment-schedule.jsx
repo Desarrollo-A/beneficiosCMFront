@@ -129,8 +129,12 @@ export default function AppointmentSchedule({
         setNombreEspecialidad('Guía espiritual');
         break;
 
+      case 158:
+        setNombreEspecialidad('Quantum balance');
+        break;
+
       default:
-        setNombreEspecialidad('ERROR');
+        setNombreEspecialidad('ERROR AL BUSCAR LA ESPECIALIDAD');
         break;
     }
   }, [beneficioActivo?.beneficio]);
