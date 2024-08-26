@@ -1,6 +1,6 @@
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { enqueueSnackbar } from 'notistack';
 import localeData from 'dayjs/plugin/localeData';
@@ -23,6 +23,7 @@ import { endpoints } from 'src/utils/axios';
 import { getEncodedHash } from 'src/api/api';
 import { useAuthContext } from 'src/auth/hooks';
 import { usePostGeneral } from 'src/api/general';
+import { useEncuestas } from 'src/api/encuestas';
 import {
   sendMail,
   consultarCita,
@@ -52,13 +53,25 @@ export default function PendingModalUser({ idUsuario }) {
   const [btnConfirmAction, setBtnConfirmAction] = useState(false);
   const [citaPayment, setCitaPayment] = useState([]);
 
-  const { encuestaData } = usePostGeneral(
+  /* const { encuestaData } = usePostGeneral(
     idUsuario,
     endpoints.encuestas.evaluacionEncuesta,
     'encuestaData'
-  );
+  ); */
 
-  const encDisponible = encuestaData.some((objeto) => Object.values(objeto).includes(0));
+  const { encuestas } = useEncuestas(idUsuario);
+
+  const encDisponible = encuestas?.some((objeto) => Object.values(objeto).includes(0));
+
+  const [evaluate, setEvaluate] = useState(false);
+
+  useEffect(() => {
+    if (encDisponible) {
+        setEvaluate(true);
+    } else {
+        setEvaluate(false);
+    }
+}, [encDisponible]);
 
   dayjs.locale('es');
   dayjs.extend(localeData);
@@ -439,14 +452,15 @@ export default function PendingModalUser({ idUsuario }) {
           />
         )} */}
 
-      {encDisponible ? (
+      {evaluate ? (
         <EvaluateDialog
           open={open}
-          encuestas={encuestaData}
+          encuestas={encuestas}
           mutate={pendingsMutate}
           cerrar={onClose}
         />
       ) : null}
+
       <Dialog open={confirmCancel} maxWidth="sm" disableEnforceFocus>
         <DialogContent>
           <Stack

@@ -51,8 +51,7 @@ export default function Header({ onOpenNav }) {
           <SvgColor src={`${import.meta.env.BASE_URL}assets/icons/navbar/ic_menu_item.svg`} />
         </IconButton>
       )}
-
-      {datosUser?.idRol === 2 && <PendingModalUser idUsuario={datosUser?.idUsuario}/>}
+      
       {datosUser?.idRol === 3 && <EndAppointmentDialog />}
 
       <Stack
