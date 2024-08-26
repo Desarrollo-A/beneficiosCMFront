@@ -148,8 +148,7 @@ export default function PendingModalUser({ idUsuario }) {
     // alert(JSON.stringify(currentEvent));
 
     /* VALIDAR SI ES GRATUITA LA CITA */
-    let precio = 50;
-    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') precio = 0.0;
+    const precio = 50.0;
 
     let nombreBeneficio = '';
     let abreviatura = '';

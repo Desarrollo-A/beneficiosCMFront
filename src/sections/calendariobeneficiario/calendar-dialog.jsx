@@ -398,8 +398,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
     }
 
     /* VALIDAR SI ES GRATUITA LA CITA */
-    let precio = 50.0;
-    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') precio = 0.0;
+    const precio = 50.0;
 
     /* PAGO  */
     const DATOS_PAGO = Object.freeze({
@@ -653,8 +652,7 @@ export default function CalendarDialog({ currentEvent, onClose, selectedDate, ap
   const pagarCitaPendiente = async () => {
     setBtnPayDisabled(true);
     /* VALIDAR SI ES GRATUITA LA CITA */
-    let precio = 50;
-    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') precio = 0.0;
+    const precio = 50.0;
 
     let nombreBeneficio = '';
     let abreviatura = '';
