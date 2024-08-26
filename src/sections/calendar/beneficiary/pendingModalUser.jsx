@@ -28,7 +28,6 @@ import {
   consultarCita,
   useGetPendientes,
   cancelAppointment,
-  registrarDetalleDePago,
   updateStatusAppointment,
   deleteGoogleCalendarEvent,
   actualizarFechaIntentoPago,
@@ -147,8 +146,7 @@ export default function PendingModalUser({ idUsuario }) {
     // alert(JSON.stringify(currentEvent));
 
     /* VALIDAR SI ES GRATUITA LA CITA */
-    let precio = 50;
-    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') precio = 0.0;
+    const precio = 50.0;
 
     let nombreBeneficio = '';
     let abreviatura = '';
@@ -196,59 +194,33 @@ export default function PendingModalUser({ idUsuario }) {
       SERVICIO: '501',
     });
 
-    if (datosUser.tipoPuesto.toLowerCase() !== 'operativa') {
-      const resultadoPago = await bbPago(
-        DATOS_PAGO.FOLIO,
-        DATOS_PAGO.REFERENCIA,
-        DATOS_PAGO.MONTO,
-        DATOS_PAGO.CONCEPTO,
-        DATOS_PAGO.SERVICIO
+    const resultadoPago = await bbPago(
+      DATOS_PAGO.FOLIO,
+      DATOS_PAGO.REFERENCIA,
+      DATOS_PAGO.MONTO,
+      DATOS_PAGO.CONCEPTO,
+      DATOS_PAGO.SERVICIO
+    );
+    if (!resultadoPago) {
+      const update = await updateStatusAppointment(
+        DATOS_CITA.ID_USUARIO,
+        currentEvent.id,
+        ESTATUS_CITA.PENDIENTE_PAGO
       );
-      if (!resultadoPago) {
+      if (!update) console.error('La cita no se pudo actualizar para realizar el pago');
+    }
+    // Actualizamos la fecha de intento de pago para que tenga una duración de 10 minutos desde que se intento pagar
+    if (resultadoPago) {
+      if (currentEvent.fechaIntentoPago == null) {
+        await actualizarFechaIntentoPago(DATOS_CITA.ID_USUARIO, currentEvent.id);
+      } else {
         const update = await updateStatusAppointment(
           DATOS_CITA.ID_USUARIO,
           currentEvent.id,
-          ESTATUS_CITA.PENDIENTE_PAGO
+          ESTATUS_CITA.PROCESANDO_PAGO
         );
         if (!update) console.error('La cita no se pudo actualizar para realizar el pago');
       }
-      // Actualizamos la fecha de intento de pago para que tenga una duración de 10 minutos desde que se intento pagar
-      if (resultadoPago) {
-        if (currentEvent.fechaIntentoPago == null) {
-          await actualizarFechaIntentoPago(DATOS_CITA.ID_USUARIO, currentEvent.id);
-        } else {
-          const update = await updateStatusAppointment(
-            DATOS_CITA.ID_USUARIO,
-            currentEvent.id,
-            ESTATUS_CITA.PROCESANDO_PAGO
-          );
-          if (!update) console.error('La cita no se pudo actualizar para realizar el pago');
-        }
-      }
-    }
-
-    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
-      const METODO_PAGO = Object.freeze({
-        NO_APLICA: 7,
-      });
-
-      const ESTATUS_PAGO = Object.freeze({
-        COBRADO: 1,
-      });
-
-      await pagoGratuito(
-        DATOS_PAGO.FOLIO,
-        DATOS_PAGO.REFERENCIA,
-        DATOS_PAGO.CONCEPTO,
-        DATOS_PAGO.MONTO,
-        METODO_PAGO.NO_APLICA,
-        ESTATUS_PAGO.COBRADO,
-        currentEvent.id
-      );
-
-      enqueueSnackbar('¡Has pagado la cita con éxito!', {
-        variant: 'success',
-      });
     }
 
     pendingsMutate();
@@ -310,34 +282,6 @@ export default function PendingModalUser({ idUsuario }) {
     return true;
   };
 
-  const pagoGratuito = async (
-    folio,
-    referencia,
-    concepto,
-    cantidad,
-    metodoPago,
-    estatusPago,
-    idCita
-  ) => {
-    const registrarPago = await registrarDetalleDePago(
-      datosUser.idUsuario,
-      folio,
-      referencia,
-      concepto,
-      cantidad,
-      metodoPago,
-      estatusPago,
-      idCita
-    );
-
-    if (!registrarPago.result) {
-      enqueueSnackbar('¡Ha surgido un error al generar el detalle de pago!', {
-        variant: 'error',
-      });
-    }
-    return registrarPago.result;
-  };
-
   return (
     <>
       {pendientes?.data?.pago?.length > 0 && ( // si hay pendientes se mostrara el modal
@@ -365,7 +309,10 @@ export default function PendingModalUser({ idUsuario }) {
                   secondaryAction={
                     <>
                       <Tooltip title="Cancelar cita">
-                        <IconButton className="buttonActions" onClick={() => handleCancel(pendientes?.data?.pago[key])}>
+                        <IconButton
+                          className="buttonActions"
+                          onClick={() => handleCancel(pendientes?.data?.pago[key])}
+                        >
                           <Iconify className="bell" icon="solar:trash-bin-trash-bold" />
                         </IconButton>
                       </Tooltip>
