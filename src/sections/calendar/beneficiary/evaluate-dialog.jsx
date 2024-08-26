@@ -37,7 +37,7 @@ export default function EvaluateDialog({ open, encuestas, mutate, cerrar }) {
   const [tipoEvaluacion, setTipoEvaluacion] = useState(0);
 
   const [paramsEnc, setParamsEnc] = useState(0);
-
+  
   const { encuestaData } = usePostGeneral(tipoEvaluacion, endpoints.encuestas.getEncuestaContestar, "encuestaData");
 
   const { Resp1Data } = useGetGeneral(endpoints.encuestas.getResp1, "Resp1Data");
