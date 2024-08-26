@@ -40,7 +40,7 @@ export default function EditarDias({ open, onClose, idEncuesta }) {
     if (vig !== '') {
       try {
         const data = {
-          idEncuesta: idEncuesta,
+          idEncuesta,
           vigencia: vig,
         };
 
