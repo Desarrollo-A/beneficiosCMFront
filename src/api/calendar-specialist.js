@@ -98,7 +98,22 @@ export function GetCustomEvents(current, idUsuario, idSede) {
         const fechasCitasReagendadas = obtenerFechasConHoras(event.fechasFolio);
         let fechas = '';
         fechasCitasReagendadas?.forEach((fecha) => {
-          const fechaInicioCita = idSede === 11 ? horaTijuana(fecha) : horaCancun(fecha);
+          let fechaInicioCita = ''
+
+          switch(idSede){
+            case 11:
+              fechaInicioCita = horaTijuana(fecha)
+              break;
+            
+            case 9:
+              fechaInicioCita = horaCancun(fecha)
+              break;
+
+              default:
+                fechaInicioCita = fecha
+                break;
+          }
+
           fechas +=
             fechas === ''
               ? `${dayjs(fechaInicioCita).format('DD / MM / YYYY')} A las ${dayjs(

@@ -1,34 +1,32 @@
+import { useTheme } from '@emotion/react';
 import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import Card from '@mui/material/Card';
-import Radio from '@mui/material/Radio';
+import { Dialog } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
 import Tooltip from '@mui/material/Tooltip';
-import Checkbox from '@mui/material/Checkbox';
 import ListItem from '@mui/material/ListItem';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import RadioGroup from '@mui/material/RadioGroup';
 import IconButton from '@mui/material/IconButton';
-import FormControl from '@mui/material/FormControl';
 import ListItemButton from '@mui/material/ListItemButton';
 import LinearProgress from '@mui/material/LinearProgress';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import ArrowIcon from '@mui/icons-material/KeyboardArrowRight';
 
+import { getSedes } from 'src/api/sedes';
 import { useGetAreas } from 'src/api/areas';
 import { useGetOficinas } from 'src/api/oficinas';
 import { useGetModalidades } from 'src/api/modalidades';
 import { getActiveSedes, useGetEspecialistas } from 'src/api/especialistas';
-import { getSedes, saveOficinaXSede, saveAtencionXSede } from 'src/api/sedes';
 
 import Scrollbar from 'src/components/scrollbar';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
+import OficinasDialog from './oficinasDialog';
 //---------------------------------------------------------
 
 const HEIGHT = 600
@@ -45,13 +43,13 @@ export default function AtencionXsedeView() {
   const [ sedes, setSedes ] = useState([])
   const [ activas, setActivas ] = useState([])
   const [ loadingActivas, setLoadingActivas ] = useState(false)
-  const [ allChecked, setAllChecked ] = useState(false)
   const [ oficina, setOficina ] = useState(null)
 
   const { areas, areasLoading } = useGetAreas()
   const { especialistas, especialistasLoading } = useGetEspecialistas(area, {area})
   const { oficinas, oficinasLoading } = useGetOficinas(sede, {sede})
   const { modalidades } = useGetModalidades(true)
+  const theme = useTheme();
 
   const handleChangeArea = (are) => {
     setArea(are)
@@ -73,21 +71,27 @@ export default function AtencionXsedeView() {
     setLoadingActivas(true)
   }
 
-  const handleCheckSede = async(sed, checked) => {
-    // console.log({area, especialista, modalidad, sed, checked})
+  const [open, setOpen] = useState(false);
 
-    const tmp_sedes = [...sedes]
+  const onClose = () => {
+    setOpen(false)
+  } 
 
-    const index = tmp_sedes.findIndex(pres => pres.idsede === sed)
+  // const handleCheckSede = async(sed, checked) => {
+  //   // console.log({area, especialista, modalidad, sed, checked})
 
-    if(index !== -1){
-      tmp_sedes[index].active = checked
-    }
+  //   const tmp_sedes = [...sedes]
 
-    setSedes(tmp_sedes)
+  //   const index = tmp_sedes.findIndex(pres => pres.idsede === sed)
 
-    await saveAtencionXSede({area, especialista, modalidad, sede: sed, checked})
-  }
+  //   if(index !== -1){
+  //     tmp_sedes[index].active = checked
+  //   }
+
+  //   setSedes(tmp_sedes)
+
+  //   await saveAtencionXSede({area, especialista, modalidad, sede: sed, checked})
+  // }
 
   const getActivas = async() => {
     const act = await getActiveSedes({modalidad, especialista})
@@ -101,11 +105,11 @@ export default function AtencionXsedeView() {
     setSedes(seds)
   }
 
-  const checkAllchecked = () => {
-    const total = sedes.every(sed => sed.active === true)
+  // const checkAllchecked = () => {
+  //   const total = sedes.every(sed => sed.active === true)
 
-    setAllChecked(total)
-  }
+  //   setAllChecked(total)
+  // }
 
   const buildChecked = (act) => {
     const tmp = [...sedes]
@@ -126,47 +130,47 @@ export default function AtencionXsedeView() {
     setSedes(tmp)
   }
 
-  const handleCheckAll = (checked) => {
-    const tmp = [...sedes]
+  // const handleCheckAll = (checked) => {
+  //   const tmp = [...sedes]
 
-    tmp.map((sed) => {
-      sed.active = checked
+  //   tmp.map((sed) => {
+  //     sed.active = checked
 
-      saveAtencionXSede({area, especialista, modalidad, sede: sed.idsede, checked})
+  //     saveAtencionXSede({area, especialista, modalidad, sede: sed.idsede, checked})
 
-      return true
-    })
+  //     return true
+  //   })
 
-    setSedes(tmp)
-  }
+  //   setSedes(tmp)
+  // }
 
-  const handleChangeOficina = async(ofi) => {
-    setOficina(ofi)
+  // const handleChangeOficina = async(ofi) => {
+  //   setOficina(ofi)
 
-    await saveOficinaXSede({especialista, modalidad, sede, oficina: ofi})
+  //   await saveOficinaXSede({especialista, modalidad, sede, oficina: ofi})
 
-    const index = activas.findIndex(sed => sed.idSede === sede)
+  //   const index = activas.findIndex(sed => sed.idSede === sede)
 
-    activas[index].idOficina = ofi
-  }
+  //   activas[index].idOficina = ofi
+  // }
 
   const handleChangeSede = (sed) => {
     setSede(sed)
 
     const ofi = activas.find(se => se.idSede === sed)
 
-    if(ofi){
-      setOficina(ofi.idOficina)
-    }else{
-      setOficina(null)
-    }
+    setOpen(true);
+
+    // if(ofi){
+    //   setOficina(ofi.idOficina)
+    // }else{
+    //   setOficina(null)
+    // }
     
   }
 
   useEffect(() => {
-    checkAllchecked()
     setLoadingActivas(false)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sedes])
 
   useEffect(() => {
@@ -252,12 +256,6 @@ export default function AtencionXsedeView() {
           {modalidad && (
             <Stack sx={{ flex: 1 }} >
               <Typography variant='h6' sx={{ marginLeft: 2 }} >
-                <Checkbox
-                  edge="start"
-                  checked={allChecked}
-                  // indeterminate
-                  onChange={ (event) => handleCheckAll(event.target.checked) }
-                />
                 Sedes
               </Typography>
                 
@@ -271,11 +269,7 @@ export default function AtencionXsedeView() {
                   <Scrollbar sx={{ height: HEIGHT }} >
                     {sedes.map((sed, index) => (
                       <ListItem key={index}>
-                        <Checkbox
-                          edge="start"
-                          checked={ sed.active }
-                          onChange={ (event) => handleCheckSede(sed.idsede, event.target.checked) }
-                        />
+
                         <Typography sx={{ fontWeight: sed.idsede === sede ? 'bold' : '' }} >{sed.nsede}</Typography>
                         <Box sx={{ flex: 1 }}/>
                         {modalidad === 1 &&
@@ -292,7 +286,7 @@ export default function AtencionXsedeView() {
               )}
             </Stack>
           )}
-          { sede && (
+          {/* { sede && (
             <Stack sx={{ flex: 1 }} >
               <Typography variant='h6' sx={{ marginBottom: 1, paddingLeft: 1 }} >Oficina</Typography>
               { oficinasLoading ?
@@ -304,23 +298,40 @@ export default function AtencionXsedeView() {
                 <List>
 
                   <FormControl>
-                    <RadioGroup
-                      value={oficina}
-                      onChange={(event) => handleChangeOficina(event.target.value)}
-                    >
+                    
                       {oficinas.map((ofi, index) => (
                         <Box key={index} sx={{ marginBottom: 0.5 }}>
                           <FormControlLabel sx={{ marginLeft: 1.5, marginBottom: 0.5 }} value={ofi.idoficina} control={<Radio />} label={ofi.noficina} />
                         </Box>
                       ))}
-                    </RadioGroup>
+                    
                   </FormControl>
                 </List>
               </Scrollbar>
             </Stack>
-          )}
+          )} */}
 
         </Stack>
+
+        <Dialog
+          fullWidth
+          maxWidth="xs"
+          open={open}
+          transitionDuration={{
+          enter: theme.transitions.duration.shortest,
+          exit: theme.transitions.duration.shortest - 1000,
+          }}
+        >
+          <OficinasDialog
+            onClose={onClose}
+            oficinasLoading = {oficinasLoading}
+            oficinas = {oficinas}
+            sede = {sede}
+            modalidad={modalidad}
+            especialista={especialista}
+          />
+          
+        </Dialog>
       </Card>
 
   	</Container>
