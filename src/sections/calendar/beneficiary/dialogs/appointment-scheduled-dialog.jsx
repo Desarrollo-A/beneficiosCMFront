@@ -69,9 +69,7 @@ import {
   getSedesPresenciales,
   getCitasSinFinalizar,
   getOficinaByAtencion,
-  registrarDetalleDePago,
   updateStatusAppointment,
-  insertGoogleCalendarEvent,
   updateGoogleCalendarEvent,
   deleteGoogleCalendarEvent,
   actualizarFechaIntentoPago,
@@ -310,37 +308,8 @@ export default function AppointmentScheduleDialog({
     }
 
     // Evento de google
-    let newGoogleEvent = null;
     const organizador = datosUser.correo;
     const correosNotificar = [organizador];
-    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
-      const startDate = dayjs(horarioSeleccionado);
-      const endDate = startDate.add(1, 'hour');
-
-      const GOOGLE_EVENT = Object.freeze({
-        TITULO: `Cita ${nombreBeneficio} - ${datosUser.nombre}`,
-        INICIO_CITA: startDate.format('YYYY-MM-DDTHH:mm:ss'),
-        FIN_CITA: endDate.format('YYYY-MM-DDTHH:mm:ss'),
-        OFICINA: oficina?.data ? oficina.data[0].ubicación : 'Oficina virtual ',
-        DESCRIPCION: `Cita de ${datosUser.nombre} en ${nombreBeneficio}`,
-      });
-
-      newGoogleEvent = await insertGoogleCalendarEvent(
-        GOOGLE_EVENT.TITULO,
-        GOOGLE_EVENT.INICIO_CITA,
-        GOOGLE_EVENT.FIN_CITA,
-        GOOGLE_EVENT.OFICINA,
-        GOOGLE_EVENT.DESCRIPCION,
-        correosNotificar, // Sustituir valores de correos
-        organizador // datosUser.correo
-      );
-
-      if (!newGoogleEvent.result) {
-        enqueueSnackbar('Error al conectar con la cuenta de google', {
-          variant: 'error',
-        });
-      }
-    }
 
     /* otro proceso */
     const ESTATUS_CITA = Object.freeze({
@@ -366,13 +335,9 @@ export default function AppointmentScheduleDialog({
       ID_USUARIO: datosUser.idUsuario,
       ID_DETALLE_PAGO: null,
       ID_BENEFICIO: selectedValues.beneficio,
-      ID_GOOGLE_EVENT:
-        datosUser.tipoPuesto.toLowerCase() === 'operativa' ? newGoogleEvent.data.id : null, // newGoogleEvent.result ? newGoogleEvent.data.id : null,
+      ID_GOOGLE_EVENT: null, // newGoogleEvent.result ? newGoogleEvent.data.id : null,
       MODALIDAD: selectedValues.modalidad,
-      ESTATUS_CITA:
-        datosUser.tipoPuesto.toLowerCase() === 'operativa'
-          ? ESTATUS_CITA.POR_ASISTIR
-          : ESTATUS_CITA.PROCESO_PAGO,
+      ESTATUS_CITA: ESTATUS_CITA.PROCESO_PAGO,
     });
 
     const agendar = await agendarCita(
@@ -391,9 +356,6 @@ export default function AppointmentScheduleDialog({
     );
 
     if (!agendar.result) {
-      if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
-        await deleteGoogleCalendarEvent(currentEvent.idEventoGoogle, organizador);
-      }
       enqueueSnackbar(agendar.msg, {
         variant: 'error',
       });
@@ -401,8 +363,7 @@ export default function AppointmentScheduleDialog({
     }
 
     /* VALIDAR SI ES GRATUITA LA CITA */
-    let precio = 50.0;
-    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') precio = 0.0;
+    const precio = 50.0;
 
     /* PAGO  */
     const DATOS_PAGO = Object.freeze({
@@ -417,45 +378,23 @@ export default function AppointmentScheduleDialog({
       SERVICIO: '501',
     });
 
-    if (datosUser.tipoPuesto.toLowerCase() !== 'operativa') {
-      const resultadoPago = await bbPago(
-        DATOS_PAGO.FOLIO,
-        DATOS_PAGO.REFERENCIA,
-        DATOS_PAGO.MONTO,
-        DATOS_PAGO.CONCEPTO,
-        DATOS_PAGO.SERVICIO
+    const resultadoPago = await bbPago(
+      DATOS_PAGO.FOLIO,
+      DATOS_PAGO.REFERENCIA,
+      DATOS_PAGO.MONTO,
+      DATOS_PAGO.CONCEPTO,
+      DATOS_PAGO.SERVICIO
+    );
+    if (!resultadoPago) {
+      const update = await updateStatusAppointment(
+        DATOS_CITA.ID_USUARIO,
+        agendar.data,
+        ESTATUS_CITA.PENDIENTE_PAGO
       );
-      if (!resultadoPago) {
-        const update = await updateStatusAppointment(
-          DATOS_CITA.ID_USUARIO,
-          agendar.data,
-          ESTATUS_CITA.PENDIENTE_PAGO
-        );
-        if (!update) console.error('La cita no se pudo actualizar para realizar el pago');
-      }
-      if (resultadoPago) {
-        await actualizarFechaIntentoPago(DATOS_CITA.ID_USUARIO, agendar.data);
-      }
+      if (!update) console.error('La cita no se pudo actualizar para realizar el pago');
     }
-
-    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
-      const METODO_PAGO = Object.freeze({
-        NO_APLICA: 7,
-      });
-
-      const ESTATUS_PAGO = Object.freeze({
-        COBRADO: 1,
-      });
-
-      await pagoGratuito(
-        DATOS_PAGO.FOLIO,
-        DATOS_PAGO.REFERENCIA,
-        DATOS_PAGO.CONCEPTO,
-        DATOS_PAGO.MONTO,
-        METODO_PAGO.NO_APLICA,
-        ESTATUS_PAGO.COBRADO,
-        agendar.data
-      );
+    if (resultadoPago) {
+      await actualizarFechaIntentoPago(DATOS_CITA.ID_USUARIO, agendar.data);
     }
 
     enqueueSnackbar('¡Se ha agendado tu cita con éxito!', {
@@ -558,34 +497,6 @@ export default function AppointmentScheduleDialog({
     return true;
   };
 
-  const pagoGratuito = async (
-    folio,
-    referencia,
-    concepto,
-    cantidad,
-    metodoPago,
-    estatusPago,
-    idCita
-  ) => {
-    const registrarPago = await registrarDetalleDePago(
-      datosUser.idUsuario,
-      folio,
-      referencia,
-      concepto,
-      cantidad,
-      metodoPago,
-      estatusPago,
-      idCita
-    );
-
-    if (!registrarPago.result) {
-      enqueueSnackbar('¡Ha surgido un error al generar el detalle de pago!', {
-        variant: 'error',
-      });
-    }
-    return registrarPago.result;
-  };
-
   const onCancel = async () => {
     setBtnConfirmAction(true);
     const cancel = await cancelAppointment(currentEvent, currentEvent.id, 0, datosUser.idUsuario);
@@ -658,8 +569,7 @@ export default function AppointmentScheduleDialog({
   const pagarCitaPendiente = async (cita) => {
     setBtnPayDisabled(true);
     /* VALIDAR SI ES GRATUITA LA CITA */
-    let precio = 50;
-    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') precio = 0.0;
+    const precio = 50;
 
     let nombreBeneficio = '';
     let abreviatura = '';
@@ -707,58 +617,32 @@ export default function AppointmentScheduleDialog({
       SERVICIO: '501',
     });
 
-    if (datosUser.tipoPuesto.toLowerCase() !== 'operativa') {
-      const resultadoPago = await bbPago(
-        DATOS_PAGO.FOLIO,
-        DATOS_PAGO.REFERENCIA,
-        DATOS_PAGO.MONTO,
-        DATOS_PAGO.CONCEPTO,
-        DATOS_PAGO.SERVICIO
+    const resultadoPago = await bbPago(
+      DATOS_PAGO.FOLIO,
+      DATOS_PAGO.REFERENCIA,
+      DATOS_PAGO.MONTO,
+      DATOS_PAGO.CONCEPTO,
+      DATOS_PAGO.SERVICIO
+    );
+    if (!resultadoPago) {
+      const update = await updateStatusAppointment(
+        DATOS_CITA.ID_USUARIO,
+        cita.id,
+        ESTATUS_CITA.PENDIENTE_PAGO
       );
-      if (!resultadoPago) {
+      if (!update) console.error('La cita no se pudo actualizar para realizar el pago');
+    }
+    if (resultadoPago && cita.fechaIntentoPago == null) {
+      if (cita.fechaIntentoPago == null) {
+        await actualizarFechaIntentoPago(DATOS_CITA.ID_USUARIO, cita.id);
+      } else {
         const update = await updateStatusAppointment(
           DATOS_CITA.ID_USUARIO,
           cita.id,
-          ESTATUS_CITA.PENDIENTE_PAGO
+          ESTATUS_CITA.PROCESAND_PAGO
         );
         if (!update) console.error('La cita no se pudo actualizar para realizar el pago');
       }
-      if (resultadoPago && cita.fechaIntentoPago == null) {
-        if (cita.fechaIntentoPago == null) {
-          await actualizarFechaIntentoPago(DATOS_CITA.ID_USUARIO, cita.id);
-        } else {
-          const update = await updateStatusAppointment(
-            DATOS_CITA.ID_USUARIO,
-            cita.id,
-            ESTATUS_CITA.PROCESAND_PAGO
-          );
-          if (!update) console.error('La cita no se pudo actualizar para realizar el pago');
-        }
-      }
-    }
-
-    if (datosUser.tipoPuesto.toLowerCase() === 'operativa') {
-      const METODO_PAGO = Object.freeze({
-        NO_APLICA: 7,
-      });
-
-      const ESTATUS_PAGO = Object.freeze({
-        COBRADO: 1,
-      });
-
-      await pagoGratuito(
-        DATOS_PAGO.FOLIO,
-        DATOS_PAGO.REFERENCIA,
-        DATOS_PAGO.CONCEPTO,
-        DATOS_PAGO.MONTO,
-        METODO_PAGO.NO_APLICA,
-        ESTATUS_PAGO.COBRADO,
-        cita.id
-      );
-
-      enqueueSnackbar('¡El pago de cita se ha realizado con exito!', {
-        variant: 'success',
-      });
     }
 
     setBtnPayDisabled(false);
