@@ -35,7 +35,7 @@ export default function Inview() {
   return (
     <Card sx={{ p: 3 }}>
       <Grid container sx={{ mb: 3 }}>
-        <Grid xs={12} md={9}>
+        <Grid item xs={12} md={9}>
           <Toolbar
             isText={text.value}
             isMulti={multi.value}
@@ -47,7 +47,7 @@ export default function Inview() {
       </Grid>
 
       <Grid container spacing={3}>
-        <Grid xs={12} md={9}>
+        <Grid item xs={12} md={9}>
           <ContainerView
             key={count}
             isText={text.value}
@@ -55,7 +55,7 @@ export default function Inview() {
             selectVariant={selectVariant}
           />
         </Grid>
-        <Grid xs={12} md={3}>
+        <Grid item xs={12} md={3}>
           <ControlPanel
             variantKey={variantKey}
             selectVariant={selectVariant}

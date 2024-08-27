@@ -120,7 +120,7 @@ export default function UserNewEditForm({ currentUser }) {
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
-        <Grid xs={12} md={4}>
+        <Grid item xs={12} md={4}>
           <Card sx={{ pt: 10, pb: 5, px: 3 }}>
             {currentUser && (
               <Label
@@ -216,7 +216,7 @@ export default function UserNewEditForm({ currentUser }) {
           </Card>
         </Grid>
 
-        <Grid xs={12} md={8}>
+        <Grid item xs={12} md={8}>
           <Card sx={{ p: 3 }}>
             <Box
               rowGap={3}

@@ -7,6 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 
 import { Box } from '@mui/system';
 import Stack from '@mui/material/Stack';
+import { LoadingButton } from '@mui/lab';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import Select from '@mui/material/Select';
@@ -36,9 +37,8 @@ export default function ModalEditarOficinas({
   descripcion,
   icono,
   video,
-  idRol
+  idRol,
 }) {
-
   const { user } = useAuthContext();
 
   const idUsr = user?.idUsuario;
@@ -53,7 +53,7 @@ export default function ModalEditarOficinas({
 
   const NewUserSchema = Yup.object().shape({
     descripcion: Yup.string().required('El campo es requerido'),
-    titulo: Yup.string().required('El campo es requerido')
+    titulo: Yup.string().required('El campo es requerido'),
   });
 
   const [values, setValues] = useState({ titulo, descripcion, icono, video, modificadoPor: idUsr });
@@ -74,14 +74,13 @@ export default function ModalEditarOficinas({
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
-
-    const idRolVal = { rol }
-    const idManual = { id }
+    const idRolVal = { rol };
+    const idManual = { id };
 
     const dataValue = {
       ...idManual,
       ...idRolVal,
-      ...data
+      ...data,
     };
 
     try {
@@ -89,7 +88,7 @@ export default function ModalEditarOficinas({
       reset();
       onClose();
 
-     const update = await updateManuales(dataValue);
+      const update = await updateManuales(dataValue);
 
       if (update.estatus === true) {
         enqueueSnackbar(update.msj, { variant: 'success' });
@@ -99,10 +98,8 @@ export default function ModalEditarOficinas({
         enqueueSnackbar(update.msj, { variant: 'error' });
       }
     } catch (error) {
-
-      console.error("Error en handleSubmit:", error);
+      console.error('Error en handleSubmit:', error);
       enqueueSnackbar(`Error en registrar los datos`, { variant: 'danger' });
-
     }
   });
 
@@ -116,10 +113,8 @@ export default function ModalEditarOficinas({
         sx: { maxWidth: 720 },
       }}
     >
-
       <FormProvider methods={methods} onSubmit={onSubmit}>
-        <Stack spacing={1} >
-
+        <Stack spacing={1}>
           <DialogTitle>
             Edición de Manual
             <Box>
@@ -130,7 +125,6 @@ export default function ModalEditarOficinas({
           </DialogTitle>
 
           <DialogContent>
-
             <Box mb={2} />
 
             <FormControl fullWidth>
@@ -157,7 +151,7 @@ export default function ModalEditarOficinas({
             <Box mb={2} />
 
             <Grid xs={12} md={6}>
-              <RHFTextField name="descripcion" label="Descripcion" multiline rows={4}/>
+              <RHFTextField name="descripcion" label="Descripcion" multiline rows={4} />
             </Grid>
 
             <Box mb={2} />
@@ -170,24 +164,19 @@ export default function ModalEditarOficinas({
             <Grid xs={12} md={6}>
               <RHFTextField name="video" label="Video" multiline rows={1} />
             </Grid>
-
           </DialogContent>
-
         </Stack>
 
         <DialogActions>
           <Button variant="contained" color="error" onClick={onClose}>
             Cerrar
           </Button>
-          <Button type="submit" variant="contained" color="success" loading={isSubmitting}>
+          <LoadingButton type="submit" variant="contained" color="success" loading={isSubmitting}>
             Guardar
-          </Button>
+          </LoadingButton>
         </DialogActions>
-
       </FormProvider>
-
     </Dialog>
-
   );
 }
 

@@ -14,8 +14,8 @@ import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
 
-import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
+// import { paths } from 'src/routes/paths';
+// import { useRouter } from 'src/routes/hooks';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
@@ -57,6 +57,7 @@ const TABLE_HEAD = [
   { id: 'fechaCreacion', label: 'Fecha de registro' },
   { id: 'servicios', label: 'Servicios usados' },
   { id: 'rol', label: 'Rol' },
+  { id: 'permisos', label: 'Permisos adicionales', width: 100 },
   { id: 'estatus', label: 'Estatus', width: 100 },
   { id: '', width: 88 },
 ];
@@ -70,10 +71,9 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 
 function handleDownloadExcel(tableData) {
-
   const data = [
     {
-      sheet: "Usuarios Beneficios",
+      sheet: 'Usuarios Beneficios',
       columns: [
         { value: 'id', label: 'ID' },
         { value: 'numEmpleado', label: 'Número de empleado' },
@@ -86,66 +86,90 @@ function handleDownloadExcel(tableData) {
         { value: 'fechaCreacion', label: 'Fecha de registro' },
         { value: 'servicios', label: 'Servicios usados' },
         { value: 'rol', label: 'Rol' },
-        { value: 'estatus', label: 'Estatus'},
+        { value: 'estatus', label: 'Estatus' },
       ],
       content: tableData,
     },
   ];
-  
+
   const settings = {
-    fileName: "Historial Reportes",
+    fileName: 'Historial Reportes',
     extraLength: 3,
-    writeMode: "writeFile",
+    writeMode: 'writeFile',
     writeOptions: {},
     RTL: false,
-  }
-  Xlsx(data, settings)
+  };
+  Xlsx(data, settings);
 }
-
-
 
 const doc = new JsPDF('l', 'pt');
 
 function handleDownloadPDF(tableData, headerBase) {
-
   let data = [];
 
-  data = tableData.map(item => ([item.id, item.numEmpleado, item.nombre, item.sede, item.departamento, item.area, item.puesto,
-    item.correo, item.fechaCreacion, item.servicios, item.rol, item.estatus
-  ]));
+  data = tableData.map((item) => [
+    item.id,
+    item.numEmpleado,
+    item.nombre,
+    item.sede,
+    item.departamento,
+    item.area,
+    item.puesto,
+    item.correo,
+    item.fechaCreacion,
+    item.servicios,
+    item.rol,
+    item.estatus,
+  ]);
 
   autoTable(doc, {
     head: [headerBase],
     body: data,
-  })
-  doc.save('Usuarios Beneficios.pdf')
+  });
+  doc.save('Usuarios Beneficios.pdf');
 }
 
 // ----------------------------------------------------------------------
 
 export default function UsuariosView() {
-
-  const headerBase = ["ID", "Número de empleado", "Nombre", "Sede", "Departamenti", "Área", "Puesto", "Correo", "Fecha de registro", 
-    "Servicios", "Rol", "Estatus"];
+  const headerBase = [
+    'ID',
+    'Número de empleado',
+    'Nombre',
+    'Sede',
+    'Departamenti',
+    'Área',
+    'Puesto',
+    'Correo',
+    'Fecha de registro',
+    'Servicios',
+    'Rol',
+    'Estatus',
+  ];
 
   const table = useTable();
 
   const settings = useSettingsContext();
 
-  const router = useRouter();
+  /* const router = useRouter(); */
 
   const confirm = useBoolean();
 
   const { user } = useAuthContext();
 
-  const rol = user?.idRol
+  const rol = user?.idRol;
 
-  const [userDt] = useState({ // setUserDt
+  const [userDt] = useState({
+    // setUserDt
     idRol: user?.idRol,
     idPuesto: user?.idPuesto,
   });
 
-  const { usuariosData } = usePostGeneral(userDt, endpoints.gestor.getUsuarios, "usuariosData");
+  const { usuariosData, getData: getUsuarios } = usePostGeneral(
+    userDt,
+    endpoints.gestor.getUsuarios,
+    'usuariosData'
+  );
 
   const [tableData, setTableData] = useState([]);
 
@@ -153,7 +177,7 @@ export default function UsuariosView() {
 
   const [especialistas] = useState([]); // setEspecialistas
 
-  const _rp = especialistas.flatMap((es) => (es.nombre));
+  const _rp = especialistas.flatMap((es) => es.nombre);
 
   const dataFiltered = applyFilter({
     inputData: tableData,
@@ -204,12 +228,14 @@ export default function UsuariosView() {
     });
   }, [dataFiltered.length, dataInPage.length, table, tableData]);
 
+  /*
   const handleEditRow = useCallback(
     (id) => {
       router.push(paths.dashboard.user.edit(id));
     },
     [router]
   );
+  */
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
@@ -219,37 +245,28 @@ export default function UsuariosView() {
     setTableData(usuariosData);
   }, [usuariosData]);
 
-  const handlePdf = async e => {
+  const handlePdf = async (e) => {
     e.preventDefault();
-    handleDownloadPDF(
-      tableData,
-      headerBase
-    );
-  }
+    handleDownloadPDF(tableData, headerBase);
+  };
 
-  const handleExcel = async e => {
+  const handleExcel = async (e) => {
     e.preventDefault();
-    handleDownloadExcel(
-      tableData
-    );
-  }
+    handleDownloadExcel(tableData);
+  };
 
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
           heading="Usuarios"
-          links={[
-            { name: 'Gestor' },
-            { name: 'Usuarios' },
-          ]}
+          links={[{ name: 'Gestor' }, { name: 'Usuarios' }]}
           sx={{
             mb: { xs: 3, md: 5 },
           }}
         />
 
         <Card>
-
           <ToolbarUsuarios
             filters={filters}
             onFilters={handleFilters}
@@ -283,27 +300,19 @@ export default function UsuariosView() {
             }}
           >
             <Tooltip title="Exportar a XLS" placement="top" arrow>
-              <MenuItem
-                sx={{ width: 50, p: 1 }}
-                onClick={handleExcel}
-              >
+              <MenuItem sx={{ width: 50, p: 1 }} onClick={handleExcel}>
                 <Iconify icon="teenyicons:xls-outline" />
               </MenuItem>
             </Tooltip>
 
             <Tooltip title="Exportar a PDF" placement="top" arrow>
-              <MenuItem
-                sx={{ width: 50, p: 1 }}
-                onClick={handlePdf}
-              >
+              <MenuItem sx={{ width: 50, p: 1 }} onClick={handlePdf}>
                 <Iconify icon="teenyicons:pdf-outline" />
               </MenuItem>
             </Tooltip>
-
           </Stack>
 
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
-
             <Scrollbar>
               <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
                 <TableHeadCustom
@@ -325,11 +334,11 @@ export default function UsuariosView() {
                       <TableRowUsuarios
                         key={index}
                         row={row}
-                        rol={rol}
+                        idRol={rol}
                         selected={table.selected.includes(row.id)}
                         onSelectRow={() => table.onSelectRow(row.id)}
                         onDeleteRow={() => handleDeleteRow(row.id)}
-                        onEditRow={() => handleEditRow(row.id)}
+                        onEditRow={() => getUsuarios()}
                       />
                     ))}
 
@@ -350,7 +359,7 @@ export default function UsuariosView() {
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
             onRowsPerPageChange={table.onChangeRowsPerPage}
-          //
+            //
           />
         </Card>
       </Container>
@@ -401,14 +410,17 @@ function applyFilter({ inputData, comparator, filters }) {
       (i) =>
         (i.nombre && i.nombre.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
         (i.correo && i.correo.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
-        (i.numEmpleado && i.numEmpleado.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
+        (i.numEmpleado &&
+          i.numEmpleado.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
         (i.rol && i.rol.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
         (i.id && i.id.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
         (i.sede && i.sede.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
-        (i.departamento && i.departamento.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
+        (i.departamento &&
+          i.departamento.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
         (i.area && i.area.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
         (i.puesto && i.puesto.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
-        (i.fechaCreacion && i.fechaCreacion.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
+        (i.fechaCreacion &&
+          i.fechaCreacion.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1) ||
         (i.servicios && i.servicios.toString().toLowerCase().indexOf(name.toLowerCase()) !== -1)
     );
   }

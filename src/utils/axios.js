@@ -180,6 +180,7 @@ export const endpoints = {
     insertGoogleId: 'CalendarioController/insertGoogleId',
     updateGoogleEvent: 'CalendarioController/updateGoogleEvent',
     deleteGoogleEvent: 'CalendarioController/deleteGoogleEvent',
+    AtencionesPresenciales: 'CalendarioController/getAtencionesPresenciales',
   },
   calendarioColaborador: {
     isPrimeraCita: 'CalendarioController/isPrimeraCita',
@@ -198,6 +199,7 @@ export const endpoints = {
     getLastAppointment: 'CalendarioController/getLastAppointment',
     updateAppointment: 'CalendarioController/updateAppointmentData',
     updateStatusAppointment: 'CalendarioController/updateStatusAppointmentData',
+    doEventCancelaCitas: 'CalendarioController/eventCancelaCitasSinPago',
     updateDetail: 'CalendarioController/updateDetallePaciente',
     getPendientes: 'CalendarioController/getPendientes',
     cancelAppointment: 'CalendarioController/cancelAppointmentUser',
@@ -221,7 +223,6 @@ export const endpoints = {
     getEstatusPaciente: '/GeneralController/getEstatusPaciente',
     updateEstatusPaciente: '/GeneralController/updateEstatusPaciente',
     getCierrePacientes: '/ReportesController/getCierrePacientes',
-    getCierreIngresos: '/ReportesController/getCierreIngresos',
     getSelectEspe: '/ReportesController/getSelectEspe',
     getEspeUser: '/ReportesController/getEspeUser',
     demandaDepartamentos: '/ReportesController/demandaDepartamentos',
@@ -311,6 +312,8 @@ export const endpoints = {
     updateEstatusPuestos: '/GestorController/updateEstatusPuestos',
     updateEstatusAreas: '/GestorController/updateEstatusAreas',
     updateEstatusDepartamentos: '/GestorController/updateEstatusDepartamentos',
+    permisos: '/GestorController/getPermisosOptions',
+    save_permisos: '/GestorController/savePermisos',
   },
   avisosPrivacidad: {
     getEspecialidadToSelect: '/AvisosPrivacidadController/getEspecialidades',
@@ -331,6 +334,10 @@ export const endpoints = {
     updateManuales: '/AyudaController/updateManuales',
     updateEstatusFaq: '/AyudaController/updateEstatusFaq',
     updateEstatusManual: '/AyudaController/updateEstatusManual',
+  },
+  notificacion: {
+    getNotificacion: '/NotificacionController/getNotificacion',
+    deleteNotificacion: '/NotificacionController/deleteNotificacion',
   },
   sedes: {
     list: '/sedes/list',

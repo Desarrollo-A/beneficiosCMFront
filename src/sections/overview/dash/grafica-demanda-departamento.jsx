@@ -41,42 +41,30 @@ const StyledChart = styled(Chart)(({ theme }) => ({
 export default function AnalyticsConversionRates({ title, subheader, beneficios, ...other }) {
   const theme = useTheme();
 
-  const { depaData } = useGetGeneral(endpoints.dashboard.getDepartamentos, "depaData");
+  const { depaData } = useGetGeneral(endpoints.dashboard.getDepartamentos, 'depaData');
 
   const [tit, setTit] = useState('departamentos');
 
-  const handleChangeArea = useCallback(
-    (event) => {
-      setAreas(event.target.value);
-    },
-    []
-  );
+  const handleChangeArea = useCallback((event) => {
+    setAreas(event.target.value);
+  }, []);
 
-  const handleChangeDepa = useCallback(
-    (event) => {
-      setDepa(event.target.value);
-      setAr(0);
-      setPuestos(0);
-      setTit('departamentos');
-    },
-    []
-  );
+  const handleChangeDepa = useCallback((event) => {
+    setDepa(event.target.value);
+    setAr(0);
+    setPuestos(0);
+    setTit('departamentos');
+  }, []);
 
-  const handleChangeAr = useCallback(
-    (event) => {
-      setAr(event.target.value);
-      setTit('áreas');
-    },
-    []
-  );
+  const handleChangeAr = useCallback((event) => {
+    setAr(event.target.value);
+    setTit('áreas');
+  }, []);
 
-  const handleChangePuestos = useCallback(
-    (event) => {
-      setPuestos(event.target.value);
-      setTit('puestos');
-    },
-    []
-  );
+  const handleChangePuestos = useCallback((event) => {
+    setPuestos(event.target.value);
+    setTit('puestos');
+  }, []);
 
   const [areas, setAreas] = useState(585);
 
@@ -97,25 +85,69 @@ export default function AnalyticsConversionRates({ title, subheader, beneficios,
     });
   }, [areas, depa, ar, puestos]);
 
-  const { areaData } = usePostGeneral(depa, endpoints.dashboard.getAreas, "areaData");
+  const { areaData } = usePostGeneral(depa, endpoints.dashboard.getAreas, 'areaData');
 
-  const { puestosData } = usePostGeneral(ar, endpoints.dashboard.getPuestos, "puestosData");
+  const { puestosData } = usePostGeneral(ar, endpoints.dashboard.getPuestos, 'puestosData');
 
-  const { demandaData } = usePostGeneral(demandaValues, endpoints.dashboard.getDemandaBeneficio, "demandaData");
+  const { demandaData } = usePostGeneral(
+    demandaValues,
+    endpoints.dashboard.getDemandaBeneficio,
+    'demandaData'
+  );
 
   const chartSeries = demandaData.map((i) => i.value);
 
   const colors = [
-    "#FF6633", "#FFB399", "#FF33FF", "#FFFF99", "#00B3E6",
-    "#E6B333", "#3366E6", "#999966", "#99FF99", "#B34D4D",
-    "#80B300", "#809900", "#E6B3B3", "#6680B3", "#66991A",
-    "#FF99E6", "#CCFF1A", "#FF1A66", "#E6331A", "#33FFCC",
-    "#66994D", "#B366CC", "#4D8000", "#B33300", "#CC80CC",
-    "#66664D", "#991AFF", "#E666FF", "#4DB3FF", "#1AB399",
-    "#E666B3", "#33991A", "#CC9999", "#B3B31A", "#00E680",
-    "#4D8066", "#809980", "#E6FF80", "#1AFF33", "#999933",
-    "#FF3380", "#CCCC00", "#66E64D", "#4D80CC", "#9900B3",
-    "#E64D66", "#4DB380", "#FF4D4D", "#99E6E6", "#6666FF"
+    '#FF6633',
+    '#FFB399',
+    '#FF33FF',
+    '#FFFF99',
+    '#00B3E6',
+    '#E6B333',
+    '#3366E6',
+    '#999966',
+    '#99FF99',
+    '#B34D4D',
+    '#80B300',
+    '#809900',
+    '#E6B3B3',
+    '#6680B3',
+    '#66991A',
+    '#FF99E6',
+    '#CCFF1A',
+    '#FF1A66',
+    '#E6331A',
+    '#33FFCC',
+    '#66994D',
+    '#B366CC',
+    '#4D8000',
+    '#B33300',
+    '#CC80CC',
+    '#66664D',
+    '#991AFF',
+    '#E666FF',
+    '#4DB3FF',
+    '#1AB399',
+    '#E666B3',
+    '#33991A',
+    '#CC9999',
+    '#B3B31A',
+    '#00E680',
+    '#4D8066',
+    '#809980',
+    '#E6FF80',
+    '#1AFF33',
+    '#999933',
+    '#FF3380',
+    '#CCCC00',
+    '#66E64D',
+    '#4D80CC',
+    '#9900B3',
+    '#E64D66',
+    '#4DB380',
+    '#FF4D4D',
+    '#99E6E6',
+    '#6666FF',
   ];
 
   const chartOptions = useChart({
@@ -141,11 +173,11 @@ export default function AnalyticsConversionRates({ title, subheader, beneficios,
       categories: demandaData.map((i) => i.label),
     },
     legend: {
-      show: false
+      show: false,
     },
     title: {
       text: `Demanda por ${tit}`,
-      offsetX: 30
+      offsetX: 30,
     },
   });
 
@@ -161,7 +193,7 @@ export default function AnalyticsConversionRates({ title, subheader, beneficios,
       colors: [theme.palette.background.paper],
     },
     legend: {
-      show: false
+      show: false,
     },
     dataLabels: {
       enabled: true,
@@ -192,20 +224,26 @@ export default function AnalyticsConversionRates({ title, subheader, beneficios,
   return (
     <>
       {depaData.length > 0 ? (
-
         <Card {...other}>
-
           <CardHeader title={title} subheader={subheader} />
 
-          <Grid container spacing={2} sx={{
-            p: 3, backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f7f7f7',
-            borderRadius: '20px', margin: '20px'
-          }}>
+          <Grid
+            container
+            spacing={2}
+            sx={{
+              p: 3,
+              backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f7f7f7',
+              borderRadius: '20px',
+              margin: '20px',
+            }}
+          >
             <Grid md={6} xs={12}>
-              <FormControl sx={{
-                width: "100%",
-                pr: { xs: 1, md: 1 },
-              }}>
+              <FormControl
+                sx={{
+                  width: '100%',
+                  pr: { xs: 1, md: 1 },
+                }}
+              >
                 <InputLabel id="demo-simple-select-label">Beneficio</InputLabel>
                 <Select
                   labelId="demo-simple-select-label"
@@ -221,7 +259,6 @@ export default function AnalyticsConversionRates({ title, subheader, beneficios,
                       </MenuItem>
                     ))
                   ) : (
-
                     <Grid style={{ paddingTop: '2%' }}>
                       <LinearProgress />
                       <Box mb={3} />
@@ -231,10 +268,12 @@ export default function AnalyticsConversionRates({ title, subheader, beneficios,
               </FormControl>
             </Grid>
             <Grid md={6} xs={12}>
-              <FormControl sx={{
-                width: "100%",
-                pr: { xs: 1, md: 1 },
-              }}>
+              <FormControl
+                sx={{
+                  width: '100%',
+                  pr: { xs: 1, md: 1 },
+                }}
+              >
                 <InputLabel id="demo-simple-select-label">Departamento</InputLabel>
                 <Select
                   labelId="demo-simple-select-label"
@@ -243,9 +282,7 @@ export default function AnalyticsConversionRates({ title, subheader, beneficios,
                   label="Departamneto"
                   onChange={(e) => handleChangeDepa(e)}
                 >
-                  <MenuItem value={0}>
-                    TOP 10
-                  </MenuItem>
+                  <MenuItem value={0}>TOP 10</MenuItem>
                   {!isEmpty(beneficios) ? (
                     depaData.map((i, index) => (
                       <MenuItem key={index} value={i.id}>
@@ -253,7 +290,6 @@ export default function AnalyticsConversionRates({ title, subheader, beneficios,
                       </MenuItem>
                     ))
                   ) : (
-
                     <Grid style={{ paddingTop: '2%' }}>
                       <LinearProgress />
                       <Box mb={3} />
@@ -264,10 +300,12 @@ export default function AnalyticsConversionRates({ title, subheader, beneficios,
             </Grid>
 
             <Grid md={6} xs={12}>
-              <FormControl sx={{
-                width: "100%",
-                pr: { xs: 1, md: 1 },
-              }}>
+              <FormControl
+                sx={{
+                  width: '100%',
+                  pr: { xs: 1, md: 1 },
+                }}
+              >
                 <InputLabel id="demo-simple-select-label">Área</InputLabel>
                 <Select
                   labelId="demo-simple-select-label"
@@ -293,10 +331,12 @@ export default function AnalyticsConversionRates({ title, subheader, beneficios,
             </Grid>
 
             <Grid md={6} xs={12}>
-              <FormControl sx={{
-                width: "100%",
-                pr: { xs: 1, md: 1 },
-              }}>
+              <FormControl
+                sx={{
+                  width: '100%',
+                  pr: { xs: 1, md: 1 },
+                }}
+              >
                 <InputLabel id="demo-simple-select-label">Puestos</InputLabel>
                 <Select
                   labelId="demo-simple-select-label"
@@ -325,7 +365,7 @@ export default function AnalyticsConversionRates({ title, subheader, beneficios,
           <Grid container spacing={2}>
             {!isEmpty(demandaData) ? (
               <>
-                <Grid item xs={12} md={6} lg={8}>
+                <Grid xs={12} md={6} lg={8}>
                   <Chart
                     dir="ltr"
                     type="bar"
@@ -335,7 +375,7 @@ export default function AnalyticsConversionRates({ title, subheader, beneficios,
                     height={300}
                   />
                 </Grid>
-                <Grid item xs={12} md={6} lg={4}>
+                <Grid xs={12} md={6} lg={4}>
                   <StyledChart
                     dir="ltr"
                     type="pie"
@@ -356,16 +396,18 @@ export default function AnalyticsConversionRates({ title, subheader, beneficios,
               />
             )}
           </Grid>
-
-
         </Card>
-
       ) : (
         <Card {...other}>
-          <Grid container spacing={1} sx={{ backgroundColor: "#ECECEC", animation: 'pulse 1.5s infinite', p: 5 }} justifyContent="center" alignItems="center" />
+          <Grid
+            container
+            spacing={1}
+            sx={{ backgroundColor: '#ECECEC', animation: 'pulse 1.5s infinite', p: 5 }}
+            justifyContent="center"
+            alignItems="center"
+          />
         </Card>
       )}
-
     </>
   );
 }

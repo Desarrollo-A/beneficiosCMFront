@@ -225,7 +225,6 @@ export default function GraficaEncuestas({
       <Card {...other}>
         {tipoEncData.length > 0 ? (
           <>
-
             <CardHeader title={title} />
             <Grid
               container
@@ -400,7 +399,9 @@ export default function GraficaEncuestas({
 
                   <Iconify
                     width={16}
-                    icon={popover.open ? 'eva:arrow-ios-upward-fill' : 'eva:arrow-ios-downward-fill'}
+                    icon={
+                      popover.open ? 'eva:arrow-ios-upward-fill' : 'eva:arrow-ios-downward-fill'
+                    }
                     sx={{ ml: 0.5 }}
                   />
                 </ButtonBase>
@@ -434,9 +435,14 @@ export default function GraficaEncuestas({
               />
             )}
           </>
-
         ) : (
-          <Grid container spacing={1} sx={{ backgroundColor: "#ECECEC", animation: 'pulse 1.5s infinite', p: 5 }} justifyContent="center" alignItems="center" />
+          <Grid
+            container
+            spacing={1}
+            sx={{ backgroundColor: '#ECECEC', animation: 'pulse 1.5s infinite', p: 5 }}
+            justifyContent="center"
+            alignItems="center"
+          />
         )}
       </Card>
 

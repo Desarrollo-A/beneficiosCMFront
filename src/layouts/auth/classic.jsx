@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Unstable_Grid2';
 
-import { useResponsive } from 'src/hooks/use-responsive';
+// import { useResponsive } from 'src/hooks/use-responsive';
 
 export default function AuthClassicLayout({ children, image, title }) {
 
-  const mdUp = useResponsive('up', 'md');
+  // const mdUp = useResponsive('up', 'md');
 
   const renderContent = (
     <Stack
@@ -42,7 +42,7 @@ export default function AuthClassicLayout({ children, image, title }) {
       }}
     >
 
-      {mdUp}
+      {/* {mdUp} */}
       <Grid container 
         sx={{ width : '100%',
           display: 'flex',

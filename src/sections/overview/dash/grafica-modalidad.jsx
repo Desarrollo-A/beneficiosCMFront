@@ -54,8 +54,8 @@ export default function GraficaModalidad({
   rol,
   puesto,
   id,
-  ...other }) {
-
+  ...other
+}) {
   const theme = useTheme();
 
   const [areas, setAreas] = useState(rol === 3 ? puesto : 585);
@@ -77,7 +77,7 @@ export default function GraficaModalidad({
     espe: _es,
     fhI: fhI.setDate(fhI.getDate() + 1),
     fhF: fechaF,
-    usuario: _usr
+    usuario: _usr,
   });
 
   useEffect(() => {
@@ -86,11 +86,15 @@ export default function GraficaModalidad({
       espe: _es,
       fhI: fechaI,
       fhF: fechaF,
-      usuario: _usr
+      usuario: _usr,
     });
   }, [areas, _es, fechaI, fechaF, _usr]);
 
-  const { modalidadData } = usePostGeneral(val, endpoints.dashboard.getCountModalidades, "modalidadData");
+  const { modalidadData } = usePostGeneral(
+    val,
+    endpoints.dashboard.getCountModalidades,
+    'modalidadData'
+  );
 
   const [data, setData] = useState([]);
 
@@ -106,7 +110,7 @@ export default function GraficaModalidad({
 
   useEffect(() => {
     if (data.length) {
-      set_pre(data.flatMap((est) => (est.presencial)));
+      set_pre(data.flatMap((est) => est.presencial));
     }
   }, [data]);
 
@@ -114,7 +118,7 @@ export default function GraficaModalidad({
 
   useEffect(() => {
     if (data.length) {
-      set_vir(data.flatMap((est) => (est.virtual)));
+      set_vir(data.flatMap((est) => est.virtual));
     }
   }, [data]);
 
@@ -132,53 +136,31 @@ export default function GraficaModalidad({
     }
   }, [pre, vir, data]);
 
-  const handleChangeArea = useCallback(
-    (event) => {
-      setAreas(event.target.value);
-    },
-    []
-  );
+  const handleChangeArea = useCallback((event) => {
+    setAreas(event.target.value);
+  }, []);
 
-  const handleChangeEsp = useCallback(
-    (event) => {
-      set_es(event.target.value);
-    },
-    []
-  );
+  const handleChangeEsp = useCallback((event) => {
+    set_es(event.target.value);
+  }, []);
 
-  const handleFilterStartDate = useCallback(
-    (newValue) => {
-      const date = new Date(newValue);
-      const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-      setFechaI(formattedDate);
-    },
-    []
-  );
+  const handleFilterStartDate = useCallback((newValue) => {
+    const date = new Date(newValue);
+    const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+    setFechaI(formattedDate);
+  }, []);
 
-  const handleFilterEndDate = useCallback(
-    (newValue) => {
-      const date = new Date(newValue);
-      const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-      setFechaF(formattedDate);
-    },
-    []
-  );
+  const handleFilterEndDate = useCallback((newValue) => {
+    const date = new Date(newValue);
+    const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+    setFechaF(formattedDate);
+  }, []);
 
-  const handleChangeUsr = useCallback(
-    (event) => {
-      set_usr(event.target.value);
-    },
-    []
-  );
+  const handleChangeUsr = useCallback((event) => {
+    set_usr(event.target.value);
+  }, []);
 
-  const {
-    colors = [
-      ['#6620D1'],
-      ['#9EE351'],
-    ],
-    series,
-    options,
-  } = chart;
+  const { colors = [['#6620D1'], ['#9EE351']], series, options } = chart;
 
   const chartOptions = useChart({
     colors: colors.map((colr) => colr[0]),
@@ -209,20 +191,28 @@ export default function GraficaModalidad({
   });
 
   return (
-
     <Card {...other}>
-
       {modalidadData.length > 0 ? (
         <>
-        <CardHeader title={title} subheader={subheader} sx={{ mb: 0 }} />
-          <Grid container spacing={2} className="fade-in" sx={{ p: 3, backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f7f7f7',
-        borderRadius: '20px', margin: '20px' }}>
-
-          <Grid md={12} xs={12}>
-              <FormControl sx={{
-                width: "100%",
-                pr: { xs: 1, md: 1 },
-              }}>
+          <CardHeader title={title} subheader={subheader} sx={{ mb: 0 }} />
+          <Grid
+            container
+            spacing={2}
+            className="fade-in"
+            sx={{
+              p: 3,
+              backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f7f7f7',
+              borderRadius: '20px',
+              margin: '20px',
+            }}
+          >
+            <Grid md={12} xs={12}>
+              <FormControl
+                sx={{
+                  width: '100%',
+                  pr: { xs: 1, md: 1 },
+                }}
+              >
                 <InputLabel id="demo-simple-select-label">Tipo de usuario</InputLabel>
                 <Select
                   labelId="demo-simple-select-label"
@@ -231,15 +221,9 @@ export default function GraficaModalidad({
                   label="Tipo de usuario"
                   onChange={(e) => handleChangeUsr(e)}
                 >
-                  <MenuItem value={2}>
-                    Todos
-                  </MenuItem>
-                  <MenuItem value={0}>
-                    Colaborador
-                  </MenuItem>
-                  <MenuItem value={1}>
-                    Externo
-                  </MenuItem>
+                  <MenuItem value={2}>Todos</MenuItem>
+                  <MenuItem value={0}>Colaborador</MenuItem>
+                  <MenuItem value={1}>Externo</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -247,10 +231,12 @@ export default function GraficaModalidad({
             {rol !== 3 ? (
               <>
                 <Grid md={6} xs={12}>
-                  <FormControl sx={{
-                    width: "100%",
-                    pr: { xs: 1, md: 1 },
-                  }}>
+                  <FormControl
+                    sx={{
+                      width: '100%',
+                      pr: { xs: 1, md: 1 },
+                    }}
+                  >
                     <InputLabel id="demo-simple-select-label">Beneficio</InputLabel>
                     <Select
                       labelId="demo-simple-select-label"
@@ -269,10 +255,12 @@ export default function GraficaModalidad({
                 </Grid>
 
                 <Grid md={6} xs={12}>
-                  <FormControl sx={{
-                    width: "100%",
-                    pr: { xs: 1, md: 1 },
-                  }}>
+                  <FormControl
+                    sx={{
+                      width: '100%',
+                      pr: { xs: 1, md: 1 },
+                    }}
+                  >
                     <InputLabel id="demo-simple-select-label">Especialista</InputLabel>
                     <Select
                       labelId="demo-simple-select-label"
@@ -281,9 +269,7 @@ export default function GraficaModalidad({
                       label="Especialista"
                       onChange={(e) => handleChangeEsp(e)}
                     >
-                      <MenuItem value='0'>
-                        Todos
-                      </MenuItem>
+                      <MenuItem value="0">Todos</MenuItem>
                       {especialistas.map((i, index) => (
                         <MenuItem key={index} value={i.idUsuario}>
                           {i.nombre}
@@ -293,16 +279,15 @@ export default function GraficaModalidad({
                   </FormControl>
                 </Grid>
               </>
-
-            ) : (
-              null
-            )}
+            ) : null}
 
             <Grid md={6} xs={12}>
-              <FormControl sx={{
-                width: "100%",
-                pr: { xs: 1, md: 1 },
-              }}>
+              <FormControl
+                sx={{
+                  width: '100%',
+                  pr: { xs: 1, md: 1 },
+                }}
+              >
                 <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
                   <DatePicker
                     label="Fecha inicio"
@@ -320,10 +305,12 @@ export default function GraficaModalidad({
             </Grid>
 
             <Grid md={6} xs={12}>
-              <FormControl sx={{
-                width: "100%",
-                pr: { xs: 1, md: 1 },
-              }}>
+              <FormControl
+                sx={{
+                  width: '100%',
+                  pr: { xs: 1, md: 1 },
+                }}
+              >
                 <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
                   <DatePicker
                     label="Fecha fin"
@@ -345,11 +332,15 @@ export default function GraficaModalidad({
             width="100%"
             height={300}
           />
-
         </>
-
       ) : (
-        <Grid container spacing={1} sx={{ backgroundColor: "#ECECEC", animation: 'pulse 1.5s infinite', p: 5 }} justifyContent="center" alignItems="center"/>
+        <Grid
+          container
+          spacing={1}
+          sx={{ backgroundColor: '#ECECEC', animation: 'pulse 1.5s infinite', p: 5 }}
+          justifyContent="center"
+          alignItems="center"
+        />
       )}
     </Card>
   );

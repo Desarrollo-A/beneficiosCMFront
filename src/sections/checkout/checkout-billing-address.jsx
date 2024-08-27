@@ -22,7 +22,7 @@ export default function CheckoutBillingAddress() {
   return (
     <>
       <Grid container spacing={3}>
-        <Grid xs={12} md={8}>
+        <Grid item xs={12} md={8}>
           {_addressBooks.slice(0, 4).map((address) => (
             <AddressItem
               key={address.id}
@@ -73,7 +73,7 @@ export default function CheckoutBillingAddress() {
           </Stack>
         </Grid>
 
-        <Grid xs={12} md={4}>
+        <Grid item xs={12} md={4}>
           <CheckoutSummary
             total={checkout.total}
             subTotal={checkout.subTotal}

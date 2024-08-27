@@ -33,7 +33,7 @@ export default function OverviewBookingView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <Grid container spacing={SPACING} disableEqualOverflow>
-        <Grid xs={12} md={4}>
+        <Grid item xs={12} md={4}>
           <BookingWidgetSummary
             title="Total Booking"
             total={714000}
@@ -41,17 +41,17 @@ export default function OverviewBookingView() {
           />
         </Grid>
 
-        <Grid xs={12} md={4}>
+        <Grid item xs={12} md={4}>
           <BookingWidgetSummary title="Sold" total={311000} icon={<CheckInIllustration />} />
         </Grid>
 
-        <Grid xs={12} md={4}>
+        <Grid item xs={12} md={4}>
           <BookingWidgetSummary title="Canceled" total={124000} icon={<CheckoutIllustration />} />
         </Grid>
 
         <Grid container xs={12}>
           <Grid container xs={12} md={8}>
-            <Grid xs={12} md={6}>
+            <Grid item xs={12} md={6}>
               <BookingTotalIncomes
                 title="Total Incomes"
                 total={18765}
@@ -71,11 +71,11 @@ export default function OverviewBookingView() {
               />
             </Grid>
 
-            <Grid xs={12} md={6}>
+            <Grid item xs={12} md={6}>
               <BookingBooked title="Booked" data={_bookingsOverview} />
             </Grid>
 
-            <Grid xs={12}>
+            <Grid item xs={12}>
               <BookingCheckInWidgets
                 chart={{
                   series: [
@@ -86,7 +86,7 @@ export default function OverviewBookingView() {
               />
             </Grid>
 
-            <Grid xs={12}>
+            <Grid item xs={12}>
               <BookingStatistics
                 title="Statistics"
                 subheader="(+43% Sold | +12% Canceled) than last year"
@@ -139,7 +139,7 @@ export default function OverviewBookingView() {
             </Grid>
           </Grid>
 
-          <Grid xs={12} md={4}>
+          <Grid item xs={12} md={4}>
             <BookingAvailable
               title="Tours Available"
               chart={{
@@ -159,11 +159,11 @@ export default function OverviewBookingView() {
           </Grid>
         </Grid>
 
-        <Grid xs={12}>
+        <Grid item xs={12}>
           <BookingNewest title="Newest Booking" subheader="12 Booking" list={_bookingNew} />
         </Grid>
 
-        <Grid xs={12}>
+        <Grid item xs={12}>
           <BookingDetails
             title="Booking Details"
             tableData={_bookings}

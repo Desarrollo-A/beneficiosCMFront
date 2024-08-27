@@ -126,7 +126,7 @@ export default function JobNewEditForm({ currentJob }) {
   const renderDetails = (
     <>
       {mdUp && (
-        <Grid md={4}>
+        <Grid item md={4}>
           <Typography variant="h6" sx={{ mb: 0.5 }}>
             Details
           </Typography>
@@ -136,7 +136,7 @@ export default function JobNewEditForm({ currentJob }) {
         </Grid>
       )}
 
-      <Grid xs={12} md={8}>
+      <Grid item xs={12} md={8}>
         <Card>
           {!mdUp && <CardHeader title="Details" />}
 
@@ -159,7 +159,7 @@ export default function JobNewEditForm({ currentJob }) {
   const renderProperties = (
     <>
       {mdUp && (
-        <Grid md={4}>
+        <Grid item md={4}>
           <Typography variant="h6" sx={{ mb: 0.5 }}>
             Properties
           </Typography>
@@ -169,7 +169,7 @@ export default function JobNewEditForm({ currentJob }) {
         </Grid>
       )}
 
-      <Grid xs={12} md={8}>
+      <Grid item xs={12} md={8}>
         <Card>
           {!mdUp && <CardHeader title="Properties" />}
 
@@ -404,8 +404,8 @@ export default function JobNewEditForm({ currentJob }) {
 
   const renderActions = (
     <>
-      {mdUp && <Grid md={4} />}
-      <Grid xs={12} md={8} sx={{ display: 'flex', alignItems: 'center' }}>
+      {mdUp && <Grid item md={4} />}
+      <Grid item xs={12} md={8} sx={{ display: 'flex', alignItems: 'center' }}>
         <FormControlLabel
           control={<Switch defaultChecked />}
           label="Publish"

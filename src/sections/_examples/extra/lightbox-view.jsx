@@ -92,7 +92,7 @@ export default function LightboxView() {
       <Container sx={{ my: 10 }}>
         <Card sx={{ p: 3 }}>
           <Grid container spacing={3}>
-            <Grid xs={12} md={9}>
+            <Grid item xs={12} md={9}>
               <Box
                 gap={1}
                 display="grid"
@@ -122,7 +122,7 @@ export default function LightboxView() {
               </Box>
             </Grid>
 
-            <Grid xs={12} md={3}>
+            <Grid item xs={12} md={3}>
               <Paper sx={{ p: 3, bgcolor: 'background.neutral', borderRadius: 2 }}>
                 <FormControl component="fieldset" variant="standard">
                   <Stack spacing={2}>

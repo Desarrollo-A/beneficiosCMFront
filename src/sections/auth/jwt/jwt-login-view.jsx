@@ -31,6 +31,8 @@ import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
 import ModalPoliticas from './modal-politicas';
 
+//---------------------------------------------------------
+
 export default function JwtLoginView() {
   const { login } = useAuthContext();
   const theme = useTheme();
@@ -42,6 +44,8 @@ export default function JwtLoginView() {
   // const [errorMsg] = useState('');
   const [numEmpleado, setnumEmpleado] = useState('');
   const [passwd, setPasswd] = useState('');
+  const [ isSubmitting, setSubmitting ] = useState(false)
+
   const searchParams = useSearchParams();
 
   const returnTo = searchParams.get('returnTo');
@@ -63,12 +67,9 @@ export default function JwtLoginView() {
     defaultValues,
   });
 
-  const {
-    formState: { isSubmitting },
-  } = methods;
-
-
   const onSubmit = (e) => {
+    setSubmitting(true)
+
     e.preventDefault();
     login?.(numEmpleado, passwd)
       .then(response => {
@@ -81,6 +82,8 @@ export default function JwtLoginView() {
         else if (response !== undefined && response.result === 0) {
           enqueueSnackbar(response.message, { variant: "error" });
         }
+
+        setSubmitting(false)
       })
   }
 

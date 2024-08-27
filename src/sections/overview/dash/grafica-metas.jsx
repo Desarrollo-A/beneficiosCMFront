@@ -49,14 +49,23 @@ export default function GraficaMetas({ id }) {
 
   const getMonthName = (month) => {
     const monthNames = [
-      "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-      "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+      'Enero',
+      'Febrero',
+      'Marzo',
+      'Abril',
+      'Mayo',
+      'Junio',
+      'Julio',
+      'Agosto',
+      'Septiembre',
+      'Octubre',
+      'Noviembre',
+      'Diciembre',
     ];
     return monthNames[month - 1];
   };
 
   const chartOptions = useChart({
-
     legend: {
       show: false,
     },
@@ -79,7 +88,7 @@ export default function GraficaMetas({ id }) {
           name: { offsetY: -16 },
           value: { offsetY: 10 },
           total: {
-            label: "Citas",
+            label: 'Citas',
             text: `${total}`,
             formatter: () => fNumber(total),
           },
@@ -88,97 +97,110 @@ export default function GraficaMetas({ id }) {
     },
   });
 
-  return (
-    metaData!== undefined ?
+  return metaData !== undefined ? (
+    <Card>
+      <CardHeader title="Meta de citas" sx={{ mb: 1.8 }} />
 
-      <Card>
-        <CardHeader title='Meta de citas' sx={{ mb: 1.8 }} />
-
-        <Grid container spacing={2} className="fade-in" sx={{ p: 4, backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f7f7f7',
-        borderRadius: '20px', margin: '20px' }}>
-
-          <Grid md={12} xs={12}>
-            <FormControl sx={{
-              width: "100%",
+      <Grid
+        container
+        spacing={2}
+        className="fade-in"
+        sx={{
+          p: 4,
+          backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f7f7f7',
+          borderRadius: '20px',
+          margin: '20px',
+        }}
+      >
+        <Grid md={12} xs={12}>
+          <FormControl
+            sx={{
+              width: '100%',
               pr: { xs: 1, md: 1 },
-            }}>
-              <InputLabel id="demo-simple-select-label">Mes</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={selectedMonth}
-                label="Mes"
-                onChange={handleChangeMes}
-              >
-                {months.map(month => (
-                  <MenuItem key={month} value={month}>
-                    {getMonthName(month)}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
+            }}
+          >
+            <InputLabel id="demo-simple-select-label">Mes</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={selectedMonth}
+              label="Mes"
+              onChange={handleChangeMes}
+            >
+              {months.map((month) => (
+                <MenuItem key={month} value={month}>
+                  {getMonthName(month)}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </Grid>
+      </Grid>
 
-        <Chart
-          dir="ltr"
-          type="radialBar"
-          series={[total]}
-          options={chartOptions}
-          width="100%"
-          height={310}
-        />
+      <Chart
+        dir="ltr"
+        type="radialBar"
+        series={[total]}
+        options={chartOptions}
+        width="100%"
+        height={310}
+      />
 
-        <Stack spacing={2} sx={{ p: 5 }}>
-          <Stack
-            spacing={1}
-            direction="row"
-            alignItems="center"
+      <Stack spacing={2} sx={{ p: 5 }}>
+        <Stack
+          spacing={1}
+          direction="row"
+          alignItems="center"
+          sx={{
+            typography: 'subtitle2',
+          }}
+        >
+          <Box
             sx={{
-              typography: 'subtitle2',
+              width: 16,
+              height: 16,
+              borderRadius: 0.75,
+              bgcolor: theme.palette.primary.main,
             }}
-          >
-            <Box
-              sx={{
-                width: 16,
-                height: 16,
-                borderRadius: 0.75,
-                bgcolor: theme.palette.primary.main,
-              }}
-            />
-            <Box sx={{ color: 'text.secondary', flexGrow: 1 }}>Meta</Box>
-            {meta} citas
-          </Stack>
-          <Stack
-            spacing={1}
-            direction="row"
-            alignItems="center"
-            sx={{
-              typography: 'subtitle2',
-            }}
-          >
-            <Box
-              sx={{
-                width: 16,
-                height: 16,
-                bgcolor: alpha(theme.palette.grey[500], 0.16),
-                borderRadius: 0.75,
-                // bgcolor: colors[1],
-              }}
-            />
-            <Box sx={{ color: 'text.secondary', flexGrow: 1 }}>Faltan</Box>
-            {meta - total} citas
-          </Stack>
+          />
+          <Box sx={{ color: 'text.secondary', flexGrow: 1 }}>Meta</Box>
+          {meta} citas
         </Stack>
-      </Card>
-
-      :
-      <Card sx={{ pr: 2, pl: 1 }}>
-        <Grid container spacing={1} sx={{ backgroundColor: "#ECECEC", animation: 'pulse 1.5s infinite', p: 5 }} justifyContent="center" alignItems="center"/>
-      </Card>
+        <Stack
+          spacing={1}
+          direction="row"
+          alignItems="center"
+          sx={{
+            typography: 'subtitle2',
+          }}
+        >
+          <Box
+            sx={{
+              width: 16,
+              height: 16,
+              bgcolor: alpha(theme.palette.grey[500], 0.16),
+              borderRadius: 0.75,
+              // bgcolor: colors[1],
+            }}
+          />
+          <Box sx={{ color: 'text.secondary', flexGrow: 1 }}>Faltan</Box>
+          {meta - total} citas
+        </Stack>
+      </Stack>
+    </Card>
+  ) : (
+    <Card sx={{ pr: 2, pl: 1 }}>
+      <Grid
+        container
+        spacing={1}
+        sx={{ backgroundColor: '#ECECEC', animation: 'pulse 1.5s infinite', p: 5 }}
+        justifyContent="center"
+        alignItems="center"
+      />
+    </Card>
   );
 }
 
 GraficaMetas.propTypes = {
-  id: PropTypes.any
+  id: PropTypes.any,
 };

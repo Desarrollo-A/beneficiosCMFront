@@ -1,5 +1,6 @@
 import { m } from 'framer-motion';
-/* import { useGoogleLogin } from '@react-oauth/google'; */
+// import { useGoogleLogin } from '@react-oauth/google';
+// import { useGoogleOneTapLogin } from '@react-oauth/google';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -52,7 +53,7 @@ export default function AccountPopover() {
       router.replace(import.meta.env.BASE_URL);
     } catch (error) {
       console.error(error);
-      enqueueSnackbar('Unable to logout!', { variant: 'error' });
+      enqueueSnackbar('Errror al cerrar sesión!', { variant: 'error' });
     }
   };
 
@@ -61,11 +62,14 @@ export default function AccountPopover() {
     router.push(path);
   };
 
-/*   const login = useGoogleLogin({
+  /*
+  const login = useGoogleLogin({
     onSuccess: (tokenResponse) => console.log(tokenResponse),
-    scope: 'https://www.googleapis.com/auth/calendar',
+    scope:
+      'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events',
     flow: 'auth-code',
-  }); */
+  });
+  */
 
   if (userData) {
     return (
@@ -91,14 +95,15 @@ export default function AccountPopover() {
             </Typography>
           </Box>
 
+          {/*  
           <Divider sx={{ borderStyle: 'dashed' }} />
 
-          {/* <Box sx={{ p: 1, mb: 1, mt: 0 }}>
+          <Box sx={{ p: 1, mb: 1, mt: 0 }}>
             <MenuItem onClick={() => login()}>Conectar cuenta de google</MenuItem>
-          </Box> */}
+          </Box>
 
           <Divider sx={{ borderStyle: 'dashed' }} />
-
+*/}
           <Stack sx={{ p: 1 }}>
             {OPTIONS.map((option) => (
               <MenuItem key={option.label} onClick={() => handleClickItem(option.linkTo)}>

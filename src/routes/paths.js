@@ -11,7 +11,7 @@ const MOCK_TITLE = _postTitles[2];
 const ROOTS = {
   AUTH: `${import.meta.env.BASE_URL}auth`,
   AUTH_DEMO: '/auth-demo',
-  DASHBOARD: `${import.meta.env.BASE_URL}dashboard`,
+  DASHBOARD: `${import.meta.env.BASE_URL}beneficios`,
 };
 
 // ----------------------------------------------------------------------
@@ -101,7 +101,8 @@ export const paths = {
     chat: `${ROOTS.DASHBOARD}/chat`,
     blank: `${ROOTS.DASHBOARD}/blank`,
     kanban: `${ROOTS.DASHBOARD}/kanban`,
-    calendar: `${ROOTS.DASHBOARD}/calendariobeneficiario`,
+    calendario: `${ROOTS.DASHBOARD}/calendario`,
+    // calendar: `${ROOTS.DASHBOARD}/calendariobeneficiario`,
     agenda: `${ROOTS.DASHBOARD}/agenda`,
     fileManager: `${ROOTS.DASHBOARD}/file-manager`,
     permission: `${ROOTS.DASHBOARD}/permission`,
@@ -114,7 +115,7 @@ export const paths = {
       banking: `${ROOTS.DASHBOARD}/banking`,
       booking: `${ROOTS.DASHBOARD}/booking`,
       file: `${ROOTS.DASHBOARD}/file`,
-      calendarioEspecialista: `${ROOTS.DASHBOARD}/calendarioespecialista`,
+      // calendarioEspecialista: `${ROOTS.DASHBOARD}/calendarioespecialista`,
       evaluacioncitas: `${ROOTS.DASHBOARD}/evaluacioncitas`,
     },
     reportes: {

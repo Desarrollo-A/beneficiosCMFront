@@ -116,7 +116,7 @@ export default function AboutTestimonials() {
           justifyContent={{ xs: 'center', md: 'space-between' }}
           sx={{ height: 1 }}
         >
-          <Grid xs={10} md={4}>
+          <Grid item xs={10} md={4}>
             {renderDescription}
           </Grid>
 

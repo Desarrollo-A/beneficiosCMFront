@@ -39,7 +39,8 @@ export default function GraficaEstatusCitas({
   rol,
   puesto,
   id,
-  ...other }) {
+  ...other
+}) {
   const theme = useTheme();
 
   const [fechaI, setFechaI] = useState(diaUnoMes);
@@ -61,14 +62,21 @@ export default function GraficaEstatusCitas({
     espe: _es,
     fhI: fhI.setDate(fhI.getDate() + 1),
     fhF: fechaF,
-    usuario: _usr
+    usuario: _usr,
   });
 
   const { especialistas } = useGetEspecialistasPorArea({ areas });
 
-  const { estatusCitasData } = useGetGeneral(endpoints.dashboard.getEstatusCitas, "estatusCitasData");
+  const { estatusCitasData } = useGetGeneral(
+    endpoints.dashboard.getEstatusCitas,
+    'estatusCitasData'
+  );
 
-  const { countEstCitasData } = usePostGeneral(val, endpoints.dashboard.getCountEstatusCitas, "countEstCitasData");
+  const { countEstCitasData } = usePostGeneral(
+    val,
+    endpoints.dashboard.getCountEstatusCitas,
+    'countEstCitasData'
+  );
 
   useEffect(() => {
     setVal({
@@ -76,62 +84,47 @@ export default function GraficaEstatusCitas({
       espe: _es,
       fhI: fechaI,
       fhF: fechaF,
-      usuario: _usr
+      usuario: _usr,
     });
   }, [areas, _es, fechaI, fechaF, _usr]);
 
-  const handleFilterStartDate = useCallback(
-    (newValue) => {
-      const date = new Date(newValue);
-      const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-      setFechaI(formattedDate);
-    },
-    []
-  );
+  const handleFilterStartDate = useCallback((newValue) => {
+    const date = new Date(newValue);
+    const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+    setFechaI(formattedDate);
+  }, []);
 
-  const handleFilterEndDate = useCallback(
-    (newValue) => {
-      const date = new Date(newValue);
-      const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-      setFechaF(formattedDate);
-    },
-    []
-  );
+  const handleFilterEndDate = useCallback((newValue) => {
+    const date = new Date(newValue);
+    const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+    setFechaF(formattedDate);
+  }, []);
 
-  const handleChangeArea = useCallback(
-    (event) => {
-      setAreas(event.target.value);
-    },
-    []
-  );
+  const handleChangeArea = useCallback((event) => {
+    setAreas(event.target.value);
+  }, []);
 
-  const handleChangeEsp = useCallback(
-    (event) => {
-      set_es(event.target.value);
-    },
-    []
-  );
+  const handleChangeEsp = useCallback((event) => {
+    set_es(event.target.value);
+  }, []);
 
-  const handleChangeUsr = useCallback(
-    (event) => {
-      set_usr(event.target.value);
-    },
-    []
-  );
+  const handleChangeUsr = useCallback((event) => {
+    set_usr(event.target.value);
+  }, []);
 
-  const _estNom = estatusCitasData.flatMap((est) => (est.nombre));
+  const _estNom = estatusCitasData.flatMap((est) => est.nombre);
 
-  const _estColor = estatusCitasData.flatMap((est) => (est.color));
+  const _estColor = estatusCitasData.flatMap((est) => est.color);
 
-  const _1 = countEstCitasData.flatMap((est) => (est.asistir));
-  const _2 = countEstCitasData.flatMap((est) => (est.cancelada));
-  const _3 = countEstCitasData.flatMap((est) => (est.penalizada));
-  const _4 = countEstCitasData.flatMap((est) => (est.asistencia));
-  const _5 = countEstCitasData.flatMap((est) => (est.justificada));
-  const _6 = countEstCitasData.flatMap((est) => (est.pendiente));
-  const _7 = countEstCitasData.flatMap((est) => (est.procesandoPago));
+  const _1 = countEstCitasData.flatMap((est) => est.asistir);
+  const _2 = countEstCitasData.flatMap((est) => est.cancelada);
+  const _3 = countEstCitasData.flatMap((est) => est.penalizada);
+  const _4 = countEstCitasData.flatMap((est) => est.asistencia);
+  const _5 = countEstCitasData.flatMap((est) => est.justificada);
+  const _6 = countEstCitasData.flatMap((est) => est.pendiente);
+  const _7 = countEstCitasData.flatMap((est) => est.procesandoPago);
 
-  const citas = countEstCitasData.flatMap((est) => (est.citas));
+  const citas = countEstCitasData.flatMap((est) => est.citas);
 
   const countEstCt = [_1, _2, _3, _4, _5, _6, _7];
 
@@ -142,7 +135,7 @@ export default function GraficaEstatusCitas({
     colors: _estColor,
     labels: _estNom,
     stroke: {
-      colors: ['#fff']
+      colors: ['#fff'],
     },
     fill: {
       opacity: 0.9,
@@ -178,20 +171,27 @@ export default function GraficaEstatusCitas({
 
   return (
     <Card {...other}>
-
       {countEstCitasData.length > 0 ? (
         <>
           <CardHeader title={title} subheader={subheader} />
-          <Grid container spacing={2} className="fade-in" sx={{
-            p: 3, backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f7f7f7',
-            borderRadius: '20px', margin: '20px'
-          }}>
-
+          <Grid
+            container
+            spacing={2}
+            className="fade-in"
+            sx={{
+              p: 3,
+              backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f7f7f7',
+              borderRadius: '20px',
+              margin: '20px',
+            }}
+          >
             <Grid md={12} xs={12}>
-              <FormControl sx={{
-                width: "100%",
-                pr: { xs: 1, md: 1 },
-              }}>
+              <FormControl
+                sx={{
+                  width: '100%',
+                  pr: { xs: 1, md: 1 },
+                }}
+              >
                 <InputLabel id="demo-simple-select-label">Tipo de usuario</InputLabel>
                 <Select
                   labelId="demo-simple-select-label"
@@ -200,15 +200,9 @@ export default function GraficaEstatusCitas({
                   label="Tipo de usuario"
                   onChange={(e) => handleChangeUsr(e)}
                 >
-                  <MenuItem value={2}>
-                    Todos
-                  </MenuItem>
-                  <MenuItem value={0}>
-                    Colaborador
-                  </MenuItem>
-                  <MenuItem value={1}>
-                    Externo
-                  </MenuItem>
+                  <MenuItem value={2}>Todos</MenuItem>
+                  <MenuItem value={0}>Colaborador</MenuItem>
+                  <MenuItem value={1}>Externo</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -216,10 +210,12 @@ export default function GraficaEstatusCitas({
             {rol !== 3 ? (
               <>
                 <Grid md={6} xs={12}>
-                  <FormControl sx={{
-                    width: "100%",
-                    pr: { xs: 1, md: 1 },
-                  }}>
+                  <FormControl
+                    sx={{
+                      width: '100%',
+                      pr: { xs: 1, md: 1 },
+                    }}
+                  >
                     <InputLabel id="demo-simple-select-label">Beneficio</InputLabel>
                     <Select
                       labelId="demo-simple-select-label"
@@ -238,10 +234,12 @@ export default function GraficaEstatusCitas({
                 </Grid>
 
                 <Grid md={6} xs={12}>
-                  <FormControl sx={{
-                    width: "100%",
-                    pr: { xs: 1, md: 1 },
-                  }}>
+                  <FormControl
+                    sx={{
+                      width: '100%',
+                      pr: { xs: 1, md: 1 },
+                    }}
+                  >
                     <InputLabel id="demo-simple-select-label">Especialista</InputLabel>
                     <Select
                       labelId="demo-simple-select-label"
@@ -250,9 +248,7 @@ export default function GraficaEstatusCitas({
                       label="Especialista"
                       onChange={(e) => handleChangeEsp(e)}
                     >
-                      <MenuItem value='0'>
-                        Todos
-                      </MenuItem>
+                      <MenuItem value="0">Todos</MenuItem>
                       {especialistas.map((i, index) => (
                         <MenuItem key={index} value={i.idUsuario}>
                           {i.nombre}
@@ -262,16 +258,15 @@ export default function GraficaEstatusCitas({
                   </FormControl>
                 </Grid>
               </>
-
-            ) : (
-              null
-            )}
+            ) : null}
 
             <Grid md={6} xs={12}>
-              <FormControl sx={{
-                width: "100%",
-                pr: { xs: 1, md: 1 },
-              }}>
+              <FormControl
+                sx={{
+                  width: '100%',
+                  pr: { xs: 1, md: 1 },
+                }}
+              >
                 <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
                   <DatePicker
                     label="Fecha inicio"
@@ -289,10 +284,12 @@ export default function GraficaEstatusCitas({
             </Grid>
 
             <Grid md={6} xs={12}>
-              <FormControl sx={{
-                width: "100%",
-                pr: { xs: 1, md: 1 },
-              }}>
+              <FormControl
+                sx={{
+                  width: '100%',
+                  pr: { xs: 1, md: 1 },
+                }}
+              >
                 <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
                   <DatePicker
                     label="Fecha fin"
@@ -351,11 +348,15 @@ export default function GraficaEstatusCitas({
               {citas}
             </Stack>
           </Box>
-
         </>
-
       ) : (
-        <Grid container spacing={1} sx={{ backgroundColor: "#ECECEC", animation: 'pulse 1.5s infinite', p: 5 }} justifyContent="center" alignItems="center" />
+        <Grid
+          container
+          spacing={1}
+          sx={{ backgroundColor: '#ECECEC', animation: 'pulse 1.5s infinite', p: 5 }}
+          justifyContent="center"
+          alignItems="center"
+        />
       )}
     </Card>
   );

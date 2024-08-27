@@ -17,12 +17,15 @@ import { RHFSelect, RHFTextField } from 'src/components/hook-form';
 // ----------------------------------------------------------------------
 
 export default function InvoiceNewEditDetails() {
+  const { respuestasData } = useGetGeneral(endpoints.encuestas.getRespuestas, 'respuestasData');
 
-  const { respuestasData } = useGetGeneral(endpoints.encuestas.getRespuestas, "respuestasData");
+  const { minEncuestaData } = useGetGeneral(endpoints.encuestas.encuestaMinima, 'minEncuestaData');
 
-  const { minEncuestaData } = useGetGeneral(endpoints.encuestas.encuestaMinima, "minEncuestaData");
-
-  const minEnc = parseInt(minEncuestaData.map((u) => (u.minIdEncuesta)), 10) + 1;
+  const minEnc =
+    parseInt(
+      minEncuestaData.map((u) => u.minIdEncuesta),
+      10
+    ) + 1;
 
   const { control } = useFormContext();
 
@@ -49,10 +52,12 @@ export default function InvoiceNewEditDetails() {
         sx={{
           p: 2.5,
           pr: { xs: 2.5, md: 2.5 },
-        }} divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3}>
-
+        }}
+        divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />}
+        spacing={3}
+      >
         {fields.map((item, index) => (
-          <Stack key={item.id} >
+          <Stack key={item.id}>
             <Grid container spacing={3} disableEqualOverflow>
               <Grid xs={9} md={9}>
                 <RHFTextField
@@ -70,20 +75,16 @@ export default function InvoiceNewEditDetails() {
                   label="Respuestas"
                   InputLabelProps={{ shrink: true }}
                 >
-
                   <Divider sx={{ borderStyle: 'dashed' }} />
 
                   {respuestasData.map((res) => (
-                    <MenuItem
-                      key={res.idOpcion}
-                      value={res.idOpcion}
-                    >
+                    <MenuItem key={res.idOpcion} value={res.idOpcion}>
                       {res.nombre}
                     </MenuItem>
                   ))}
                 </RHFSelect>
-
-              </Grid></Grid>
+              </Grid>
+            </Grid>
 
             <Grid xs={3} md={3}>
               <Button
@@ -94,13 +95,12 @@ export default function InvoiceNewEditDetails() {
                 onClick={() => handleRemove(index)}
                 sx={{
                   p: 1,
-                  my: 1
+                  my: 1,
                 }}
               >
                 Remover
               </Button>
             </Grid>
-
           </Stack>
         ))}
       </Stack>
@@ -122,7 +122,6 @@ export default function InvoiceNewEditDetails() {
         >
           Agregar pregunta
         </Button>
-
       </Stack>
     </Box>
   );

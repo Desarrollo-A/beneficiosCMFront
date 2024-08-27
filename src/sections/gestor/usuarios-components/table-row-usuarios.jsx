@@ -14,7 +14,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import ModalUsuarios from './modal-usuarios';
 // ----------------------------------------------------------------------
 
-export default function TableRowUsuarios({ row, close }) {
+export default function TableRowUsuarios({ row, idRol, close, onEditRow }) {
   const { 
     id, 
     numEmpleado,
@@ -26,9 +26,10 @@ export default function TableRowUsuarios({ row, close }) {
     correo, 
     fechaCreacion,
     servicios,
-
-    estatus, 
-    rol, 
+    rol,
+    estatus,
+    permisos_id,
+    permisos_name,
     contrato,
     password,
     
@@ -39,6 +40,12 @@ export default function TableRowUsuarios({ row, close }) {
   // const quickHisCit = useBoolean();
 
   const popover = usePopover();
+
+  const handleClose = () => {
+    // onEditRow()
+    
+    quickEditar.onFalse()
+  }
 
   return (
     <>
@@ -65,6 +72,8 @@ export default function TableRowUsuarios({ row, close }) {
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{servicios}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{rol}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{permisos_name}</TableCell>
 
         <TableCell>
           <Label
@@ -98,8 +107,10 @@ export default function TableRowUsuarios({ row, close }) {
         area={area}
         puesto={puesto}
         rol={rol}
+        idRol={idRol}
+        permisos_id={permisos_id}
         open={quickEditar.value}
-        onClose={quickEditar.onFalse}
+        onClose={handleClose}
       />
 
       <CustomPopover
@@ -115,8 +126,8 @@ export default function TableRowUsuarios({ row, close }) {
             popover.onClose();
           }}
         >
-          <Iconify icon="solar:eye-bold" />
-          Ver
+          <Iconify icon={idRol === 4 ?"solar:clapperboard-edit-outline" : "solar:eye-bold"} />
+          {idRol === 4 ? 'Editar' : 'Ver'}
         </MenuItem>
       </CustomPopover>
     </>
@@ -127,4 +138,6 @@ TableRowUsuarios.propTypes = {
   row: PropTypes.object,
   estatus: PropTypes.any,
   close: PropTypes.func,
+  idRol: PropTypes.number,
+  onEditRow: PropTypes.func,
 };

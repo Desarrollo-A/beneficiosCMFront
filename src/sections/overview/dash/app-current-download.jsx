@@ -73,7 +73,7 @@ export default function AppCurrentDownload({
     area: areas,
     espe: _es,
     fhI: fhI.setDate(fhI.getDate() + 1),
-    fhF: fechaF
+    fhF: fechaF,
   });
 
   useEffect(() => {
@@ -81,51 +81,43 @@ export default function AppCurrentDownload({
       area: areas,
       espe: _es,
       fhI: fechaI,
-      fhF: fechaF
+      fhF: fechaF,
     });
   }, [areas, _es, fechaI, fechaF]);
 
-  const { pacientesData } = usePostGeneral(val, endpoints.dashboard.getCountPacientes, "pacientesData");
+  const { pacientesData } = usePostGeneral(
+    val,
+    endpoints.dashboard.getCountPacientes,
+    'pacientesData'
+  );
 
-  const externo = pacientesData.flatMap((x) => (x.externo));
+  const externo = pacientesData.flatMap((x) => x.externo);
 
-  const colaborador = pacientesData.flatMap((x) => (x.colaborador));
+  const colaborador = pacientesData.flatMap((x) => x.colaborador);
 
   const chartSeries = [Number(colaborador), Number(externo)];
 
   const { especialistas } = useGetEspecialistasPorArea({ areas });
 
-  const handleFilterStartDate = useCallback(
-    (newValue) => {
-      const date = new Date(newValue);
-      const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-      setFechaI(formattedDate);
-    },
-    []
-  );
+  const handleFilterStartDate = useCallback((newValue) => {
+    const date = new Date(newValue);
+    const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+    setFechaI(formattedDate);
+  }, []);
 
-  const handleFilterEndDate = useCallback(
-    (newValue) => {
-      const date = new Date(newValue);
-      const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-      setFechaF(formattedDate);
-    },
-    []
-  );
+  const handleFilterEndDate = useCallback((newValue) => {
+    const date = new Date(newValue);
+    const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+    setFechaF(formattedDate);
+  }, []);
 
-  const handleChangeArea = useCallback(
-    (event) => {
-      setAreas(event.target.value);
-    },
-    []
-  );
+  const handleChangeArea = useCallback((event) => {
+    setAreas(event.target.value);
+  }, []);
 
-  const handleChangeEsp = useCallback(
-    (event) => {
-      set_es(event.target.value);
-    },
-    []
-  );
+  const handleChangeEsp = useCallback((event) => {
+    set_es(event.target.value);
+  }, []);
 
   const chartOptions = useChart({
     chart: {
@@ -167,27 +159,34 @@ export default function AppCurrentDownload({
           },
         },
       },
-    }
+    },
   });
 
   return (
     <Card {...other}>
-
       {pacientesData.length > 0 ? (
         <>
           <CardHeader title={title} subheader={subheader} sx={{ mb: 5 }} />
-          <Grid container spacing={2} className="fade-in" sx={{
-            p: 3, backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f7f7f7',
-            borderRadius: '20px', margin: '20px'
-          }}>
-
+          <Grid
+            container
+            spacing={2}
+            className="fade-in"
+            sx={{
+              p: 3,
+              backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f7f7f7',
+              borderRadius: '20px',
+              margin: '20px',
+            }}
+          >
             {rol !== 3 ? (
               <>
                 <Grid md={6} xs={12}>
-                  <FormControl sx={{
-                    width: "100%",
-                    pr: { xs: 1, md: 1 },
-                  }}>
+                  <FormControl
+                    sx={{
+                      width: '100%',
+                      pr: { xs: 1, md: 1 },
+                    }}
+                  >
                     <InputLabel id="demo-simple-select-label">Beneficio</InputLabel>
                     <Select
                       labelId="demo-simple-select-label"
@@ -206,10 +205,12 @@ export default function AppCurrentDownload({
                 </Grid>
 
                 <Grid md={6} xs={12}>
-                  <FormControl sx={{
-                    width: "100%",
-                    pr: { xs: 1, md: 1 },
-                  }}>
+                  <FormControl
+                    sx={{
+                      width: '100%',
+                      pr: { xs: 1, md: 1 },
+                    }}
+                  >
                     <InputLabel id="demo-simple-select-label">Especialista</InputLabel>
                     <Select
                       labelId="demo-simple-select-label"
@@ -218,9 +219,7 @@ export default function AppCurrentDownload({
                       label="Especialista"
                       onChange={(e) => handleChangeEsp(e)}
                     >
-                      <MenuItem value='0'>
-                        Todos
-                      </MenuItem>
+                      <MenuItem value="0">Todos</MenuItem>
                       {especialistas.map((i, index) => (
                         <MenuItem key={index} value={i.idUsuario}>
                           {i.nombre}
@@ -230,16 +229,15 @@ export default function AppCurrentDownload({
                   </FormControl>
                 </Grid>
               </>
-
-            ) : (
-              null
-            )}
+            ) : null}
 
             <Grid md={6} xs={12}>
-              <FormControl sx={{
-                width: "100%",
-                pr: { xs: 1, md: 1 },
-              }}>
+              <FormControl
+                sx={{
+                  width: '100%',
+                  pr: { xs: 1, md: 1 },
+                }}
+              >
                 <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
                   <DatePicker
                     label="Fecha inicio"
@@ -257,10 +255,12 @@ export default function AppCurrentDownload({
             </Grid>
 
             <Grid md={6} xs={12}>
-              <FormControl sx={{
-                width: "100%",
-                pr: { xs: 1, md: 1 },
-              }}>
+              <FormControl
+                sx={{
+                  width: '100%',
+                  pr: { xs: 1, md: 1 },
+                }}
+              >
                 <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
                   <DatePicker
                     label="Fecha fin"
@@ -282,11 +282,15 @@ export default function AppCurrentDownload({
             width="100%"
             height={280}
           />
-
         </>
-
       ) : (
-        <Grid container spacing={1} sx={{ backgroundColor: "#ECECEC", animation: 'pulse 1.5s infinite', p: 5 }} justifyContent="center" alignItems="center" />
+        <Grid
+          container
+          spacing={1}
+          sx={{ backgroundColor: '#ECECEC', animation: 'pulse 1.5s infinite', p: 5 }}
+          justifyContent="center"
+          alignItems="center"
+        />
       )}
     </Card>
   );

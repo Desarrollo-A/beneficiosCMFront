@@ -1,127 +1,77 @@
+import { useEffect } from 'react';
 import { m } from 'framer-motion';
-import { useState, useCallback } from 'react';
+import PropTypes from 'prop-types';
 
-import Tab from '@mui/material/Tab';
-import Box from '@mui/material/Box';
-import Tabs from '@mui/material/Tabs';
 import List from '@mui/material/List';
 import Stack from '@mui/material/Stack';
 import Badge from '@mui/material/Badge';
 import Drawer from '@mui/material/Drawer';
-import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
-import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 
-import { _notifications } from 'src/_mock';
+import { useNotificacion } from 'src/api/notificacion';
 
-import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { varHover } from 'src/components/animate';
 
 import NotificationItem from './notification-item';
+import NotificationPush from './notification-push';
 
+// eslint-disable-next-line
+import addNotification from 'react-push-notification';
+
+import './style.css';
 // ----------------------------------------------------------------------
 
-const TABS = [
-  {
-    value: 'all',
-    label: 'All',
-    count: 22,
-  },
-  {
-    value: 'unread',
-    label: 'Unread',
-    count: 12,
-  },
-  {
-    value: 'archived',
-    label: 'Archived',
-    count: 10,
-  },
-];
-
-// ----------------------------------------------------------------------
-
-export default function NotificationsPopover() {
+export default function NotificationsPopover({ idUsuario }) {
   const drawer = useBoolean();
 
   const smUp = useResponsive('up', 'sm');
 
-  const [currentTab, setCurrentTab] = useState('all');
+  const { notifications, /* benefitsLoading */ } = useNotificacion(idUsuario);
 
-  const handleChangeTab = useCallback((event, newValue) => {
-    setCurrentTab(newValue);
-  }, []);
-
-  const [notifications, setNotifications] = useState(_notifications);
-
-  const totalUnRead = notifications.filter((item) => item.isUnRead === true).length;
-
-  const handleMarkAllAsRead = () => {
-    setNotifications(
-      notifications.map((notification) => ({
-        ...notification,
-        isUnRead: false,
-      }))
-    );
-  };
+  useEffect(() => {
+    notifications.forEach((notification) => {
+      addNotification({
+        title: 'Beneficios Maderas',
+        message: notification.mensaje,
+        theme: 'darkblue',
+        native: true
+      });
+    });
+  }, [notifications]);
 
   const renderHead = (
     <Stack direction="row" alignItems="center" sx={{ py: 2, pl: 2.5, pr: 1, minHeight: 68 }}>
-      <Typography variant="h6" sx={{ flexGrow: 1 }}>
-        Notifications
-      </Typography>
+      {notifications.length > 0 ? (
+        <>
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+            Notificaciones
+          </Typography>
 
-      {!!totalUnRead && (
-        <Tooltip title="Mark all as read">
-          <IconButton color="primary" onClick={handleMarkAllAsRead}>
-            <Iconify icon="eva:done-all-fill" />
-          </IconButton>
-        </Tooltip>
+          {/* <Tooltip title="Eliminar todas las notificaciones" placement="left">
+            <IconButton onClick={handleMarkAllAsRead}>
+              <Iconify icon="fluent:delete-24-filled" />
+            </IconButton>
+          </Tooltip> */}
+        </>
+      ) : (
+        <Typography variant="h6" sx={{ flexGrow: 1 }}>
+          Sin notificaciones
+        </Typography>
       )}
 
       {!smUp && (
-        <IconButton onClick={drawer.onFalse}>
+        <IconButton onClick={drawer.onFalse} >
           <Iconify icon="mingcute:close-line" />
         </IconButton>
       )}
     </Stack>
-  );
-
-  const renderTabs = (
-    <Tabs value={currentTab} onChange={handleChangeTab}>
-      {TABS.map((tab) => (
-        <Tab
-          key={tab.value}
-          iconPosition="end"
-          value={tab.value}
-          label={tab.label}
-          icon={
-            <Label
-              variant={((tab.value === 'all' || tab.value === currentTab) && 'filled') || 'soft'}
-              color={
-                (tab.value === 'unread' && 'info') ||
-                (tab.value === 'archived' && 'success') ||
-                'default'
-              }
-            >
-              {tab.count}
-            </Label>
-          }
-          sx={{
-            '&:not(:last-of-type)': {
-              mr: 3,
-            },
-          }}
-        />
-      ))}
-    </Tabs>
   );
 
   const renderList = (
@@ -143,12 +93,12 @@ export default function NotificationsPopover() {
         variants={varHover(1.05)}
         color={drawer.value ? 'primary' : 'default'}
         onClick={drawer.onTrue}
+        className="buttonActions"
       >
-        <Badge badgeContent={totalUnRead} color="error">
-          <Iconify icon="solar:bell-bing-bold-duotone" width={24} />
+        <Badge badgeContent={notifications.length} color="primary">
+          <Iconify icon="solar:bell-bing-bold-duotone" className="bell" width={24} />
         </Badge>
       </IconButton>
-
       <Drawer
         open={drawer.value}
         onClose={drawer.onFalse}
@@ -164,28 +114,24 @@ export default function NotificationsPopover() {
 
         <Divider />
 
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          sx={{ pl: 2.5, pr: 1 }}
-        >
-          {renderTabs}
-          <IconButton onClick={handleMarkAllAsRead}>
-            <Iconify icon="solar:settings-bold-duotone" />
-          </IconButton>
-        </Stack>
-
         <Divider />
 
         {renderList}
 
-        <Box sx={{ p: 1 }}>
+        {/* <Box sx={{ p: 1 }}>
           <Button fullWidth size="large">
             View All
           </Button>
-        </Box>
+        </Box> */}
       </Drawer>
+
+      {notifications.map((notification) => (
+        <NotificationPush key={notification.id} notification={notification} />
+      ))}
     </>
   );
 }
+
+NotificationsPopover.propTypes = {
+  idUsuario: PropTypes.any,
+};

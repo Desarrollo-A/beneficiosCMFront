@@ -16,12 +16,13 @@ import Logo from 'src/components/logoMini';
 import SvgColor from 'src/components/svg-color';
 import { useSettingsContext } from 'src/components/settings';
 
-import PendingModalUser from 'src/sections/calendariobeneficiario/pendingModalUser';
-import PendingModal from 'src/sections/overview/calendarioespecialista/view/pendingModal';
+// import PendingModalUser from 'src/sections/calendar/beneficiary/pendingModalUser';
+import EndAppointmentDialog from 'src/sections/calendar/specialist/dialogs/end-appointment-dialog';
 
 import { NAV, HEADER } from '../config-layout';
 import SettingsButton from '../common/settings-button';
 import AccountPopover from '../common/account-popover';
+import NotificationsPopover from '../common/notifications-popover';
 
 // ----------------------------------------------------------------------
 export default function Header({ onOpenNav }) {
@@ -51,8 +52,7 @@ export default function Header({ onOpenNav }) {
         </IconButton>
       )}
 
-      {datosUser?.idRol === 2 && <PendingModalUser idUsuario={datosUser?.idUsuario}/>}
-      {datosUser?.idRol === 3 && <PendingModal />}
+      {datosUser?.idRol === 3 && <EndAppointmentDialog />}
 
       <Stack
         flexGrow={1}
@@ -61,7 +61,7 @@ export default function Header({ onOpenNav }) {
         justifyContent="flex-end"
         spacing={{ xs: 0.5, sm: 1 }}
       >
-        {/* <NotificationsPopover /> */}
+        <NotificationsPopover idUsuario={datosUser?.idUsuario} />
 
         <SettingsButton />
 

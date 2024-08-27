@@ -22,16 +22,12 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { endpoints } from 'src/utils/axios';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { usePostSelect, usePostIngresos, usePostPacientes } from 'src/api/reportes';
-import {
-  BookingIllustration,
-  CheckInIllustration,
-} from 'src/assets/illustrations';
+import { BookingIllustration } from 'src/assets/illustrations';
+import { usePostSelect, usePostPacientes } from 'src/api/reportes';
 
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
-import WidgetIngresos from './widget-ingresos';
 import WidgetPacientes from './widget-pacientes';
 
 // ----------------------------------------------------------------------
@@ -47,13 +43,15 @@ export default function BarraTareasTabla({
   rol,
   _eu,
   idUsuario,
-  modOptions
+  modOptions,
 }) {
   const popover = usePopover();
 
   const { user } = useAuthContext();
 
-  const ultimoDiaMes = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).toISOString().split('T')[0];
+  const ultimoDiaMes = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0)
+    .toISOString()
+    .split('T')[0];
 
   function formatFirstDayOfMonth() {
     const currentDate = new Date(); // Obtener la fecha actual
@@ -68,7 +66,7 @@ export default function BarraTareasTabla({
 
   const diaUnoMes = formatFirstDayOfMonth();
 
-  const [area, setArea] = useState([rol === 4 ? filters.area : _eu]);
+  const [area, setArea] = useState([rol === 4 || user?.permisos === 5 ? filters.area : _eu]);
 
   const [fechaI, setFechaI] = useState(diaUnoMes);
 
@@ -98,7 +96,7 @@ export default function BarraTareasTabla({
   const [currenTypeUsers, setCurrenTypeUsers] = useState(typeUsers[0].value);
 
   const [dt, setDt] = useState({
-    esp: rol === 4 ? area : _eu,
+    esp: rol === 4 || user?.permisos === 5 ? area : _eu,
     fhI: fechaI,
     fhF: fechaF,
     roles: rol,
@@ -106,13 +104,14 @@ export default function BarraTareasTabla({
     idEsp: selectEsp,
     modalidad: mod,
     reporte: currentStatus,
-    tipo: currenTypeUsers
+    tipo: currenTypeUsers,
+    permisos: user?.permisos,
   });
 
   useEffect(() => {
     if (area) {
       setDt({
-        esp: rol === 4 ? area : _eu,
+        esp: rol === 4 || user?.permisos === 5 ? area : _eu,
         fhI: fechaI,
         fhF: fechaF,
         roles: rol,
@@ -120,7 +119,8 @@ export default function BarraTareasTabla({
         idEsp: selectEsp,
         modalidad: mod,
         reporte: currentStatus,
-        tipo: currenTypeUsers
+        tipo: currenTypeUsers,
+        permisos: user?.permisos,
       });
     }
   }, [
@@ -133,7 +133,8 @@ export default function BarraTareasTabla({
     selectEsp,
     mod,
     currentStatus,
-    currenTypeUsers
+    currenTypeUsers,
+    user,
   ]);
 
   const [condi, setCondi] = useState(true);
@@ -143,7 +144,6 @@ export default function BarraTareasTabla({
   const fhF = new Date(fechaF);
 
   useEffect(() => {
-
     if (rol !== 1) {
       if (area[0]?.length === 0) {
         setCondi(true);
@@ -155,14 +155,11 @@ export default function BarraTareasTabla({
     } else {
       setCondi(false);
     }
-
   }, [area, fechaI, fechaF, dt, rol]);
 
-  const { cPaciData } = usePostPacientes(dt, endpoints.reportes.getCierrePacientes, "cPaciData");
+  const { cPaciData } = usePostPacientes(dt, endpoints.reportes.getCierrePacientes, 'cPaciData');
 
-  const { cIngreData } = usePostIngresos(dt, endpoints.reportes.getCierreIngresos, "cIngreData");
-
-  const { espData } = usePostSelect(dt, endpoints.reportes.getSelectEspe, "espData");
+  const { espData } = usePostSelect(dt, endpoints.reportes.getSelectEspe, 'espData');
 
   /* const handleFilterName = useCallback(
     (event) => {
@@ -182,17 +179,23 @@ export default function BarraTareasTabla({
     [onFilters]
   );
 
-  const handleChangeStatus = useCallback((event) => {
-    setCurrentStatus(event.target.value);
-    handleChangeReport(event.target.value);
-    table.onResetPage();
-  }, [handleChangeReport, table]);
+  const handleChangeStatus = useCallback(
+    (event) => {
+      setCurrentStatus(event.target.value);
+      handleChangeReport(event.target.value);
+      table.onResetPage();
+    },
+    [handleChangeReport, table]
+  );
 
-  const handleTypeUsers = useCallback((event) => {
-    setCurrenTypeUsers(event.target.value);
-    handleChangeTypeUsers(event.target.value);
-    table.onResetPage();
-  }, [handleChangeTypeUsers, table]);
+  const handleTypeUsers = useCallback(
+    (event) => {
+      setCurrenTypeUsers(event.target.value);
+      handleChangeTypeUsers(event.target.value);
+      table.onResetPage();
+    },
+    [handleChangeTypeUsers, table]
+  );
 
   const handleFilterStartDate = useCallback(
     (newValue) => {
@@ -239,15 +242,12 @@ export default function BarraTareasTabla({
     [onFilters]
   );
 
-  const _pa = cPaciData.flatMap((i) => (i.TotalPacientes));
-
-  const _in = cIngreData.flatMap((i) => (i.TotalIngreso));
+  const _pa = cPaciData.flatMap((i) => i.TotalPacientes);
 
   const SPACING = 3;
 
   return (
     <>
-
       <Stack
         spacing={2}
         sx={{
@@ -256,8 +256,7 @@ export default function BarraTareasTabla({
         }}
       >
         <Grid container spacing={SPACING} disableEqualOverflow>
-
-          <Grid xs={12} md={6}>
+          <Grid xs={12} md={12}>
             <WidgetPacientes
               title="Total de pacientes"
               total={_pa}
@@ -265,17 +264,7 @@ export default function BarraTareasTabla({
               icon={<BookingIllustration />}
             />
           </Grid>
-
-          <Grid xs={12} md={6}>
-            <WidgetIngresos
-              title="Total de ingresos"
-              total={currenTypeUsers === 0 || currenTypeUsers === 2 ? _in : [0]}
-              length={_in.length}
-              icon={<CheckInIllustration />}
-            />
-          </Grid>
         </Grid>
-
       </Stack>
 
       <Stack
@@ -290,11 +279,12 @@ export default function BarraTareasTabla({
           pr: { xs: 2.5, md: 1 },
         }}
       >
-
-        <FormControl sx={{
-          width: "100%",
-          pr: { xs: 1, md: 1 },
-        }}>
+        <FormControl
+          sx={{
+            width: '100%',
+            pr: { xs: 1, md: 1 },
+          }}
+        >
           <TextField
             fullWidth
             select
@@ -302,22 +292,20 @@ export default function BarraTareasTabla({
             value={currenTypeUsers}
             onChange={handleTypeUsers}
           >
-
             {typeUsers.map((option, index) => (
-              <MenuItem
-                key={index}
-                value={option.value}
-              >
+              <MenuItem key={index} value={option.value}>
                 {option.label}
               </MenuItem>
             ))}
           </TextField>
         </FormControl>
 
-        <FormControl sx={{
-          width: "100%",
-          pr: { xs: 1, md: 1 },
-        }}>
+        <FormControl
+          sx={{
+            width: '100%',
+            pr: { xs: 1, md: 1 },
+          }}
+        >
           <TextField
             fullWidth
             select
@@ -325,25 +313,22 @@ export default function BarraTareasTabla({
             value={currentStatus}
             onChange={handleChangeStatus}
           >
-
             {report.map((option, index) => (
-              <MenuItem
-                key={index}
-                value={option.value}
-              >
+              <MenuItem key={index} value={option.value}>
                 {option.label}
               </MenuItem>
             ))}
           </TextField>
         </FormControl>
 
-        {rol === 4 ? (
-
+        {rol === 4 || user?.permisos === 5 ? (
           <>
-            <FormControl sx={{
-              width: "100%",
-              pr: { xs: 1, md: 1 },
-            }}>
+            <FormControl
+              sx={{
+                width: '100%',
+                pr: { xs: 1, md: 1 },
+              }}
+            >
               <InputLabel>Beneficio</InputLabel>
 
               <Select
@@ -361,7 +346,11 @@ export default function BarraTareasTabla({
                 {!isEmpty(roleOptions) ? (
                   roleOptions.map((option, index) => (
                     <MenuItem key={index} value={option}>
-                      <Checkbox disableRipple size="small" checked={filters.area.includes(option)} />
+                      <Checkbox
+                        disableRipple
+                        size="small"
+                        checked={filters.area.includes(option)}
+                      />
                       {option}
                     </MenuItem>
                   ))
@@ -374,10 +363,12 @@ export default function BarraTareasTabla({
               </Select>
             </FormControl>
 
-            <FormControl sx={{
-              width: "100%",
-              pr: { xs: 1, md: 1 },
-            }}>
+            <FormControl
+              sx={{
+                width: '100%',
+                pr: { xs: 1, md: 1 },
+              }}
+            >
               <InputLabel>Especialistas</InputLabel>
 
               <Select
@@ -396,7 +387,11 @@ export default function BarraTareasTabla({
                 {!isEmpty(espData) ? (
                   espData.map((option) => (
                     <MenuItem key={option} value={option.nombre}>
-                      <Checkbox disableRipple size="small" checked={filters.especialista.includes(option.nombre)} />
+                      <Checkbox
+                        disableRipple
+                        size="small"
+                        checked={filters.especialista.includes(option.nombre)}
+                      />
                       {option.nombre}
                     </MenuItem>
                   ))
@@ -408,17 +403,15 @@ export default function BarraTareasTabla({
                 )}
               </Select>
             </FormControl>
-
           </>
+        ) : null}
 
-        ) : (
-          null
-        )}
-
-         <FormControl sx={{
-            width: "100%",
+        <FormControl
+          sx={{
+            width: '100%',
             pr: { xs: 1, md: 1 },
-          }}>
+          }}
+        >
           <InputLabel>Modalidad</InputLabel>
 
           <Select
@@ -436,7 +429,11 @@ export default function BarraTareasTabla({
             {!isEmpty(modOptions) ? (
               modOptions.map((option, index) => (
                 <MenuItem key={index} value={option}>
-                  <Checkbox disableRipple size="small" checked={filters.modalidad.includes(option)} />
+                  <Checkbox
+                    disableRipple
+                    size="small"
+                    checked={filters.modalidad.includes(option)}
+                  />
                   {option}
                 </MenuItem>
               ))
@@ -475,10 +472,7 @@ export default function BarraTareasTabla({
               />
             </LocalizationProvider>
           </>
-        ) : (
-          null
-        )}
-
+        ) : null}
       </Stack>
 
       <Stack
@@ -493,7 +487,7 @@ export default function BarraTareasTabla({
           pr: { xs: 2.5, md: 1 },
         }}
       >
-        {rol === 4 ? (
+        {rol === 4 || user?.permisos === 5 ? (
           <>
             <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
               <DatePicker
@@ -519,9 +513,7 @@ export default function BarraTareasTabla({
               />
             </LocalizationProvider>
           </>
-        ) : (
-          null
-        )}
+        ) : null}
 
         {/* <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField
@@ -588,5 +580,5 @@ BarraTareasTabla.propTypes = {
   rol: PropTypes.any,
   _eu: PropTypes.any,
   idUsuario: PropTypes.any,
-  modOptions: PropTypes.any
+  modOptions: PropTypes.any,
 };

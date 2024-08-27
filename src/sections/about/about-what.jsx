@@ -49,7 +49,7 @@ export default function AboutWhat() {
       <Grid container columnSpacing={{ md: 3 }} alignItems="flex-start">
         {mdUp && (
           <Grid container xs={12} md={6} lg={7} alignItems="center" sx={{ pr: { md: 7 } }}>
-            <Grid xs={6}>
+            <Grid item xs={6}>
               <m.div variants={varFade().inUp}>
                 <Image
                   alt="our office 2"
@@ -60,7 +60,7 @@ export default function AboutWhat() {
               </m.div>
             </Grid>
 
-            <Grid xs={6}>
+            <Grid item xs={6}>
               <m.div variants={varFade().inUp}>
                 <Image
                   alt="our office 1"
@@ -73,7 +73,7 @@ export default function AboutWhat() {
           </Grid>
         )}
 
-        <Grid xs={12} md={6} lg={5}>
+        <Grid item xs={12} md={6} lg={5}>
           <m.div variants={varFade().inRight}>
             <Typography variant="h2" sx={{ mb: 3 }}>
               What is Minimal?

@@ -22,7 +22,6 @@ import { useSnackbar } from 'src/components/snackbar';
 // ----------------------------------------------------------------------
 
 export default function EditarDias({ open, onClose, idEncuesta }) {
-
   const confirm = useBoolean();
 
   const { enqueueSnackbar } = useSnackbar();
@@ -33,22 +32,19 @@ export default function EditarDias({ open, onClose, idEncuesta }) {
 
   const handleChange = (event) => {
     setPregunta(event.target.value);
-  }
+  };
 
   const updateVigencia = useUpdate(endpoints.encuestas.updateVigencia);
 
   const handleEstatus = async (vig) => {
-
     if (vig !== '') {
-
       try {
-
         const data = {
-          'idEncuesta': idEncuesta,
-          'vigencia': vig,
+          idEncuesta,
+          vigencia: vig,
         };
 
-        console.log(data)
+        console.log(data);
 
         onClose();
 
@@ -61,29 +57,23 @@ export default function EditarDias({ open, onClose, idEncuesta }) {
           mutate(endpoints.encuestas.getEstatusUno);
 
           setBtnLoad(false);
-
         } else {
           enqueueSnackbar(update.msj, { variant: 'error' });
 
           setBtnLoad(false);
         }
-
       } catch (error) {
-        console.error("Error en handleEstatus:", error);
+        console.error('Error en handleEstatus:', error);
         enqueueSnackbar(`Error en actualizar los datos`, { variant: 'danger' });
 
         setBtnLoad(false);
       }
-
     } else {
       enqueueSnackbar(`¡No se selecciono el número de días!`, { variant: 'danger' });
 
       setBtnLoad(false);
     }
-
-  }
-
-
+  };
 
   return (
     <Dialog
@@ -95,15 +85,15 @@ export default function EditarDias({ open, onClose, idEncuesta }) {
         sx: { maxWidth: 720 },
       }}
     >
-
       {/* <DialogTitle>Trimestre</DialogTitle> */}
 
-      <Stack spacing={1} >
-
-      <DialogTitle>¿Estás de modificar los días hábiles de la encuesta?</DialogTitle>
+      <Stack spacing={1}>
+        <DialogTitle>¿Estás seguro de modificar los días hábiles de la encuesta?</DialogTitle>
 
         <FormControl spacing={3} sx={{ p: 3 }}>
-          <InputLabel spacing={3} sx={{ p: 3 }} id="demo-simple-select-label">Días para constestar</InputLabel>
+          <InputLabel spacing={3} sx={{ p: 3 }} id="demo-simple-select-label">
+            Días para constestar
+          </InputLabel>
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
@@ -115,26 +105,27 @@ export default function EditarDias({ open, onClose, idEncuesta }) {
             <MenuItem value={2}>2</MenuItem>
             <MenuItem value={3}>3</MenuItem>
           </Select>
-
         </FormControl>
-
       </Stack>
 
       <DialogActions>
         <Button variant="contained" color="error" onClick={onClose}>
           Cerrar
         </Button>
-        <Button variant="contained" color="success" loading={btnLoad} onClick={() => {
-          setBtnLoad(true);
-          handleEstatus(pregunta);
-          confirm.onFalse();
-        }}>
+        <Button
+          variant="contained"
+          color="success"
+          loading={btnLoad}
+          onClick={() => {
+            setBtnLoad(true);
+            handleEstatus(pregunta);
+            confirm.onFalse();
+          }}
+        >
           Guardar
         </Button>
       </DialogActions>
-
     </Dialog>
-
   );
 }
 

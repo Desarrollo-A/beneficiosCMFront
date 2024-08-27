@@ -97,7 +97,21 @@ export function GetCustomEvents(current, idUsuario, idSede) {
         const fechasCitasReagendadas = obtenerFechasConHoras(event.fechasFolio);
         let fechas = '';
         fechasCitasReagendadas?.forEach((fecha) => {
-          const fechaInicioCita = idSede === 11 ? horaTijuana(fecha) : horaCancun(fecha);
+          let fechaInicioCita = '';
+
+          switch (idSede) {
+            case 11:
+              fechaInicioCita = horaTijuana(fecha);
+              break;
+
+            case 9:
+              fechaInicioCita = horaCancun(fecha);
+              break;
+
+            default:
+              fechaInicioCita = fecha;
+              break;
+          }
           fechas +=
             fechas === ''
               ? `${dayjs(fechaInicioCita).format('DD / MM / YYYY')} A las ${dayjs(
@@ -171,7 +185,7 @@ export function GetCustomEvents(current, idUsuario, idSede) {
 
     return {
       events: events || [],
-      eventsLoading: isLoading,
+      eventsLoading: isLoading || isValidating,
       eventsError: error,
       eventsValidating: isValidating,
       eventsEmpty: !isLoading && !data?.events?.length,
@@ -340,6 +354,7 @@ export async function createAppointment(eventData, modalitie, datosUser, default
   let especialidad = '';
   let sede = modalitie?.sede || 'virtual';
   let oficina = modalitie?.oficina || 'virtual';
+  const precio = 0.0;
 
   /* const organizador = eventData.paciente.correo
     ? 'programador.analista36@ciudadmaderas.com'
@@ -548,10 +563,7 @@ export async function createAppointment(eventData, modalitie, datosUser, default
 
     create = await fetcherPost(create_appointment, data);
 
-    if (
-      create.result &&
-      (fundacion === 1 || fundacion === '1' || eventData.paciente.tipoPuesto === 'Operativa')
-    ) {
+    if (create.result && (fundacion === 1 || fundacion === '1')) {
       const dataTransaction = {
         usuario: eventData.paciente.idUsuario,
         folio: `${eventData.paciente.idUsuario}${dayjs(new Date()).format('HHmmssYYYYMMDD')}`,
@@ -566,10 +578,7 @@ export async function createAppointment(eventData, modalitie, datosUser, default
       await fetcherPost(registar_transaccion, dataTransaction);
     }
 
-    if (
-      (create.result && (fundacion === 1 || fundacion === '1')) ||
-      (create.result && eventData.paciente.tipoPuesto === 'Operativa')
-    ) {
+    if (create.result && (fundacion === 1 || fundacion === '1')) {
       const googleEvent = await fetcherPost(insert_google_event, googleData);
 
       if (eventData.paciente.correo) {
@@ -585,11 +594,7 @@ export async function createAppointment(eventData, modalitie, datosUser, default
         fetcherPost(insert_google_id, updateData);
       }
     }
-    if (
-      create.result &&
-      eventData.paciente.tipoPuesto !== 'Operativa' &&
-      (fundacion === 0 || fundacion === '0')
-    ) {
+    if (create.result && (fundacion === 0 || fundacion === '0')) {
       const pendingMail = {
         especialidad,
         especialista: datosUser.nombre,
@@ -1206,8 +1211,8 @@ export async function reschedule(eventData, idDetalle, cancelType, datosUser, de
 
   if (
     !(
-      eventData.hora_inicio >= defaultHour.horaInicio &&
-      eventData.hora_final <= defaultHour.horaFinal &&
+      eventData.hora_inicio >= defaultHour.horaInicio.split('.')[0] &&
+      eventData.hora_final <= defaultHour.horaFinal.split('.')[0] &&
       eventData.hora_final > eventData.hora_inicio
     )
   ) {
