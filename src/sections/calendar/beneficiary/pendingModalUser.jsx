@@ -1,7 +1,7 @@
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
-import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useState, useEffect } from 'react';
 import { enqueueSnackbar } from 'notistack';
 import localeData from 'dayjs/plugin/localeData';
 import { Dialog, DialogContent } from '@material-ui/core';
@@ -18,11 +18,11 @@ import {
   DialogActions,
 } from '@mui/material';
 
-import { endpoints } from 'src/utils/axios';
+// import { endpoints } from 'src/utils/axios';
 
 import { getEncodedHash } from 'src/api/api';
 import { useAuthContext } from 'src/auth/hooks';
-import { usePostGeneral } from 'src/api/general';
+// import { usePostGeneral } from 'src/api/general';
 import { useEncuestas } from 'src/api/encuestas';
 import {
   sendMail,
@@ -66,11 +66,11 @@ export default function PendingModalUser({ idUsuario }) {
 
   useEffect(() => {
     if (encDisponible) {
-        setEvaluate(true);
+      setEvaluate(true);
     } else {
-        setEvaluate(false);
+      setEvaluate(false);
     }
-}, [encDisponible]);
+  }, [encDisponible]);
 
   dayjs.locale('es');
   dayjs.extend(localeData);

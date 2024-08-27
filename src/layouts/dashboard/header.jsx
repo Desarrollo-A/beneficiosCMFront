@@ -16,7 +16,7 @@ import Logo from 'src/components/logoMini';
 import SvgColor from 'src/components/svg-color';
 import { useSettingsContext } from 'src/components/settings';
 
-import PendingModalUser from 'src/sections/calendar/beneficiary/pendingModalUser';
+// import PendingModalUser from 'src/sections/calendar/beneficiary/pendingModalUser';
 import EndAppointmentDialog from 'src/sections/calendar/specialist/dialogs/end-appointment-dialog';
 
 import { NAV, HEADER } from '../config-layout';
@@ -51,7 +51,7 @@ export default function Header({ onOpenNav }) {
           <SvgColor src={`${import.meta.env.BASE_URL}assets/icons/navbar/ic_menu_item.svg`} />
         </IconButton>
       )}
-      
+
       {datosUser?.idRol === 3 && <EndAppointmentDialog />}
 
       <Stack
@@ -61,7 +61,7 @@ export default function Header({ onOpenNav }) {
         justifyContent="flex-end"
         spacing={{ xs: 0.5, sm: 1 }}
       >
-        <NotificationsPopover idUsuario={datosUser?.idUsuario}/>
+        <NotificationsPopover idUsuario={datosUser?.idUsuario} />
 
         <SettingsButton />
 
