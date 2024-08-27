@@ -1,3 +1,5 @@
+import 'dayjs/locale/es';
+import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
 import { enqueueSnackbar } from 'notistack';
 import { useState, useCallback } from 'react';
@@ -155,7 +157,7 @@ export default function EvaluateDialog({ open, encuestas, mutate, cerrar }) {
                     {item.primeraSesion === 0 ? (
                       <Box display="flex" justifyContent="space-between" alignItems="center">
                         Encuesta de primera sesión cita #{item.idCita} (
-                        {formatText(item.especialidad)} el {item.fecha})
+                        {formatText(item.especialidad)} el {dayjs(item.fecha).format('YYYY-MM-DD')})
                         <Button
                           variant="contained"
                           color="primary"
@@ -177,7 +179,7 @@ export default function EvaluateDialog({ open, encuestas, mutate, cerrar }) {
                     {item.satisfaccion === 0 ? (
                       <Box display="flex" justifyContent="space-between" alignItems="center">
                         Encuesta de satisfacción cita #{item.idCita} (
-                        {formatText(item.especialidad)} el {item.fecha})
+                        {formatText(item.especialidad)} el {dayjs(item.fecha).format('YYYY-MM-DD')})
                         <Button
                           variant="contained"
                           color="primary"
@@ -198,7 +200,7 @@ export default function EvaluateDialog({ open, encuestas, mutate, cerrar }) {
                     {item.reagenda === 0 ? (
                       <Box display="flex" justifyContent="space-between" alignItems="center">
                         Encuesta de reagenda cita #{item.idCita} ({formatText(item.especialidad)} el{' '}
-                        {item.fecha})
+                        {dayjs(item.fecha).format('YYYY-MM-DD')})
                         <Button
                           variant="contained"
                           color="primary"
@@ -219,7 +221,7 @@ export default function EvaluateDialog({ open, encuestas, mutate, cerrar }) {
                     {item.cancelacion === 0 ? (
                       <Box display="flex" justifyContent="space-between" alignItems="center">
                         Encuesta de cancelación cita #{item.idCita} ({formatText(item.especialidad)}{' '}
-                        el {item.fecha})
+                        el {dayjs(item.fecha).format('YYYY-MM-DD')})
                         <Button
                           variant="contained"
                           color="primary"
