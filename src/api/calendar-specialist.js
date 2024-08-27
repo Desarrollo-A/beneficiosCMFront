@@ -569,7 +569,7 @@ export async function createAppointment(eventData, modalitie, datosUser, default
         folio: `${eventData.paciente.idUsuario}${dayjs(new Date()).format('HHmmssYYYYMMDD')}`,
         referencia: `U${eventData.paciente.idUsuario}-${abreviatura}-E${datosUser.idPuesto}-C${create.data}`,
         concepto: 1, // 1: citas
-        cantidad: precio,
+        cantidad: 50.0,
         metodoPago: 7, // 7: No aplica (gratis)
         estatusPago: 1, // 1:cobrado
         idCita: create.data,

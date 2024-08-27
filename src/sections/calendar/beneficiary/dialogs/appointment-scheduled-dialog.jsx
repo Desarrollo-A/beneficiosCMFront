@@ -569,7 +569,7 @@ export default function AppointmentScheduleDialog({
   const pagarCitaPendiente = async (cita) => {
     setBtnPayDisabled(true);
     /* VALIDAR SI ES GRATUITA LA CITA */
-    const precio = 50;
+    const precio = 50.0;
 
     let nombreBeneficio = '';
     let abreviatura = '';
