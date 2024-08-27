@@ -99,17 +99,19 @@ export default function AtencionXsedeView() {
 
     const sede_rea = await saveAtencionXSede({area, especialista, modalidad, sede: sed, checked})
 
-    setSaving(false)
+    
 
     if(sede_rea){      
       if((sede_rea.idOficina === null || sede_rea.idOficina === 0) && sede_rea.estatus === 1 && sede_rea.tipoCita === 1){
-        // muestrar modal
-        
         handleChangeSedeNew(sed)
         enqueueSnackbar("Se debe seleccionar una oficina", {variant: "info"});
       }
-      else{
-        enqueueSnackbar("Se ha guardado la sede");
+      else if((sede_rea.idOficina !== null || sede_rea.idOficina !== 0) && sede_rea.estatus === 1){
+        // handleChangeSede(sed)
+        enqueueSnackbar("Se ha activado la sede");
+      }
+      else {
+        enqueueSnackbar("Se ha desactivado la sede");
       }
     }
     else{
@@ -123,6 +125,7 @@ export default function AtencionXsedeView() {
     const act = await getActiveSedes({modalidad, especialista})
 
     setActivas(act)
+    setSaving(false)
   }
 
   const getListSedes = async() => {
