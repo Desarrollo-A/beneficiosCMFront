@@ -344,7 +344,7 @@ export default function PendingModalUser({ idUsuario }) {
                   }
                 >
                   <ListItemText
-                    sx={{ width: '60%' }}
+                    sx={{ width: '50%' }}
                     primary={`${pending.beneficio} - ${pending.especialista}`}
                   />
                   <ListItemText
