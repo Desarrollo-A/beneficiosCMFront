@@ -18,42 +18,40 @@ import {
   FormControlLabel
 } from '@mui/material';
 
-import { getActiveSedes } from 'src/api/especialistas'
-
 import Scrollbar from 'src/components/scrollbar';
 import FormProvider from 'src/components/hook-form/form-provider';
 
-export default function OficinasDialog({ onClose, oficinasLoading, oficinas, sede, modalidad, especialista }) {
+export default function OficinasDialog({ onClose, oficinasLoading, oficinas, sede, modalidad, especialista, oficina, handleChangeOficina, isLoad, hasOffice }) {
   const HEIGHT = 600;
 
-  const [oficina, setOficina] = useState([])
-  const [ activas, setActivas ] = useState([])
-  const [isDisable, setDisable] = useState()
-console.log(oficina);
-
-  const handleChangeOficina = (ofi) => {
-    setOficina(ofi)
-
-    const index = activas.findIndex(sed => sed.idSede === sede)
-
-    activas[index].idOficina = ofi
-  }
-
-  const getActivas = async() => {
-    const act = await getActiveSedes({modalidad, especialista})
-
-    setActivas(act)
-  }
+  const [isDisable, setDisable] = useState(true)
+  const [nuevaOficina, setNuevaOficina] = useState(0)
 
   useEffect(() => {
-    if(modalidad){
-      getActivas()
+    if(nuevaOficina === 0){
+        setDisable(true)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [modalidad])
+    else{
+        setDisable(false)
+    }
+  }, [oficina, nuevaOficina])
 
-  const onSubmit = async (data) => {
-    // await saveOficinaXSede({especialista, modalidad, sede, oficina: ofi})
+  useEffect(() => {
+    if(oficina === null){
+        setNuevaOficina(0)
+    }
+    else{
+        setNuevaOficina(oficina)
+    }
+    
+  }, [oficina, sede])
+
+  const handleChangeNuevaOficina = (idOficina) => {
+    setNuevaOficina(idOficina)
+  }
+
+  const onSubmit = async () => {
+    handleChangeOficina(nuevaOficina)
   }
  
   return (
@@ -72,8 +70,8 @@ console.log(oficina);
             <List>
               <FormControl>
                 <RadioGroup
-                  value={oficina}
-                  onChange={(event) => handleChangeOficina(event.target.value)}
+                  value={nuevaOficina}
+                  onChange={(event) => handleChangeNuevaOficina(event.target.value)}
                 >
                   {oficinas.map((ofi, index) => (
                     <Box key={index} sx={{ marginBottom: 0.5 }}>
@@ -92,11 +90,13 @@ console.log(oficina);
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button variant="contained" color="error" onClick={onClose}>
-          Cerrar
-        </Button>
+        {hasOffice &&
+            <Button variant="contained" color="error" disabled={isLoad} onClick={onClose}>
+                Cerrar
+            </Button>
+        }        
 
-        <LoadingButton variant="contained" color="success" disabled={isDisable} onClick={onSubmit}>
+        <LoadingButton variant="contained" color="success" loading={isLoad} disabled={isDisable} onClick={onSubmit}>
           Guardar
         </LoadingButton>
       </DialogActions>
@@ -108,7 +108,11 @@ OficinasDialog.propTypes = {
   onClose: PropTypes.func,
   oficinasLoading: PropTypes.bool,
   oficinas: PropTypes.array,
+  oficina: PropTypes.oneOfType([PropTypes.number, PropTypes.string]), // se agrega 2 tipos diferentes por el evnio y regreso
   sede: PropTypes.number,
   modalidad: PropTypes.number,
-  especialista: PropTypes.number
+  especialista: PropTypes.number,
+  handleChangeOficina: PropTypes.func,
+  isLoad: PropTypes.bool,
+  hasOffice: PropTypes.bool
 };
