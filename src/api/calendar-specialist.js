@@ -354,7 +354,7 @@ export async function createAppointment(eventData, modalitie, datosUser, default
   let especialidad = '';
   let sede = modalitie?.sede || 'virtual';
   let oficina = modalitie?.oficina || 'virtual';
-  const precio = 0.0;
+  // const precio = 0.0;
 
   /* const organizador = eventData.paciente.correo
     ? 'programador.analista36@ciudadmaderas.com'
