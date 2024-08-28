@@ -103,12 +103,15 @@ export const StyledCalendar = styled('div')(({ theme }) => ({
   },
   '& .fc .fc-more-popover .fc-popover-body': {
     padding: theme.spacing(1),
+    overflowY: 'scroll',
+    maxHeight: 200
   },
   '& .fc .fc-popover-body': {
     '& .fc-daygrid-event.fc-event-start, & .fc-daygrid-event.fc-event-end': {
       margin: '2px 0',
     },
   },
+ 
 
   // Month View
   '& .fc .fc-day-other .fc-daygrid-day-top': {
