@@ -211,7 +211,7 @@ export default function AppointmentSchedule({
     const sedeEsp = especialistas.find(
       (especialista) => especialista.id === selectedValues.especialista
     );
-    const idSedeEsp = sedeEsp.idsede;
+    const idSedeEsp = sedeEsp?.idsede;
     let adjustedTime;
 
     // Validaciones según las diferentes zonas horarias

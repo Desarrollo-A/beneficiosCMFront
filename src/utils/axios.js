@@ -350,4 +350,7 @@ export const endpoints = {
   modalidades: {
     list: '/modalidades/list',
   },
+  fondoAhorro:{
+    getInformacion: '/FondoAhorroController/getInformacion'
+  }
 };

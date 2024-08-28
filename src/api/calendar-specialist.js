@@ -377,7 +377,7 @@ export async function createAppointment(eventData, modalitie, datosUser, default
   let horaInicioCita = eventData.hora_inicio;
   let horaFinCita = eventData.hora_final;
 
-  if (datosUser.idSede === 11) {
+  if (datosUser?.idSede === 11) {
     const partesInicio = eventData.hora_inicio.split(':');
     const inicioCita = new Date(`${eventData.fechaInicio} ${eventData.hora_inicio}`);
     inicioCita.setHours(partesInicio[0], partesInicio[1], partesInicio[2]);
@@ -410,7 +410,7 @@ export async function createAppointment(eventData, modalitie, datosUser, default
     horaInicioCita = `${horasI}:${minutosI}:${segundosI}`;
     horaFinCita = `${horasF}:${minutosF}:${segundosF}`;
   }
-  if (datosUser.idSede === 9) {
+  if (datosUser?.idSede === 9) {
     const partesInicio = eventData.hora_inicio.split(':');
     const inicioCita = new Date(`${eventData.fechaInicio} ${eventData.hora_inicio}`);
     inicioCita.setHours(partesInicio[0], partesInicio[1], partesInicio[2]);

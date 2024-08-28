@@ -183,7 +183,7 @@ export default function CancelEventDialog({
             currentEvent?.id,
             cancelType,
             user?.idUsuario,
-            user.idSede
+            user?.idSede
           );
           break;
       }
