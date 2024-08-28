@@ -2,7 +2,7 @@ import axios from 'axios';
 import useSWR, { mutate } from 'swr';
 import { useMemo, useEffect } from 'react';
 
-import { fetcherPost } from 'src/utils/axios';
+import { endpoints, fetcherPost } from 'src/utils/axios';
 
 import { HOST } from 'src/config-global';
 
@@ -40,9 +40,9 @@ export function usePost(dataValue, URL, nameData) {
   return memoizedVal;
 }
 
-export function useInsert(endpoints) {
+export function useInsert(ruta) {
   const insertData = async (obj) => {
-    const URL = obj ? endpoints : '';
+    const URL = obj ? ruta : '';
     return fetcherInsert([URL, obj]);
   };
 
@@ -90,4 +90,29 @@ export function useGetCountRespuestas(dataValue, URL, nameData) {
     [data?.data, error, isLoading, isValidating, nameData]
   );
   return { ...memoizedVal };
+}
+
+export function useEncuestas(idUsuario) {
+  const URL_NOTIFICACION = [endpoints.encuestas.evaluacionEncuesta];
+  const {
+    data,
+    mutate: revalidate,
+    isLoading,
+    error,
+    isValidating,
+  } = useSWR(URL_NOTIFICACION, (url) => fetcherPost(url, { idUsuario }));
+
+  const memoizedValue = useMemo(
+    () => ({
+      encuestas: data?.data || [],
+      benefitsLoading: isLoading || isValidating,
+      benefitsError: error,
+      benefitsValidating: isValidating,
+      benefitsEmpty: !isLoading && !data?.data?.length,
+      getencuestas: revalidate,
+    }),
+    [data?.data, error, isLoading, isValidating, revalidate]
+  );
+
+  return memoizedValue;
 }
