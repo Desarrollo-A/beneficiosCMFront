@@ -33,7 +33,3 @@ export function useGetOficinas(load, object) {
 
   return memoizedValue;
 }
-
-export function saveOffice(){
-
-}
