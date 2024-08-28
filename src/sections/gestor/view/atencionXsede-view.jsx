@@ -46,6 +46,7 @@ export default function AtencionXsedeView() {
   const [ sedes, setSedes ] = useState([])
   const [ activas, setActivas ] = useState([])
   const [ loadingActivas, setLoadingActivas ] = useState(false)
+  const [ loadingActivas2, setLoadingActivas2 ] = useState(false)
   const [, setAllChecked ] = useState(false)
   const [ oficina, setOficina ] = useState(null)
 
@@ -99,8 +100,6 @@ export default function AtencionXsedeView() {
 
     const sede_rea = await saveAtencionXSede({area, especialista, modalidad, sede: sed, checked})
 
-    
-
     if(sede_rea){      
       if((sede_rea.idOficina === null || sede_rea.idOficina === 0) && sede_rea.estatus === 1 && sede_rea.tipoCita === 1){
         handleChangeSedeNew(sed)
@@ -122,10 +121,12 @@ export default function AtencionXsedeView() {
   }
 
   const getActivas = async() => {
+    setLoadingActivas2(true)
     const act = await getActiveSedes({modalidad, especialista})
 
     setActivas(act)
     setSaving(false)
+    setLoadingActivas2(false)
   }
 
   const getListSedes = async() => {
@@ -317,13 +318,17 @@ export default function AtencionXsedeView() {
                 Sedes
               </Typography>
                 
-              {loadingActivas?
+              {loadingActivas ?
                 <LinearProgress />
               :
                 <Divider flexItem orientation='horizontal' />
               }
               {!loadingActivas && (
-                <List>
+
+                
+                <List>{loadingActivas2 &&
+                  <LinearProgress />
+                }
                   <Scrollbar sx={{ height: HEIGHT }} >
                     {sedes.map((sed, index) => (                      
                       <ListItem key={index}>
