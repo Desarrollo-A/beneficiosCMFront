@@ -97,20 +97,20 @@ export function GetCustomEvents(current, idUsuario, idSede) {
         const fechasCitasReagendadas = obtenerFechasConHoras(event.fechasFolio);
         let fechas = '';
         fechasCitasReagendadas?.forEach((fecha) => {
-          let fechaInicioCita = '';
+          let fechaInicioCita = ''
 
-          switch (idSede) {
+          switch(idSede){
             case 11:
-              fechaInicioCita = horaTijuana(fecha);
+              fechaInicioCita = horaTijuana(fecha)
               break;
-
+            
             case 9:
-              fechaInicioCita = horaCancun(fecha);
+              fechaInicioCita = horaCancun(fecha)
               break;
 
-            default:
-              fechaInicioCita = fecha;
-              break;
+              default:
+                fechaInicioCita = fecha
+                break;
           }
           fechas +=
             fechas === ''

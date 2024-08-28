@@ -1,22 +1,21 @@
 import { useState, useEffect } from 'react';
+import { enqueueSnackbar } from 'notistack';
 
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import Card from '@mui/material/Card';
-import Radio from '@mui/material/Radio';
+import { Dialog } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
 import Tooltip from '@mui/material/Tooltip';
 import Checkbox from '@mui/material/Checkbox';
 import ListItem from '@mui/material/ListItem';
 import Container from '@mui/material/Container';
+import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
-import RadioGroup from '@mui/material/RadioGroup';
 import IconButton from '@mui/material/IconButton';
-import FormControl from '@mui/material/FormControl';
 import ListItemButton from '@mui/material/ListItemButton';
 import LinearProgress from '@mui/material/LinearProgress';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import ArrowIcon from '@mui/icons-material/KeyboardArrowRight';
 
 import { useGetAreas } from 'src/api/areas';
@@ -28,6 +27,8 @@ import { getSedes, saveOficinaXSede, saveAtencionXSede } from 'src/api/sedes';
 import Scrollbar from 'src/components/scrollbar';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+
+import OficinasDialog from './oficinasDialog';
 
 //---------------------------------------------------------
 
@@ -45,13 +46,25 @@ export default function AtencionXsedeView() {
   const [ sedes, setSedes ] = useState([])
   const [ activas, setActivas ] = useState([])
   const [ loadingActivas, setLoadingActivas ] = useState(false)
-  const [ allChecked, setAllChecked ] = useState(false)
+  const [ loadingActivas2, setLoadingActivas2 ] = useState(false)
+  const [, setAllChecked ] = useState(false)
   const [ oficina, setOficina ] = useState(null)
 
   const { areas, areasLoading } = useGetAreas()
   const { especialistas, especialistasLoading } = useGetEspecialistas(area, {area})
   const { oficinas, oficinasLoading } = useGetOficinas(sede, {sede})
   const { modalidades } = useGetModalidades(true)
+  const theme = useTheme()
+  const [open, setOpen] = useState(false)
+  const [isLoad, setLoad] = useState(false)
+  const [isSaving, setSaving] = useState(false) // para cuando se usa un checkbox y guardar sede
+  const [hasOffice, setHasOffice] = useState(true)
+
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+  const onClose = () => {
+    setOpen(false)
+  } 
 
   const handleChangeArea = (are) => {
     setArea(are)
@@ -74,8 +87,7 @@ export default function AtencionXsedeView() {
   }
 
   const handleCheckSede = async(sed, checked) => {
-    // console.log({area, especialista, modalidad, sed, checked})
-
+    setSaving(true)
     const tmp_sedes = [...sedes]
 
     const index = tmp_sedes.findIndex(pres => pres.idsede === sed)
@@ -86,13 +98,35 @@ export default function AtencionXsedeView() {
 
     setSedes(tmp_sedes)
 
-    await saveAtencionXSede({area, especialista, modalidad, sede: sed, checked})
+    const sede_rea = await saveAtencionXSede({area, especialista, modalidad, sede: sed, checked})
+
+    if(sede_rea){      
+      if((sede_rea.idOficina === null || sede_rea.idOficina === 0) && sede_rea.estatus === 1 && sede_rea.tipoCita === 1){
+        handleChangeSedeNew(sed)
+        enqueueSnackbar("Se debe seleccionar una oficina", {variant: "info"});
+      }
+      else if((sede_rea.idOficina !== null || sede_rea.idOficina !== 0) && sede_rea.estatus === 1){
+        // handleChangeSede(sed)
+        enqueueSnackbar("Se ha activado la sede");
+      }
+      else {
+        enqueueSnackbar("Se ha desactivado la sede");
+      }
+    }
+    else{
+      enqueueSnackbar("Error al guardar la sede", {variant: "error"});
+    }
+
+    getActivas() 
   }
 
   const getActivas = async() => {
+    setLoadingActivas2(true)
     const act = await getActiveSedes({modalidad, especialista})
 
     setActivas(act)
+    setSaving(false)
+    setLoadingActivas2(false)
   }
 
   const getListSedes = async() => {
@@ -126,41 +160,70 @@ export default function AtencionXsedeView() {
     setSedes(tmp)
   }
 
-  const handleCheckAll = (checked) => {
-    const tmp = [...sedes]
-
-    tmp.map((sed) => {
-      sed.active = checked
-
-      saveAtencionXSede({area, especialista, modalidad, sede: sed.idsede, checked})
-
-      return true
-    })
-
-    setSedes(tmp)
-  }
-
   const handleChangeOficina = async(ofi) => {
+    setLoad(true)
     setOficina(ofi)
+    setSaving(true)
 
-    await saveOficinaXSede({especialista, modalidad, sede, oficina: ofi})
+    const save = await saveOficinaXSede({especialista, modalidad, sede, oficina: ofi})
+    
+    if(hasOffice){
+      const index = activas.findIndex(sed => sed.idSede === sede)
 
-    const index = activas.findIndex(sed => sed.idSede === sede)
+      activas[index].idOficina = ofi
 
-    activas[index].idOficina = ofi
+      setActivas(activas)    
+    }
+
+    getActivas()
+    await sleep(3000)
+  
+    if(save.result){
+      setHasOffice(true)
+      setLoad(false)
+      setOpen(false)
+      enqueueSnackbar(save.message)
+    }
+    else{
+      setHasOffice(true)
+      setLoad(false)
+      enqueueSnackbar(save.message, {variant: "error"})
+    }   
+    setSaving(false)
+      
   }
 
-  const handleChangeSede = (sed) => {
+  const handleChangeSedeNew = (sed) => { // independiente cuando se hace check en sede
     setSede(sed)
 
     const ofi = activas.find(se => se.idSede === sed)
 
     if(ofi){
+      setHasOffice(true)
+      setOpen(true)
       setOficina(ofi.idOficina)
-    }else{
+    }
+    else{
+      setHasOffice(false)
+      setOpen(true)
       setOficina(null)
     }
+  }
+
+  const handleChangeSede = (sed) => { // para el boton de arrows
+    setSede(sed)
     
+    const ofi = activas.find(se => se.idSede === sed)
+
+    if(ofi){
+      setHasOffice(true)
+      setOpen(true)
+      setOficina(ofi.idOficina)
+    }
+    else{
+      enqueueSnackbar("Se debe activar la sede antes de asignar una oficina", {variant: 'info'})
+      setOficina(null)
+    }
   }
 
   useEffect(() => {
@@ -252,35 +315,34 @@ export default function AtencionXsedeView() {
           {modalidad && (
             <Stack sx={{ flex: 1 }} >
               <Typography variant='h6' sx={{ marginLeft: 2 }} >
-                <Checkbox
-                  edge="start"
-                  checked={allChecked}
-                  // indeterminate
-                  onChange={ (event) => handleCheckAll(event.target.checked) }
-                />
                 Sedes
               </Typography>
                 
-              {loadingActivas?
+              {loadingActivas ?
                 <LinearProgress />
               :
                 <Divider flexItem orientation='horizontal' />
               }
               {!loadingActivas && (
-                <List>
+
+                
+                <List>{loadingActivas2 &&
+                  <LinearProgress />
+                }
                   <Scrollbar sx={{ height: HEIGHT }} >
-                    {sedes.map((sed, index) => (
+                    {sedes.map((sed, index) => (                      
                       <ListItem key={index}>
                         <Checkbox
                           edge="start"
                           checked={ sed.active }
+                          disabled={isSaving}
                           onChange={ (event) => handleCheckSede(sed.idsede, event.target.checked) }
                         />
                         <Typography sx={{ fontWeight: sed.idsede === sede ? 'bold' : '' }} >{sed.nsede}</Typography>
                         <Box sx={{ flex: 1 }}/>
                         {modalidad === 1 &&
                           <Tooltip title="Cambiar oficina de atención">
-                            <IconButton onClick={ () => handleChangeSede(sed.idsede) }>
+                            <IconButton disabled={isSaving} onClick={ () => handleChangeSede(sed.idsede) }>
                               <ArrowIcon/>
                             </IconButton>
                           </Tooltip>
@@ -292,33 +354,30 @@ export default function AtencionXsedeView() {
               )}
             </Stack>
           )}
-          { sede && (
-            <Stack sx={{ flex: 1 }} >
-              <Typography variant='h6' sx={{ marginBottom: 1, paddingLeft: 1 }} >Oficina</Typography>
-              { oficinasLoading ?
-                <LinearProgress />
-              :
-                <Divider flexItem orientation='horizontal' />
-              }
-              <Scrollbar sx={{ height: HEIGHT, overflowX: 'hidden', margin: 0, padding: 0 }} >
-                <List>
 
-                  <FormControl>
-                    <RadioGroup
-                      value={oficina}
-                      onChange={(event) => handleChangeOficina(event.target.value)}
-                    >
-                      {oficinas.map((ofi, index) => (
-                        <Box key={index} sx={{ marginBottom: 0.5 }}>
-                          <FormControlLabel sx={{ marginLeft: 1.5, marginBottom: 0.5 }} value={ofi.idoficina} control={<Radio />} label={ofi.noficina} />
-                        </Box>
-                      ))}
-                    </RadioGroup>
-                  </FormControl>
-                </List>
-              </Scrollbar>
-            </Stack>
-          )}
+        <Dialog
+          fullWidth
+          maxWidth="xs"
+          open={open}
+          transitionDuration={{
+          enter: theme.transitions.duration.shortest,
+          exit: theme.transitions.duration.shortest - 1000,
+          }}
+        >
+          <OficinasDialog
+            onClose={onClose}
+            oficinasLoading = {oficinasLoading}
+            oficinas = {oficinas}
+            oficina = {oficina}
+            handleChangeOficina = {handleChangeOficina}
+            sede = {sede}
+            modalidad={modalidad}
+            especialista={especialista}
+            isLoad={isLoad}
+            hasOffice={hasOffice}
+          />
+          
+        </Dialog>
 
         </Stack>
       </Card>
