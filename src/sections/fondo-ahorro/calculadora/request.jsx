@@ -95,7 +95,11 @@ QontoStepIcon.propTypes = {
 
 export default function Request({ onClose }) {
 
+  const updateEstatus = useUpdate(endpoints.fondoAhorro.sendMail);
+
   const { user } = useAuthContext();
+
+  console.log(user)
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -177,21 +181,26 @@ export default function Request({ onClose }) {
   const isButtonDisabled = !isValid || !dirtyFields.ahorroFinal;
 
   const onSubmit = handleSubmit(async (data) => {
+
+    const dataValue = {
+      nombre: user?.nombre,
+      numEmpleado: user?.numEmpleado,
+      ...data,
+    };
+
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
 
-      /*  const update = await updateEstatus(data); */
+       const update = await updateEstatus(dataValue);
 
-      /*  if (update.result === true) { */
-      enqueueSnackbar('hola', { variant: 'success' });
+       if (update.estatus === true) {
+      enqueueSnackbar(update.msj, { variant: 'success' });
 
-      /* mutate(endpoints.ayuda.createFaqs);
-      mutate(endpoints.ayuda.getAllFaqs);
-      mutate(endpoints.ayuda.getFaqs);
+      mutate(endpoints.ayuda.createFaqs);
 
     } else {
-      enqueueSnackbar(update.msg, { variant: 'error' });
-    } */
+      enqueueSnackbar(update.msj, { variant: 'error' });
+    }
 
     } catch (error) {
       console.error(error);
@@ -229,7 +238,7 @@ export default function Request({ onClose }) {
             <Box mb={2} />
 
             {activeStep === 0 && (
-              <Grid container justifyContent="center">
+              <Grid container justifyContent="center" className="fade-in">
                 <Box component="ul" sx={{ paddingRight: 6 }}>
                   <Box
                     component="li"
@@ -308,7 +317,7 @@ export default function Request({ onClose }) {
 
             {activeStep === 2 && (
               <FormProvider methods={methods} onSubmit={onSubmit}>
-                <Stack spacing={3} sx={{ p: 3 }}>
+                <Stack spacing={3} sx={{ p: 3 }} className="fade-in">
                   <RHFTextField
                     name="ahorroFinal"
                     size="small"
@@ -374,7 +383,7 @@ export default function Request({ onClose }) {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        content={<Box textAlign="center">¿Estás seguro de mandar tu solicitud con ese monto?</Box>}
+        content={<Typography>¿Estás seguro de mandar tu solicitud con ese monto?</Typography>}
         action={
           <>
             <Button variant="contained" color="error" onClick={() => { confirm.onFalse() }}>

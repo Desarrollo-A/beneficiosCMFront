@@ -32,6 +32,8 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
+import { finHorarioVerano, inicioHorarioVerano } from 'src/utils/general';
+
 import { useAuthContext } from 'src/auth/hooks';
 import { getDocumento } from 'src/api/calendar-colaborador';
 
@@ -39,7 +41,6 @@ import Iconify from 'src/components/iconify';
 
 import '../../styles/style.css';
 import TermsAndConditionsDialog from '../dialogs/terms-and-conditions-dialog';
-import { finHorarioVerano, inicioHorarioVerano } from 'src/utils/general';
 
 dayjs.locale('es');
 dayjs.extend(utc);

@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 
-import { FondoAhorroView } from 'src/sections/fondo-ahorro/view';
+import { FondoAhorroView } from 'src/sections/fondo-ahorro/calculadora/view';
 
 // ----------------------------------------------------------------------
 

@@ -351,6 +351,6 @@ export const endpoints = {
     list: '/modalidades/list',
   },
   fondoAhorro:{
-    getInformacion: '/FondoAhorroController/getInformacion'
+    sendMail: 'fondoAhorro/FondoAhorroController/sendMail'
   }
 };
