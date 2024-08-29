@@ -66,7 +66,7 @@ export default function BarraTareasTabla({
 
   const diaUnoMes = formatFirstDayOfMonth();
 
-  const [area, setArea] = useState([rol === 4 || user?.permisos === 5 ? filters.area : _eu]);
+  const [area, setArea] = useState([(rol === 4 || user?.permisos === 5) || (rol === 2 && user?.permisos === 1) ? filters.area : _eu]);
 
   const [fechaI, setFechaI] = useState(diaUnoMes);
 
@@ -96,7 +96,7 @@ export default function BarraTareasTabla({
   const [currenTypeUsers, setCurrenTypeUsers] = useState(typeUsers[0].value);
 
   const [dt, setDt] = useState({
-    esp: rol === 4 || user?.permisos === 5 ? area : _eu,
+    esp: (rol === 4 || user?.permisos === 5)|| (rol === 2 && user?.permisos === 1) ? area : _eu,
     fhI: fechaI,
     fhF: fechaF,
     roles: rol,
@@ -111,7 +111,7 @@ export default function BarraTareasTabla({
   useEffect(() => {
     if (area) {
       setDt({
-        esp: rol === 4 || user?.permisos === 5 ? area : _eu,
+        esp: (rol === 4 || user?.permisos === 5) || (rol === 2 && user?.permisos === 1) ? area : _eu,
         fhI: fechaI,
         fhF: fechaF,
         roles: rol,
@@ -321,7 +321,7 @@ export default function BarraTareasTabla({
           </TextField>
         </FormControl>
 
-        {rol === 4 || user?.permisos === 5 ? (
+        {(rol === 4 || user?.permisos === 5) || (rol === 2 && user?.permisos === 1) ? (
           <>
             <FormControl
               sx={{
@@ -487,7 +487,7 @@ export default function BarraTareasTabla({
           pr: { xs: 2.5, md: 1 },
         }}
       >
-        {rol === 4 || user?.permisos === 5 ? (
+        {(rol === 4 || user?.permisos === 5) || (rol === 2 && user?.permisos === 1) ? (
           <>
             <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
               <DatePicker

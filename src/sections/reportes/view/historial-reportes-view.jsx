@@ -197,9 +197,9 @@ export default function HistorialReportesView() {
 
   const _mod = modalidadesData.flatMap((es) => (es.modalidad));
 
-  defaultFilters.area = (user?.idRol === 4 || user?.permisos === 5) ? [] : _eu;
+  defaultFilters.area = ((user?.idRol === 4 || user?.permisos === 5)|| (rol === 2 && user?.permisos === 1)) ? [] : _eu;
 
-  defaultFilters.especialista = (user?.idRol === 4 || user?.permisos === 5) ? [] : nombreUser;
+  defaultFilters.especialista = ((user?.idRol === 4 || user?.permisos === 5)|| (rol === 2 && user?.permisos === 1)) ? [] : nombreUser;
 
   const table = useTable();
 
