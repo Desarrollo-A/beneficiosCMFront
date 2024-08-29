@@ -22,8 +22,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { endpoints } from 'src/utils/axios';
 
 import { useAuthContext } from 'src/auth/hooks';
+import { usePostSelect } from 'src/api/reportes';
 import { BookingIllustration } from 'src/assets/illustrations';
-import { usePostSelect, usePostPacientes } from 'src/api/reportes';
 
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
@@ -44,6 +44,7 @@ export default function BarraTareasTabla({
   _eu,
   idUsuario,
   modOptions,
+  totalCitas
 }) {
   const popover = usePopover();
 
@@ -157,7 +158,7 @@ export default function BarraTareasTabla({
     }
   }, [area, fechaI, fechaF, dt, rol]);
 
-  const { cPaciData } = usePostPacientes(dt, endpoints.reportes.getCierrePacientes, 'cPaciData');
+  // const { cPaciData } = usePostPacientes(dt, endpoints.reportes.getCierrePacientes, 'cPaciData'); // se comenta para cambiar el total de pacientes por el total de citas
 
   const { espData } = usePostSelect(dt, endpoints.reportes.getSelectEspe, 'espData');
 
@@ -242,7 +243,7 @@ export default function BarraTareasTabla({
     [onFilters]
   );
 
-  const _pa = cPaciData.flatMap((i) => i.TotalPacientes);
+  // const _pa = cPaciData.flatMap((i) => i.TotalPacientes);
 
   const SPACING = 3;
 
@@ -258,9 +259,9 @@ export default function BarraTareasTabla({
         <Grid container spacing={SPACING} disableEqualOverflow>
           <Grid xs={12} md={12}>
             <WidgetPacientes
-              title="Total de pacientes"
-              total={_pa}
-              length={_pa.length}
+              title="Total de citas"
+              total={totalCitas}
+              length={totalCitas}
               icon={<BookingIllustration />}
             />
           </Grid>
@@ -581,4 +582,5 @@ BarraTareasTabla.propTypes = {
   _eu: PropTypes.any,
   idUsuario: PropTypes.any,
   modOptions: PropTypes.any,
+  totalCitas: PropTypes.number
 };
