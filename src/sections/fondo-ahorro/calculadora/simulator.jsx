@@ -68,14 +68,14 @@ export default function Simulator({ conditional }) {
             const month = String(date.getMonth() + 1).padStart(2, '0');
             const year = date.getFullYear();
 
-            return `${day}/${month}/${year}`;
+            return `${day}-${month}-${year}`;
         };
 
         // Calcular fechas
         const firstFriday = getFirstFriday(today);
 
         // 12 meses despues
-        const ftNext = dayjs(firstFriday).add(365, 'day').format('MM/DD/YYYY');
+        const ftNext = dayjs(firstFriday).add(365, 'day').format('MM-DD-YYYY');
 
         // Actualizar estado
         setFirstDay(firstFriday);
@@ -534,7 +534,7 @@ export default function Simulator({ conditional }) {
                 >
                     <CloseIcon />
                 </IconButton>
-                <Request onClose={handleClose} />
+                <Request FirstDay={FirstDay} dateNext={dateNext} onClose={handleClose} />
             </Dialog>
         </>
     );
