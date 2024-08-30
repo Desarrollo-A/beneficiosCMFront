@@ -4,7 +4,16 @@ import { useMemo } from 'react';
 import { endpoints, fetcherPost } from 'src/utils/axios';
 
 export function useNotificacion(idUsuario) {
-  const URL_NOTIFICACION = [endpoints.notificacion.getNotificacion];
+  const accessToken = localStorage.getItem('accessToken');
+
+  const config = {
+    headers: {
+      Token: accessToken,
+    },
+  };
+
+  const URL_NOTIFICACION = [endpoints.notificacion.getNotificacion, config];
+
   const {
     data,
     mutate: revalidate,
