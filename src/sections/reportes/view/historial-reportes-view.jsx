@@ -197,9 +197,9 @@ export default function HistorialReportesView() {
 
   const _mod = modalidadesData.flatMap((es) => (es.modalidad));
 
-  defaultFilters.area = (user?.idRol === 4 || user?.permisos === 5) ? [] : _eu;
+  defaultFilters.area = ((user?.idRol === 4 || user?.permisos === 5)|| (rol === 2 && user?.permisos === 1)) ? [] : _eu;
 
-  defaultFilters.especialista = (user?.idRol === 4 || user?.permisos === 5) ? [] : nombreUser;
+  defaultFilters.especialista = ((user?.idRol === 4 || user?.permisos === 5)|| (rol === 2 && user?.permisos === 1)) ? [] : nombreUser;
 
   const table = useTable();
 
@@ -218,11 +218,11 @@ export default function HistorialReportesView() {
 
   const TABLE_BASE = [
     { id: '', label: 'ID Cita' },
-    { id: '', label: 'Número de empleado' },
+    { id: '', label: 'No. empleado (Paciente)' },
+    { id: '', label: 'No. empleado (Especialista)' },
     { id: '', label: 'Especialista' },
     { id: '', label: 'Usuario'},
     { id: '', label: 'Estatus' },
-    { id: '', label: 'No. empleado' },
     { id: '', label: 'Paciente' },
     { id: '', label: 'Departamento' },
     { id: '', label: 'Puesto' },
@@ -233,7 +233,7 @@ export default function HistorialReportesView() {
     { id: '', label: 'Método de pago' },
     { id: '', label: 'Fecha de pago' },
     { id: '', label: 'No. de consulta'},
-    { id: '', label: ''}
+    { id: '', label: 'Acciones'}
   ];
 
   if (rol === 3) {
@@ -379,6 +379,7 @@ export default function HistorialReportesView() {
             _eu={_eu}
             idUsuario={idUsuario}
             nombreUser={nombreUser}
+            totalCitas={dataFiltered.length}
           />
 
           {canReset && (

@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
 
 import { IconButton } from '@mui/material';
@@ -71,6 +72,8 @@ export default function FilasTabla({ row, selected, rol, rel }) {
       <TableRow hover selected={selected}>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{idCita}</TableCell>
 
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{numEmpleado}</TableCell>
+
         {rol !== 3 ? <TableCell sx={{ whiteSpace: 'nowrap' }}>{numEspecialista}</TableCell> : null}
 
         {rol !== 3 ? <TableCell sx={{ whiteSpace: 'nowrap' }}>{especialista}</TableCell> : null}
@@ -81,9 +84,7 @@ export default function FilasTabla({ row, selected, rol, rel }) {
           <Label variant="soft" sx={{ backgroundColor: `${color}0f`, color }}>
             {estatus}
           </Label>
-        </TableCell>
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{numEmpleado}</TableCell>
+        </TableCell>        
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{paciente}</TableCell>
 
@@ -105,7 +106,7 @@ export default function FilasTabla({ row, selected, rol, rel }) {
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{metodoPago}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fechaPago}</TableCell>       
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{dayjs(fechaPago).isValid() ? dayjs(fechaPago).format('YYYY-MM-DD HH:mm') : fechaPago}</TableCell>       
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{numCita}</TableCell>
 
