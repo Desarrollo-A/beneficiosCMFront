@@ -156,7 +156,8 @@ export default function Request({ onClose, FirstDay, dateNext }) {
       .typeError('Debe ser un número')
       .required('Ingresa un monto')
       .positive('Debe ser un número positivo')
-      .min(1.00, 'Debe ser mayor o igual a $1'),
+      .min(500.00, 'Debe ser mayor o igual a $500')
+      .max(10000.00, 'Debe ser menor o igual a $10,000'),
   });
 
   const defaultValues = useMemo(

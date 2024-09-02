@@ -1,6 +1,8 @@
 /* eslint-disable import/no-cycle */
 import dayjs from 'dayjs';
 import * as Yup from 'yup';
+import moment from 'moment';
+import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 import { useMemo, useState, useEffect } from 'react';
@@ -11,13 +13,25 @@ import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Dialog from '@mui/material/Dialog';
 import Tooltip from '@mui/material/Tooltip';
+import { useTheme } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';
-import Typography from '@mui/material/Typography';
 import CloseIcon from '@mui/icons-material/Close';
+import Typography from '@mui/material/Typography';
 import { Button, IconButton } from '@mui/material';
+import LoadingButton from '@mui/lab/LoadingButton';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import InputAdornment from '@mui/material/InputAdornment';
 
+import { useBoolean } from 'src/hooks/use-boolean';
+
+import { endpoints } from 'src/utils/axios';
+
+import { useAuthContext } from 'src/auth/hooks';
+import { usePostGeneral } from 'src/api/general';
+
 import Iconify from 'src/components/iconify/iconify';
+import Chart, { useChart } from 'src/components/chart';
+import { ConfirmDialog } from 'src/components/custom-dialog';
 import FormProvider, {
     RHFTextField,
 } from 'src/components/hook-form';
@@ -26,6 +40,18 @@ import Request from './request';
 // ----------------------------------------------------------------------
 
 export default function Simulator({ conditional }) {
+
+    const { user } = useAuthContext();
+
+    const confirm = useBoolean();
+
+    const isMobile = useMediaQuery('(max-width: 960px)');
+
+    const { fondoData } = usePostGeneral(
+        user?.idContrato,
+        endpoints.fondoAhorro.getFondo,
+        'fondoData'
+    );
 
     const [FirstDay, setFirstDay] = useState('');
     const [dateNext, setdateNext] = useState('');
@@ -97,7 +123,8 @@ export default function Simulator({ conditional }) {
             .typeError('Debe ser un número')
             .required('Ingresa un monto')
             .positive('Debe ser un número positivo')
-            .min(1.00, 'Debe ser mayor o igual a $1'),
+            .min(500.00, 'Debe ser mayor o igual a $500')
+            .max(10000.00, 'Debe ser menor o igual a $10,000'),
     });
 
     const defaultValues = useMemo(
@@ -140,14 +167,85 @@ export default function Simulator({ conditional }) {
         }
     });
 
-    const render = (
+    const chart = {
+        series: 76,
+    }
+
+    const theme = useTheme();
+
+    const { options } = chart;
+
+    const inicioMensualidad = moment(fondoData[0]?.fechaInicio ? fondoData[0]?.fechaInicio : 0);
+    const FinMensualidad = moment(fondoData[0]?.fechaFin ? fondoData[0]?.fechaFin : 0);
+
+    const diferienciaMensualidad = FinMensualidad.diff(inicioMensualidad, 'months');
+
+    const porcentaje = (1.2 * (12 - diferienciaMensualidad)) * 10;
+
+    const chartOptions = useChart({
+        chart: {
+            offsetY: -50,
+            sparkline: {
+                enabled: true,
+            },
+        },
+        grid: {
+            padding: {
+                bottom: 0,
+            },
+        },
+        legend: {
+            show: false,
+        },
+        plotOptions: {
+            radialBar: {
+                startAngle: -90,
+                endAngle: 90,
+                track: {
+                    background: "#B0B0B0",
+                    strokeWidth: '60%',
+                },
+                hollow: {
+                    size: '65%',
+                },
+                dataLabels: {
+                    name: {
+                        offsetY: 18,
+                    },
+                    value: {
+                        offsetY: -30, // Ajusta más el desplazamiento vertical
+                        fontSize: '38px',
+                        fontWeight: 'bold',
+                    },
+                    total: {
+                        label: `Ahorro actual ${(fondoData[0]?.monto ?? 0) * (12 - diferienciaMensualidad)}`,
+                        color: theme.palette.text.disabled,
+                        fontSize: theme.typography.body1.fontSize,
+                        fontWeight: theme.typography.body1.fontWeight,
+                    },
+                },
+            },
+        },
+        fill: {
+            type: 'gradient',
+            gradient: {
+                colorStops: [
+                    { offset: 10, color: '#BAA36B', opacity: 1 },
+                    { offset: 100, color: '#BAA36B', opacity: 1 },
+                ],
+            },
+        },
+        ...options,
+    });
+
+    const calculadora = (
 
         <>
-        {conditional === 0 &&(
-            <Typography variant="h4" sx={{ p: 3, fontWeight: 'bold', mb: -2, color: 'black' }}>
-                Calculadora de ahorro
-            </Typography>
-        )}
+            {conditional === 0 && (
+                <Typography variant="h4" sx={{ p: 3, fontWeight: 'bold', mb: -2, color: 'black' }}>
+                    Calculadora de ahorro
+                </Typography>
+            )}
 
             <Stack spacing={3} sx={{ p: 3 }}>
                 <RHFTextField
@@ -387,7 +485,7 @@ export default function Simulator({ conditional }) {
                 </Grid>
 
                 <Grid container alignItems="stretch" spacing={1}>
-                    <Grid item xs={12} md={conditional === 1 ? 6 : 4}>
+                    <Grid item xs={12} md={conditional === 1 || (!isEmpty(fondoData) || fondoData[0]?.estatusFondo === 6) ? 6 : 4}>
                         <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '80px' }}>
                             <Tooltip title="Este es el rendimiento de 12 meses de inversión." placement="top">
                                 <Typography sx={{ mb: 0, fontWeight: 'bold', color: 'black', fontSize: '13px' }}>
@@ -420,7 +518,7 @@ export default function Simulator({ conditional }) {
                         </Box>
                     </Grid>
 
-                    <Grid item xs={12} md={conditional === 1 ? 6 : 4}>
+                    <Grid item xs={12} md={conditional === 1 || (!isEmpty(fondoData) || fondoData[0]?.estatusFondo === 6) ? 6 : 4}>
                         <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '80px' }}>
                             <Typography sx={{ mb: 0, fontWeight: 'bold', color: 'black', fontSize: '13px' }}>
                                 Inversión + rendimiento
@@ -451,44 +549,198 @@ export default function Simulator({ conditional }) {
                         </Box>
                     </Grid>
 
-                    {conditional === 0 && (
-                        <Grid item xs={12} md={4}>
-                            <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '80px' }}>
-                                <Typography>ㅤ</Typography>
-                                <Button
-                                    variant="contained"
-                                    fullWidth
-                                    sx={{
-                                        height: '40px',
-                                        backgroundColor: '#00263A',
-                                        color: '#ffffff',
-                                        '&:hover': {
-                                            backgroundColor: '#002244',
-                                        },
-                                    }}
-                                    onClick={handleClickOpen}
-                                >
-                                    <Typography sx={{ p: 0.2, fontWeight: 'bold', fontSize: '12px' }}>
-                                        Generar solicitud
-                                    </Typography>
-                                    <Iconify icon="pajamas:doc-symlink" width={24} />
-                                </Button>
-                            </Box>
-                        </Grid>
-                    )}
-
+                    {conditional === 0 && (isEmpty(fondoData) || fondoData[0]?.estatusFondo === 6)
+                        && (
+                            <Grid item xs={12} md={4}>
+                                <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '80px' }}>
+                                    <Typography sx={{ mb: 0, fontWeight: 'bold', color: 'black', fontSize: '13px' }}>ㅤ</Typography>
+                                    <Button
+                                        variant="contained"
+                                        fullWidth
+                                        sx={{
+                                            height: '40px',
+                                            backgroundColor: '#00263A',
+                                            color: '#ffffff',
+                                            '&:hover': {
+                                                backgroundColor: '#002244',
+                                            },
+                                        }}
+                                        onClick={handleClickOpen}
+                                    >
+                                        <Typography sx={{ p: 0.2, fontWeight: 'bold', fontSize: '12px' }}>
+                                            Generar solicitud
+                                        </Typography>
+                                        <Iconify icon="pajamas:doc-symlink" width={24} />
+                                    </Button>
+                                </Box>
+                            </Grid>
+                        )}
                 </Grid>
-
-
-
             </Stack>
+        </>
+    );
+
+    const miAhorro = (
+
+        <>
+            {conditional === 0 && (
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography variant="h4" sx={{ p: 3, fontWeight: 'bold', color: 'black' }}>
+                        Tu ahorro
+                    </Typography>
+                    <Typography variant="body1" sx={{ p: 4, textAlign: 'right' }}>
+                        mensualidad <span style={{ fontWeight: 'bold' }}>{12 - diferienciaMensualidad}</span> de <span style={{ fontWeight: 'bold' }}>12</span>
+                    </Typography>
+                </Box>
+            )}
+
+            <Stack >
+                <Grid container>
+                    <Grid item xs={12} md={12}>
+                        <Box sx={{ marginBottom: isMobile ? -3 : -6 }}>
+                            <Chart
+                                dir="ltr"
+                                type="radialBar"
+                                series={[porcentaje]}
+                                options={chartOptions}
+                                width="100%"
+                                height={400}
+                            />
+                        </Box>
+                        <Box component="ul" sx={{ paddingTop: 0, p: 3 }}>
+                            <Box
+                                component="li"
+                                sx={{
+                                    display: 'flex',
+                                    alignItems: 'flex-start',
+                                    marginBottom: 2,
+                                }}
+                            >
+                                <Box sx={{ width: 24, height: 24, flexShrink: 0, marginRight: 1 }}>
+                                    <Iconify
+                                        icon="ph:arrow-right-duotone"
+                                        width="100%"
+                                        height="100%"
+                                        sx={{ color: '#00263A' }}
+                                    />
+                                </Box>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                                    <Typography variant="body1" sx={{ textAlign: 'justify', flexGrow: 1 }}>
+                                        Retención semanal
+                                    </Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 'bold', textAlign: 'right' }}>
+                                        ${(fondoData[0]?.monto ?? 0) / 4}
+                                    </Typography>
+                                </Box>
+                            </Box>
+
+                            <Box
+                                component="li"
+                                sx={{
+                                    display: 'flex',
+                                    alignItems: 'flex-start',
+                                    marginBottom: 2,
+                                }}
+                            >
+                                <Box sx={{ width: 24, height: 24, flexShrink: 0, marginRight: 1 }}>
+                                    <Iconify
+                                        icon="ph:arrow-right-duotone"
+                                        width="100%"
+                                        height="100%"
+                                        sx={{ color: '#00263A' }}
+                                    />
+                                </Box>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                                    <Typography variant="body1" sx={{ textAlign: 'justify', flexGrow: 1 }}>
+                                        Inversión mensual
+                                    </Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 'bold', textAlign: 'right' }}>
+                                        ${fondoData[0]?.monto}
+                                    </Typography>
+                                </Box>
+                            </Box>
+
+                            <Box
+                                component="li"
+                                sx={{
+                                    display: 'flex',
+                                    alignItems: 'flex-start',
+                                    marginBottom: 2,
+                                }}
+                            >
+                                <Box sx={{ width: 24, height: 24, flexShrink: 0, marginRight: 1 }}>
+                                    <Iconify
+                                        icon="ph:arrow-right-duotone"
+                                        width="100%"
+                                        height="100%"
+                                        sx={{ color: '#00263A' }}
+                                    />
+                                </Box>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                                    <Typography variant="body1" sx={{ textAlign: 'justify', flexGrow: 1 }}>
+                                        Inversión anual
+                                    </Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 'bold', textAlign: 'right' }}>
+                                        ${(fondoData[0]?.monto ?? 0) * 12}
+                                    </Typography>
+                                </Box>
+                            </Box>
+                            <Box
+                                component="li"
+                                sx={{
+                                    display: 'flex',
+                                    alignItems: 'flex-start',
+                                    marginBottom: 2,
+                                }}
+                            >
+                                <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+                                    <Button
+                                        variant="contained"
+                                        sx={{
+                                            backgroundColor: '#00263A',
+                                            color: '#ffffff',
+                                            '&:hover': {
+                                                backgroundColor: '#002244',
+                                            },
+                                            width: isMobile ? '100%' : '40%'
+                                        }}
+                                        onClick={() => { confirm.onTrue() }}
+                                    >
+                                        <Typography sx={{ p: 0.2, fontWeight: 'bold', fontSize: '12px' }}>
+                                            Cancelar ahorro
+                                        </Typography>
+                                        <Iconify icon="mdi:cancel-outline" width={24} />
+                                    </Button>
+                                </Box>
+                            </Box>
+                        </Box>
+                    </Grid>
+                </Grid>
+            </Stack>
+
+
+            <ConfirmDialog
+                open={confirm.value}
+                onClose={confirm.onFalse}
+                content={<Typography>¿Estás seguro de cancelar tu fondo de ahorro?</Typography>}
+                action={
+                    <>
+                        <Button variant="contained" color="error" onClick={() => { confirm.onFalse() }}>
+                            Cancelar
+                        </Button>
+                        <LoadingButton variant="contained" color="success" /* onClick={handleSubmit(onSubmit)}  loading={isSubmitting} */>
+                            Aceptar
+                        </LoadingButton>
+                    </>
+                }
+            />
         </>
     );
 
     return (
         <>
             <FormProvider methods={methods} onSubmit={onSubmit}>
-                <Card sx={ conditional === 1 ? { 
+                <Card sx={conditional === 1 ? {
                     backgroundColor: '#F2EEE3',
                     boxShadow: 'none'
                 } : {
@@ -505,14 +757,22 @@ export default function Simulator({ conditional }) {
                     <Grid container
                         className="fade-in"
                         spacing={0}
-                        sx={conditional === 1 ?{}
+                        sx={conditional === 1 ? {}
                             :
-                            {p: .05,
+                            {
+                                p: .05,
                                 borderRadius: '20px',
-                                margin: '20px',}}>
-                        <Grid item xs={12}>
-                            {render}
-                        </Grid>
+                                margin: '20px',
+                            }}>
+                        {fondoData[0]?.estatusFondo === 4 || fondoData[0]?.estatusFondo === 5 ? (
+                            <Grid item xs={12}>
+                                {miAhorro}
+                            </Grid>
+                        ) : (
+                            <Grid item xs={12}>
+                                {calculadora}
+                            </Grid>
+                        )}
                     </Grid>
                 </Card>
             </FormProvider>
@@ -536,6 +796,7 @@ export default function Simulator({ conditional }) {
                 </IconButton>
                 <Request FirstDay={FirstDay} dateNext={dateNext} onClose={handleClose} />
             </Dialog>
+
         </>
     );
 }
