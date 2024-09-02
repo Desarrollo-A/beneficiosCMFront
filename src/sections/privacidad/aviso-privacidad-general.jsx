@@ -264,7 +264,7 @@ export default function AvisoPrivacidadGeneral() {
     return (
       <Container maxWidth={settings.themeStretch ? false : 'lg'} style={{ paddingTop: '2%' }}>
         <Grid container spacing={2}>
-          <Grid item xs={12}>
+          <Grid xs={12}>
             <form onSubmit={manejarEnvioFormulario}>
               <Stack direction="row" justifyContent="center">
                 <Typography>{nombreArchivo}</Typography>
@@ -344,7 +344,7 @@ export default function AvisoPrivacidadGeneral() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <Grid container spacing={2}>
-          <Grid item xs={12}>
+          <Grid xs={12}>
             <h3>Políticas de privacidad</h3>
             <FormControl fullWidth>
               <InputLabel id="demo-simple-select-label">Tipo especialidad</InputLabel>

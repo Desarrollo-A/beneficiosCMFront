@@ -7,6 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 
 import { Box } from '@mui/system';
 import Stack from '@mui/material/Stack';
+import { LoadingButton } from '@mui/lab';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import Select from '@mui/material/Select';
@@ -143,24 +144,24 @@ export default function ModalEditarOficinas({
 
             <Box mb={2} />
 
-            <Grid item xs={12} md={6}>
+            <Grid xs={12} md={6}>
               <RHFTextField name="titulo" label="Título" multiline rows={1} />
             </Grid>
 
             <Box mb={2} />
 
-            <Grid item xs={12} md={6}>
+            <Grid xs={12} md={6}>
               <RHFTextField name="descripcion" label="Descripcion" multiline rows={4} />
             </Grid>
 
             <Box mb={2} />
 
-            <Grid item xs={12} md={6}>
+            <Grid xs={12} md={6}>
               <RHFTextField name="icono" label="Icono" multiline rows={1} />
             </Grid>
 
             <Box mb={2} />
-            <Grid item xs={12} md={6}>
+            <Grid xs={12} md={6}>
               <RHFTextField name="video" label="Video" multiline rows={1} />
             </Grid>
           </DialogContent>
@@ -170,9 +171,9 @@ export default function ModalEditarOficinas({
           <Button variant="contained" color="error" onClick={onClose}>
             Cerrar
           </Button>
-          <Button type="submit" variant="contained" color="success" loading={isSubmitting}>
+          <LoadingButton type="submit" variant="contained" color="success" loading={isSubmitting}>
             Guardar
-          </Button>
+          </LoadingButton>
         </DialogActions>
       </FormProvider>
     </Dialog>

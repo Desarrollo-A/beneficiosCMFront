@@ -56,9 +56,9 @@ export default function UserQuickEditForm({ open, onClose, idEncuesta }) {
         {encuestaData.length > 0 ? (
 
           <Stack sx={{ mt: 0 }} >
-            {encuestaData.map((item) => (
+            {encuestaData.map((item, index) => (
 
-              <FormProvider methods={methods} >
+              <FormProvider key={index} methods={methods} >
 
                 <DialogContent style={{ fontWeight: 'bold', margin: '25px' }}>
                   {item.pregunta}

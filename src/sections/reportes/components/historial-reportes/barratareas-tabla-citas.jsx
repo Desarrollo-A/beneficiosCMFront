@@ -22,13 +22,12 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { endpoints } from 'src/utils/axios';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { usePostSelect, usePostIngresos, usePostPacientes } from 'src/api/reportes';
-import { BookingIllustration, CheckInIllustration } from 'src/assets/illustrations';
+import { usePostSelect } from 'src/api/reportes';
+import { BookingIllustration } from 'src/assets/illustrations';
 
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
-import WidgetIngresos from './widget-ingresos';
 import WidgetPacientes from './widget-pacientes';
 
 // ----------------------------------------------------------------------
@@ -45,6 +44,7 @@ export default function BarraTareasTabla({
   _eu,
   idUsuario,
   modOptions,
+  totalCitas
 }) {
   const popover = usePopover();
 
@@ -67,7 +67,7 @@ export default function BarraTareasTabla({
 
   const diaUnoMes = formatFirstDayOfMonth();
 
-  const [area, setArea] = useState([rol === 4 || user?.permisos === 5 ? filters.area : _eu]);
+  const [area, setArea] = useState([(rol === 4 || user?.permisos === 5) || (rol === 2 && user?.permisos === 1) ? filters.area : _eu]);
 
   const [fechaI, setFechaI] = useState(diaUnoMes);
 
@@ -97,7 +97,7 @@ export default function BarraTareasTabla({
   const [currenTypeUsers, setCurrenTypeUsers] = useState(typeUsers[0].value);
 
   const [dt, setDt] = useState({
-    esp: rol === 4 || user?.permisos === 5 ? area : _eu,
+    esp: (rol === 4 || user?.permisos === 5)|| (rol === 2 && user?.permisos === 1) ? area : _eu,
     fhI: fechaI,
     fhF: fechaF,
     roles: rol,
@@ -112,7 +112,7 @@ export default function BarraTareasTabla({
   useEffect(() => {
     if (area) {
       setDt({
-        esp: rol === 4 || user?.permisos === 5 ? area : _eu,
+        esp: (rol === 4 || user?.permisos === 5) || (rol === 2 && user?.permisos === 1) ? area : _eu,
         fhI: fechaI,
         fhF: fechaF,
         roles: rol,
@@ -158,9 +158,7 @@ export default function BarraTareasTabla({
     }
   }, [area, fechaI, fechaF, dt, rol]);
 
-  const { cPaciData } = usePostPacientes(dt, endpoints.reportes.getCierrePacientes, 'cPaciData');
-
-  const { cIngreData } = usePostIngresos(dt, endpoints.reportes.getCierreIngresos, 'cIngreData');
+  // const { cPaciData } = usePostPacientes(dt, endpoints.reportes.getCierrePacientes, 'cPaciData'); // se comenta para cambiar el total de pacientes por el total de citas
 
   const { espData } = usePostSelect(dt, endpoints.reportes.getSelectEspe, 'espData');
 
@@ -245,9 +243,7 @@ export default function BarraTareasTabla({
     [onFilters]
   );
 
-  const _pa = cPaciData.flatMap((i) => i.TotalPacientes);
-
-  const _in = cIngreData.flatMap((i) => i.TotalIngreso);
+  // const _pa = cPaciData.flatMap((i) => i.TotalPacientes);
 
   const SPACING = 3;
 
@@ -261,21 +257,12 @@ export default function BarraTareasTabla({
         }}
       >
         <Grid container spacing={SPACING} disableEqualOverflow>
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={12}>
             <WidgetPacientes
-              title="Total de pacientes"
-              total={_pa}
-              length={_pa.length}
+              title="Total de citas"
+              total={totalCitas}
+              length={totalCitas}
               icon={<BookingIllustration />}
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <WidgetIngresos
-              title="Total de ingresos"
-              total={currenTypeUsers === 0 || currenTypeUsers === 2 ? _in : [0]}
-              length={_in.length}
-              icon={<CheckInIllustration />}
             />
           </Grid>
         </Grid>
@@ -335,7 +322,7 @@ export default function BarraTareasTabla({
           </TextField>
         </FormControl>
 
-        {rol === 4 || user?.permisos === 5 ? (
+        {(rol === 4 || user?.permisos === 5) || (rol === 2 && user?.permisos === 1) ? (
           <>
             <FormControl
               sx={{
@@ -501,7 +488,7 @@ export default function BarraTareasTabla({
           pr: { xs: 2.5, md: 1 },
         }}
       >
-        {rol === 4 || user?.permisos === 5 ? (
+        {(rol === 4 || user?.permisos === 5) || (rol === 2 && user?.permisos === 1) ? (
           <>
             <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
               <DatePicker
@@ -595,4 +582,5 @@ BarraTareasTabla.propTypes = {
   _eu: PropTypes.any,
   idUsuario: PropTypes.any,
   modOptions: PropTypes.any,
+  totalCitas: PropTypes.number
 };

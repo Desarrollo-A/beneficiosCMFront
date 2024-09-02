@@ -35,8 +35,6 @@ export default function TableRowUsuarios({ row, idRol, close, onEditRow }) {
     
   } = row;
 
-  console.log(row)
-
   const quickEditar = useBoolean();
 
   // const quickHisCit = useBoolean();

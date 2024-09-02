@@ -141,7 +141,7 @@ export default function UserQuickEditForm({
               name="contrato"
               label="contrato"
               value={currentUser.contrato}
-              defaultValue={currentUser.contrato}
+
               disabled
               hidden
             />
@@ -149,13 +149,13 @@ export default function UserQuickEditForm({
               name="id"
               label="ID"
               value={currentUser.id}
-              defaultValue={currentUser.id}
+ 
               disabled
             />
             <RHFSelect
               name="estatus"
               label="Estatus"
-              defaultValue={currentUser && currentUser.estatus === 1 ? 1 : 0}
+              value={currentUser && currentUser.estatus === 1 ? 1 : 0}
             >
               <MenuItem name="estatus" key={0} value={0}>
                 INACTIVO
@@ -164,11 +164,11 @@ export default function UserQuickEditForm({
                 ACTIVO
               </MenuItem>
             </RHFSelect>
-            <RHFTextField name="nombre" label="Nombre" defaultValue={currentUser.nombre} />
+            <RHFTextField name="nombre" label="Nombre" value={currentUser.nombre} />
             <RHFSelect
               name="sexo"
               label="Sexo"
-              defaultValue={currentUser && currentUser.sexo === 'M' ? 'M' : 'H'}
+              value={currentUser && currentUser.sexo === 'M' ? 'M' : 'H'}
             >
               <MenuItem name="estatus" key="M" value="M">
                 Femenino
@@ -177,12 +177,12 @@ export default function UserQuickEditForm({
                 Masculino
               </MenuItem>
             </RHFSelect>
-            <RHFTextField name="telefono" label="Teléfono" defaultValue={currentUser.telefono} />
+            <RHFTextField name="telefono" label="Teléfono" value={currentUser.telefono} />
             <RHFTextField
               name="correo"
               type="email"
               label="Correo"
-              defaultValue={currentUser.correo}
+              value={currentUser.correo}
             />
           </Box>
         </DialogContent>

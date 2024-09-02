@@ -287,9 +287,9 @@ export function _isPrimeraCita(usuario, beneficio) {
 }
 
 // Traer las citas sin finalizar o pendientes del beneficio
-export function getCitasSinFinalizar(usuario, beneficio) {
+export function getCitasSinFinalizar(usuario, beneficio, idCita) {
   const URL = [endpoints.calendarioColaborador.getCitasSinFinalizar];
-  const cita = fetcherPost(URL, { usuario, beneficio });
+  const cita = fetcherPost(URL, { usuario, beneficio, idCita });
 
   return cita;
 }
@@ -426,17 +426,17 @@ export function useGetPendientes() {
   const memoizedValue = useMemo(() => {
     let pagos = [];
     let evaluaciones = [];
-    switch (datosUser.idSede) {
+    switch (datosUser?.idSede) {
       case 11:
         pagos = data?.data?.pago?.map((i) => {
           let startConverted = horaTijuana(i.start);
           startConverted = toLocalISOString(startConverted);
           startConverted = startConverted.slice(0, 19).replace('T', ' ');
-          const inicioCita = datosUser.idSede !== 11 ? i.start : startConverted;
+          const inicioCita = datosUser?.idSede !== 11 ? i.start : startConverted;
           let endConverted = horaTijuana(i.end);
           endConverted = toLocalISOString(endConverted);
           endConverted = endConverted.slice(0, 19).replace('T', ' ');
-          const finCita = datosUser.idSede !== 11 ? i.end : endConverted;
+          const finCita = datosUser?.idSede !== 11 ? i.end : endConverted;
           return {
             ...i,
             start: inicioCita,
@@ -449,11 +449,11 @@ export function useGetPendientes() {
           let startConverted = horaTijuana(i.start);
           startConverted = toLocalISOString(startConverted);
           startConverted = startConverted.slice(0, 19).replace('T', ' ');
-          const inicioCita = datosUser.idSede !== 11 ? i.start : startConverted;
+          const inicioCita = datosUser?.idSede !== 11 ? i.start : startConverted;
           let endConverted = horaTijuana(i.end);
           endConverted = toLocalISOString(endConverted);
           endConverted = endConverted.slice(0, 19).replace('T', ' ');
-          const finCita = datosUser.idSede !== 11 ? i.end : endConverted;
+          const finCita = datosUser?.idSede !== 11 ? i.end : endConverted;
           return {
             ...i,
             start: inicioCita,
@@ -467,11 +467,11 @@ export function useGetPendientes() {
           let startConverted = horaCancun(i.start);
           startConverted = toLocalISOString(startConverted);
           startConverted = startConverted.slice(0, 19).replace('T', ' ');
-          const inicioCita = datosUser.idSede !== 9 ? i.start : startConverted;
+          const inicioCita = datosUser?.idSede !== 9 ? i.start : startConverted;
           let endConverted = horaCancun(i.end);
           endConverted = toLocalISOString(endConverted);
           endConverted = endConverted.slice(0, 19).replace('T', ' ');
-          const finCita = datosUser.idSede !== 9 ? i.end : endConverted;
+          const finCita = datosUser?.idSede !== 9 ? i.end : endConverted;
           return {
             ...i,
             start: inicioCita,
@@ -484,11 +484,11 @@ export function useGetPendientes() {
           let startConverted = horaCancun(i.start);
           startConverted = toLocalISOString(startConverted);
           startConverted = startConverted.slice(0, 19).replace('T', ' ');
-          const inicioCita = datosUser.idSede !== 11 ? i.start : startConverted;
+          const inicioCita = datosUser?.idSede !== 11 ? i.start : startConverted;
           let endConverted = horaCancun(i.end);
           endConverted = toLocalISOString(endConverted);
           endConverted = endConverted.slice(0, 19).replace('T', ' ');
-          const finCita = datosUser.idSede !== 11 ? i.end : endConverted;
+          const finCita = datosUser?.idSede !== 11 ? i.end : endConverted;
           return {
             ...i,
             start: inicioCita,
@@ -534,7 +534,7 @@ export function useGetPendientes() {
       data: data ? citas : [],
       pendingsMutate: revalidate,
     };
-  }, [data, revalidate, datosUser.idSede]);
+  }, [data, revalidate, datosUser?.idSede]);
 
   return memoizedValue;
 }

@@ -7,7 +7,7 @@ import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 import ListItemText from '@mui/material/ListItemText';
-import DialogContentText from '@mui/material/DialogContentText';
+// import DialogContentText from '@mui/material/DialogContentText';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
@@ -43,8 +43,6 @@ export default function RowResumenTerapias({ row, area, idUs, rol, typeusersData
   const [us, setUs] = useState(0);
 
   const [open, setOpen] = useState(false);
-
-  const [close] = useState(false);
 
   const [scroll, setScroll] = useState('paper');
 
@@ -148,8 +146,7 @@ export default function RowResumenTerapias({ row, area, idUs, rol, typeusersData
       <Dialog
         fullWidth
         maxWidth={false}
-        open={open}
-        onClose={close}
+        open={open}        
         PaperProps={{
           sx: { maxWidth: 420 },
         }}
@@ -157,12 +154,12 @@ export default function RowResumenTerapias({ row, area, idUs, rol, typeusersData
         aria-labelledby="scroll-dialog-title"
         aria-describedby="scroll-dialog-description"
       >
-         <DialogContentText
-         id="scroll-dialog-description"
-         ref={descriptionElementRef}
-         tabIndex={-1}>
-        <HistorialCitas idUsuario={us} area={area} rol={rol} idUs={idUs} open={quickHisCit.value} onClose={handleClose} typeusersData={typeusersData} />
-        </DialogContentText>
+         {/* <DialogContentText
+          id="scroll-dialog-description"
+          ref={descriptionElementRef}
+          > */}
+          <HistorialCitas idUsuario={us} area={area} rol={rol} idUs={idUs} open={quickHisCit.value} onClose={handleClose} typeusersData={typeusersData} />
+        {/* </DialogContentText> */}
       </Dialog>
     </>
   );

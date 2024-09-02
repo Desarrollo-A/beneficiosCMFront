@@ -24,7 +24,7 @@ export default function ConfirmCancelDialog({ open, onClose, onCancel, btnConfir
           </Typography>
         </Stack>
 
-        <Typography>¿Está seguro de cancelar la cita?</Typography>
+        <Typography>¿Estás seguro de cancelar la cita?</Typography>
       </DialogContent>
       <DialogActions>
         <Button variant="contained" color="error" onClick={onClose}>

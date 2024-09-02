@@ -11,7 +11,10 @@ import Typography from '@mui/material/Typography';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 
+import { endpoints } from 'src/utils/axios';
+
 import { useAuthContext } from 'src/auth/hooks';
+import { usePostGeneral } from 'src/api/general';
 import { GetCustomEvents } from 'src/api/calendar-specialist';
 import { useGetHorariosPresenciales } from 'src/api/especialistas';
 import { useGetAppointmentsByUser } from 'src/api/calendar-colaborador';
@@ -69,9 +72,11 @@ export default function CalendarView() {
     user?.idSede
   );
 
-  const { horarios, horariosGet } = useGetHorariosPresenciales({
+  const { horariosGet } = useGetHorariosPresenciales({
     idEspecialista: user?.idUsuario,
   });
+
+  const { atencionesData } = usePostGeneral(user?.idUsuario, endpoints.calendario.AtencionesPresenciales, 'atencionesData');
 
   const events = [...beneficiarioEvents, ...especialistaEvents];
 
@@ -132,7 +137,7 @@ export default function CalendarView() {
 
         {user?.idRol === 3 ? (
           <>
-            {new Set(horarios?.map((item) => item?.sede)).size > 1 && (
+            {atencionesData[0]?.atenciones > 1 && (
               <Button
                 color="inherit"
                 variant="outlined"
