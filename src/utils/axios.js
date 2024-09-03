@@ -229,7 +229,7 @@ export const endpoints = {
     allDemandaAreas: '/ReportesController/allDemandaAreas',
     demandaAreas: '/ReportesController/demandaAreas',
     demandaPuestos: '/ReportesController/demandaPuestos',
-    aceptarJustificacion: '/ReportesController/aceptarJustificacion'
+    aceptarJustificacion: '/ReportesController/aceptarJustificacion',
   },
   dashboard: {
     citasAnual: '/DashboardController/citasAnual',
@@ -351,8 +351,9 @@ export const endpoints = {
   modalidades: {
     list: '/modalidades/list',
   },
-  fondoAhorro:{
+  fondoAhorro: {
     getFondo: 'fondoAhorro/FondoAhorroController/getFondo',
-    sendMail: 'fondoAhorro/FondoAhorroController/sendMail'
-  }
+    sendMail: 'fondoAhorro/FondoAhorroController/sendMail',
+    getSolicitudes: 'fondoAhorro/FondoAhorroController/getSolicitudes',
+  },
 };

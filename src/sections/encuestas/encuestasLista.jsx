@@ -54,7 +54,7 @@ export default function EncuestasLista({ encuestas, estatusCt }) {
 
   let puestos = 0;
 
-  if (user?.idRol === "4" || user?.idRol === 4) {
+  if (user?.idRol === '4' || user?.idRol === 4) {
     puestos = 585;
   } else {
     puestos = user?.idPuesto;
@@ -62,11 +62,14 @@ export default function EncuestasLista({ encuestas, estatusCt }) {
 
   const [area, setArea] = useState(puestos);
 
-  const { getData } = usePostGeneral(area, endpoints.encuestas.getEncuestasCreadas, "getData");
+  const { getData } = usePostGeneral(area, endpoints.encuestas.getEncuestasCreadas, 'getData');
 
   const targetRef = useRef();
 
-  const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
+  const { especialistasData } = useGetGeneral(
+    endpoints.reportes.especialistas,
+    'especialistasData'
+  );
 
   const [especialistas, setEspecialistas] = useState([]);
 
@@ -131,7 +134,7 @@ export default function EncuestasLista({ encuestas, estatusCt }) {
 
   const handleChangeId = (newAr) => {
     setArea(newAr);
-  }
+  };
 
   return (
     <Card>

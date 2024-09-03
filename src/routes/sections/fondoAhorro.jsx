@@ -8,6 +8,7 @@ import { LoadingScreen } from 'src/components/loading-screen';
 
 // AYUDA
 const FondoAhorroPage = lazy(() => import('src/pages/fondoAhorro/fondo-ahorro-view'));
+const SolicitudesPage = lazy(() => import('src/pages/fondoAhorro/solicitudes'));
 
 // ----------------------------------------------------------------------
 
@@ -25,6 +26,10 @@ export const fondoAhorroRoutes = [
     ),
     children: [
       { path: 'fondoAhorro', element: <FondoAhorroPage /> },
+      {
+        path: 'fondoAhorro',
+        children: [{ path: 'solicitudes', element: <SolicitudesPage /> }],
+      },
     ],
   },
 ];
