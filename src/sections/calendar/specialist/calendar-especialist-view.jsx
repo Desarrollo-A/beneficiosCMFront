@@ -25,6 +25,8 @@ import { reRender, dropUpdate, useGetMotivos , GetCustomEvents } from 'src/api/c
 
 import { useSettingsContext } from 'src/components/settings';
 
+import PendingModalUser from 'src/sections/calendar/beneficiary/pendingModalUser';
+
 import { useEvent, useCalendar } from './hooks';
 import { StyledCalendar } from '../styles/styles';
 import DataEventDialog from './dialogs/data-event-dialog';
@@ -131,10 +133,14 @@ export default function CalendarioView() {
   const modalSize =
     statusSizeMap[currentEvent?.estatus] || statusSizeMap[currentEvent?.type] || 'xs';
 
+  const { user: datosUser } = useAuthContext();
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <Card>
+
+      <PendingModalUser idUsuario={datosUser?.idUsuario}/>
+
         <StyledCalendar>
           <CalendarToolbar
             date={date}

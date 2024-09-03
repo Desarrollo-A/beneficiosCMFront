@@ -42,7 +42,6 @@ export function useUpdate(rt){
   };
 
   return updateData;
-
 }
 
 export const updateObservaciones = async(data) => {
@@ -202,4 +201,17 @@ export function useGetAreas(){
   }, [data]);
 
   return memoizedValue;
+}
+
+export async function aceptarJustificacion(idCita, tipo){
+  const url = endpoints.reportes.aceptarJustificacion
+  const accessToken = localStorage.getItem('accessToken')
+
+  const form = new FormData()
+  form.append('idCita', idCita)
+  form.append('tipo', tipo)
+
+  const update = await axios.post( url, form, { headers: { 'Content-Type': 'application/x-www-form-urlencoded', Token: accessToken } })
+
+  return update.data;
 }

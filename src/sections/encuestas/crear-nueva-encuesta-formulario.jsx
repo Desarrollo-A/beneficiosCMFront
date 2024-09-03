@@ -145,7 +145,7 @@ export default function InvoiceNewEditForm() {
             spacing={3}
           >
             <Grid container spacing={3} disableEqualOverflow>
-              <Grid item xs={12} md={12}>
+              <Grid xs={12} md={12}>
                 {rol === 4 ? (
                   <RHFSelect
                     name="tipoEncuesta"
@@ -162,7 +162,7 @@ export default function InvoiceNewEditForm() {
                 ) : null}
               </Grid>
 
-              <Grid item xs={12}>
+              <Grid xs={12}>
                 <Divider sx={{ my: 1, borderStyle: 'dashed' }} />
               </Grid>
             </Grid>

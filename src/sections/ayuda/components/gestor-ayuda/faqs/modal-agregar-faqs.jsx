@@ -127,13 +127,13 @@ export default function ModalAgregarFaqs({ open, onClose }) {
 
               <Box mb={2} />
 
-              <Grid item xs={12} md={6}>
+              <Grid xs={12} md={6}>
                 <RHFTextField name="titulo" label="Título" multiline rows={1} />
               </Grid>
 
               <Box mb={2} />
 
-              <Grid item xs={12} md={6}>
+              <Grid xs={12} md={6}>
                 <RHFTextField name="descripcion" label="Descripcion" multiline rows={4} />
               </Grid>
             </DialogContent>

@@ -1,3 +1,5 @@
+import 'dayjs/locale/es';
+import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
 import { enqueueSnackbar } from 'notistack';
 import { useState, useCallback } from 'react';
@@ -28,24 +30,28 @@ import { useAuthContext } from 'src/auth/hooks';
 import { updateEvaluacion } from 'src/api/evaluacion';
 import { useGetGeneral, usePostGeneral } from 'src/api/general';
 
-import FormProvider, {
-  RHFTextField,
-} from 'src/components/hook-form';
+import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
 export default function EvaluateDialog({ open, encuestas, mutate, cerrar }) {
-
   const [tipoEvaluacion, setTipoEvaluacion] = useState(0);
 
   const [paramsEnc, setParamsEnc] = useState(0);
 
-  const { encuestaData } = usePostGeneral(tipoEvaluacion, endpoints.encuestas.getEncuestaContestar, "encuestaData");
+  const { encuestaData } = usePostGeneral(
+    tipoEvaluacion,
+    endpoints.encuestas.getEncuestaContestar,
+    'encuestaData'
+  );
 
-  const { Resp1Data } = useGetGeneral(endpoints.encuestas.getResp1, "Resp1Data");
+  const { Resp1Data } = useGetGeneral(endpoints.encuestas.getResp1, 'Resp1Data');
 
-  const handleEvaluacion = useCallback((e) => () => {
-    setParamsEnc(e);
-    setTipoEvaluacion(e.encuesta);
-  }, []);
+  const handleEvaluacion = useCallback(
+    (e) => () => {
+      setParamsEnc(e);
+      setTipoEvaluacion(e.encuesta);
+    },
+    []
+  );
 
   // console.log(encuestas)
 
@@ -59,72 +65,66 @@ export default function EvaluateDialog({ open, encuestas, mutate, cerrar }) {
 
   const insertData = useInsert(endpoints.encuestas.encuestaInsert);
 
-
   const methods = useForm({});
 
-const {
-  reset,
-  handleSubmit,
-  formState: { isSubmitting },
-} = methods;
+  const {
+    reset,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = methods;
 
-const [formKey, setFormKey] = useState(0);
+  const [formKey, setFormKey] = useState(0);
 
-const resetForm = () => {
-  reset();
-  setFormKey((prevKey) => prevKey + 1);
-};
+  const resetForm = () => {
+    reset();
+    setFormKey((prevKey) => prevKey + 1);
+  };
 
-const onSubmit = handleSubmit(async (data) => {
-  console.log("Form Data:", data);
+  const onSubmit = handleSubmit(async (data) => {
+    const newData = encuestaData.map((item, index) => {
+      const respKey = `resp_${index}`;
 
-  const newData = encuestaData.map((item, index) => {
-    const respKey = `resp_${index}`;
+      return {
+        ...item,
+        idUsuario: user?.idUsuario,
+        idEnc: encuestaData[0]?.idEncuesta,
+        idArea: paramsEnc.beneficio,
+        idEsp: paramsEnc.especialista,
+        resp: data[respKey],
+      };
+    });
 
-    return {
-      ...item,
-      idUsuario: user?.idUsuario,
-      idEnc: encuestaData[0]?.idEncuesta,
-      idArea: paramsEnc.beneficio,
-      idEsp: paramsEnc.especialista,
-      resp: data[respKey]
-    };
-  });
+    try {
+      await new Promise((resolve) => setTimeout(resolve));
 
-  try {
-    await new Promise((resolve) => setTimeout(resolve));
+      const insert = await insertData(newData);
 
-    const insert = await insertData(newData);
+      if (insert.estatus === true) {
+        const update = await updateEvaluacion(
+          paramsEnc.idCita,
+          paramsEnc.encuesta,
+          user?.idUsuario
+        );
 
-    if (insert.estatus === true) {
-      const update =  await updateEvaluacion(
-        paramsEnc.idCita,
-        paramsEnc.encuesta,
-        user?.idUsuario,
-      );
+        if (update.result === true) {
+          enqueueSnackbar(insert.msj, { variant: 'success' });
+          resetForm();
+          mutate(endpoints.encuestas.getEcuestaValidacion);
+          router.replace(paths.dashboard.root);
 
-      if (update.result === true) {
-
-      enqueueSnackbar(insert.msj, { variant: 'success' });
-      resetForm();
-      mutate(endpoints.encuestas.getEcuestaValidacion);
-      router.replace(paths.dashboard.root);
-
-      mutate();
-      cerrar();
-
-      }else{
-        enqueueSnackbar(`¡No se pudó actualizar los datos!`, { variant: 'danger' });
+          mutate();
+          cerrar();
+        } else {
+          enqueueSnackbar(`¡No se pudó actualizar los datos!`, { variant: 'danger' });
+        }
+      } else {
+        enqueueSnackbar(insert.msj, { variant: 'error' });
       }
-
-    } else {
-      enqueueSnackbar(insert.msj, { variant: 'error' });
+    } catch (error) {
+      console.error('Error en handleSubmit:', error);
+      // enqueueSnackbar(`¡No se pudó actualizar los datos!`, { variant: 'danger' });
     }
-  } catch (error) {
-    console.error("Error en handleSubmit:", error);
-    // enqueueSnackbar(`¡No se pudó actualizar los datos!`, { variant: 'danger' });
-  }
-});
+  });
 
   return (
     <Dialog
@@ -140,132 +140,186 @@ const onSubmit = handleSubmit(async (data) => {
       }}
       padding={0}
     >
-
       {tipoEvaluacion === 0 ? (
         <>
-          <DialogTitle sx={{ m: 0, p: 2, margin: '25px', textAlign: 'center' }} id="customized-dialog-title">
+          <DialogTitle
+            sx={{ m: 0, p: 2, margin: '25px', textAlign: 'center' }}
+            id="customized-dialog-title"
+          >
             Encuestas por contestar
           </DialogTitle>
 
           <Stack sx={{ mt: 0 }}>
             <DialogContent dividers sx={{ margin: '25px' }}>
               {encuestas.map((item, index) => (
-                <>
-                  <Typography variant="subtitle2" >
+                <Stack key={index} sx={{ display: 'inline-block', width: 'fit-content' }}>
+                  <Typography variant="subtitle2">
                     {item.primeraSesion === 0 ? (
                       <Box display="flex" justifyContent="space-between" alignItems="center">
-                        Encuesta de primera sesión ({formatText(item.especialidad)} - {item.fecha})
-                        <Button variant="contained" color="primary" key={item.idCita}
-                          onClick={handleEvaluacion(
-                            { idCita: item.idCita, especialista: item.idEspecialista, beneficio: item.idpuesto, encuesta: 1 }
-                          )}>Contestar</Button>
+                        Encuesta de primera sesión cita #{item.idCita} (
+                        {formatText(item.especialidad)} el {dayjs(item.fecha).format('YYYY-MM-DD')})
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          key={item.idCita}
+                          onClick={handleEvaluacion({
+                            idCita: item.idCita,
+                            especialista: item.idEspecialista,
+                            beneficio: item.idpuesto,
+                            encuesta: 1,
+                          })}
+                        >
+                          Contestar
+                        </Button>
                       </Box>
                     ) : null}
                   </Typography>
                   <Box mb={2} />
-                  <Typography variant="subtitle2" >
+                  <Typography variant="subtitle2">
                     {item.satisfaccion === 0 ? (
                       <Box display="flex" justifyContent="space-between" alignItems="center">
-                        Encuesta de satisfacción ({formatText(item.especialidad)} - {item.fecha})
-                        <Button variant="contained" color="primary"
-                          onClick={handleEvaluacion(
-                            { idCita: item.idCita, especialista: item.idEspecialista, beneficio: item.idpuesto, encuesta: 4 }
-                          )}>Contestar</Button>
+                        Encuesta de satisfacción cita #{item.idCita} (
+                        {formatText(item.especialidad)} el {dayjs(item.fecha).format('YYYY-MM-DD')})
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          onClick={handleEvaluacion({
+                            idCita: item.idCita,
+                            especialista: item.idEspecialista,
+                            beneficio: item.idpuesto,
+                            encuesta: 4,
+                          })}
+                        >
+                          Contestar
+                        </Button>
                       </Box>
                     ) : null}
                   </Typography>
                   <Box mb={2} />
-                  <Typography variant="subtitle2" >
+                  <Typography variant="subtitle2">
                     {item.reagenda === 0 ? (
                       <Box display="flex" justifyContent="space-between" alignItems="center">
-                        Encuesta de reagenda ({formatText(item.especialidad)} - {item.fecha})
-                        <Button variant="contained" color="primary"
-                          onClick={handleEvaluacion(
-                            { idCita: item.idCita, especialista: item.idEspecialista, beneficio: item.idpuesto, encuesta: 3 }
-                          )}>Contestar</Button>
+                        Encuesta de reagenda cita #{item.idCita} ({formatText(item.especialidad)} el{' '}
+                        {dayjs(item.fecha).format('YYYY-MM-DD')})
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          onClick={handleEvaluacion({
+                            idCita: item.idCita,
+                            especialista: item.idEspecialista,
+                            beneficio: item.idpuesto,
+                            encuesta: 3,
+                          })}
+                        >
+                          Contestar
+                        </Button>
                       </Box>
                     ) : null}
                   </Typography>
                   <Box mb={2} />
-                  <Typography variant="subtitle2" >
+                  <Typography variant="subtitle2">
                     {item.cancelacion === 0 ? (
                       <Box display="flex" justifyContent="space-between" alignItems="center">
-                        Encuesta de cancelación ({formatText(item.especialidad)} - {item.fecha})
-                        <Button variant="contained" color="primary"
-                          onClick={handleEvaluacion(
-                            { idCita: item.idCita, especialista: item.idEspecialista, beneficio: item.idpuesto, encuesta: 2 }
-                          )}>Contestar</Button>
+                        Encuesta de cancelación cita #{item.idCita} ({formatText(item.especialidad)}{' '}
+                        el {dayjs(item.fecha).format('YYYY-MM-DD')})
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          onClick={handleEvaluacion({
+                            idCita: item.idCita,
+                            especialista: item.idEspecialista,
+                            beneficio: item.idpuesto,
+                            encuesta: 2,
+                          })}
+                        >
+                          Contestar
+                        </Button>
                       </Box>
                     ) : null}
                   </Typography>
                   <Box mb={2} />
-                </>
+                </Stack>
               ))}
             </DialogContent>
           </Stack>
         </>
-
       ) : (
-
         <Stack sx={{ mt: 0 }}>
-          <DialogContent dividers >
-
+          <DialogContent dividers>
             <FormProvider methods={methods} onSubmit={onSubmit} key={formKey}>
-
-              <DialogTitle sx={{ m: 0, p: 2, margin: '25px', textAlign: 'center' }} id="customized-dialog-title">
+              <DialogTitle
+                sx={{ m: 0, p: 2, margin: '25px', textAlign: 'center' }}
+                id="customized-dialog-title"
+              >
                 Encuesta
               </DialogTitle>
 
               {encuestaData.length > 0 ? (
                 <>
-                  <Stack sx={{ mt: 0 }} >
+                  <Stack sx={{ mt: 0 }}>
                     {encuestaData.map((item, index) => (
-                      <>
+                      <Stack
+                        key={index}
+                        sx={
+                          {
+                            /* display: 'inline-block' */
+                          }
+                        }
+                      >
                         <DialogContent style={{ fontWeight: 'bold', margin: '15px' }}>
                           {item.pregunta}
                         </DialogContent>
 
                         <DialogContent sx={{ margin: '15px' }}>
-                        <Controller
-                          name={`resp_${index}`}
-                          control={methods.control}
-                          render={({ field }) => (
-                            <RadioGroup {...field} key={item.idPregunta}>
-                              {Resp1Data.map((r1) =>
-                                r1.grupo === item.respuestas ? (
-                                  <li key={r1.id} style={{ marginBottom: '0px', listStyleType: 'none' }}>
-                                    <FormControlLabel value={r1.value} control={<Radio />} label={r1.label} />
-                                  </li>
-                                ) : null
-                              )}
-                            </RadioGroup>
-                          )}
-                        />
+                          <Controller
+                            name={`resp_${index}`}
+                            control={methods.control}
+                            render={({ field }) => (
+                              <RadioGroup {...field} key={item.idPregunta}>
+                                {Resp1Data.map((r1) =>
+                                  r1.grupo === item.respuestas ? (
+                                    <li
+                                      key={r1.id}
+                                      style={{ marginBottom: '0px', listStyleType: 'none' }}
+                                    >
+                                      <FormControlLabel
+                                        value={r1.value}
+                                        control={<Radio />}
+                                        label={r1.label}
+                                      />
+                                    </li>
+                                  ) : null
+                                )}
+                              </RadioGroup>
+                            )}
+                          />
 
-                          {item.respuestas === "5" || item.respuestas === 5 && (
-                            <RHFTextField name={`resp_${index}`} multiline rows={3} />
-                          )}
-
+                          {item.respuestas === '5' ||
+                            (item.respuestas === 5 && (
+                              <RHFTextField name={`resp_${index}`} multiline rows={3} />
+                            ))}
                         </DialogContent>
-                      </>
+                      </Stack>
                     ))}
-
                   </Stack>
 
                   <DialogActions justifycontent="center" sx={{ justifyContent: 'center' }}>
-                    <LoadingButton type="submit" variant="contained" color="success" loading={isSubmitting}>
+                    <LoadingButton
+                      type="submit"
+                      variant="contained"
+                      color="success"
+                      loading={isSubmitting}
+                    >
                       Enviar
                     </LoadingButton>
                   </DialogActions>
                 </>
               ) : (
-
-                <Stack spacing={1} >
+                <Stack spacing={1}>
                   <Grid container sx={{ p: 5 }} justifyContent="center" alignItems="center">
                     <CircularProgress />
                   </Grid>
                 </Stack>
-
               )}
             </FormProvider>
           </DialogContent>

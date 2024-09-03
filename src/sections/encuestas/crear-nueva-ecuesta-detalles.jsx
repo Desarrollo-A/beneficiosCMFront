@@ -59,7 +59,7 @@ export default function InvoiceNewEditDetails() {
         {fields.map((item, index) => (
           <Stack key={item.id}>
             <Grid container spacing={3} disableEqualOverflow>
-              <Grid item xs={9} md={9}>
+              <Grid xs={9} md={9}>
                 <RHFTextField
                   size="small"
                   name={`items[${index}].pregunta`}
@@ -68,7 +68,7 @@ export default function InvoiceNewEditDetails() {
                 />
               </Grid>
 
-              <Grid item xs={3} md={3}>
+              <Grid xs={3} md={3}>
                 <RHFSelect
                   name={`items[${index}].respuesta`}
                   size="small"
@@ -86,7 +86,7 @@ export default function InvoiceNewEditDetails() {
               </Grid>
             </Grid>
 
-            <Grid item xs={3} md={3}>
+            <Grid xs={3} md={3}>
               <Button
                 size="small"
                 color="error"

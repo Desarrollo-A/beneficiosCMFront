@@ -129,25 +129,25 @@ export default function ModalAgregarManuales({ open, onClose }) {
 
               <Box mb={2} />
 
-              <Grid item xs={12} md={6}>
+              <Grid xs={12} md={6}>
                 <RHFTextField name="titulo" label="Título" multiline rows={1} />
               </Grid>
 
               <Box mb={2} />
 
-              <Grid item xs={12} md={6}>
+              <Grid xs={12} md={6}>
                 <RHFTextField name="descripcion" label="Descripcion" multiline rows={4} />
               </Grid>
 
               <Box mb={2} />
 
-              <Grid item xs={12} md={6}>
+              <Grid xs={12} md={6}>
                 <RHFTextField name="icono" label="Icono" multiline rows={1} />
               </Grid>
 
               <Box mb={2} />
 
-              <Grid item xs={12} md={6}>
+              <Grid xs={12} md={6}>
                 <RHFTextField name="video" label="Video" multiline rows={1} />
               </Grid>
             </DialogContent>

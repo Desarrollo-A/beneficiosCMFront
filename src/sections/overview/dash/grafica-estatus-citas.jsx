@@ -185,7 +185,7 @@ export default function GraficaEstatusCitas({
               margin: '20px',
             }}
           >
-            <Grid item md={12} xs={12}>
+            <Grid md={12} xs={12}>
               <FormControl
                 sx={{
                   width: '100%',
@@ -209,7 +209,7 @@ export default function GraficaEstatusCitas({
 
             {rol !== 3 ? (
               <>
-                <Grid item md={6} xs={12}>
+                <Grid md={6} xs={12}>
                   <FormControl
                     sx={{
                       width: '100%',
@@ -233,7 +233,7 @@ export default function GraficaEstatusCitas({
                   </FormControl>
                 </Grid>
 
-                <Grid item md={6} xs={12}>
+                <Grid md={6} xs={12}>
                   <FormControl
                     sx={{
                       width: '100%',
@@ -260,7 +260,7 @@ export default function GraficaEstatusCitas({
               </>
             ) : null}
 
-            <Grid item md={6} xs={12}>
+            <Grid md={6} xs={12}>
               <FormControl
                 sx={{
                   width: '100%',
@@ -283,7 +283,7 @@ export default function GraficaEstatusCitas({
               </FormControl>
             </Grid>
 
-            <Grid item md={6} xs={12}>
+            <Grid md={6} xs={12}>
               <FormControl
                 sx={{
                   width: '100%',

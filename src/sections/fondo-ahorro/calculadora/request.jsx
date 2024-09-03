@@ -14,18 +14,19 @@ import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';
 import StepLabel from '@mui/material/StepLabel';
 import { Box, Typography } from '@mui/material';
+import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
 
-import { endpoints } from 'src/utils/axios';
-
 import { useBoolean } from 'src/hooks/use-boolean';
+
+import { endpoints } from 'src/utils/axios';
 
 import { useUpdate } from 'src/api/reportes';
 import { useAuthContext } from 'src/auth/hooks';
 
-import { ConfirmDialog } from 'src/components/custom-dialog';
 import Iconify from 'src/components/iconify/iconify';
 import { useSnackbar } from 'src/components/snackbar';
+import { ConfirmDialog } from 'src/components/custom-dialog';
 import FormProvider, {
   RHFTextField,
 } from 'src/components/hook-form';
@@ -37,7 +38,7 @@ const steps = ['Tener en cuenta', 'Calcula tu ahorro', 'Envia tu solicitud'];
 
 // ----------------------------------------------------------------------
 
-const QontoStepIconRoot = styled('div')(({ theme }) => ({
+const QontoStepIconRoot = styled('div')(() => ({
   color: '#eaeaf0',
   display: 'flex',
   height: 22,
@@ -53,9 +54,6 @@ const QontoStepIconRoot = styled('div')(({ theme }) => ({
     borderRadius: '50%',
     backgroundColor: 'currentColor',
   },
-  ...theme.applyStyles('dark', {
-    color: theme.palette.grey[700],
-  }),
   variants: [
     {
       props: ({ ownerState }) => ownerState.active,
@@ -93,13 +91,11 @@ QontoStepIcon.propTypes = {
   completed: PropTypes.bool,
 };
 
-export default function Request({ onClose }) {
+export default function Request({ onClose, FirstDay, dateNext }) {
 
   const updateEstatus = useUpdate(endpoints.fondoAhorro.sendMail);
 
   const { user } = useAuthContext();
-
-  console.log(user)
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -157,7 +153,8 @@ export default function Request({ onClose }) {
       .typeError('Debe ser un número')
       .required('Ingresa un monto')
       .positive('Debe ser un número positivo')
-      .min(1.00, 'Debe ser mayor o igual a $1'),
+      .min(500.00, 'Debe ser mayor o igual a $500')
+      .max(10000.00, 'Debe ser menor o igual a $10,000'),
   });
 
   const defaultValues = useMemo(
@@ -174,6 +171,7 @@ export default function Request({ onClose }) {
 
   const {
     handleSubmit,
+    formState: { isSubmitting },
   } = methods;
 
   const { isValid, dirtyFields } = useFormState({ control: methods.control });
@@ -183,8 +181,12 @@ export default function Request({ onClose }) {
   const onSubmit = handleSubmit(async (data) => {
 
     const dataValue = {
+      idUsuario: user?.idUsuario,
       nombre: user?.nombre,
       numEmpleado: user?.numEmpleado,
+      idContrato: user?.idContrato,
+      FirstDay,
+      dateNext,
       ...data,
     };
 
@@ -196,7 +198,7 @@ export default function Request({ onClose }) {
        if (update.estatus === true) {
       enqueueSnackbar(update.msj, { variant: 'success' });
 
-      mutate(endpoints.ayuda.createFaqs);
+      mutate(endpoints.fondoAhorro.getFondo);
 
     } else {
       enqueueSnackbar(update.msj, { variant: 'error' });
@@ -389,9 +391,9 @@ export default function Request({ onClose }) {
             <Button variant="contained" color="error" onClick={() => { confirm.onFalse() }}>
               Cancelar
             </Button>
-            <Button variant="contained" color="success" onClick={handleSubmit(onSubmit)}>
+            <LoadingButton variant="contained" color="success" onClick={handleSubmit(onSubmit)} loading={isSubmitting}>
               Aceptar
-            </Button>
+            </LoadingButton>
           </>
         }
       />
@@ -400,5 +402,7 @@ export default function Request({ onClose }) {
 }
 
 Request.propTypes = {
-  onClose: PropTypes.func
+  onClose: PropTypes.any,
+  dateNext: PropTypes.any,
+  FirstDay: PropTypes.any
 };

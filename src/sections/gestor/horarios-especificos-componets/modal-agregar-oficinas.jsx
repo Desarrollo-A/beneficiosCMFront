@@ -62,7 +62,7 @@ export default function ModalAgregarOficinas({ open, onClose }) {
 
   const [btnLoad, setBtnLoad] = useState(false);
 
-  const [isChecked, setIsChecked] = useState(0);
+  const [isChecked, setIsChecked] = useState();
 
   const [espe, setEspe] = useState('');
 

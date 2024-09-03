@@ -34,7 +34,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
   const idUsr = user?.idUsuario;
 
   const NewUserSchema = Yup.object().shape({
-    descripcion: Yup.string().required('El campo es requerido'),
+    descripcion: Yup.string().trim().required('El campo es requerido'),
     idCita: Yup.string().required('El campo es requerido'),
     archivo: Yup.mixed().nullable(),
   });
@@ -111,6 +111,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
       PaperProps={{
         sx: { maxWidth: 720 },
       }}
+      backdrop="static"
     >
       <FormProvider methods={methods} onSubmit={onSubmit}>
         <DialogTitle>Justificación de penalización</DialogTitle>

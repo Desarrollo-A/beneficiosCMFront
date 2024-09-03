@@ -9,6 +9,10 @@ import interactionPlugin from '@fullcalendar/interaction';
 
 import Card from '@mui/material/Card';
 
+import { useAuthContext } from 'src/auth/hooks';
+
+import PendingModalUser from 'src/sections/calendar/beneficiary/pendingModalUser';
+
 import '../styles/style.css';
 import { StyledCalendar } from '../styles/styles';
 import CalendarToolbar from '../components/calendar-toolbar';
@@ -26,8 +30,14 @@ export default function BeneficiaryCalendar({
   onClickEvent,
   smUp,
 }) {
+
+  const { user: datosUser } = useAuthContext();
+
   return (
     <Card>
+
+      <PendingModalUser idUsuario={datosUser?.idUsuario}/>
+
       <StyledCalendar>
         <CalendarToolbar
           date={date}

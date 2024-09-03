@@ -239,7 +239,7 @@ export default function GraficaEncuestas({
             >
               {rol !== 3 ? (
                 <>
-                  <Grid item md={6} xs={12}>
+                  <Grid md={6} xs={12}>
                     <FormControl
                       sx={{
                         width: '100%',
@@ -263,7 +263,7 @@ export default function GraficaEncuestas({
                     </FormControl>
                   </Grid>
 
-                  <Grid item md={6} xs={12}>
+                  <Grid md={6} xs={12}>
                     <FormControl
                       sx={{
                         width: '100%',
@@ -290,7 +290,7 @@ export default function GraficaEncuestas({
                 </>
               ) : null}
 
-              <Grid item md={6} xs={12}>
+              <Grid md={6} xs={12}>
                 <FormControl
                   sx={{
                     width: '100%',
@@ -313,7 +313,7 @@ export default function GraficaEncuestas({
                 </FormControl>
               </Grid>
 
-              <Grid item md={6} xs={12}>
+              <Grid md={6} xs={12}>
                 <FormControl
                   sx={{
                     width: '100%',
@@ -332,7 +332,7 @@ export default function GraficaEncuestas({
                 </FormControl>
               </Grid>
 
-              <Grid item md={6} xs={12}>
+              <Grid md={6} xs={12}>
                 <FormControl
                   sx={{
                     width: '100%',
@@ -356,7 +356,7 @@ export default function GraficaEncuestas({
                 </FormControl>
               </Grid>
 
-              <Grid item md={6} xs={12}>
+              <Grid md={6} xs={12}>
                 <FormControl
                   sx={{
                     width: '100%',
