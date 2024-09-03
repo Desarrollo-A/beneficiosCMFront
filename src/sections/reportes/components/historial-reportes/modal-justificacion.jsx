@@ -27,7 +27,7 @@ export default function ModalJustificacion({ open, onClose, observacion, archivo
   const widthBox = useRef(0)
   const [isAceptar, setAceptar] = useState(false)
   const [isRechazo, setRechazo] = useState(false)
-
+  
   const fileExt = archivo ? /[^.]+$/.exec(archivo)[0] : '';
 
   const aceptar = async(value) => {

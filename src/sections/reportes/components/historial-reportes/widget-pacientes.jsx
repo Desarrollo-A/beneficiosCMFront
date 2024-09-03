@@ -10,7 +10,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 export default function BookingWidgetSummary({ title, total, icon, sx, length, ...other }) {
 
   const theme = useTheme();
-
+  
   return (
     <Card
       sx={{
@@ -27,7 +27,7 @@ export default function BookingWidgetSummary({ title, total, icon, sx, length, .
       
       <Box>
         <Box sx={{ mb: 1, typography: 'h3' }}> 
-          {length > 0 ? ( 
+          {length >= 0 ? ( 
             total
            ):(
             <CircularProgress /> )}
