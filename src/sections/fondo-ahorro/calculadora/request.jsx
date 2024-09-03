@@ -198,7 +198,7 @@ export default function Request({ onClose, FirstDay, dateNext }) {
        if (update.estatus === true) {
       enqueueSnackbar(update.msj, { variant: 'success' });
 
-      mutate(endpoints.ayuda.createFaqs);
+      mutate(endpoints.fondoAhorro.getFondo);
 
     } else {
       enqueueSnackbar(update.msj, { variant: 'error' });
