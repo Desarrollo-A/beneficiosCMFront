@@ -99,6 +99,7 @@ export const paths = {
   fondoAhorro: {
     root: `${ROOTS.RAIZ}/fondoAhorro`,
     main: `${ROOTS.RAIZ}/fondoAhorro`,
+    solicitudes: `${ROOTS.RAIZ}/solicitudes`,
   },
   // DASHBOARD
   dashboard: {

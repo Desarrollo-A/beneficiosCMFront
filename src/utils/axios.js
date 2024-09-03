@@ -350,7 +350,8 @@ export const endpoints = {
   modalidades: {
     list: '/modalidades/list',
   },
-  fondoAhorro:{
-    sendMail: 'fondoAhorro/FondoAhorroController/sendMail'
-  }
+  fondoAhorro: {
+    sendMail: 'fondoAhorro/FondoAhorroController/sendMail',
+    getSolicitudes: 'fondoAhorro/FondoAhorroController/getSolicitudes',
+  },
 };
