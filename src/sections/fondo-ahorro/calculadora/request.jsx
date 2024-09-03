@@ -38,7 +38,7 @@ const steps = ['Tener en cuenta', 'Calcula tu ahorro', 'Envia tu solicitud'];
 
 // ----------------------------------------------------------------------
 
-const QontoStepIconRoot = styled('div')(({ theme }) => ({
+const QontoStepIconRoot = styled('div')(() => ({
   color: '#eaeaf0',
   display: 'flex',
   height: 22,
@@ -54,9 +54,6 @@ const QontoStepIconRoot = styled('div')(({ theme }) => ({
     borderRadius: '50%',
     backgroundColor: 'currentColor',
   },
-  ...theme.applyStyles('dark', {
-    color: theme.palette.grey[700],
-  }),
   variants: [
     {
       props: ({ ownerState }) => ownerState.active,
