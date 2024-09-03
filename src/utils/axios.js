@@ -229,6 +229,7 @@ export const endpoints = {
     allDemandaAreas: '/ReportesController/allDemandaAreas',
     demandaAreas: '/ReportesController/demandaAreas',
     demandaPuestos: '/ReportesController/demandaPuestos',
+    aceptarJustificacion: '/ReportesController/aceptarJustificacion'
   },
   dashboard: {
     citasAnual: '/DashboardController/citasAnual',

@@ -43,7 +43,8 @@ export default function FilasTabla({ row, selected, rol, rel }) {
     usuario, 
     archivo,
     numEspecialista,
-    numCita
+    numCita,
+    justificado
   } = row;
     const quickEdit = useBoolean();
     const modalJust = useBoolean();
@@ -74,9 +75,9 @@ export default function FilasTabla({ row, selected, rol, rel }) {
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{numEmpleado}</TableCell>
 
-        {rol !== 3 ? <TableCell sx={{ whiteSpace: 'nowrap' }}>{numEspecialista}</TableCell> : null}
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{numEspecialista}</TableCell>
 
-        {rol !== 3 ? <TableCell sx={{ whiteSpace: 'nowrap' }}>{especialista}</TableCell> : null}
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{especialista}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{usuario}</TableCell>
 
@@ -110,7 +111,7 @@ export default function FilasTabla({ row, selected, rol, rel }) {
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{numCita}</TableCell>
 
-        {estatusCita === 3 && (observaciones === null || observaciones === '') && rol === 4 ? (
+        {estatusCita === 3 && (observaciones === null) && justificado === 0 ? (
           <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
             <Tooltip title="Justificar" placement="top" arrow>
               <IconButton
@@ -123,7 +124,7 @@ export default function FilasTabla({ row, selected, rol, rel }) {
           </TableCell>
         ) : null}
 
-        {/* {estatusCita === 5 && archivo !== null && rol === 4 ? (
+        {(estatusCita === 3 || estatusCita === 5) && (observaciones !== null) ? (
           <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
             <Tooltip title="Ver justificación" placement="top" arrow>
               <IconButton
@@ -134,7 +135,7 @@ export default function FilasTabla({ row, selected, rol, rel }) {
               </IconButton>
             </Tooltip>
           </TableCell>
-        ) : null} */}
+        ) : null}
       </TableRow>
 
       <UserQuickEditForm
@@ -144,6 +145,7 @@ export default function FilasTabla({ row, selected, rol, rel }) {
         idCita={idCita}
         row={row}
         rel={rel}
+        rol={rol}
       />
 
       <ModalJustificacion
@@ -152,6 +154,9 @@ export default function FilasTabla({ row, selected, rol, rel }) {
         idCita={idCita}
         observacion={observaciones}
         archivo={archivo}
+        rol={rol}
+        estatusCita={estatusCita}
+        justificado={justificado}
       />
     </>
   );
