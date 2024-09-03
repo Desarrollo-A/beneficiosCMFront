@@ -16,13 +16,12 @@ import TableBody from '@mui/material/TableBody';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import TableContainer from '@mui/material/TableContainer';
-// import LinearProgress from '@mui/material/LinearProgress';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
-import { useAuthContext } from 'src/auth/hooks';
-import { updateExternalUser } from 'src/api/user';
+import { fTimestamp } from 'src/utils/format-time';
+import { fCurrency } from 'src/utils/format-number';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -37,13 +36,6 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-// import UserTableRow from './user-table-row';
-// import UserTableToolbar from './user-table-toolbar';
-// import UserTableFiltersResult from './user-table-filters';
-
-import { fTimestamp } from 'src/utils/format-time';
-import { fCurrency } from 'src/utils/format-number';
-
 import SolicitudesTableRow from './solicitudes/solicitudes-table-row';
 import SolicitudesTableToolbar from './solicitudes/solicitudes-table-toolbar';
 import SolicitudesTableFilterResult from './solicitudes/solicitudes-table-filters';
@@ -57,7 +49,6 @@ const TABLE_HEAD = [
   { id: '', label: 'MONTO' },
   { id: '', label: 'ES REINVERSIÓN' },
   { id: '', label: 'ESTATUS' },
-  { id: '', label: '' },
 ];
 
 const HEADER = [
@@ -139,7 +130,6 @@ export default function SolicitudesTable({ solicitudes, solicitudesMutate }) {
   const table = useTable();
   const targetRef = useRef();
   const { enqueueSnackbar } = useSnackbar();
-  const { user: datosUser } = useAuthContext();
   const [filters, setFilters] = useState(defaultFilters);
   const [fechaI, setFechaI] = useState(primerDiaMes);
   const [fechaF, setFechaF] = useState(ultimoDiaMes);
@@ -199,24 +189,6 @@ export default function SolicitudesTable({ solicitudes, solicitudesMutate }) {
     [handleFilters]
   );
 
-  const handleDisableUser = async (id, estatus) => {
-    try {
-      const update = await updateExternalUser(id, {
-        estatus: estatus === 1 ? 0 : 1,
-        modificadoPor: datosUser.idUsuario,
-      });
-      if (update.result) {
-        enqueueSnackbar(`¡Se ha actualizado el usuario exitosamente!`, { variant: 'success' });
-        solicitudesMutate();
-      } else {
-        enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'warning' });
-      }
-    } catch (error) {
-      console.error('Error en handleDisableUser:', error);
-      enqueueSnackbar(`¡No se pudó actualizar los datos de usuario!`, { variant: 'error' });
-    }
-  };
-
   const handleExcel = async (e) => {
     e.preventDefault();
     if (dataFiltered.length === 0) {
@@ -239,13 +211,11 @@ export default function SolicitudesTable({ solicitudes, solicitudesMutate }) {
     <Card>
       <CardHeader />
       <CardContent>
-        {/* BUSCADOR DE REGISTROS */}
         <Stack sx={{ flexDirection: 'row', alignItems: 'center' }}>
           <SolicitudesTableToolbar filters={filters} onFilters={handleFilters} />
           <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
             <DatePicker
               label="Fecha inicio"
-              // maxDate={fhF.setDate(fhF.getDate() + 1)}
               maxDate={new Date(fechaF).setDate(new Date(fechaF).getDate() + 1)}
               value={filters.startDate}
               onChange={handleFilterStartDate}
@@ -265,7 +235,6 @@ export default function SolicitudesTable({ solicitudes, solicitudesMutate }) {
           <LocalizationProvider adapterLocale={es} dateAdapter={AdapterDateFns}>
             <DatePicker
               label="Fecha fin"
-              // minDate={fhI.setDate(fhI.getDate() + 1)}
               minDate={new Date(fechaI).setDate(new Date(fechaI).getDate() + 1)}
               value={filters.endDate}
               onChange={handleFilterEndDate}
@@ -283,9 +252,7 @@ export default function SolicitudesTable({ solicitudes, solicitudesMutate }) {
           <SolicitudesTableFilterResult
             filters={filters}
             onFilters={handleFilters}
-            //
             onResetFilters={handleResetFilters}
-            //
             results={dataFiltered.length}
             sx={{ pb: 1, pt: 0 }}
           />
@@ -341,9 +308,6 @@ export default function SolicitudesTable({ solicitudes, solicitudesMutate }) {
                       key={item.idFondo}
                       row={item}
                       selected={table.selected.includes(item.idFondo)}
-                      onSelectRow={() => table.onSelectRow(item.idFondo)}
-                      onDisableRow={() => handleDisableUser(item.contrato, item.estatus)}
-                      usersMutate={solicitudesMutate}
                     />
                   ))}
 
@@ -375,7 +339,7 @@ SolicitudesTable.propTypes = {
 };
 
 const applyFilter = ({ inputData, comparator, filters, dateError }) => {
-  const { name, startDate, endDate, modalidad } = filters;
+  const { name, startDate, endDate } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
 
@@ -407,14 +371,6 @@ const applyFilter = ({ inputData, comparator, filters, dateError }) => {
     });
   }
 
-  /*
-  const endDateC = new Date(endDate);
-  const endDateF = new Date(endDateC);
-  
-  endDateC.setTime(endDateC.getTime() + 86400000);
-  const endDateF = endDateC.toISOString();
-  */
-
   if (!dateError) {
     if (startDate && endDate) {
       inputData = inputData.filter(
@@ -423,10 +379,6 @@ const applyFilter = ({ inputData, comparator, filters, dateError }) => {
           fTimestamp(item.fechaInicio) <= fTimestamp(endDate)
       );
     }
-  }
-
-  if (modalidad?.length) {
-    inputData = inputData.filter((i) => modalidad.includes(i?.modalidad));
   }
 
   return inputData;
