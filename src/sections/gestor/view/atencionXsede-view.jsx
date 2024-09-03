@@ -100,7 +100,7 @@ export default function AtencionXsedeView() {
 
     const sede_rea = await saveAtencionXSede({area, especialista, modalidad, sede: sed, checked})
 
-    if(sede_rea){      
+    if(sede_rea){
       if((sede_rea.idOficina === null || sede_rea.idOficina === 0) && sede_rea.estatus === 1 && sede_rea.tipoCita === 1){
         handleChangeSedeNew(sed)
         enqueueSnackbar("Se debe seleccionar una oficina", {variant: "info"});

@@ -90,11 +90,9 @@ export default function OficinasDialog({ onClose, oficinasLoading, oficinas, sed
         </Stack>
       </DialogContent>
       <DialogActions>
-        {hasOffice &&
-            <Button variant="contained" color="error" disabled={isLoad} onClick={onClose}>
-                Cerrar
-            </Button>
-        }        
+        <Button variant="contained" color="error" disabled={isLoad} onClick={onClose}>
+            Cerrar
+        </Button>
 
         <LoadingButton variant="contained" color="success" loading={isLoad} disabled={isDisable} onClick={onSubmit}>
           Guardar
