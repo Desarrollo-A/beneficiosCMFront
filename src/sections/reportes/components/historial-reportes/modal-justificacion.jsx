@@ -21,7 +21,7 @@ import { aceptarJustificacion } from 'src/api/reportes';
 
 import Iconify from 'src/components/iconify';
 // ----------------------------------------------------------------------
-export default function ModalJustificacion({ open, onClose, observacion, archivo, idCita, rol, estatusCita }) {
+export default function ModalJustificacion({ open, onClose, observacion, archivo, idCita, rol, estatusCita, justificado }) {
   const theme = useTheme();
   const widthInput = useRef(0)
   const widthBox = useRef(0)
@@ -146,7 +146,7 @@ export default function ModalJustificacion({ open, onClose, observacion, archivo
               ) : (
                 ''
               )}
-              {rol === 4 && estatusCita === 3 ? (
+              {rol === 4 && estatusCita === 3 && justificado === 0 ? (
                 <Stack direction="row" spacing={2} sx={{ mb: 2, mt: 2 }}>
                   <LoadingButton
                     variant="contained"
@@ -194,5 +194,6 @@ ModalJustificacion.propTypes = {
   archivo: PropTypes.any,
   idCita: PropTypes.number,
   rol: PropTypes.number,
-  estatusCita: PropTypes.number
+  estatusCita: PropTypes.number,
+  justificado: PropTypes.number
 };

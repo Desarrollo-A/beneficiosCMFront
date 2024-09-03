@@ -43,7 +43,8 @@ export default function FilasTabla({ row, selected, rol, rel }) {
     usuario, 
     archivo,
     numEspecialista,
-    numCita
+    numCita,
+    justificado
   } = row;
     const quickEdit = useBoolean();
     const modalJust = useBoolean();
@@ -110,7 +111,7 @@ export default function FilasTabla({ row, selected, rol, rel }) {
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{numCita}</TableCell>
 
-        {estatusCita === 3 && (observaciones === null) ? (
+        {estatusCita === 3 && (observaciones === null) && justificado === 0 ? (
           <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
             <Tooltip title="Justificar" placement="top" arrow>
               <IconButton
@@ -123,7 +124,7 @@ export default function FilasTabla({ row, selected, rol, rel }) {
           </TableCell>
         ) : null}
 
-        {(estatusCita === 3 || estatusCita === 12) && (observaciones !== null) ? (
+        {(estatusCita === 3 || estatusCita === 5) && (observaciones !== null) ? (
           <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
             <Tooltip title="Ver justificación" placement="top" arrow>
               <IconButton
@@ -155,6 +156,7 @@ export default function FilasTabla({ row, selected, rol, rel }) {
         archivo={archivo}
         rol={rol}
         estatusCita={estatusCita}
+        justificado={justificado}
       />
     </>
   );
