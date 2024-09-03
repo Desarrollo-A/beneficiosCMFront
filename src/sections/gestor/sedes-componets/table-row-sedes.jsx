@@ -57,7 +57,7 @@ export default function TableRowSedes({ row, rol }) {
       </TableRow>
 
       <ModalEditarSedes
-        idSede={row.idSede}
+        idSede={row?.idSede}
         sede={sede}
         abreviacion={abreviacion}
         estatus={estatus}

@@ -12,6 +12,7 @@ const ROOTS = {
   AUTH: `${import.meta.env.BASE_URL}auth`,
   AUTH_DEMO: '/auth-demo',
   DASHBOARD: `${import.meta.env.BASE_URL}beneficios`,
+  FONDOAHORRO: `${import.meta.env.BASE_URL}`,
 };
 
 // ----------------------------------------------------------------------
@@ -93,6 +94,11 @@ export const paths = {
       newPassword: `${ROOTS.AUTH_DEMO}/modern/new-password`,
       verify: `${ROOTS.AUTH_DEMO}/modern/verify`,
     },
+  },
+  // FONDO AHORRO
+  fondoAhorro: {
+    root: `${ROOTS.RAIZ}/fondoAhorro`,
+    main: `${ROOTS.RAIZ}/fondoAhorro`,
   },
   // DASHBOARD
   dashboard: {
