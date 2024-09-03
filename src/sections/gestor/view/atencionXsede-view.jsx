@@ -379,7 +379,7 @@ export default function AtencionXsedeView() {
                           edge="start"
                           checked={ sed.active }
                           disabled={isSaving}
-                          onChange ={ (event) => handleChangeSedeCheck(sed.idsede, event.target.checked) }
+                          onChange ={ (event) => modalidad === 1 ? handleChangeSedeCheck(sed.idsede, event.target.checked) : handleCheckSede(sed.idsede, event.target.checked)  }
                           // onChange={ (event) => handleCheckSede(sed.idsede, event.target.checked) }
                         />
                         <Typography sx={{ fontWeight: sed.idsede === sede ? 'bold' : '' }} >{sed.nsede}</Typography>
