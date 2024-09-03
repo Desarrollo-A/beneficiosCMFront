@@ -64,6 +64,7 @@ export default function AtencionXsedeView() {
 
   const onClose = () => {
     setOpen(false)
+    getActivas()
   } 
 
   const handleChangeArea = (are) => {
@@ -120,6 +121,37 @@ export default function AtencionXsedeView() {
     getActivas() 
   }
 
+  const handleSaveSede = async(sed, checked, ofi) => {
+    setSaving(true)
+    setLoad(true)
+    const tmp_sedes = [...sedes]
+
+    const index = tmp_sedes.findIndex(pres => pres.idsede === sed)
+
+    if(index !== -1){
+      tmp_sedes[index].active = checked
+    }
+
+    setSedes(tmp_sedes)
+
+    const sede_rea = await saveAtencionXSede({area, especialista, modalidad, sede: sed, checked})
+
+    if(sede_rea){
+      if((sede_rea.idOficina !== null || sede_rea.idOficina !== 0) && sede_rea.estatus === 1){
+        // handleChangeSede(sed)
+        handleChangeOficina(ofi)
+      }
+      else{
+        enqueueSnackbar("Error al guardar la atención por sede")
+      }
+    }
+    else{
+      enqueueSnackbar("Error al guardar la sede", {variant: "error"});
+    }
+
+    getActivas() 
+  }
+
   const getActivas = async() => {
     setLoadingActivas2(true)
     const act = await getActiveSedes({modalidad, especialista})
@@ -161,15 +193,12 @@ export default function AtencionXsedeView() {
   }
 
   const handleChangeOficina = async(ofi) => {
-    setLoad(true)
     setOficina(ofi)
-    setSaving(true)
 
     const save = await saveOficinaXSede({especialista, modalidad, sede, oficina: ofi})
-    
-    if(hasOffice){
-      const index = activas.findIndex(sed => sed.idSede === sede)
+    const index = activas.findIndex(sed => sed.idSede === sede)
 
+    if(hasOffice && activas[index]!== undefined){
       activas[index].idOficina = ofi
 
       setActivas(activas)    
@@ -218,11 +247,25 @@ export default function AtencionXsedeView() {
     if(ofi){
       setHasOffice(true)
       setOpen(true)
-      setOficina(ofi.idOficina)
+      setOficina(ofi !== undefined ? ofi.idOficina : 0)
     }
     else{
       enqueueSnackbar("Se debe activar la sede antes de asignar una oficina", {variant: 'info'})
       setOficina(null)
+    }
+  }
+
+  const handleChangeSedeCheck = (sed, checked) => { // para el boton de arrows
+    setSede(sed)
+    if(checked){
+      const ofi = activas.find(se => se.idSede === sed)
+
+      setHasOffice(true)
+      setOpen(true)
+      setOficina(ofi !== undefined ? ofi.idOficina : 0)
+    }
+    else{
+      handleCheckSede(sed, checked)
     }
   }
 
@@ -336,7 +379,8 @@ export default function AtencionXsedeView() {
                           edge="start"
                           checked={ sed.active }
                           disabled={isSaving}
-                          onChange={ (event) => handleCheckSede(sed.idsede, event.target.checked) }
+                          onChange ={ (event) => modalidad === 1 ? handleChangeSedeCheck(sed.idsede, event.target.checked) : handleCheckSede(sed.idsede, event.target.checked)  }
+                          // onChange={ (event) => handleCheckSede(sed.idsede, event.target.checked) }
                         />
                         <Typography sx={{ fontWeight: sed.idsede === sede ? 'bold' : '' }} >{sed.nsede}</Typography>
                         <Box sx={{ flex: 1 }}/>
@@ -375,6 +419,7 @@ export default function AtencionXsedeView() {
             especialista={especialista}
             isLoad={isLoad}
             hasOffice={hasOffice}
+            handleSaveSede={handleSaveSede}
           />
           
         </Dialog>
