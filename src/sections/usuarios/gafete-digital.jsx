@@ -18,32 +18,23 @@ import './styles.css'
 
 const drawerBleeding = 56;
 
-const Root = styled('div')(({ theme }) => ({
+const Root = styled('div')(() => ({
     height: '100%',
     backgroundColor: grey[100],
-    ...theme.applyStyles('dark', {
-        backgroundColor: theme.palette.background.default,
-    }),
 }));
 
-const StyledBox = styled('div')(({ theme }) => ({
-    backgroundColor: '#fff',
-    ...theme.applyStyles('dark', {
-        backgroundColor: grey[800],
-    }),
+const StyledBox = styled('div')(() => ({
+    backgroundColor: '#fff'
 }));
 
-const Puller = styled('div')(({ theme }) => ({
+const Puller = styled('div')(() => ({
     width: 30,
     height: 6,
     backgroundColor: grey[300],
     borderRadius: 3,
     position: 'absolute',
     top: 8,
-    left: 'calc(50% - 15px)',
-    ...theme.applyStyles('dark', {
-        backgroundColor: grey[900],
-    }),
+    left: 'calc(50% - 15px)'
 }));
 
 export default function GafeteDigital(props) {
@@ -122,18 +113,18 @@ export default function GafeteDigital(props) {
                                 <Stack
                                     alignItems="center"
                                     sx={{
-                                        mb: 30,
-                                        width: '65%',
+                                        mb: 40,
+                                        width: '70%',
                                         height: '100%',
                                         backgroundImage: `url(${import.meta.env.BASE_URL}assets/images/gafete/logoMaderas.svg)`,
-                                        backgroundSize: 'contain',
+                                        backgroundSize: '100% 100%',
                                         backgroundRepeat: 'no-repeat',
                                         backgroundPosition: 'center',
-                                        zIndex: 1,
+                                        zIndex: 2,
                                     }}
                                 />
 
-                                <Box className="card-line-front" sx={{ zIndex: 2, top: 360 }} />
+                                <Box className="card-line-front" sx={{ zIndex: 2, top: 430 }} />
                                 <Typography
                                     variant="body2"
                                     sx={{
@@ -141,7 +132,7 @@ export default function GafeteDigital(props) {
                                         fontWeight: 'italic',
                                         textAlign: 'center',
                                         zIndex: 3,
-                                        top: 352,
+                                        top: 430,
                                         position: 'absolute',
                                         padding: '8px',
                                         fontSize: '16px'
@@ -151,7 +142,7 @@ export default function GafeteDigital(props) {
                                 </Typography>
                             </Box>
                         </Grid>
-                        <Grid item xs={6} sx={{ px: 5 }}>
+                       {/*  <Grid item xs={6} sx={{ px: 5 }}>
                             <Box
                                 className="card"
                                 sx={{
@@ -217,7 +208,7 @@ export default function GafeteDigital(props) {
                                     CREADORES DE CIUDADES
                                 </Typography>
                             </Box>
-                        </Grid>
+                        </Grid> */}
 
                     </Grid>
                 </Box>
