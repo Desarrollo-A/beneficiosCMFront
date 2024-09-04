@@ -1,1 +1,0 @@
-export { default as RelojChecadorView } from './view/reloj-checador-view'

@@ -4,18 +4,32 @@ import PropTypes from 'prop-types';
 import { Box } from '@mui/system';
 import { Dialog } from '@mui/material';
 import Stack from '@mui/material/Stack';
+import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
-import IconButton from '@mui/material/IconButton';
+import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/system/Unstable_Grid/Grid';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import LinearProgress from '@mui/material/LinearProgress';
 
+import { HOST } from 'src/config-global';
+
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 import ColorsDialog from './colors-status-dialog';
+
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: '#fff',
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: 'center',
+  color: theme.palette.text.secondary,
+  ...theme.applyStyles('dark', {
+    backgroundColor: '#1A2027',
+  }),
+}));
 
 // ----------------------------------------------------------------------
 
@@ -42,7 +56,6 @@ export default function CalendarToolbar({
   onChangeView,
   onOpenFilters,
 }) {
-
   const isMobile = useMediaQuery('(max-width: 960px)');
 
   const popover = usePopover();
@@ -63,9 +76,7 @@ export default function CalendarToolbar({
 
   return (
     <>
-
       {isMobile ? (
-
         <Grid
           container
           direction="column"
@@ -73,9 +84,13 @@ export default function CalendarToolbar({
           justifyContent="space-between"
           sx={{ p: 2.5, pr: 2, position: 'relative' }}
         >
-
+          <Grid container alignItems="center" justifyContent="space-between" spacing={1}>
+            <Grid container direction="row" alignItems="center" spacing={1}>
+              <Typography variant="h6">{fechaTitulo}</Typography>
+            </Grid>
+          </Grid>
+          <Box mb={3} />
           <Grid
-            item
             container
             direction="row"
             alignItems="center"
@@ -83,58 +98,15 @@ export default function CalendarToolbar({
             spacing={1}
             sx={{ width: '100%' }}
           >
-            <Grid item xs={6}>
+            <Grid xs={6}>
               <Button
-                fullWidth
-                size="small"
-                color="error"
+                target="_blank"
                 variant="contained"
-                onClick={onToday}
+                color="info"
+                href={`${HOST}/dist/documentos/solicitud-permiso/solicitudPermiso.pdf`}
               >
-                Hoy
+                Solicitud de permiso
               </Button>
-            </Grid>
-            <Grid item xs={6}>
-              <Button
-                fullWidth
-                size="small"
-                color="primary"
-                variant="contained"
-                onClick={() => handleOpen()}
-              >
-                Leyenda
-              </Button>
-            </Grid>
-          </Grid>
-
-          <Box mb={3} />
-
-          <Grid
-            item
-            container
-            alignItems="center"
-            justifyContent="space-between"
-            spacing={1}
-          >
-            <Button
-              size="small"
-              color="inherit"
-              onClick={popover.onOpen}
-              endIcon={<Iconify icon="eva:arrow-ios-downward-fill" sx={{ ml: -0.5 }} />}
-            >
-              Agenda
-            </Button>
-
-            <Grid item container direction="row" alignItems="center" spacing={1}>
-              <IconButton onClick={onPrevDate}>
-                <Iconify icon="eva:arrow-ios-back-fill" />
-              </IconButton>
-
-              <Typography variant="h6">{fechaTitulo}</Typography>
-
-              <IconButton onClick={onNextDate}>
-                <Iconify icon="eva:arrow-ios-forward-fill" />
-              </IconButton>
             </Grid>
           </Grid>
 
@@ -143,14 +115,10 @@ export default function CalendarToolbar({
             open={open}
             fullWidth
             maxWidth="xs"
-
-            
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
           >
-            <ColorsDialog
-              onClose={() => handleClose()}
-            />
+            <ColorsDialog onClose={() => handleClose()} />
           </Dialog>
 
           {loading && (
@@ -166,38 +134,35 @@ export default function CalendarToolbar({
             />
           )}
         </Grid>
-
       ) : (
-
         <Stack
           direction="row"
           alignItems="center"
           justifyContent="center"
           sx={{ p: 2.5, pr: 2, position: 'relative' }}
         >
-          <Stack direction="row" alignItems="center" spacing={1}>
-            <IconButton onClick={onPrevDate}>
-              <Iconify icon="eva:arrow-ios-back-fill" />
-            </IconButton>
-            <Typography variant="h6">{fechaTitulo}</Typography>
-            <IconButton onClick={onNextDate}>
-              <Iconify icon="eva:arrow-ios-forward-fill" />
-            </IconButton>
-          </Stack>
-
-          <Dialog // dialog de confirmación de finalización
-            open={open}
-            fullWidth
-            maxWidth="xs"
-
-            
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-          >
-            <ColorsDialog
-              onClose={() => handleClose()}
-            />
-          </Dialog>
+          <Box sx={{ flexGrow: 1 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={4} alignContent="center" />
+              <Grid item xs={4} alignContent="center">
+                <Item>
+                  <Typography variant="h6">{fechaTitulo}</Typography>
+                </Item>
+              </Grid> 
+              <Grid item xs={4}>
+                <Item>
+                  <Button
+                    target="_blank"
+                    variant="contained"
+                    color="info"
+                    href={`${HOST}/dist/documentos/solicitud-permiso/solicitudPermiso.pdf`}
+                  >
+                    Solicitud de permiso
+                  </Button>
+                </Item>
+              </Grid>
+            </Grid>
+          </Box>
 
           {loading && (
             <LinearProgress
@@ -212,7 +177,6 @@ export default function CalendarToolbar({
             />
           )}
         </Stack>
-
       )}
 
       <CustomPopover

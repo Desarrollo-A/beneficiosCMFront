@@ -8,10 +8,9 @@ import esLocale from '@fullcalendar/core/locales/es';
 import interactionPlugin from '@fullcalendar/interaction';
 
 import Paper from '@mui/material/Paper';
-import Avatar from '@mui/material/Avatar';
 import { styled } from '@mui/material/styles';
+import { Card, Stack, Container } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { Card, Grid, Stack, Button, Container, Typography } from '@mui/material';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
@@ -19,10 +18,10 @@ import { useAuthContext } from 'src/auth/hooks';
 
 import { StyledCalendar } from 'src/sections/calendar/styles/styles';
 
-import { useCalendar } from '../hooks';
-import CalendarToolbar from '../components/calendar-toolbar';
+import { useCalendar } from './hooks';
+import CalendarToolbar from './components/calendar-toolbar';
 
-export default function RelojChecadorView() {
+export default function RelojChecador() {
   const {
     calendarRef,
     //
@@ -45,7 +44,7 @@ export default function RelojChecadorView() {
   } = useCalendar();
 
   const { user } = useAuthContext();
-  const isMobile = useMediaQuery('(max-width: 960px)');
+  const isMobile = useMediaQuery('(max-width: 960px)')
 
   const smUp = useResponsive('up', 'sm');
   const Item = styled(Paper)(({ theme }) => ({
@@ -72,14 +71,7 @@ export default function RelojChecadorView() {
       endTime: '14:00',
     },
   ];
-
-  /*
-   * calculate the following:
-   * - minimum "opening time"
-   * - maximum "opening time"
-   * - working days
-   * - non-working days
-   */
+  
   const workMin = workSpec
     .map((item) => item.startTime)
     .sort()
@@ -88,38 +80,25 @@ export default function RelojChecadorView() {
     .map((item) => item.endTime)
     .sort()
     .pop();
+    
   const workDays = [...new Set(workSpec.flatMap((item) => item.daysOfWeek))];
   const hideDays = [...Array(7).keys()].filter((day) => !workDays.includes(day));
+
+  const today = new Date();
+  const pastWeekStart = new Date(today);
+  pastWeekStart.setDate(today.getDate() - 7);
+
+  const curr = new Date();
+  let first = curr.getDate() - curr.getDay();
+  first -= 7;
+  const firstdayOb = new Date(curr.setDate(first));
+  const firstday = firstdayOb.toISOString().split('T')[0];
+  const firstdayTemp = firstdayOb;
+  const lastday = new Date(firstdayTemp.setDate(firstdayTemp.getDate() + 7)).toISOString().split('T')[0];
 
   return (
     <Container>
       <Stack sx={{ mt: 2 }}>
-        <Card direction="row" sx={{ mb: 3, padding: 2 }}>
-          <Grid container spacing={2}>
-            <Grid item xs={isMobile ? 12 : 9}>
-              <Item>
-                <Stack spacing={2} direction="row" sx={{ alignItems: 'center' }}>
-                  <Avatar
-                    src="https://assets.minimals.cc/public/assets/images/mock/avatar/avatar-11.webp"
-                    sx={{ mr: 2, width: 80, height: 80 }}
-                  />
-                  <Stack alignItems="start" spacing={0.5}>
-                    <Typography noWrap>{user?.nombre}</Typography>
-                    <Typography noWrap>{user?.puesto}</Typography>
-                    <Typography noWrap>{user?.numEmpleado}</Typography>
-                  </Stack>
-                </Stack>
-              </Item>
-            </Grid>
-            <Grid item xs={isMobile ? 12 : 3} alignContent="center">
-              <Item>
-                <Button variant="contained" color="info">
-                  Solicitud de permiso
-                </Button>
-              </Item>
-            </Grid>
-          </Grid>
-        </Card>
         <Card>
           <StyledCalendar>
             <CalendarToolbar
@@ -136,11 +115,21 @@ export default function RelojChecadorView() {
               editable={false} // en false para prevenir un drag del evento
               droppable
               selectable
+              weekText="Semana"
               businessHours={workSpec}
               slotMinTime={workMin}
               slotMaxTime={workMax}
               hiddenDays={hideDays}
               weekNumbers
+              visibleRange={{
+                start: firstday,
+                end: lastday,
+              }}
+              validRange={{
+                start: firstday,
+                end: lastday,
+              }}
+              firstDay={0}
               selectLongPressDelay={0}
               locale={esLocale}
               rerenderDelay={10}

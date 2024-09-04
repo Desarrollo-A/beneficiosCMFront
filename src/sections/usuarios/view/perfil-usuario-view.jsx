@@ -14,6 +14,7 @@ import { useSettingsContext } from 'src/components/settings';
 import ProfileCover from '../profile-cover';
 import GafeteDigital from '../gafete-digital';
 import DatosPersonales from '../datos-personales';
+import RelojChecador from '../checador/reloj-checador';
 
 // ----------------------------------------------------------------------
 
@@ -27,13 +28,13 @@ const TABS = [
     value: 'gafete',
     label: 'Gafete digital',
     icon: <Iconify icon="clarity:id-badge-solid" width={24} />,
-  },
+  }, */
   {
     value: 'checador',
     label: 'Reloj checador',
     icon: <Iconify icon="fluent:clock-bill-24-filled" width={24} />,
-  },
-  {
+  }
+  /* {
     value: 'calculadora',
     label: 'Calculadora de nómina',
     icon: <Iconify icon="solar:calculator-minimalistic-bold" width={24} />,
@@ -99,6 +100,8 @@ export default function PerfilUsuarioView() {
       </Card>
 
       {currentTab === 'datos' && <DatosPersonales info={_userAbout} posts={_userFeeds} />}
+
+      {currentTab === 'checador' && <RelojChecador info={_userAbout} posts={_userFeeds} />}
 
       {currentTab === 'gafete' && <GafeteDigital/>}
 
