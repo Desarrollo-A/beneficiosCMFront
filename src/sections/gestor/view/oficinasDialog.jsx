@@ -9,14 +9,14 @@ import {
   Radio,
   Button,
   Divider,
+  Typography,
   RadioGroup,
+  DialogTitle,
   FormControl,
   DialogContent,
   DialogActions,
   LinearProgress,
   FormControlLabel,
-  DialogTitle,
-  Typography
 } from '@mui/material';
 
 import Scrollbar from 'src/components/scrollbar';
