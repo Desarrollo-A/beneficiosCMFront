@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
-import { Typography, DialogTitle } from '@material-ui/core';
 
 import { LoadingButton } from '@mui/lab';
 import {
@@ -15,7 +14,9 @@ import {
   DialogContent,
   DialogActions,
   LinearProgress,
-  FormControlLabel
+  FormControlLabel,
+  DialogTitle,
+  Typography
 } from '@mui/material';
 
 import Scrollbar from 'src/components/scrollbar';
@@ -28,19 +29,19 @@ export default function OficinasDialog({ onClose, oficinasLoading, oficinas, sed
   const [nuevaOficina, setNuevaOficina] = useState(0)
 
   useEffect(() => {
-    if(nuevaOficina === 0){
-        setDisable(true)
+    if (nuevaOficina === 0) {
+      setDisable(true)
     }
-    else{
-        setDisable(false)
+    else {
+      setDisable(false)
     }
   }, [oficina, nuevaOficina])
 
   useEffect(() => {
-    
-        setNuevaOficina(oficina)
-    
-    
+
+    setNuevaOficina(oficina)
+
+
   }, [oficina, sede])
 
   const handleChangeNuevaOficina = (idOficina) => {
@@ -51,45 +52,46 @@ export default function OficinasDialog({ onClose, oficinasLoading, oficinas, sed
     // handleChangeOficina(nuevaOficina)
     handleSaveSede(sede, true, nuevaOficina)
   }
- 
+
   return (
     <FormProvider>
-      <DialogTitle sx={{ p: { xs: 1, md: 1 } }}>
-        <Typography>Selecciona una oficina para asignar</Typography>
+      <DialogTitle sx={{ fontWeight: 'bold' }}>
+        Oficinas
       </DialogTitle>
 
-      <DialogContent>
+      <DialogContent style={{
+        maxHeight: '400px',
+        overflowY: 'auto',
+      }}>
         <Stack sx={{ flex: 1 }}>
-          <Typography variant="h6" sx={{ marginBottom: 1, paddingLeft: 1 }}>
-            Oficina
+          <Typography>
+            Selecciona una oficina para asignar
           </Typography>
           {oficinasLoading ? <LinearProgress /> : <Divider flexItem orientation="horizontal" />}
-          <Scrollbar sx={{ height: HEIGHT, overflowX: 'hidden', margin: 0, padding: 0 }}>
-            <List>
-              <FormControl>
-                <RadioGroup
-                  value={nuevaOficina}
-                  onChange={(event) => handleChangeNuevaOficina(event.target.value)}
-                >
-                  {oficinas.map((ofi, index) => (
-                    <Box key={index} sx={{ marginBottom: 0.5 }}>
-                      <FormControlLabel
-                        sx={{ marginLeft: 1.5, marginBottom: 0.5 }}
-                        value={ofi.idoficina}
-                        control={<Radio />}
-                        label={ofi.noficina}
-                      />
-                    </Box>
-                  ))}
-                </RadioGroup>
-              </FormControl>
-            </List>
-          </Scrollbar>
+          <List>
+            <FormControl>
+              <RadioGroup
+                value={nuevaOficina}
+                onChange={(event) => handleChangeNuevaOficina(event.target.value)}
+              >
+                {oficinas.map((ofi, index) => (
+                  <Box key={index} sx={{ marginBottom: 0.5 }}>
+                    <FormControlLabel
+                      sx={{ marginLeft: 1.5, marginBottom: 0.5 }}
+                      value={ofi.idoficina}
+                      control={<Radio />}
+                      label={ofi.noficina}
+                    />
+                  </Box>
+                ))}
+              </RadioGroup>
+            </FormControl>
+          </List>
         </Stack>
       </DialogContent>
       <DialogActions>
         <Button variant="contained" color="error" disabled={isLoad} onClick={onClose}>
-            Cerrar
+          Cerrar
         </Button>
 
         <LoadingButton variant="contained" color="success" loading={isLoad} disabled={isDisable} onClick={onSubmit}>
