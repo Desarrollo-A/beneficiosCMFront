@@ -10,6 +10,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import Paper from '@mui/material/Paper';
 import Avatar from '@mui/material/Avatar';
 import { styled } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { Card, Grid, Stack, Button, Container, Typography } from '@mui/material';
 
 import { useResponsive } from 'src/hooks/use-responsive';
@@ -44,6 +45,7 @@ export default function RelojChecadorView() {
   } = useCalendar();
 
   const { user } = useAuthContext();
+  const isMobile = useMediaQuery('(max-width: 960px)');
 
   const smUp = useResponsive('up', 'sm');
   const Item = styled(Paper)(({ theme }) => ({
@@ -93,36 +95,30 @@ export default function RelojChecadorView() {
     <Container>
       <Stack sx={{ mt: 2 }}>
         <Card direction="row" sx={{ mb: 3, padding: 2 }}>
-          
-            <Grid container spacing={2}>
-              <Grid item xs={9}>
-                <Item>
-                  <Stack spacing={2} direction="row" sx={{ alignItems: 'center' }}>
-                    <Avatar
-                      src="https://assets.minimals.cc/public/assets/images/mock/avatar/avatar-11.webp"
-                      sx={{ mr: 2, width: 80, height: 80 }}
-                    />
-                    <Stack alignItems="start" spacing={0.5}>
-                      <Typography noWrap>{user?.nombre}</Typography>
-                      <Typography noWrap>{user?.puesto}</Typography>
-                      <Typography noWrap>{user?.numEmpleado}</Typography>
-                    </Stack>
+          <Grid container spacing={2}>
+            <Grid item xs={isMobile ? 12 : 9}>
+              <Item>
+                <Stack spacing={2} direction="row" sx={{ alignItems: 'center' }}>
+                  <Avatar
+                    src="https://assets.minimals.cc/public/assets/images/mock/avatar/avatar-11.webp"
+                    sx={{ mr: 2, width: 80, height: 80 }}
+                  />
+                  <Stack alignItems="start" spacing={0.5}>
+                    <Typography noWrap>{user?.nombre}</Typography>
+                    <Typography noWrap>{user?.puesto}</Typography>
+                    <Typography noWrap>{user?.numEmpleado}</Typography>
                   </Stack>
-                </Item>
-              </Grid>
-              <Grid item xs={3} alignContent='center'>
-                <Item>
-                  <Button
-                    variant='contained'
-                    color='info'
-                  >
-                    Solicitud de permiso
-                  </Button>
-                </Item>
-              </Grid>
+                </Stack>
+              </Item>
             </Grid>
-
-          
+            <Grid item xs={isMobile ? 12 : 3} alignContent="center">
+              <Item>
+                <Button variant="contained" color="info">
+                  Solicitud de permiso
+                </Button>
+              </Item>
+            </Grid>
+          </Grid>
         </Card>
         <Card>
           <StyledCalendar>
