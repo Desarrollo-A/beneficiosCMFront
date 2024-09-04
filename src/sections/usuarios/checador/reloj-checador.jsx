@@ -7,7 +7,7 @@ import timelinePlugin from '@fullcalendar/timeline';
 import esLocale from '@fullcalendar/core/locales/es';
 import interactionPlugin from '@fullcalendar/interaction';
 
-import { Card, Stack, Container } from '@mui/material';
+import { Card, Stack } from '@mui/material';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
