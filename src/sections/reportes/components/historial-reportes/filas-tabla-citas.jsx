@@ -1,10 +1,10 @@
 import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
 
-import { IconButton } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
+import { Dialog, IconButton } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
@@ -43,7 +43,8 @@ export default function FilasTabla({ row, selected, rol, rel }) {
     usuario, 
     archivo,
     numEspecialista,
-    numCita
+    numCita,
+    justificado
   } = row;
     const quickEdit = useBoolean();
     const modalJust = useBoolean();
@@ -74,9 +75,9 @@ export default function FilasTabla({ row, selected, rol, rel }) {
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{numEmpleado}</TableCell>
 
-        {rol !== 3 ? <TableCell sx={{ whiteSpace: 'nowrap' }}>{numEspecialista}</TableCell> : null}
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{numEspecialista}</TableCell>
 
-        {rol !== 3 ? <TableCell sx={{ whiteSpace: 'nowrap' }}>{especialista}</TableCell> : null}
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{especialista}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{usuario}</TableCell>
 
@@ -84,7 +85,7 @@ export default function FilasTabla({ row, selected, rol, rel }) {
           <Label variant="soft" sx={{ backgroundColor: `${color}0f`, color }}>
             {estatus}
           </Label>
-        </TableCell>        
+        </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{paciente}</TableCell>
 
@@ -106,11 +107,13 @@ export default function FilasTabla({ row, selected, rol, rel }) {
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{metodoPago}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{dayjs(fechaPago).isValid() ? dayjs(fechaPago).format('YYYY-MM-DD HH:mm') : fechaPago}</TableCell>       
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {dayjs(fechaPago).isValid() ? dayjs(fechaPago).format('YYYY-MM-DD HH:mm') : fechaPago}
+        </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{numCita}</TableCell>
 
-        {estatusCita === 3 && (observaciones === null || observaciones === '') && rol === 4 ? (
+        {estatusCita === 3 && observaciones === null && justificado === 0 ? (
           <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
             <Tooltip title="Justificar" placement="top" arrow>
               <IconButton
@@ -123,7 +126,7 @@ export default function FilasTabla({ row, selected, rol, rel }) {
           </TableCell>
         ) : null}
 
-        {/* {estatusCita === 5 && archivo !== null && rol === 4 ? (
+        {(estatusCita === 3 || estatusCita === 5) && observaciones !== null ? (
           <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
             <Tooltip title="Ver justificación" placement="top" arrow>
               <IconButton
@@ -134,25 +137,40 @@ export default function FilasTabla({ row, selected, rol, rel }) {
               </IconButton>
             </Tooltip>
           </TableCell>
-        ) : null} */}
+        ) : null}
       </TableRow>
 
-      <UserQuickEditForm
-        currentUser={row}
+      <Dialog
+        fullWidth
+        maxWidth={false}
         open={quickEdit.value}
-        onClose={quickEdit.onFalse}
-        idCita={idCita}
-        row={row}
-        rel={rel}
-      />
+        PaperProps={{
+          sx: { maxWidth: 720 },
+        }}
+        backdrop="static"
+      >
+        <UserQuickEditForm
+          currentUser={row}
+          onClose={quickEdit.onFalse}
+          idCita={row.idCita}
+          row={row}
+          rel={rel}
+          rol={rol}
+        />
+      </Dialog>
 
-      <ModalJustificacion
-        open={modalJust.value}
-        onClose={modalJust.onFalse}
-        idCita={idCita}
-        observacion={observaciones}
-        archivo={archivo}
-      />
+  
+        <ModalJustificacion
+          open={modalJust.value}
+          onClose={modalJust.onFalse}
+          idCita={row.idCita}
+          observacion={observaciones}
+          archivo={archivo}
+          rol={rol}
+          estatusCita={estatusCita}
+          justificado={justificado}
+        />
+     
     </>
   );
 }

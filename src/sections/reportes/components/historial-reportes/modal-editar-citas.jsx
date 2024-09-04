@@ -7,7 +7,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 
 import { Box } from '@mui/system';
 import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
 import Grid from '@mui/material/Unstable_Grid2';
 import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -34,7 +33,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
   const idUsr = user?.idUsuario;
 
   const NewUserSchema = Yup.object().shape({
-    descripcion: Yup.string().required('El campo es requerido'),
+    descripcion: Yup.string().trim().required('El campo es requerido'),
     idCita: Yup.string().required('El campo es requerido'),
     archivo: Yup.mixed().nullable(),
   });
@@ -103,29 +102,21 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
   }, [setValue]);
 
   return (
-    <Dialog
-      fullWidth
-      maxWidth={false}
-      open={open}
-      onClose={onClose}
-      PaperProps={{
-        sx: { maxWidth: 720 },
-      }}
-    >
+
       <FormProvider methods={methods} onSubmit={onSubmit}>
         <DialogTitle>Justificación de penalización</DialogTitle>
 
         <DialogContent>
           ¿Estás seguro que deseas justificar la cita seleccionada?
           <Box mb={2} />
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <RHFTextField name="descripcion" label="Observaciones" multiline rows={4} />
           </Grid>
         </DialogContent>
 
         <RHFTextField name="idCita" value={idCita} style={{ display: 'none' }} />
 
-        <Grid item xs={12} md={6} sx={{ p: 3 }}>
+        <Grid xs={12} md={6} sx={{ p: 3 }}>
           <RHFUpload
             name="archivo"
             onDrop={handleDrop}
@@ -144,7 +135,7 @@ export default function UserQuickEditForm({ currentUser, open, onClose, idCita, 
           </LoadingButton>
         </DialogActions>
       </FormProvider>
-    </Dialog>
+    
   );
 }
 

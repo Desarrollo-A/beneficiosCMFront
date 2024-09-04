@@ -39,7 +39,6 @@ import Iconify from 'src/components/iconify';
 import '../../styles/style.css';
 import TermsAndConditionsDialog from '../dialogs/terms-and-conditions-dialog';
 
-
 dayjs.locale('es');
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -141,7 +140,6 @@ export default function AppointmentSchedule({
   const handleWindowClose = () => {
     setOpenWindow(false);
   };
-
 
   return (
     <Grid sx={{ display: { xs: 'block', sm: 'flex', md: 'flex' } }}>

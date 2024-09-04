@@ -1,69 +1,125 @@
 import { useState, useCallback } from 'react';
 
 import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
+import Card from '@mui/material/Card';
 import Container from '@mui/material/Container';
+import Tabs, { tabsClasses } from '@mui/material/Tabs';
+
+import { paths } from 'src/routes/paths';
+
+import { useMockedUser } from 'src/hooks/use-mocked-user';
+
+import { _userAbout, _userFeeds, _userFriends, _userGallery, _userFollowers } from 'src/_mock';
 
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
-import AccountGeneral from '../account-general';
-import AccountChangePassword from '../account-change-password';
+import ProfileCover from '../profile-cover';
+import GafeteDigital from '../gafete-digital';
+import DatosPersonales from '../datos-personales';
 
 // ----------------------------------------------------------------------
 
 const TABS = [
   {
-    value: 'general',
-    label: 'General',
-    icon: <Iconify icon="solar:user-id-bold" width={24} />,
+    value: 'datos',
+    label: 'Datos personales',
+    icon: <Iconify icon="iconamoon:profile-circle-fill" width={24} />,
   },
   {
-    value: 'security',
-    label: 'Seguridad',
-    icon: <Iconify icon="ic:round-vpn-key" width={24} />,
+    value: 'gafete',
+    label: 'Gafete digital',
+    icon: <Iconify icon="clarity:id-badge-solid" width={24} />,
+  },
+  {
+    value: 'checador',
+    label: 'Reloj checador',
+    icon: <Iconify icon="fluent:clock-bill-24-filled" width={24} />,
+  },
+  {
+    value: 'calculadora',
+    label: 'Calculadora de nómina',
+    icon: <Iconify icon="solar:calculator-minimalistic-bold" width={24} />,
+  },
+  {
+    value: 'eventos',
+    label: 'Eventos corporativos',
+    icon: <Iconify icon="streamline:champagne-party-alcohol-solid" width={24} />,
   },
 ];
-
 // ----------------------------------------------------------------------
 
 export default function PerfilUsuarioView() {
   const settings = useSettingsContext();
 
-  const [currentTab, setCurrentTab] = useState('general');
+  const { user } = useMockedUser();
+
+  const [searchFriends, setSearchFriends] = useState('');
+
+  const [currentTab, setCurrentTab] = useState('datos');
 
   const handleChangeTab = useCallback((event, newValue) => {
     setCurrentTab(newValue);
   }, []);
 
+  const handleSearchFriends = useCallback((event) => {
+    setSearchFriends(event.target.value);
+  }, []);
+
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-      <CustomBreadcrumbs
-        heading="Perfil"
-        links={[
-          { name: '' }
-        ]}
-        sx={{
-          mb: { xs: 3, md: 5 },
-        }}
-      />
 
-      <Tabs
-        value={currentTab}
-        onChange={handleChangeTab}
+      <Card
         sx={{
-          mb: { xs: 3, md: 5 },
+          mb: 3,
+          height: 290,
         }}
       >
-        {TABS.map((tab) => (
-          <Tab key={tab.value} label={tab.label} icon={tab.icon} value={tab.value} />
-        ))}
-      </Tabs>
+        <ProfileCover
+          role={_userAbout.role}
+          name={user?.displayName}
+          avatarUrl={user?.photoURL}
+          coverUrl={_userAbout.coverUrl}
+        />
 
-      {currentTab === 'general' && <AccountGeneral />}
+        <Tabs
+          value={currentTab}
+          onChange={handleChangeTab}
+          sx={{
+            width: 1,
+            bottom: 0,
+            zIndex: 9,
+            position: 'absolute',
+            bgcolor: 'background.paper',
+            [`& .${tabsClasses.flexContainer}`]: {
+              pr: { md: 3 },
+              justifyContent: {
+                sm: 'center',
+                md: 'flex-center',
+              },
+            },
+          }}
+        >
+          {TABS.map((tab) => (
+            <Tab key={tab.value} value={tab.value} icon={tab.icon} label={tab.label} />
+          ))}
+        </Tabs>
+      </Card>
 
-      {currentTab === 'security' && <AccountChangePassword />}
+      {currentTab === 'datos' && <DatosPersonales info={_userAbout} posts={_userFeeds} />}
+
+      {currentTab === 'gafete' && <GafeteDigital/>}
+
+      {/* {currentTab === 'friends' && (
+        <ProfileFriends
+          friends={_userFriends}
+          searchFriends={searchFriends}
+          onSearchFriends={handleSearchFriends}
+        />
+      )} */}
+
+      {/* {currentTab === 'gallery' && <ProfileGallery gallery={_userGallery} />} */}
     </Container>
   );
 }

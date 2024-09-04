@@ -13,7 +13,7 @@ import { mainRoutes } from './main';
 // import { authDemoRoutes } from './auth-demo';
 import { dashboardRoutes } from './dashboard';
 import { beneficiosRoutes } from './beneficios';
-import { componentsRoutes } from './components';
+import { fondoAhorroRoutes } from './fondoAhorro';
 
 // const JwtLoginPage = lazy(() => import('src/pages/auth/jwt/login'));
 
@@ -55,7 +55,7 @@ export default function Router() {
     ...mainRoutes,
 
     // Components routes
-    ...componentsRoutes,
+    ...fondoAhorroRoutes,
 
     // No match 404
     { path: '*', element: <Navigate to="/404" replace /> },

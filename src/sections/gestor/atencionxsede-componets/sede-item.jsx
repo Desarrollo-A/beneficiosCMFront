@@ -89,7 +89,7 @@ export default function SedeItem({value, handleOpen, sx, ...other}){
                 variant="contained"
                 color="primary"
                 onClick={() => {
-                handleOpen(value.idSede);
+                handleOpen(value?.idSede);
                 }}
             >
                 Asignar <Iconify icon="lets-icons:add-duotone" />

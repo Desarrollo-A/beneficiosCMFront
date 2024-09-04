@@ -219,6 +219,7 @@ export default function HistorialReportesView() {
   const TABLE_BASE = [
     { id: '', label: 'ID Cita' },
     { id: '', label: 'No. empleado (Paciente)' },
+    { id: '', label: 'No. empleado (Paciente)' },
     { id: '', label: 'No. empleado (Especialista)' },
     { id: '', label: 'Especialista' },
     { id: '', label: 'Usuario'},
@@ -236,7 +237,7 @@ export default function HistorialReportesView() {
     { id: '', label: 'Acciones'}
   ];
 
-  if (rol === 3) {
+
 
     TABLE_BASE.splice(2, 1);
     headerBase.splice(2, 1);
@@ -244,10 +245,6 @@ export default function HistorialReportesView() {
     TABLE_HEAD = TABLE_BASE;
     header = headerBase;
 
-  } else {
-  TABLE_HEAD = TABLE_BASE;
-  header = headerBase;
-  }
 
   const dataFiltered = applyFilter({
     inputData: datosTabla,

@@ -21,7 +21,7 @@ import {
 import Scrollbar from 'src/components/scrollbar';
 import FormProvider from 'src/components/hook-form/form-provider';
 
-export default function OficinasDialog({ onClose, oficinasLoading, oficinas, sede, modalidad, especialista, oficina, handleChangeOficina, isLoad, hasOffice }) {
+export default function OficinasDialog({ onClose, oficinasLoading, oficinas, sede, modalidad, especialista, oficina, handleChangeOficina, isLoad, hasOffice, handleSaveSede }) {
   const HEIGHT = 600;
 
   const [isDisable, setDisable] = useState(true)
@@ -37,12 +37,9 @@ export default function OficinasDialog({ onClose, oficinasLoading, oficinas, sed
   }, [oficina, nuevaOficina])
 
   useEffect(() => {
-    if(oficina === null){
-        setNuevaOficina(0)
-    }
-    else{
+    
         setNuevaOficina(oficina)
-    }
+    
     
   }, [oficina, sede])
 
@@ -51,7 +48,8 @@ export default function OficinasDialog({ onClose, oficinasLoading, oficinas, sed
   }
 
   const onSubmit = async () => {
-    handleChangeOficina(nuevaOficina)
+    // handleChangeOficina(nuevaOficina)
+    handleSaveSede(sede, true, nuevaOficina)
   }
  
   return (
@@ -90,11 +88,9 @@ export default function OficinasDialog({ onClose, oficinasLoading, oficinas, sed
         </Stack>
       </DialogContent>
       <DialogActions>
-        {hasOffice &&
-            <Button variant="contained" color="error" disabled={isLoad} onClick={onClose}>
-                Cerrar
-            </Button>
-        }        
+        <Button variant="contained" color="error" disabled={isLoad} onClick={onClose}>
+            Cerrar
+        </Button>
 
         <LoadingButton variant="contained" color="success" loading={isLoad} disabled={isDisable} onClick={onSubmit}>
           Guardar
@@ -114,5 +110,6 @@ OficinasDialog.propTypes = {
   especialista: PropTypes.number,
   handleChangeOficina: PropTypes.func,
   isLoad: PropTypes.bool,
-  hasOffice: PropTypes.bool
+  hasOffice: PropTypes.bool,
+  handleSaveSede: PropTypes.func
 };

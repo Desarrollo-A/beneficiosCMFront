@@ -1,0 +1,101 @@
+/* From Uiverse.io by Cobp */ 
+.card {
+    position: relative;
+    display: flex;
+    width: 100%;
+    background-color: #242824;
+    padding: 10px;
+    border-radius: 6px;
+    gap: 0.5rem;
+    height: max-content;
+  }
+  .bar {
+    width: 10px;
+    border-radius: 5px;
+    background-color: #004cff;
+    transition: all 0.5s ease-in-out;
+  }
+  .card:hover .bar {
+    margin-right: 5px;
+  }
+  .card_form {
+    position: relative;
+    min-width: 5em;
+    min-height: 5em;
+    border-radius: 4px;
+    background-color: #9147ff;
+    transition: 0.2s ease-in-out;
+    overflow: hidden;
+  }
+  .card_data {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .card_data span {
+    color: #9147ff;
+    margin-top: auto;
+    font-size: 0.9em;
+    transition: 0.2s ease-in-out;
+    cursor: pointer;
+    width: 20%;
+  }
+  .card_data span:hover {
+    color: #28aea5;
+    text-decoration: underline;
+  }
+  .text {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    margin-left: 0.5em;
+    color: white;
+  }
+  .text_m {
+    font-size: 0.9em;
+  }
+  .text_s {
+    color: #9147ff;
+    font-size: 0.6em;
+  }
+  .text_d {
+    font-size: 0.7em;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+  }
+  .cube {
+    width: max-content;
+    height: 10px;
+    transition: all 0.2s;
+    transform-style: preserve-3d;
+  }
+  .card:hover .cube {
+    transform: rotateX(90deg);
+  }
+  .side {
+    width: max-content;
+    height: 1em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: bold;
+  }
+  .top {
+    transform: rotateX(-90deg) translate3d(0, 0, 0em);
+  }
+  .front {
+    transform: translate3d(0, 0, 1em);
+  }
+  
+  @keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(-10px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  
+  .fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }

@@ -63,7 +63,7 @@ export default function ModalListaSedes({ idPuesto, open, onClose, modalidadesDa
           {!isEmpty(sedesData) ? (
             <>
             {sedesData.map((e) => (
-              <React.Fragment key={e.idSede}>
+              <React.Fragment key={e?.idSede}>
                 <ListItemText
                   primary={e.sede}
                   secondary={
@@ -97,7 +97,7 @@ export default function ModalListaSedes({ idPuesto, open, onClose, modalidadesDa
                   variant="contained"
                   color="primary"
                   onClick={() => {
-                    handleOpen(e.idSede);
+                    handleOpen(e?.idSede);
                   }}
                   sx={{
                     top: -20,
