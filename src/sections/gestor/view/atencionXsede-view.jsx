@@ -306,7 +306,7 @@ export default function AtencionXsedeView() {
 
       <Card sx={{ marginTop: 1, padding: 1 }} >
 
-        <Stack direction='row' spacing={3} divider={<Divider flexItem orientation='vertical' />} >
+        <Stack direction='row' spacing={3} >
           <Stack sx={{ flex: 1 }} >
             <Typography variant='h6' sx={{ marginBottom: 1, paddingLeft: 1 }} >Áreas</Typography>
             {areasLoading ?
@@ -322,6 +322,7 @@ export default function AtencionXsedeView() {
               ))}
             </List>
           </Stack>
+          { area ? <Divider flexItem orientation='vertical' /> : ''}
 
           {area && (
             <Stack sx={{ flex: 1 }} >
@@ -340,7 +341,7 @@ export default function AtencionXsedeView() {
               </List>
             </Stack>
           )}
-
+          { especialista ? <Divider flexItem orientation='vertical' /> : ''}
           {especialista && (
               <Stack sx={{ flex: 1 }} >
                 <Typography variant='h6' sx={{ marginBottom: 1, paddingLeft: 1 }} >Modalidad</Typography>
@@ -354,7 +355,7 @@ export default function AtencionXsedeView() {
                 </List>
               </Stack>
             )}
-
+          { modalidad ? <Divider flexItem orientation='vertical' /> : ''}
           {modalidad && (
             <Stack sx={{ flex: 1 }} >
               <Typography variant='h6' sx={{ marginLeft: 2 }} >
