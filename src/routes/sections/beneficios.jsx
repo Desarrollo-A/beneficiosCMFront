@@ -99,6 +99,10 @@ const BlankPage = lazy(() => import('src/sections/_examples/extra/upload-view'))
 
 // const AgendaPage = lazy(() => import('src/pages/beneficios/agenda'))
 
+// Mi perfil
+// Reloj checador
+const RelojChecador = lazy(() => import('src/pages/miPerfil/relojChecador/reloj-checador-view'));
+
 // ----------------------------------------------------------------------
 
 export const beneficiosRoutes = [
@@ -249,6 +253,7 @@ export const beneficiosRoutes = [
       { path: 'permission', element: <PermissionDeniedPage /> },
       { path: 'blank', element: <BlankPage /> },
       { path: 'citas', element: <CitasPage /> },
+      { path: 'relojChecador', element: <RelojChecador /> }
     ],
   },
 ];
