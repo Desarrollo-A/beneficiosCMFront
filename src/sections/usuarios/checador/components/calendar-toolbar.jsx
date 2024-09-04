@@ -66,10 +66,6 @@ export default function CalendarToolbar({
 
   const [open, setOpen] = useState(false);
 
-  const handleOpen = () => {
-    setOpen(true);
-  };
-
   const handleClose = () => {
     setOpen(false);
   };
@@ -103,6 +99,7 @@ export default function CalendarToolbar({
                 target="_blank"
                 variant="contained"
                 color="info"
+                style={{ textAlign: 'center' }}
                 href={`${HOST}/dist/documentos/solicitud-permiso/solicitudPermiso.pdf`}
               >
                 Solicitud de permiso
@@ -148,7 +145,7 @@ export default function CalendarToolbar({
                 <Item>
                   <Typography variant="h6">{fechaTitulo}</Typography>
                 </Item>
-              </Grid> 
+              </Grid>
               <Grid item xs={4}>
                 <Item>
                   <Button

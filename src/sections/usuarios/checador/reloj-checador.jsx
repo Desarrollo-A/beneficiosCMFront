@@ -7,14 +7,9 @@ import timelinePlugin from '@fullcalendar/timeline';
 import esLocale from '@fullcalendar/core/locales/es';
 import interactionPlugin from '@fullcalendar/interaction';
 
-import Paper from '@mui/material/Paper';
-import { styled } from '@mui/material/styles';
 import { Card, Stack, Container } from '@mui/material';
-import useMediaQuery from '@mui/material/useMediaQuery';
 
 import { useResponsive } from 'src/hooks/use-responsive';
-
-import { useAuthContext } from 'src/auth/hooks';
 
 import { StyledCalendar } from 'src/sections/calendar/styles/styles';
 
@@ -43,21 +38,9 @@ export default function RelojChecador() {
     // selectedEnd,
   } = useCalendar();
 
-  const { user } = useAuthContext();
-  const isMobile = useMediaQuery('(max-width: 960px)')
+
 
   const smUp = useResponsive('up', 'sm');
-  const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: '#fff',
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-    maxWidth: 400,
-    ...theme.applyStyles('dark', {
-      backgroundColor: '#1A2027',
-    }),
-  }));
 
   const workSpec = [
     {
@@ -97,7 +80,6 @@ export default function RelojChecador() {
   const lastday = new Date(firstdayTemp.setDate(firstdayTemp.getDate() + 7)).toISOString().split('T')[0];
 
   return (
-    <Container>
       <Stack sx={{ mt: 2 }}>
         <Card>
           <StyledCalendar>
@@ -153,7 +135,6 @@ export default function RelojChecador() {
             />
           </StyledCalendar>
         </Card>
-      </Stack>
-    </Container>
+      </Stack>    
   );
 }
