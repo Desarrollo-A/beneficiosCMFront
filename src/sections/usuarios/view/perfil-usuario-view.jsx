@@ -13,8 +13,10 @@ import { useSettingsContext } from 'src/components/settings';
 
 import ProfileCover from '../profile-cover';
 import GafeteDigital from '../gafete-digital';
+// import AsesorView from '../asesorCh/asesor-view';
 import DatosPersonales from '../datos-personales';
-import CalculadoraNomina from '../calculadora-nomina';
+// import CalculadoraNomina from '../calculadora-nomina';
+import RelojChecador from '../checador/reloj-checador';
 
 // ----------------------------------------------------------------------
 
@@ -49,6 +51,7 @@ const TABS = [
     label: 'Tu ejecutivo de CH',
     icon: <Iconify icon="fluent:people-team-24-filled" width={24} />,
   },
+
 ];
 // ----------------------------------------------------------------------
 
@@ -106,9 +109,11 @@ export default function PerfilUsuarioView() {
 
       {currentTab === 'datos' && <DatosPersonales info={_userAbout} posts={_userFeeds} />}
 
-      {currentTab === 'gafete' && <GafeteDigital />}
+      {currentTab === 'checador' && <RelojChecador info={_userAbout} posts={_userFeeds} />}
 
       {currentTab === 'calculadora' && <CalculadoraNomina />}
+
+      {currentTab === 'gafete' && <GafeteDigital/>}
 
       {/* {currentTab === 'friends' && (
         <ProfileFriends

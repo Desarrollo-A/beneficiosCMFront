@@ -50,10 +50,10 @@ export default function AtencionXsedeView() {
   const [, setAllChecked ] = useState(false)
   const [ oficina, setOficina ] = useState(null)
 
-  const { areas, areasLoading } = useGetAreas()
-  const { especialistas, especialistasLoading } = useGetEspecialistas(area, {area})
-  const { oficinas, oficinasLoading } = useGetOficinas(sede, {sede})
-  const { modalidades } = useGetModalidades(true)
+  const { areas, areasLoading, areasEmpty } = useGetAreas()
+  const { especialistas, especialistasLoading, especialistasEmpty } = useGetEspecialistas(area, {area})
+  const { oficinas, oficinasLoading, oficinasEmpty } = useGetOficinas(sede, {sede})
+  const { modalidades, modalidadesEmpty } = useGetModalidades(true)
   const theme = useTheme()
   const [open, setOpen] = useState(false)
   const [isLoad, setLoad] = useState(false)
@@ -64,6 +64,7 @@ export default function AtencionXsedeView() {
 
   const onClose = () => {
     setOpen(false)
+    getActivas()
   } 
 
   const handleChangeArea = (are) => {
@@ -120,6 +121,37 @@ export default function AtencionXsedeView() {
     getActivas() 
   }
 
+  const handleSaveSede = async(sed, checked, ofi) => {
+    setSaving(true)
+    setLoad(true)
+    const tmp_sedes = [...sedes]
+
+    const index = tmp_sedes.findIndex(pres => pres.idsede === sed)
+
+    if(index !== -1){
+      tmp_sedes[index].active = checked
+    }
+
+    setSedes(tmp_sedes)
+
+    const sede_rea = await saveAtencionXSede({area, especialista, modalidad, sede: sed, checked})
+
+    if(sede_rea){
+      if((sede_rea.idOficina !== null || sede_rea.idOficina !== 0) && sede_rea.estatus === 1){
+        // handleChangeSede(sed)
+        handleChangeOficina(ofi)
+      }
+      else{
+        enqueueSnackbar("Error al guardar la atención por sede")
+      }
+    }
+    else{
+      enqueueSnackbar("Error al guardar la sede", {variant: "error"});
+    }
+
+    getActivas() 
+  }
+
   const getActivas = async() => {
     setLoadingActivas2(true)
     const act = await getActiveSedes({modalidad, especialista})
@@ -161,15 +193,12 @@ export default function AtencionXsedeView() {
   }
 
   const handleChangeOficina = async(ofi) => {
-    setLoad(true)
     setOficina(ofi)
-    setSaving(true)
 
     const save = await saveOficinaXSede({especialista, modalidad, sede, oficina: ofi})
-    
-    if(hasOffice){
-      const index = activas.findIndex(sed => sed.idSede === sede)
+    const index = activas.findIndex(sed => sed.idSede === sede)
 
+    if(hasOffice && activas[index]!== undefined){
       activas[index].idOficina = ofi
 
       setActivas(activas)    
@@ -218,11 +247,25 @@ export default function AtencionXsedeView() {
     if(ofi){
       setHasOffice(true)
       setOpen(true)
-      setOficina(ofi.idOficina)
+      setOficina(ofi !== undefined ? ofi.idOficina : 0)
     }
     else{
       enqueueSnackbar("Se debe activar la sede antes de asignar una oficina", {variant: 'info'})
       setOficina(null)
+    }
+  }
+
+  const handleChangeSedeCheck = (sed, checked) => { // para el boton de arrows
+    setSede(sed)
+    if(checked){
+      const ofi = activas.find(se => se.idSede === sed)
+
+      setHasOffice(true)
+      setOpen(true)
+      setOficina(ofi !== undefined ? ofi.idOficina : 0)
+    }
+    else{
+      handleCheckSede(sed, checked)
     }
   }
 
@@ -263,7 +306,7 @@ export default function AtencionXsedeView() {
 
       <Card sx={{ marginTop: 1, padding: 1 }} >
 
-        <Stack direction='row' spacing={3} divider={<Divider flexItem orientation='vertical' />} >
+        <Stack direction='row' spacing={3} >
           <Stack sx={{ flex: 1 }} >
             <Typography variant='h6' sx={{ marginBottom: 1, paddingLeft: 1 }} >Áreas</Typography>
             {areasLoading ?
@@ -272,15 +315,16 @@ export default function AtencionXsedeView() {
               <Divider flexItem orientation='horizontal' />
             }
             <List>
-              {areas.map((are, index) => (
+              {!areasEmpty && areas.map((are, index) => (
                 <ListItemButton key={index} onClick={() => handleChangeArea(are.idAreaBeneficio)}>
                   <Typography sx={{ fontWeight: are.idAreaBeneficio === area ? 'bold' : '' }}>{are.nombre} ({are.especialistas})</Typography>
                 </ListItemButton>
               ))}
             </List>
           </Stack>
+          { area ? <Divider flexItem orientation='vertical' /> : ''}
 
-          {area && (
+          { area && (
             <Stack sx={{ flex: 1 }} >
               <Typography variant='h6' sx={{ marginBottom: 1, paddingLeft: 1 }} >Especialistas</Typography>
               {especialistasLoading ?
@@ -289,7 +333,7 @@ export default function AtencionXsedeView() {
                 <Divider flexItem orientation='horizontal' />
               }
               <List>
-                {especialistas.map((espe, index) => (
+                {!especialistasEmpty && especialistas.map((espe, index) => (
                   <ListItemButton key={index} onClick={() => handleChangeEspecialista(espe.idUsuario)}>
                     <Typography sx={{ fontWeight: espe.idUsuario === especialista ? 'bold' : '' }}>{espe.nombre}</Typography>
                   </ListItemButton>
@@ -297,13 +341,13 @@ export default function AtencionXsedeView() {
               </List>
             </Stack>
           )}
-
+          { especialista ? <Divider flexItem orientation='vertical' /> : ''}
           {especialista && (
               <Stack sx={{ flex: 1 }} >
                 <Typography variant='h6' sx={{ marginBottom: 1, paddingLeft: 1 }} >Modalidad</Typography>
                 <Divider flexItem orientation='horizontal' />
                 <List>
-                  {modalidades.map((moda, index) => (
+                  {!modalidadesEmpty && modalidades.map((moda, index) => (
                     <ListItemButton key={index} onClick={() => handleChangeModalidad(moda.idOpcion)}>
                       <Typography sx={{ fontWeight: moda.idOpcion === modalidad ? 'bold' : '' }}>{moda.nombre}</Typography>
                     </ListItemButton>
@@ -311,7 +355,7 @@ export default function AtencionXsedeView() {
                 </List>
               </Stack>
             )}
-
+          { modalidad ? <Divider flexItem orientation='vertical' /> : ''}
           {modalidad && (
             <Stack sx={{ flex: 1 }} >
               <Typography variant='h6' sx={{ marginLeft: 2 }} >
@@ -336,7 +380,8 @@ export default function AtencionXsedeView() {
                           edge="start"
                           checked={ sed.active }
                           disabled={isSaving}
-                          onChange={ (event) => handleCheckSede(sed.idsede, event.target.checked) }
+                          onChange ={ (event) => modalidad === 1 ? handleChangeSedeCheck(sed.idsede, event.target.checked) : handleCheckSede(sed.idsede, event.target.checked)  }
+                          // onChange={ (event) => handleCheckSede(sed.idsede, event.target.checked) }
                         />
                         <Typography sx={{ fontWeight: sed.idsede === sede ? 'bold' : '' }} >{sed.nsede}</Typography>
                         <Box sx={{ flex: 1 }}/>
@@ -367,7 +412,7 @@ export default function AtencionXsedeView() {
           <OficinasDialog
             onClose={onClose}
             oficinasLoading = {oficinasLoading}
-            oficinas = {oficinas}
+            oficinas = {!oficinasEmpty ? oficinas : [] }
             oficina = {oficina}
             handleChangeOficina = {handleChangeOficina}
             sede = {sede}
@@ -375,6 +420,7 @@ export default function AtencionXsedeView() {
             especialista={especialista}
             isLoad={isLoad}
             hasOffice={hasOffice}
+            handleSaveSede={handleSaveSede}
           />
           
         </Dialog>

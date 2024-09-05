@@ -260,7 +260,7 @@ export default function BarraTareasTabla({
           <Grid xs={12} md={12}>
             <WidgetPacientes
               title="Total de citas"
-              total={totalCitas}
+              total={totalCitas || 0}
               length={totalCitas}
               icon={<BookingIllustration />}
             />
