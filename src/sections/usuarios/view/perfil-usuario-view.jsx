@@ -23,7 +23,7 @@ const TABS = [
     label: 'Datos personales',
     icon: <Iconify icon="iconamoon:profile-circle-fill" width={24} />,
   },
-  /* {
+  {
     value: 'gafete',
     label: 'Gafete digital',
     icon: <Iconify icon="clarity:id-badge-solid" width={24} />,
@@ -42,7 +42,7 @@ const TABS = [
     value: 'eventos',
     label: 'Eventos corporativos',
     icon: <Iconify icon="streamline:champagne-party-alcohol-solid" width={24} />,
-  }, */
+  },
 ];
 // ----------------------------------------------------------------------
 
@@ -100,7 +100,7 @@ export default function PerfilUsuarioView() {
 
       {currentTab === 'datos' && <DatosPersonales info={_userAbout} posts={_userFeeds} />}
 
-      {currentTab === 'gafete' && <GafeteDigital/>}
+      {currentTab === 'gafete' && <GafeteDigital />}
 
       {/* {currentTab === 'friends' && (
         <ProfileFriends
