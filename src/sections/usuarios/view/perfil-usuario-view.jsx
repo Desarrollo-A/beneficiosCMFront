@@ -6,7 +6,7 @@ import Container from '@mui/material/Container';
 import Tabs, { tabsClasses } from '@mui/material/Tabs';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { _userAbout, _userFeeds } from 'src/_mock';
+import { _userAbout, _userFeeds, _ecommerceSalesOverview } from 'src/_mock';
 
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
@@ -15,6 +15,7 @@ import ProfileCover from '../profile-cover';
 import GafeteDigital from '../gafete-digital';
 import DatosPersonales from '../datos-personales';
 import RelojChecador from '../checador/reloj-checador';
+import CalculadoraNomina from '../calculadora-nomina';
 
 // ----------------------------------------------------------------------
 
@@ -110,15 +111,8 @@ export default function PerfilUsuarioView() {
 
       {currentTab === 'gafete' && <GafeteDigital/>}
 
-      {/* {currentTab === 'friends' && (
-        <ProfileFriends
-          friends={_userFriends}
-          searchFriends={searchFriends}
-          onSearchFriends={handleSearchFriends}
-        />
-      )} */}
+      {currentTab === 'calculadora' && <CalculadoraNomina title="Sales Overview" data={_ecommerceSalesOverview} />}
 
-      {/* {currentTab === 'gallery' && <ProfileGallery gallery={_userGallery} />} */}
     </Container>
   );
 }
