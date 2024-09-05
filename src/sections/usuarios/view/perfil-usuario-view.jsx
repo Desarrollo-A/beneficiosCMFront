@@ -6,7 +6,7 @@ import Container from '@mui/material/Container';
 import Tabs, { tabsClasses } from '@mui/material/Tabs';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { _userAbout, _userFeeds, _ecommerceSalesOverview } from 'src/_mock';
+import { _userAbout, _userFeeds } from 'src/_mock';
 
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
@@ -43,6 +43,11 @@ const TABS = [
     value: 'eventos',
     label: 'Eventos corporativos',
     icon: <Iconify icon="streamline:champagne-party-alcohol-solid" width={24} />,
+  },
+  {
+    value: 'capital',
+    label: 'Tu ejecutivo de CH',
+    icon: <Iconify icon="fluent:people-team-24-filled" width={24} />,
   },
 ];
 // ----------------------------------------------------------------------
@@ -103,7 +108,7 @@ export default function PerfilUsuarioView() {
 
       {currentTab === 'gafete' && <GafeteDigital />}
 
-      {currentTab === 'calculadora' && <CalculadoraNomina title="Sales Overview" data={_ecommerceSalesOverview} />}
+      {currentTab === 'calculadora' && <CalculadoraNomina />}
 
       {/* {currentTab === 'friends' && (
         <ProfileFriends
