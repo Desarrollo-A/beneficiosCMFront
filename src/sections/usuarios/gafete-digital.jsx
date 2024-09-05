@@ -60,9 +60,9 @@ export default function GafeteDigital(props) {
     const handleClick = useCallback(() => {
         setAnimationKey(prev => prev + 1); // Cambiar clave para reiniciar la animación
         setTimeout(() => {
-          setShowInitialView(prev => !prev);
+            setShowInitialView(prev => !prev);
         }, 1000); // Tiempo para esperar antes de cambiar la vista
-      }, []);
+    }, []);
 
     const isMobile = useMediaQuery('(max-width: 960px)');
 
@@ -91,6 +91,7 @@ export default function GafeteDigital(props) {
                 />
                 <Box sx={{ textAlign: 'center', pt: 1 }}>
                     <Button onClick={toggleDrawer(true)}>Vizualizar gafete</Button>
+
                 </Box>
                 <SwipeableDrawer
                     container={container}
@@ -119,22 +120,23 @@ export default function GafeteDigital(props) {
                         <Puller />
                         <Box sx={{
                             p: 2,
+                            backgroundColor: '#fff'
                         }}>
-                            <Button
-                                sx={{
-                                    height: '33px'
-                                }}
-                                onClick={handleClick}
-                            >
-                                <Iconify icon="uim:refresh" width={24} />
-                                <Typography sx={{ p: 0.2, fontWeight: 'bold', fontSize: '12px' }}>
-                                    Girar gafete
-                                </Typography>
-
-                            </Button>
-                        </Box>
+                        ㅤ
+                    </Box>
                     </StyledBox>
+                    <Button
+                        sx={{
+                            height: '80px'
+                        }}
+                        onClick={handleClick}
+                    >
+                        <Iconify icon="uim:refresh" width={24} />
+                        <Typography sx={{ p: 0.2, fontWeight: 'bold', fontSize: '12px' }}>
+                            Girar gafete
+                        </Typography>
 
+                    </Button>
                     {showInitialView ? (
                         <Box
                             sx={{
