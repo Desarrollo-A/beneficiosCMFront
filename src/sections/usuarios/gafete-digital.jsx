@@ -84,7 +84,7 @@ export default function GafeteDigital(props) {
                 <Global
                     styles={{
                         '.MuiDrawer-root > .MuiPaper-root': {
-                            height: `calc(75% - ${drawerBleeding}px)`,
+                            height: `calc(100% - ${drawerBleeding}px)`,
                             overflow: 'visible',
                         },
                     }}
