@@ -22,6 +22,7 @@ export default function ProfileCover({ name, avatarUrl, role, coverUrl, sex }) {
         }),
         height: 1,
         color: 'common.white',
+        borderRadius: '18px'
       }}
     >
       <Stack
