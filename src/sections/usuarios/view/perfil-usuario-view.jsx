@@ -13,6 +13,7 @@ import { useSettingsContext } from 'src/components/settings';
 
 import ProfileCover from '../profile-cover';
 import GafeteDigital from '../gafete-digital';
+import AsesorView from '../asesorCh/asesor-view';
 import DatosPersonales from '../datos-personales';
 import RelojChecador from '../checador/reloj-checador';
 
@@ -109,6 +110,8 @@ export default function PerfilUsuarioView() {
       {currentTab === 'checador' && <RelojChecador info={_userAbout} posts={_userFeeds} />}
 
       {currentTab === 'gafete' && <GafeteDigital/>}
+
+      {currentTab === 'asesor' && <AsesorView info={_userAbout} posts={_userFeeds} />}
 
       {/* {currentTab === 'friends' && (
         <ProfileFriends
