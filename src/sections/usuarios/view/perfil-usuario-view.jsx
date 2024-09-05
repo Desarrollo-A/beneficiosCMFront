@@ -24,17 +24,17 @@ const TABS = [
     label: 'Datos personales',
     icon: <Iconify icon="iconamoon:profile-circle-fill" width={24} />,
   },
-  /* {
+  {
     value: 'gafete',
     label: 'Gafete digital',
     icon: <Iconify icon="clarity:id-badge-solid" width={24} />,
-  }, */
+  },
   {
     value: 'checador',
     label: 'Reloj checador',
     icon: <Iconify icon="fluent:clock-bill-24-filled" width={24} />,
-  }
-  /* {
+  },
+  {
     value: 'calculadora',
     label: 'Calculadora de nómina',
     icon: <Iconify icon="solar:calculator-minimalistic-bold" width={24} />,
@@ -43,7 +43,12 @@ const TABS = [
     value: 'eventos',
     label: 'Eventos corporativos',
     icon: <Iconify icon="streamline:champagne-party-alcohol-solid" width={24} />,
-  }, */
+  },
+  {
+    value: 'asesor',
+    label: 'Asesor CH',
+    icon: <Iconify icon="wpf:administrator" width={24} />,
+  }
 ];
 // ----------------------------------------------------------------------
 
