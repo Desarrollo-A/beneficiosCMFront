@@ -6,17 +6,17 @@ import Container from '@mui/material/Container';
 import Tabs, { tabsClasses } from '@mui/material/Tabs';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { _userAbout, _userFeeds, _ecommerceSalesOverview } from 'src/_mock';
+import { _userAbout, _userFeeds } from 'src/_mock'; // _ecommerceSalesOverview
 
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
 
 import ProfileCover from '../profile-cover';
 import GafeteDigital from '../gafete-digital';
-import AsesorView from '../asesorCh/asesor-view';
+// import AsesorView from '../asesorCh/asesor-view';
 import DatosPersonales from '../datos-personales';
+// import CalculadoraNomina from '../calculadora-nomina';
 import RelojChecador from '../checador/reloj-checador';
-import CalculadoraNomina from '../calculadora-nomina';
 
 // ----------------------------------------------------------------------
 

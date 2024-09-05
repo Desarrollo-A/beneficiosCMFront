@@ -3,6 +3,7 @@ import { Global } from '@emotion/react';
 import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
+import { Card } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import { grey } from '@mui/material/colors';
