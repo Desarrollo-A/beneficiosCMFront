@@ -14,6 +14,7 @@ import { useSettingsContext } from 'src/components/settings';
 import ProfileCover from '../profile-cover';
 import GafeteDigital from '../gafete-digital';
 import DatosPersonales from '../datos-personales';
+import RelojChecador from '../checador/reloj-checador';
 import CalculadoraNomina from '../calculadora-nomina';
 
 // ----------------------------------------------------------------------
@@ -44,6 +45,11 @@ const TABS = [
     label: 'Eventos corporativos',
     icon: <Iconify icon="streamline:champagne-party-alcohol-solid" width={24} />,
   },
+  {
+    value: 'asesor',
+    label: 'Asesor CH',
+    icon: <Iconify icon="wpf:administrator" width={24} />,
+  }
 ];
 // ----------------------------------------------------------------------
 
@@ -101,19 +107,12 @@ export default function PerfilUsuarioView() {
 
       {currentTab === 'datos' && <DatosPersonales info={_userAbout} posts={_userFeeds} />}
 
-      {currentTab === 'gafete' && <GafeteDigital />}
+      {currentTab === 'checador' && <RelojChecador info={_userAbout} posts={_userFeeds} />}
+
+      {currentTab === 'gafete' && <GafeteDigital/>}
 
       {currentTab === 'calculadora' && <CalculadoraNomina title="Sales Overview" data={_ecommerceSalesOverview} />}
 
-      {/* {currentTab === 'friends' && (
-        <ProfileFriends
-          friends={_userFriends}
-          searchFriends={searchFriends}
-          onSearchFriends={handleSearchFriends}
-        />
-      )} */}
-
-      {/* {currentTab === 'gallery' && <ProfileGallery gallery={_userGallery} />} */}
     </Container>
   );
 }
