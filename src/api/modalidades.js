@@ -25,7 +25,7 @@ export function useGetModalidades(load, object) {
       modalidadesLoading: isLoading || isValidating,
       modalidadesError: error,
       modalidadesValidating: isValidating,
-      modalidadesEmpty: !isLoading && !data,
+      modalidadesEmpty: !isLoading && !data?.length,
       getModalidades: mutate,
     }),
     [data, error, isLoading, isValidating, mutate]
