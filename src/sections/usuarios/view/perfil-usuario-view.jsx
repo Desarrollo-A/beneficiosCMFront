@@ -15,7 +15,7 @@ import ProfileCover from '../profile-cover';
 import GafeteDigital from '../gafete-digital';
 // import AsesorView from '../asesorCh/asesor-view';
 import DatosPersonales from '../datos-personales';
-// import CalculadoraNomina from '../calculadora-nomina';
+import CalculadoraNomina from '../calculadora-nomina';
 import RelojChecador from '../checador/reloj-checador';
 
 // ----------------------------------------------------------------------
@@ -26,7 +26,7 @@ const TABS = [
     label: 'Datos personales',
     icon: <Iconify icon="iconamoon:profile-circle-fill" width={24} />,
   },
-  {
+/*   {
     value: 'gafete',
     label: 'Gafete digital',
     icon: <Iconify icon="clarity:id-badge-solid" width={24} />,
@@ -50,7 +50,7 @@ const TABS = [
     value: 'capital',
     label: 'Tu ejecutivo de CH',
     icon: <Iconify icon="fluent:people-team-24-filled" width={24} />,
-  },
+  }, */
 
 ];
 // ----------------------------------------------------------------------
