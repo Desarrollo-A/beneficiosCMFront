@@ -1,76 +1,231 @@
 @keyframes fadeIn {
-    0% { opacity: 0; transform: translateY(-10px); }
-    100% { opacity: 1; transform: translateY(0); }
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
   }
-  
-  .fade-in {
-    animation: fadeIn 0.5s ease-in-out;
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Animación de zoom con vibración */
+@keyframes zoomInShake {
+  0% {
+    transform: scale(0.2) translateY(0);
+  }
+  25% {
+    transform: scale(1.1) translateY(-5px);
+  }
+  50% {
+    transform: scale(0.9) translateY(5px);
+  }
+  75% {
+    transform: scale(1.05) translateY(-2px);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+  }
+}
+
+.zoom-shake {
+  animation: zoomInShake 1s ease-in-out;
+}
 
 .card {
-    width: 290px;
-    height: 470px;
-    background: #072140;
-    position: relative;
-    display: flex;
-    place-content: center;
-    place-items: center;
-    overflow: hidden;
-    border-radius: 20px;
-  }
-  
-  .card h2 {
-    z-index: 1;
-    color: white;
-    font-size: 2em;
-  }
-  
-  .card::before {
-    content: '';
-    position: absolute;
-    width: 100px;
-    background-image: linear-gradient(80deg, #ffffff, #BAA36B);
-    height: 130%;
-    animation: rotBGimg 7s linear infinite;
-    transition: all 0.2s linear;
-  }
-  
-  @keyframes rotBGimg {
-    from {
-      transform: rotate(0deg);
-    }
-  
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  
-  .card::after {
-    content: '';
-    position: absolute;
-    background: #07182E;
-    inset: 5px;
-    border-radius: 15px;
-  }  
+  width: 80vw;
+  height: 60vh;
+  max-height: 90vh;
+  background: #072140;
+  position: relative;
+  display: flex;
+  place-content: center;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 2rem;
+  max-width: 290px;
+  max-height: 470px;
+}
 
-  .card-line-front {
-    position: absolute;
-    left: 0;
-    width: 100%;
-    height: 60px; 
-    background: #BAA36B; 
+.card h2 {
+  z-index: 1;
+  color: white;
+  font-size: 2em;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  width: 100px;
+  background-image: linear-gradient(80deg, #ffffff, #BAA36B);
+  height: 130%;
+  animation: rotBGimg 7s linear infinite;
+  transition: all 0.2s linear;
+}
+
+@keyframes rotBGimg {
+  from {
+    transform: rotate(0deg);
   }
 
-  .card-line-back {
-    position: absolute;
-    left: 0;
-    width: 100%;
-    height: 4px; 
-    background: #BAA36B; 
+  to {
+    transform: rotate(360deg);
   }
-  /* .card:hover:before {
+}
+
+.card::after {
+  content: '';
+  position: absolute;
+  background: #07182E;
+  inset: 5px;
+  border-radius: 15px;
+}
+
+.card-line-front {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background: #BAA36B;
+}
+
+.card-line-back {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: #BAA36B;
+}
+
+/* .card:hover:before {
     background-image: linear-gradient(180deg, rgb(81, 255, 0), purple);
     animation: rotBGimg 3.5s linear infinite;
   } */
-  
-  
+
+.rotate {
+  transform: rotateY(360deg);
+}
+
+
+.cardDdesktop {
+  width: 300px;
+  height: 460px;
+  max-height: 90vh;
+  background: #072140;
+  position: relative;
+  display: flex;
+  place-content: center;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 2rem;
+  max-width: 290px;
+  max-height: 470px;
+}
+
+.cardDdesktop h2 {
+  z-index: 1;
+  color: white;
+  font-size: 2em;
+}
+
+@keyframes rotBGimg {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.cardDdesktop::after {
+  content: '';
+  position: absolute;
+  background: #07182E;
+  inset: 5px;
+  border-radius: 15px;
+}
+
+.cardDdesktop-line-front {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background: #BAA36B;
+}
+
+.cardDdesktop-line-back {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: #BAA36B;
+}
+
+/* Animaciones para los elementos dentro de grid-item1 */
+@keyframes fallZoom {
+  0% {
+    transform: translateY(0) scale(1); /* Posición original, sin zoom */
+  }
+  50% {
+    transform: translateY(100px) scale(1.2); /* Caída + zoom in */
+  }
+  100% {
+    transform: translateY(0) scale(1); /* Regreso a la posición original, sin zoom */
+  }
+}
+
+@keyframes fallFromTop {
+  0% {
+    transform: translateY(-30px) rotateX(40deg); /* Empieza fuera de la vista desde arriba con rotación */
+    opacity: 0; /* Inicia invisible */
+  }
+  70% {
+    transform: translateY(0) rotateX(0deg); /* Llega a su posición final y termina de rotar */
+    opacity: 1; /* Se vuelve visible mientras cae */
+  }
+  100% {
+    transform: translateY(0) rotateX(0deg); /* Mantiene la posición final sin rotación */
+    opacity: 1; /* Totalmente visible */
+  }
+}
+
+/* Animaciones específicas para grid-item1 */
+.grid-item1 .correaDdesktop {
+  animation: fallZoom 0.7s ease-in-out forwards;
+}
+
+.grid-item1 .cardDdesktop {
+  opacity: 0; /* Inicialmente invisible */
+  animation: fallFromTop 0.7s ease-in-out forwards;
+  animation-delay: 0.7s; /* Empieza después de la animación de correaDdesktop */
+  animation-fill-mode: forwards; /* Mantiene el estado final de la animación */
+  perspective: 1000px;
+}
+
+/* Animaciones específicas para grid-item2 */
+.grid-item2 .correaDdesktop {
+  animation: fallZoom 0.7s ease-in-out forwards;
+}
+
+.grid-item2 .cardDdesktop {
+  opacity: 0; /* Inicialmente invisible */
+  animation: fallFromTop 0.7s ease-in-out forwards;
+  animation-delay: 0.7s; /* Empieza después de la animación de correaDdesktop */
+  animation-fill-mode: forwards; /* Mantiene el estado final de la animación */
+  perspective: 1000px;
+}
+
+/* Mostrar grid-item2 solo después de que grid-item1 haya terminado */
+.grid-item2 {
+  display: none; /* Oculto por defecto */
+}
+
+.grid-item1.loaded + .grid-item2 {
+  display: grid; /* Muestra grid-item2 después de que grid-item1 tenga la clase loaded */
+}
