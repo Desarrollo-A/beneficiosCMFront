@@ -2,11 +2,9 @@ import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { alpha, styled, useTheme } from '@mui/material/styles';
-import { Card, Grid, Stack, Avatar, Button, Divider, CardMedia, Typography } from '@mui/material';
+import { Card, Grid, Stack, Avatar, Divider, CardMedia, Typography } from '@mui/material';
 
 import { bgGradient } from 'src/theme/css';
-
-import Iconify from 'src/components/iconify';
 
 // import { useSettingsContext } from 'src/components/settings';
 import ListaPreguntas from './components/lista-preguntas';
