@@ -37,7 +37,7 @@ export default function ModalEstatus({ open, onClose, idPregunta, estatus }) {
         if (update.result) {
           enqueueSnackbar(update.msg, { variant: 'success' });
 
-          mutate(endpoints.gestor.getFaqsCh);
+          mutate(endpoints.gestor.getFaqsChAll);
 
         } else {
           enqueueSnackbar(update.msg, { variant: 'error' });

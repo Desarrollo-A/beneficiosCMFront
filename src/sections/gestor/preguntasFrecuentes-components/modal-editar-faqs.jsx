@@ -67,7 +67,7 @@ export default function ModalEditarOficinas({ open, onClose, idPregunta, pregunt
 
       if (update.result) {
         enqueueSnackbar(update.msg, { variant: 'success' });
-        mutate(endpoints.gestor.getFaqsCh);
+        mutate(endpoints.gestor.getFaqsChAll);
       } else {
         enqueueSnackbar(update.msg, { variant: 'error' });
       }

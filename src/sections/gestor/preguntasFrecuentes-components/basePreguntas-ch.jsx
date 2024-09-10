@@ -57,7 +57,7 @@ export default function BasePreguntasCh() {
 
   const rol = user?.idRol;
 
-  const { faqsData } = useGetGeneral(endpoints.gestor.getFaqsCh, 'faqsData');
+  const { faqsData } = useGetGeneral(endpoints.gestor.getFaqsChAll, 'faqsData');
 
   const [tableData, setTableData] = useState([]);
 

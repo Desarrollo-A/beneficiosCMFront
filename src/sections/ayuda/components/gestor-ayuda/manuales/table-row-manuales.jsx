@@ -62,7 +62,7 @@ export default function TableRowManuales({ row, rol, close }) {
     <>
       <TableRow>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{id}</TableCell>
+     
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{titulo}</TableCell>
 

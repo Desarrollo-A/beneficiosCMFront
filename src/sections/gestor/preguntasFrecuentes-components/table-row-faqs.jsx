@@ -61,7 +61,15 @@ export default function TableRowFaqs({ row, rol, close }) {
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{id}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{pregunta}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+            {pregunta.length > maxLength ? (
+                <Tooltip title={pregunta} TransitionComponent={Zoom} placement="top">
+                    <span>{truncatedDescripcion}</span>
+                </Tooltip>
+            ) : (
+              pregunta
+            )}
+        </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
             {respuesta.length > maxLength ? (

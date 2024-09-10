@@ -316,6 +316,7 @@ export const endpoints = {
     permisos: '/GestorController/getPermisosOptions',
     save_permisos: '/GestorController/savePermisos',
     getFaqsCh: '/GestorController/getFaqsCh',
+    getFaqsChAll: '/GestorController/getFaqsChAll',
     savePreguntaCh: '/GestorController/savePreguntaCh',
     updatePreguntaCh: '/GestorController/updatePreguntaCh',
     habilitarPreguntaCh: '/GestorController/habilitarPreguntaCh'
