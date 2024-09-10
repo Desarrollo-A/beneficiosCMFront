@@ -13,6 +13,7 @@ import { useSettingsContext } from 'src/components/settings';
 
 import ProfileCover from '../profile-cover';
 import GafeteDigital from '../gafete-digital';
+import AsesorView from '../asesorCh/asesor-view';
 // import AsesorView from '../asesorCh/asesor-view';
 import DatosPersonales from '../datos-personales';
 // import CalculadoraNomina from '../calculadora-nomina';
@@ -48,7 +49,7 @@ const TABS = [
   },
   {
     value: 'asesor',
-    label: 'Asesor CH',
+    label: 'Ejecutivo CH',
     icon: <Iconify icon="wpf:administrator" width={24} />,
   }
 ];
@@ -111,6 +112,9 @@ export default function PerfilUsuarioView() {
       {currentTab === 'checador' && <RelojChecador info={_userAbout} posts={_userFeeds} />}
 
       {currentTab === 'gafete' && <GafeteDigital/>}
+
+      {currentTab === 'asesor' && <AsesorView info={_userAbout} posts={_userFeeds} />}
+
 
       {/* {currentTab === 'friends' && (
         <ProfileFriends

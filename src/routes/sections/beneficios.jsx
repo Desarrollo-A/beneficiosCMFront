@@ -98,6 +98,7 @@ const PermissionDeniedPage = lazy(() => import('src/pages/beneficios/permission'
 const BlankPage = lazy(() => import('src/sections/_examples/extra/upload-view'));
 
 // const AgendaPage = lazy(() => import('src/pages/beneficios/agenda'))
+const PreguntasFrecuentesPage = lazy(() => import('src/pages/beneficios/gestor/preguntas-frecuentes-view'));
 
 
 // ----------------------------------------------------------------------
@@ -142,6 +143,7 @@ export const beneficiosRoutes = [
           { path: 'estatusPuestos', element: <EstatusPuestosPage /> },
           { path: 'sedes', element: <SedesPage /> },
           { path: 'usuarios', element: <UsuariosPage /> },
+          { path: 'preguntasFrecuentes', element: <PreguntasFrecuentesPage /> }
         ],
       },
       {

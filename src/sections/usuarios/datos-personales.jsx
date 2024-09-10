@@ -114,11 +114,11 @@ export default function DatosPersonales() {
           spacing={2}>
           {/* <Grid item xs={12} md={12}> */}
 
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <RHFTextField name="nombre" label="Nombre" value={datosUser?.nombre} disabled />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <RHFTextField
               name="numEmpleado"
               label="Número de empleado"
@@ -127,11 +127,11 @@ export default function DatosPersonales() {
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <RHFTextField name="correo" label="Correo" value={datosUser?.correo} disabled />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <RHFTextField
               name="telPersonal"
               label="Teléfono"
@@ -140,13 +140,13 @@ export default function DatosPersonales() {
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             {puestoData.flatMap((u) => (
               <RHFTextField name="puesto" label="Puesto" value={u?.puesto} disabled />
             ))}
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             {sedeData.flatMap((u) => (
               <RHFTextField name="sede" label="Sede" value={u.sede} disabled />
             ))}
@@ -156,7 +156,7 @@ export default function DatosPersonales() {
 
           <RHFTextField name="password" value={datosUser.password} style={{ display: 'none' }} />
 
-          <Grid item xs={12} md={4}>
+          <Grid xs={12} md={4}>
             {password ? (
               <RHFTextField
                 name="oldPassword"
@@ -179,7 +179,7 @@ export default function DatosPersonales() {
             )}
           </Grid>
 
-          <Grid item xs={12} md={4}>
+          <Grid xs={12} md={4}>
             <RHFTextField
               name="newPassword"
               label="Nueva contraseña"
@@ -201,7 +201,7 @@ export default function DatosPersonales() {
             />
           </Grid>
 
-          <Grid item xs={12} md={4}>
+          <Grid xs={12} md={4}>
             <RHFTextField
               name="confirmNewPassword"
               type={passwordConfirm.value ? 'text' : 'password'}
@@ -218,7 +218,7 @@ export default function DatosPersonales() {
             />
           </Grid>
 
-          <Grid item xs={12} md={12}>
+          <Grid xs={12} md={12}>
             <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
               <LoadingButton
                 type="submit"

@@ -315,6 +315,10 @@ export const endpoints = {
     updateEstatusDepartamentos: '/GestorController/updateEstatusDepartamentos',
     permisos: '/GestorController/getPermisosOptions',
     save_permisos: '/GestorController/savePermisos',
+    getFaqsCh: '/GestorController/getFaqsCh',
+    savePreguntaCh: '/GestorController/savePreguntaCh',
+    updatePreguntaCh: '/GestorController/updatePreguntaCh',
+    habilitarPreguntaCh: '/GestorController/habilitarPreguntaCh'
   },
   avisosPrivacidad: {
     getEspecialidadToSelect: '/AvisosPrivacidadController/getEspecialidades',
