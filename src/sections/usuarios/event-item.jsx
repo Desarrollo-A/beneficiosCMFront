@@ -18,6 +18,9 @@ import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
 import { shortDateLabel } from 'src/components/custom-date-range-picker';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import { Rotate90DegreesCcw } from '@mui/icons-material';
+import { Typography } from '@mui/material';
+import { margin } from '@mui/system';
 
 // ----------------------------------------------------------------------
 
@@ -64,6 +67,56 @@ export default function EventItem({ event, onView, onEdit, onDelete }) {
 
   const renderPrice = (
     <Stack
+      direction="column"
+      alignItems="center"
+      sx={{
+        top: 1,
+        left: 1,
+        zIndex: 9,
+        borderRadius: '10px 0px 10px 0px',
+        position: 'absolute',
+        p: '20px 10px 20px 10px',
+        color: 'common.white',
+        // Padding
+
+        // rotar texto
+        writingMode: 'vertical-rl',
+        transform: 'rotate(180deg)', // rotate(180deg),
+        // Efecto blur
+        bgcolor: 'rgba(100, 100, 100, 0.5)', // Fondo semi-transparente
+        backdropFilter: 'blur(5px)', // Desenfoque
+        WebkitBackdropFilter: 'blur(5px)', // Para Safari
+      }}
+    >
+      <Box
+        component="span"
+        sx={{
+          color: 'white',
+          typography: 'subtitle1',
+          fontWeight: 'bold',
+          mr: 0.25,
+          alignSelf: 'flex-start',
+        }} // Alinea el '10' al inicio
+      >
+        10
+      </Box>
+      <Box
+        component="span"
+        sx={{
+          color: 'white',
+          typography: 'subtitle1',
+          fontWeight: 'light',
+          mr: 0.25,
+          // letterSpacing: '1px',
+        }}
+      >
+        {' Diciembre'}
+      </Box>
+    </Stack>
+  );
+
+  const renderBlur = (
+    <Stack
       direction="row"
       alignItems="center"
       sx={{
@@ -76,14 +129,16 @@ export default function EventItem({ event, onView, onEdit, onDelete }) {
         p: '2px 6px 2px 4px',
         color: 'common.white',
         typography: 'subtitle2',
+        writingMode: 'vertical-lr',
+        transform: 'rotate(180deg)', // rotate(180deg),
       }}
     >
-      {!!titulo && (
+      {/* {!!titulo && (
         <Box component="span" sx={{ color: 'grey.500', mr: 0.25, textDecoration: 'line-through' }}>
           {fCurrency(50)}
         </Box>
       )}
-      {fCurrency(51)}
+      {fCurrency(51)} */}
     </Stack>
   );
 
@@ -98,7 +153,11 @@ export default function EventItem({ event, onView, onEdit, onDelete }) {
       <Stack flexGrow={1} sx={{ position: 'relative' }}>
         {renderPrice}
         {renderRating}
-        <Image alt={imagen} src={imagen} sx={{ borderRadius: 1, height: 164, width: 1 }} />
+        <Image
+          alt={imagen}
+          src={imagen}
+          sx={{ margin: '0px 0px 0px 35px', borderRadius: 1, height: 300, width: 1 }}
+        />
       </Stack>
     </Stack>
   );
@@ -168,14 +227,40 @@ export default function EventItem({ event, onView, onEdit, onDelete }) {
     </Stack>
   );
 
+  const renderInfoEvent = (
+    <ListItemText
+      sx={{
+        p: (theme) => theme.spacing(2.5, 2.5, 2, 2.5),
+      }}
+      primary={`Posted date: ${fDateTime(fechaEvento)}`}
+      secondary={
+        <Link component={RouterLink} href={paths.dashboard.tour.details(idEvento)} color="inherit">
+          {titulo}
+        </Link>
+      }
+      primaryTypographyProps={{
+        typography: 'caption',
+        color: 'text.disabled',
+      }}
+      secondaryTypographyProps={{
+        mt: 1,
+        noWrap: true,
+        component: 'span',
+        color: 'text.primary',
+        typography: 'subtitle1',
+      }}
+    />
+  );
+
   return (
     <>
       <Card>
         {renderImages}
 
-        {renderTexts}
+        {renderInfoEvent}
+        {/* {renderTexts} */}
 
-        {renderInfo}
+        {/* {renderInfo} */}
       </Card>
 
       <CustomPopover
