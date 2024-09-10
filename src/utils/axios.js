@@ -356,4 +356,8 @@ export const endpoints = {
     sendMail: 'fondoAhorro/FondoAhorroController/sendMail',
     getSolicitudes: 'fondoAhorro/FondoAhorroController/getSolicitudes',
   },
+  eventos: {
+    getEventos: 'perfil/EventosController/getEventos',
+    newEvent: 'perfil/EventosController/nuevoEvento',
+  },
 };

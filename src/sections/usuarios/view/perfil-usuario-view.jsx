@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 
 import Tab from '@mui/material/Tab';
 import Card from '@mui/material/Card';
+import Stack from '@mui/system/Stack';
 import Container from '@mui/material/Container';
 import Tabs, { tabsClasses } from '@mui/material/Tabs';
 
@@ -9,12 +10,14 @@ import { paths } from 'src/routes/paths';
 
 import { useMockedUser } from 'src/hooks/use-mocked-user';
 
+import { useAuthContext } from 'src/auth/hooks';
 import { _userAbout, _userFeeds, _userFriends, _userGallery, _userFollowers } from 'src/_mock';
 
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
+import EventsList from '../events-list';
 import ProfileCover from '../profile-cover';
 import GafeteDigital from '../gafete-digital';
 import DatosPersonales from '../datos-personales';
@@ -52,8 +55,8 @@ const TABS = [
 
 export default function PerfilUsuarioView() {
   const settings = useSettingsContext();
-
   const { user } = useMockedUser();
+  const { user: userdata } = useAuthContext();
 
   const [searchFriends, setSearchFriends] = useState('');
 
@@ -69,7 +72,6 @@ export default function PerfilUsuarioView() {
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-
       <Card
         sx={{
           mb: 3,
@@ -77,8 +79,8 @@ export default function PerfilUsuarioView() {
         }}
       >
         <ProfileCover
-          role={_userAbout.role}
-          name={user?.displayName}
+          role={userdata?.puesto}
+          name={userdata?.nombre}
           avatarUrl={user?.photoURL}
           coverUrl={_userAbout.coverUrl}
         />
@@ -109,7 +111,7 @@ export default function PerfilUsuarioView() {
 
       {currentTab === 'datos' && <DatosPersonales info={_userAbout} posts={_userFeeds} />}
 
-      {currentTab === 'gafete' && <GafeteDigital/>}
+      {currentTab === 'gafete' && <GafeteDigital />}
 
       {/* {currentTab === 'friends' && (
         <ProfileFriends
@@ -120,6 +122,9 @@ export default function PerfilUsuarioView() {
       )} */}
 
       {/* {currentTab === 'gallery' && <ProfileGallery gallery={_userGallery} />} */}
+
+      {/* {currentTab === 'eventos' && <Stack>{JSON.stringify(userdata)}</Stack>} */}
+      {currentTab === 'eventos' && <EventsList info={_userAbout} posts={_userFeeds} />}
     </Container>
   );
 }
