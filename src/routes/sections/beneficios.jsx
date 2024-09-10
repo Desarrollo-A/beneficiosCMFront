@@ -100,6 +100,7 @@ const BlankPage = lazy(() => import('src/sections/_examples/extra/upload-view'))
 // const AgendaPage = lazy(() => import('src/pages/beneficios/agenda'))
 const PreguntasFrecuentesPage = lazy(() => import('src/pages/beneficios/gestor/preguntas-frecuentes-view'));
 
+const QueremosEscucharte = lazy(() => import('src/pages/queremosEscucharte/queremos-escucharte'));
 
 // ----------------------------------------------------------------------
 
@@ -251,7 +252,8 @@ export const beneficiosRoutes = [
       { path: 'kanban', element: <KanbanPage /> },
       { path: 'permission', element: <PermissionDeniedPage /> },
       { path: 'blank', element: <BlankPage /> },
-      { path: 'citas', element: <CitasPage /> }
+      { path: 'citas', element: <CitasPage /> },
+      { path: 'queremosEscucharte', element: <QueremosEscucharte /> }
     ],
   },
 ];
