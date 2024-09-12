@@ -100,7 +100,7 @@ export default function EditarEstatus({ open, onClose, id, est, estatusVal }) {
           >
             {estatusData.map((i) => (
               i.nombre === estatusVal ? null : (
-                <MenuItem key={i.idOpcion} value={i.idOpcion}>
+                <MenuItem key={i.idCatalogo} value={i.idCatalogo}>
                   {i.nombre}
                 </MenuItem>
               )

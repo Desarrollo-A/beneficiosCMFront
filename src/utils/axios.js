@@ -356,4 +356,14 @@ export const endpoints = {
     sendMail: 'fondoAhorro/FondoAhorroController/sendMail',
     getSolicitudes: 'fondoAhorro/FondoAhorroController/getSolicitudes',
   },
+  catalogos: {
+    getCatalogos: 'catalogos/CatalogosController/getCatalogos',
+    getCatalogosOp:'catalogos/CatalogosController/getCatalogosOp',
+    updateStatusCatalogosd:'catalogos/CatalogosController/updateCatalogoEstatus',
+    updateStatusCatalogosOp:'catalogos/CatalogosController/updateCatalogOpEstatus',
+    addCatalogos:'catalogos/CatalogosController/addCatalogos',
+    addCatalogossOp:'catalogos/CatalogosController/addCatalogosOp',
+
+  }
+  
 };

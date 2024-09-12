@@ -39,6 +39,8 @@ const OverviewBankingPage = lazy(() => import('src/pages/beneficios/banking'));
 const OverviewBookingPage = lazy(() => import('src/pages/beneficios/booking'));
 const OverviewFilePage = lazy(() => import('src/pages/beneficios/file'));
 const CalendarioPage = lazy(() => import('src/pages/beneficios/calendario'));
+// CATALOGOS
+const CatalogosOpPage = lazy(() => import('src/pages/beneficios/catalogos/catalogosOp'));
 // PRODUCT
 const ProductDetailsPage = lazy(() => import('src/pages/beneficios/product/details'));
 const ProductListPage = lazy(() => import('src/pages/beneficios/product/list'));
@@ -115,6 +117,12 @@ export const dashboardRoutes = [
           { path: 'demandaBeneficios', element: <DemandaBeneficiosPage /> },
         ],
       },
+      // {
+      //   path: 'catalogos',
+      //   children: [
+      //     { path: 'catalogos', element: <CatalogosOpPage /> },
+      //   ],
+      // },
       {
         path: 'encuestas',
         children: [
@@ -157,6 +165,7 @@ export const dashboardRoutes = [
       { path: 'booking', element: <OverviewBookingPage /> },
       { path: 'file', element: <OverviewFilePage /> },
       { path: 'calendario', element: <CalendarioPage /> },
+      { path: 'catalogos', element: <CatalogosOpPage /> },
       {
         path: 'user',
         children: [
