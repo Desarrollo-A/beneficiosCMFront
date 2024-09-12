@@ -13,7 +13,7 @@ export default function CatalogosOpPage() {
   return (
     <>
       <Helmet>
-        <title>Catalogos|Edit</title>
+        <title>Catálogos|Edit</title>
       </Helmet>
 
       <CatalogosOpView />

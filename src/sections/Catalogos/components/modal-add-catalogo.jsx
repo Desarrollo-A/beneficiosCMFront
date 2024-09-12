@@ -15,18 +15,13 @@ import {
 } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { addCatalogosOp } from 'src/api/catalogos/catalogos';
+import { addCatalogoss } from 'src/api/catalogos/catalogos';
 
 import { useSnackbar } from 'src/components/snackbar';
-
-
-
-
 // eslint-disable-next-line react/prop-types
-export default function AgregarCatalogoOpModal({ open, onClose, onCatalogoAdded, idCatalogo }) {
-  const [idOpcion, setIdOpcion] = useState('');
-  const [nombreCatalogOp, setNombreCatalogOp] = useState('');
-  const [estatusOp, setEstatusOp] = useState('1');
+export default function AgregarCatalogoModal({ open, onClose, onCatalogoAdded }) {
+  const [nombreCatalogo, setNombre] = useState('');
+  const [estatus, setEstatus] = useState('1');
   const { user: datosUser } = useAuthContext();
   const [btnLoad, setBtnLoad] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
@@ -36,18 +31,17 @@ export default function AgregarCatalogoOpModal({ open, onClose, onCatalogoAdded,
     { value: '0', label: 'Inactivo' }
   ];
 
-  const guardarCatalogoOp = async () => {
-    if (!nombreCatalogOp.trim()) {
-      enqueueSnackbar('Ingresa un nombre del catálogo', { variant: 'warning' });
+  const guardarCatalogo = async () => {
+    if (!nombreCatalogo.trim()) {
+      enqueueSnackbar('Ingrese el nombre del catálogo.', { variant: 'warning' });
       return;
     }
 
-    setBtnLoad(true);
+    setBtnLoad(true); 
     try {
-      await addCatalogosOp(idOpcion, idCatalogo, nombreCatalogOp, estatusOp, datosUser.idUsuario);
-      setIdOpcion('');
-      setNombreCatalogOp('');
-      setEstatusOp('1');
+      await addCatalogoss(nombreCatalogo, estatus, datosUser?.idUsuario);
+      setNombre(''); 
+      setEstatus('1'); 
 
       if (onCatalogoAdded) onCatalogoAdded();
       enqueueSnackbar('Catálogo guardado correctamente', { variant: 'success' });
@@ -57,36 +51,28 @@ export default function AgregarCatalogoOpModal({ open, onClose, onCatalogoAdded,
       console.error('Error al agregar el catálogo', error);
       enqueueSnackbar('Error al guardar el catálogo', { variant: 'error' });
     } finally {
-      setBtnLoad(false);
+      setBtnLoad(false); 
     }
   };
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Agregar Catálogo</DialogTitle>
+      <DialogTitle>Agregar catálogo</DialogTitle>
       <DialogContent>
         <TextField
           autoFocus
           margin="dense"
-          label="ID Opción"
-          type="number"
-          fullWidth
-          value={idOpcion}
-          onChange={(e) => setIdOpcion(e.target.value)}
-        />
-        <TextField
-          margin="dense"
-          label="Nombre del Catálogo"
+          label="Nombre del catálogo"
           type="text"
           fullWidth
-          value={nombreCatalogOp}
-          onChange={(e) => setNombreCatalogOp(e.target.value)}
+          value={nombreCatalogo}
+          onChange={(e) => setNombre(e.target.value)}
         />
         <FormControl fullWidth margin="dense">
           <InputLabel>Estatus</InputLabel>
           <Select
-            value={estatusOp}
-            onChange={(e) => setEstatusOp(e.target.value)}
+            value={estatus}
+            onChange={(e) => setEstatus(e.target.value)}
           >
             {estatus_select.map((option) => (
               <MenuItem key={option.value} value={option.value}>
@@ -97,16 +83,15 @@ export default function AgregarCatalogoOpModal({ open, onClose, onCatalogoAdded,
         </FormControl>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="primary">
+      <Button variant="contained" color="error" onClick={onClose}>
           Cancelar
-        </Button>
+         </Button>
         <LoadingButton
           variant="contained"
           color="success"
           loading={btnLoad}
-          onClick={guardarCatalogoOp}
-        >
-          Agregar
+          onClick={guardarCatalogo}
+        >Agregar
         </LoadingButton>
       </DialogActions>
     </Dialog>

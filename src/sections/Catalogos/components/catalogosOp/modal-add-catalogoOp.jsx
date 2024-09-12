@@ -20,8 +20,7 @@ import { addCatalogosOp } from 'src/api/catalogos/catalogos';
 import { useSnackbar } from 'src/components/snackbar';
 
 // eslint-disable-next-line react/prop-types
-export default function AgregarCatalogoOpModal({ open, onClose, onCatalogoAdded,idCatalogo}) {
-  const [idOpcion, setIdOpcion] = useState('');
+export default function AgregarCatalogoOpModal({ open, onClose, numOpcion, idCatalogo, onCatalogoAdded}) {
   const [nombreCatalogOp, setNombreCatalogOp] = useState('');
   const [estatusOp, setEstatusOp] = useState('1');
   const { user: datosUser } = useAuthContext();
@@ -41,8 +40,7 @@ export default function AgregarCatalogoOpModal({ open, onClose, onCatalogoAdded,
     
     setBtnLoad(true);
     try {
-      await addCatalogosOp(idOpcion,idCatalogo, nombreCatalogOp, estatusOp, datosUser.idUsuario);
-      setIdOpcion('');
+      await addCatalogosOp(numOpcion,idCatalogo, nombreCatalogOp, estatusOp, datosUser.idUsuario);
       setNombreCatalogOp('');
       setEstatusOp('1');
 
@@ -60,17 +58,8 @@ export default function AgregarCatalogoOpModal({ open, onClose, onCatalogoAdded,
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Agregar Catálogo</DialogTitle>
+      <DialogTitle>Agregar opcion de catálogo</DialogTitle>
       <DialogContent>
-        <TextField
-          autoFocus
-          margin="dense"
-          label="ID Opción"
-          type="number"
-          fullWidth
-          value={idOpcion}
-          onChange={(e) => setIdOpcion(e.target.value)}
-        />
         <TextField
           margin="dense"
           label="Nombre del Catálogo"
@@ -94,7 +83,7 @@ export default function AgregarCatalogoOpModal({ open, onClose, onCatalogoAdded,
         </FormControl>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="primary">
+        <Button onClick={onClose} variant="contained" color="error">
           Cancelar
         </Button>
         <LoadingButton

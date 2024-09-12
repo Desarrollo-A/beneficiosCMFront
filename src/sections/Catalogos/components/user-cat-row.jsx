@@ -80,6 +80,7 @@ export default function CatalogoRow({ row, onDeleteRow, onEditRow }) {
         <EditarCatalogoModal
           open={openEditCatalogo}
           idCatalogo={idCatalogo}
+          nombrecatalogo={nombre}
           onClose={handleCloseEditCatalogo}
         />
       )}

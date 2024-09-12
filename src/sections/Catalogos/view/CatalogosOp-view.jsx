@@ -3,7 +3,6 @@ import Xlsx from 'json-as-xlsx';
 import autoTable from 'jspdf-autotable';
 import { useState, useEffect, useCallback } from 'react';
 
-import { useTheme } from '@mui/material/styles';
 import TableContainer from '@mui/material/TableContainer';
 import {Card,Stack,Table, Button,Tooltip, MenuItem, Container, TableBody  } from '@mui/material';
 
@@ -151,17 +150,14 @@ export default function CatalogosOpView() {
     handleDownloadExcel(dataFiltered);
   };
 
-  const theme = useTheme();
-  const [animate] = useState(false);
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'xl'}>
         <CustomBreadcrumbs
           heading="Catálogos"
-          links={[{ name: 'Catalogos' }, { name: 'Editar' }]}
+          links={[{ name: 'Catálogos' }, { name: 'Editar' }]}
           sx={{ mb: { xs: 3, md: 5 } }}
         />
-
         <Stack
           direction="row"
           alignItems="center"
@@ -169,16 +165,14 @@ export default function CatalogosOpView() {
           sx={{ mb: { xs: 3, md: 5 } }}
         >
           <Button
-            className={`ButtonCatalogos ${animate ? 'animate' : ''}`}
-            id="animateElement"
+            variant="contained"
             onClick={() => setOpenAgregarDialog(true)}
-            sx={{ backgroundColor: theme.palette.mode === 'dark' ? '#140a10' : '#edf1ff' }}
-          >
+            color="success"
+            >
             <span>Agregar </span>
             <Iconify icon="line-md:plus-circle-filled" />
           </Button>
         </Stack>
-
         <Card>
           <UserTableToolbar
             filters={filters}
