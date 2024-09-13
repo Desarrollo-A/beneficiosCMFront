@@ -1,5 +1,5 @@
 .ButtonCita {
-  --black: #ffffff;
+  --black: #000000;
   --ch-black: #ffffff;
   --eer-black: #0152d3;
   --night-rider: #e8d17d;
@@ -7,7 +7,6 @@
   --af-white: #f3f3f3;
   --ch-white: #e1e1e1;
   border-radius: 8px;
-  width: 200px;
   height: 40px;
   display: flex;
   align-items: center;
@@ -59,14 +58,14 @@
 }
 
 
-.card-citas .inner {
+.card .inner {
   padding: 0px;
   background: #222;
   color: #fff;
   border-radius: 8px;
 }
 
-.border-animated {
+.example-4 {
   outline-width: 1px;
   outline-offset: 0;
   outline-color: rgba(0, 160, 252, 0.75);
@@ -220,6 +219,7 @@
 .notificar:hover p::before {
   width: 100%;
 }
+
 .base-timer {
   position: relative;
   width: 100px; /* Tamaño reducido */
@@ -228,6 +228,8 @@
 
 .base-timer__svg {
   transform: scaleX(-1);
+  background-color: rgb(86, 86, 86);
+  border-radius: 100%;
 }
 
 .base-timer__circle {
@@ -237,7 +239,7 @@
 
 .base-timer__path-elapsed {
   stroke-width: 5px;
-  stroke: grey;
+  stroke: #ffffff;
 }
 
 .base-timer__path-remaining {
@@ -263,7 +265,9 @@
 }
 
 .base-timer__label {
+  font-family: 'Digital-7', monospace;
   position: absolute;
+  color: white;
   width: 100px; /* Ajustado al tamaño del temporizador */
   height: 100px;
   top: 0;
@@ -301,6 +305,44 @@
   }
 }
 
+.buttonActions {
+  transition-duration: .8s;
+}
 
 
+.buttonActions:hover .bell {
+  animation: bellRing 0.9s both;
+}
 
+@keyframes bellRing {
+  0%,
+  100% {
+    transform-origin: top;
+  }
+
+  15% {
+    transform: rotateZ(10deg);
+  }
+
+  30% {
+    transform: rotateZ(-10deg);
+  }
+
+  45% {
+    transform: rotateZ(5deg);
+  }
+
+  60% {
+    transform: rotateZ(-5deg);
+  }
+
+  75% {
+    transform: rotateZ(2deg);
+  }
+}
+
+.dynamic-text-color {
+  mix-blend-mode: difference;
+  filter: invert(1);
+  color: rgb(0, 0, 0); /* Color de texto inicial */
+}

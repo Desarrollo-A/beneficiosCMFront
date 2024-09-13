@@ -25,7 +25,7 @@ export function useGetAreas(object) {
       areasLoading: isLoading,
       areasError: error,
       areasValidating: isValidating,
-      areasEmpty: !isLoading && !data,
+      areasEmpty: !isLoading && !data?.length,
       getAreas: mutate,
     }),
     [data, error, isLoading, isValidating, mutate]

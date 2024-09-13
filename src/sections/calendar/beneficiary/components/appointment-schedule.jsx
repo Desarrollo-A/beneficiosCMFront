@@ -428,7 +428,7 @@ export default function AppointmentSchedule({
                   </Stack>
                 </Stack>
 
-                <div className="card example-4">
+                <div className="card-citas border-animated">
                   <div className="inner">
                     <Stack
                       sx={{

@@ -50,10 +50,10 @@ export default function AtencionXsedeView() {
   const [, setAllChecked ] = useState(false)
   const [ oficina, setOficina ] = useState(null)
 
-  const { areas, areasLoading } = useGetAreas()
-  const { especialistas, especialistasLoading } = useGetEspecialistas(area, {area})
-  const { oficinas, oficinasLoading } = useGetOficinas(sede, {sede})
-  const { modalidades } = useGetModalidades(true)
+  const { areas, areasLoading, areasEmpty } = useGetAreas()
+  const { especialistas, especialistasLoading, especialistasEmpty } = useGetEspecialistas(area, {area})
+  const { oficinas, oficinasLoading, oficinasEmpty } = useGetOficinas(sede, {sede})
+  const { modalidades, modalidadesEmpty } = useGetModalidades(true)
   const theme = useTheme()
   const [open, setOpen] = useState(false)
   const [isLoad, setLoad] = useState(false)
@@ -315,7 +315,7 @@ export default function AtencionXsedeView() {
               <Divider flexItem orientation='horizontal' />
             }
             <List>
-              {areas.map((are, index) => (
+              {!areasEmpty && areas.map((are, index) => (
                 <ListItemButton key={index} onClick={() => handleChangeArea(are.idAreaBeneficio)}>
                   <Typography sx={{ fontWeight: are.idAreaBeneficio === area ? 'bold' : '' }}>{are.nombre} ({are.especialistas})</Typography>
                 </ListItemButton>
@@ -324,7 +324,7 @@ export default function AtencionXsedeView() {
           </Stack>
           { area ? <Divider flexItem orientation='vertical' /> : ''}
 
-          {area && (
+          { area && (
             <Stack sx={{ flex: 1 }} >
               <Typography variant='h6' sx={{ marginBottom: 1, paddingLeft: 1 }} >Especialistas</Typography>
               {especialistasLoading ?
@@ -333,7 +333,7 @@ export default function AtencionXsedeView() {
                 <Divider flexItem orientation='horizontal' />
               }
               <List>
-                {especialistas.map((espe, index) => (
+                {!especialistasEmpty && especialistas.map((espe, index) => (
                   <ListItemButton key={index} onClick={() => handleChangeEspecialista(espe.idUsuario)}>
                     <Typography sx={{ fontWeight: espe.idUsuario === especialista ? 'bold' : '' }}>{espe.nombre}</Typography>
                   </ListItemButton>
@@ -347,7 +347,7 @@ export default function AtencionXsedeView() {
                 <Typography variant='h6' sx={{ marginBottom: 1, paddingLeft: 1 }} >Modalidad</Typography>
                 <Divider flexItem orientation='horizontal' />
                 <List>
-                  {modalidades.map((moda, index) => (
+                  {!modalidadesEmpty && modalidades.map((moda, index) => (
                     <ListItemButton key={index} onClick={() => handleChangeModalidad(moda.idOpcion)}>
                       <Typography sx={{ fontWeight: moda.idOpcion === modalidad ? 'bold' : '' }}>{moda.nombre}</Typography>
                     </ListItemButton>
@@ -412,7 +412,7 @@ export default function AtencionXsedeView() {
           <OficinasDialog
             onClose={onClose}
             oficinasLoading = {oficinasLoading}
-            oficinas = {oficinas}
+            oficinas = {!oficinasEmpty ? oficinas : [] }
             oficina = {oficina}
             handleChangeOficina = {handleChangeOficina}
             sede = {sede}

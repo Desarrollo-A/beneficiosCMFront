@@ -13,7 +13,10 @@ import { useSettingsContext } from 'src/components/settings';
 
 import ProfileCover from '../profile-cover';
 import GafeteDigital from '../gafete-digital';
+// import AsesorView from '../asesorCh/asesor-view';
 import DatosPersonales from '../datos-personales';
+import CalculadoraNomina from '../calculadora-nomina';
+import RelojChecador from '../checador/reloj-checador';
 
 // ----------------------------------------------------------------------
 
@@ -23,7 +26,7 @@ const TABS = [
     label: 'Datos personales',
     icon: <Iconify icon="iconamoon:profile-circle-fill" width={24} />,
   },
-  /* {
+/*   {
     value: 'gafete',
     label: 'Gafete digital',
     icon: <Iconify icon="clarity:id-badge-solid" width={24} />,
@@ -42,7 +45,13 @@ const TABS = [
     value: 'eventos',
     label: 'Eventos corporativos',
     icon: <Iconify icon="streamline:champagne-party-alcohol-solid" width={24} />,
+  },
+  {
+    value: 'capital',
+    label: 'Tu ejecutivo de CH',
+    icon: <Iconify icon="fluent:people-team-24-filled" width={24} />,
   }, */
+
 ];
 // ----------------------------------------------------------------------
 
@@ -99,6 +108,10 @@ export default function PerfilUsuarioView() {
       </Card>
 
       {currentTab === 'datos' && <DatosPersonales info={_userAbout} posts={_userFeeds} />}
+
+      {currentTab === 'checador' && <RelojChecador info={_userAbout} posts={_userFeeds} />}
+
+      {currentTab === 'calculadora' && <CalculadoraNomina />}
 
       {currentTab === 'gafete' && <GafeteDigital/>}
 

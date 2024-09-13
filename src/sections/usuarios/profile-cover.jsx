@@ -13,8 +13,6 @@ import { bgGradient } from 'src/theme/css';
 export default function ProfileCover({ name, avatarUrl, role, coverUrl, sex }) {
   const theme = useTheme();
 
-  console.log(avatarUrl)
-
   return (
     <Box
       sx={{
@@ -24,6 +22,7 @@ export default function ProfileCover({ name, avatarUrl, role, coverUrl, sex }) {
         }),
         height: 1,
         color: 'common.white',
+        borderRadius: '18px'
       }}
     >
       <Stack

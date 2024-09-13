@@ -99,6 +99,7 @@ const BlankPage = lazy(() => import('src/sections/_examples/extra/upload-view'))
 
 // const AgendaPage = lazy(() => import('src/pages/beneficios/agenda'))
 
+
 // ----------------------------------------------------------------------
 
 export const beneficiosRoutes = [
@@ -248,7 +249,7 @@ export const beneficiosRoutes = [
       { path: 'kanban', element: <KanbanPage /> },
       { path: 'permission', element: <PermissionDeniedPage /> },
       { path: 'blank', element: <BlankPage /> },
-      { path: 'citas', element: <CitasPage /> },
+      { path: 'citas', element: <CitasPage /> }
     ],
   },
 ];
