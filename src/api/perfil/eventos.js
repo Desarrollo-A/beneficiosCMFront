@@ -53,5 +53,5 @@ export const newEvent = async (
     },
   });
 
-  return res;
+  return res.data;
 };

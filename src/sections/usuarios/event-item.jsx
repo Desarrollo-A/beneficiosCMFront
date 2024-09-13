@@ -1,27 +1,26 @@
+import 'dayjs/locale/es';
+import dayjs from 'dayjs';
+// import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
+import { LoadingButton } from '@mui/lab';
 import Dialog from '@mui/material/Dialog';
+import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import IconButton from '@mui/material/IconButton';
-import DialogTitle from '@mui/material/DialogTitle';
-import ListItemText from '@mui/material/ListItemText';
 import DialogContent from '@mui/material/DialogContent';
 
-import { paths } from 'src/routes/paths';
-import { RouterLink } from 'src/routes/components';
+import { useBoolean } from 'src/hooks/use-boolean';
 
-import { fDateTime } from 'src/utils/format-time';
+import { capitalizeFirstLetter } from 'src/utils/general';
 
 import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
-import { useBoolean } from 'src/hooks/use-boolean';
-import { Tooltip, Typography } from '@mui/material';
-import { shortDateLabel } from 'src/components/custom-date-range-picker';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import { LoadingButton } from '@mui/lab';
+import { fDateTime } from 'src/utils/format-time';
+import { HOST } from 'src/config-global';
 
 // ----------------------------------------------------------------------
 
@@ -31,10 +30,10 @@ export default function EventItem({ event, onView, onEdit, onDelete }) {
 
   const {
     idEvento,
-    inicioPublicacion,
     titulo,
     descripcion,
     fechaEvento,
+    inicioPublicacion,
     finPublicacion,
     imagen,
     horaEvento,
@@ -44,9 +43,14 @@ export default function EventItem({ event, onView, onEdit, onDelete }) {
     idContrato,
     confirmacion,
     asistencia,
+    confirmados,
+    asistidos,
+    estatus,
+    creadoPor,
+    fechaCreacion,
+    modificadoPor,
+    fechaModificacion,
   } = event;
-
-  const shortLabel = shortDateLabel(inicioPublicacion, finPublicacion);
 
   const renderOptions = (
     <Stack
@@ -105,7 +109,7 @@ export default function EventItem({ event, onView, onEdit, onDelete }) {
           cursor: 'pointer',
         }}
       >
-        <Iconify icon="mdi:user" sx={{ color: 'white', mr: 0.25 }} /> 50 Confirmados
+        <Iconify icon="mdi:user" sx={{ color: 'white', mr: 0.25 }} /> {confirmados} Confirmados
       </Box>
     </Stack>
   );
@@ -143,7 +147,7 @@ export default function EventItem({ event, onView, onEdit, onDelete }) {
           alignSelf: 'flex-start',
         }} // Alinea el '10' al inicio
       >
-        10
+        {dayjs(fechaEvento).format('DD')}
       </Box>
       <Box
         component="span"
@@ -155,7 +159,7 @@ export default function EventItem({ event, onView, onEdit, onDelete }) {
           // letterSpacing: '1px',
         }}
       >
-        {' Diciembre'}
+        {capitalizeFirstLetter(dayjs(fechaEvento).format('MMMM'))}
       </Box>
     </Stack>
   );
@@ -222,8 +226,8 @@ export default function EventItem({ event, onView, onEdit, onDelete }) {
         {renderDate}
         {renderOptions}
         <Image
-          alt={imagen}
-          src={imagen}
+          alt={`${HOST}/documentos/archivo/${imagen}`}
+          src={`${HOST}/documentos/archivo/${imagen}`}
           sx={{ margin: '0px 0px 0px 35px', borderRadius: 1, height: 250, width: 1 }}
         />
       </Stack>
@@ -245,8 +249,8 @@ export default function EventItem({ event, onView, onEdit, onDelete }) {
             textOverflow: 'ellipsis',
           }}
         >
-          <Tooltip title="Creado el 13 Octubre 2024, 10:35am">
-            Creado el 13 Octubre 2024, 10:35am
+          <Tooltip title={`Creado el ${dayjs(fechaCreacion).format('DD MMMM YYYY[,] HH:mm A')}`}>
+            Creado el {dayjs(fechaCreacion).format('DD MMMM YYYY[,] HH:mm A')}
           </Tooltip>
         </Box>
         <Box
@@ -261,7 +265,7 @@ export default function EventItem({ event, onView, onEdit, onDelete }) {
             textOverflow: 'ellipsis',
           }}
         >
-          <Tooltip title="Celebración de día de muertos">Celebración de día de muertos</Tooltip>
+          <Tooltip title={titulo}>{titulo}</Tooltip>
         </Box>
         <Stack direction="row" sx={{ flex: 1 }}>
           <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mr: '2px' }}>
@@ -279,9 +283,7 @@ export default function EventItem({ event, onView, onEdit, onDelete }) {
               alignItems: 'center',
             }}
           >
-            <Tooltip title="Camino a Eco-Centro s/n, 76245 Santiago de Querétaro, Querétaro, MEXICO">
-              Camino a Eco-Centro s/n, 76245 Santiago de Querétaro, Querétaro, MEXICO
-            </Tooltip>
+            <Tooltip title={ubicacion}>{ubicacion}</Tooltip>
           </Box>
         </Stack>
       </Box>
@@ -352,16 +354,24 @@ export default function EventItem({ event, onView, onEdit, onDelete }) {
         </MenuItem>
       </CustomPopover>
 
-      <Dialog open={showImage.value} onClose={showImage.onFalse}>
+      <Dialog open={showImage.value} onClose={showImage.onFalse} sx={{ borderRadius: '0px' }}>
         <DialogContent
           sx={{
+            position: 'relative',
             margin: '0px',
             padding: '0px',
-            backgroundImage: `url(${imagen})`,
-            height: '800px',
-            width: '1200px',
-            backgroundSize: 'fit',
+            // backgroundImage: `url(${imagen})`,
+            backgroundImage: `url(${HOST}/documentos/archivo/${imagen})`,
+            borderRadius: '0px',
+            backgroundSize: 'contain', // La imagen se ajusta dentro del contenedor manteniendo sus proporciones
+            backgroundRepeat: 'no-repeat', // Evita que la imagen se repita
+            backgroundPosition: 'center', // Centra la imagen dentro del contenedor
+            width: '600px', // Ancho relativo al 60% del ancho de la ventana
+            height: '900px', // Alto relativo al 80% del alto de la ventana
+            // maxWidth: '100vw', // Limita el ancho máximo al 100% del viewport
+            // maxHeight: '100vh', // Limita la altura máxima al 100% del viewport
             backdropFilter: 'blur(800px)',
+            overflow: 'hidden', // Evita que cualquier contenido adicional cree scroll
           }}
         >
           {renderImageButtons}

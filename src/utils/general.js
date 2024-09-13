@@ -293,3 +293,8 @@ export const ajustarFechasCita = (item, diferenciaHoras) => {
 export const parseStartDate = (value, originalValue) => originalValue.toISOString();
 
 export const parseEndDate = (value, originalValue) => originalValue.toISOString();
+
+export const capitalizeFirstLetter = (sentence) => {
+  const localSentence = sentence;
+  return localSentence.charAt(0).toUpperCase() + localSentence.slice(1);
+};

@@ -1,4 +1,5 @@
 import 'dayjs/locale/es';
+import dayjs from 'dayjs';
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import { es } from 'date-fns/locale';
@@ -21,10 +22,12 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { useAuthContext } from 'src/auth/hooks';
 import { newEvent } from 'src/api/perfil/eventos';
 
+import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { /* RHFSelect, */ RHFUpload, RHFTextField } from 'src/components/hook-form';
 
 export default function NewEventDialog({ open, onClose, mutate }) {
   const { user } = useAuthContext();
+  const { enqueueSnackbar } = useSnackbar();
 
   const [fechaEvento, setFechaEvento] = useState(null);
   const [errorFechaEvento, setErrorFechaEvento] = useState(false);
@@ -110,21 +113,19 @@ export default function NewEventDialog({ open, onClose, mutate }) {
     const res = await newEvent(
       data.titulo,
       data.descripcion,
-      fechaEvento,
-      inicioPublicacion,
-      finPublicacion,
-      limiteRecepcion,
+      dayjs(fechaEvento).format('YYYY-MM-DD HH:mm:ss'),
+      dayjs(inicioPublicacion).format('YYYY-MM-DD HH:mm:ss'),
+      dayjs(finPublicacion).format('YYYY-MM-DD HH:mm:ss'),
+      dayjs(limiteRecepcion).format('HH:mm:ss'),
       data.ubicacion,
       data.imagen,
       user.idUsuario
     );
 
     console.log(res);
-    // if (update.estatus === true) {
-    //   enqueueSnackbar(update.msj, { variant: 'success' });
-    // } else {
-    //   enqueueSnackbar(update.msj, { variant: 'error' });
-    // }
+    enqueueSnackbar(res.msg, { variant: res.result === true ? 'success' : 'error' });
+
+    onClose();
     mutate();
   });
 
@@ -304,7 +305,8 @@ export default function NewEventDialog({ open, onClose, mutate }) {
 
         <DialogActions>
           <Button
-            variant="error"
+            variant="contained"
+            color="error"
             onClick={() => {
               onClose();
               reset();
@@ -316,6 +318,7 @@ export default function NewEventDialog({ open, onClose, mutate }) {
 
           <LoadingButton
             variant="contained"
+            color="success"
             type="submit"
             loading={isSubmitting}
             onClick={() => {

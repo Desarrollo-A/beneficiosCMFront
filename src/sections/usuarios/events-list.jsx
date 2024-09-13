@@ -1,15 +1,13 @@
-import { useState } from 'react';
-
 import Box from '@mui/material/Box';
 import Stack from '@mui/system/Stack';
 import LoadingButton from '@mui/lab/LoadingButton';
 
 import { useBoolean } from 'src/hooks/use-boolean';
-// import { useResponsive } from 'src/hooks/use-responsive';
 
-// import { bgGradient } from 'src/theme/css';
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetEventos } from 'src/api/perfil/eventos';
+
+import Iconify from 'src/components/iconify';
 
 import EventItem from './event-item';
 import NewEventDialog from './new-event-dialog';
@@ -25,7 +23,6 @@ export default function EventsList() {
   );
 
   const eventDialog = useBoolean();
-  const [password, setPassword] = useState('');
 
   const handleNewEvent = () => {
     eventDialog.onTrue();
@@ -42,13 +39,13 @@ export default function EventsList() {
           }}
         >
           <LoadingButton
-            variant="contained"
+            variant="outlined"
             color="inherit"
             onClick={() => handleNewEvent()}
             // loading={1 = "as"}
             sx={{ width: 'auto' }}
           >
-            Nuevo evento
+            Nuevo evento <Iconify icon="f7:plus-square-on-square" ml={1} />
           </LoadingButton>
         </Stack>
         <Box
