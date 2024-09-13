@@ -40,33 +40,30 @@ export default function FilasTabla({ row, selected, rol, rel }) {
     monto,
     fechaPago,
     color,
-    usuario, 
+    usuario,
     archivo,
     numEspecialista,
     numCita,
-    justificado
+    justificado,
   } = row;
-    const quickEdit = useBoolean();
-    const modalJust = useBoolean();
+  const quickEdit = useBoolean();
+  const modalJust = useBoolean();
 
-    // Dividir la cadena en dos partes
-    const partes = horario.split(' - ');
-    // Crear las fechas
-    const fechaHoraInicio = new Date(partes[0]); // El de las 9
-    const fechaHoraFin = new Date(
-      partes[1].replace(/(\d{2}:\d{2})$/, `${partes[0].slice(0, 11)}$1`)
-    ); // El de las 10
+  // Dividir la cadena en dos partes
+  const partes = horario.split(' - ');
+  // Crear las fechas
+  const fechaHoraInicio = new Date(partes[0]); // El de las 9
+  const fechaHoraFin = new Date(partes[1].replace(/(\d{2}:\d{2})$/, `${partes[0].slice(0, 11)}$1`)); // El de las 10
 
+  let horaDeTijuana = horaTijuana(fechaHoraInicio);
+  let horaDeCancun = horaCancun(fechaHoraInicio);
+  const fechaInicio = user?.idSede === 11 ? horaDeTijuana : horaDeCancun;
 
-    let horaDeTijuana = horaTijuana(fechaHoraInicio);
-    let horaDeCancun = horaCancun(fechaHoraInicio);
-    const fechaInicio = user?.idSede === 11 ? horaDeTijuana : horaDeCancun;
+  horaDeTijuana = horaTijuana(fechaHoraFin);
+  horaDeCancun = horaCancun(fechaHoraFin);
+  const fechaFin = user?.idSede === 11 ? horaDeTijuana : horaDeCancun;
 
-    horaDeTijuana = horaTijuana(fechaHoraFin);
-    horaDeCancun = horaCancun(fechaHoraFin);
-    const fechaFin = user?.idSede === 11 ? horaDeTijuana : horaDeCancun;
-
-    formatearDosFechaAUna(fechaInicio, fechaFin);
+  formatearDosFechaAUna(fechaInicio, fechaFin);
 
   return (
     <>
@@ -113,7 +110,7 @@ export default function FilasTabla({ row, selected, rol, rel }) {
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{numCita}</TableCell>
 
-        {estatusCita === 3 && observaciones === null && justificado === 0 ? (
+        {estatusCita === 3 && observaciones === null && justificado === 0 && rol === 3 ? (
           <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
             <Tooltip title="Justificar" placement="top" arrow>
               <IconButton
@@ -159,18 +156,16 @@ export default function FilasTabla({ row, selected, rol, rel }) {
         />
       </Dialog>
 
-  
-        <ModalJustificacion
-          open={modalJust.value}
-          onClose={modalJust.onFalse}
-          idCita={row.idCita}
-          observacion={observaciones}
-          archivo={archivo}
-          rol={rol}
-          estatusCita={estatusCita}
-          justificado={justificado}
-        />
-     
+      <ModalJustificacion
+        open={modalJust.value}
+        onClose={modalJust.onFalse}
+        idCita={row.idCita}
+        observacion={observaciones}
+        archivo={archivo}
+        rol={rol}
+        estatusCita={estatusCita}
+        justificado={justificado}
+      />
     </>
   );
 }
