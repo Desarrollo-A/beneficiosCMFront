@@ -57,7 +57,7 @@ export default function EditarEstatus({ open, onClose, idCatalogo, estatusVal })
       }}
     >
       <Stack spacing={2}>
-        <DialogTitle>¿Estás seguro que deseas cambiar el estatus del catálogo?</DialogTitle>
+        <DialogTitle>¿Estás seguro de cambiar el estatus del catálogo?</DialogTitle>
 
         <FormControl sx={{ p: 3 }}>
           <InputLabel id="estatus-select-label">Estatus</InputLabel>

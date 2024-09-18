@@ -110,6 +110,7 @@ export const paths = {
     kanban: `${ROOTS.DASHBOARD}/kanban`,
     calendario: `${ROOTS.DASHBOARD}/calendario`,
     catalogos: `${ROOTS.DASHBOARD}/catalogos`,
+    asistenciaEv: `${ROOTS.DASHBOARD}/asistenciaEv`,
     // calendar: `${ROOTS.DASHBOARD}/calendariobeneficiario`,
     agenda: `${ROOTS.DASHBOARD}/agenda`,
     fileManager: `${ROOTS.DASHBOARD}/file-manager`,

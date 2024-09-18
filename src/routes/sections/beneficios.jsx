@@ -18,6 +18,10 @@ const HistorialReportesPage = lazy(
 const CatalogosOpPage = lazy(
   () => import('src/pages/beneficios/catalogos/catalogosOp')
 );
+// ASISTENCIA-EV COLABORADORES
+const AsistenciaEvPage = lazy(
+  () => import('src/pages/beneficios/asistenciaEv/asistenciaEv')
+);
 const ReportePacientesPage = lazy(() => import('src/pages/beneficios/reportes/reporte-pacientes'));
 const DemandaBeneficiosPage = lazy(
   () => import('src/pages/beneficios/reportes/demanda-beneficios')
@@ -177,6 +181,8 @@ export const beneficiosRoutes = [
       { path: 'file', element: <OverviewFilePage /> },
       { path: 'calendario', element: <CalendarioPage /> },
       { path: 'catalogos', element: <CatalogosOpPage /> },
+      { path: 'asistenciaEv', element: <AsistenciaEvPage /> },
+
       {
         path: 'user',
         children: [

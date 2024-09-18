@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 
 import DialogActions from '@mui/material/DialogActions';
 import TableContainer from '@mui/material/TableContainer';
+import CircularProgress from '@mui/material/CircularProgress';
 import {
   Box,
   Modal,
@@ -22,6 +23,7 @@ import {
 import { useAuthContext } from 'src/auth/hooks'; 
 import { useGetCatalogosOp, updateStatusCatalogoOp } from 'src/api/catalogos/catalogos';
 
+import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 
 import AgregarCatalogoOpModal from './modal-add-catalogoOp';
@@ -30,7 +32,7 @@ import AgregarCatalogoOpModal from './modal-add-catalogoOp';
 const EditarCatalogoModal = ({ open, onClose, idCatalogo, nombrecatalogo }) => {
   const { data, isError, isLoading, mutate } = useGetCatalogosOp(idCatalogo);
   const [isAgregarCatalogoOpen, setIsAgregarCatalogoOpen] = useState(false);
-  const [numOpcion, setNumOpcion] = useState(0);  // Estado para contar los registros
+  const [numOpcion, setNumOpcion] = useState(0); 
   const { user: datosUser } = useAuthContext(); 
 
   const handleOpenAgregarCatalogo = () => {
@@ -53,18 +55,18 @@ const EditarCatalogoModal = ({ open, onClose, idCatalogo, nombrecatalogo }) => {
 
   useEffect(() => {
     if (data) {
-      setNumOpcion(data.length);  // Actualiza el número de registros
+      setNumOpcion(data.length);  
     }
   }, [data]);
 
   const handleCatalogoAdded = () => {
-    // Incrementa numOpcion en 1
     setNumOpcion(prevNum => prevNum + 1);
-    // Cierra el modal
     handleCloseAgregarCatalogo();
-    // Actualiza los datos en la tabla
     mutate();
   };
+
+  const dataFiltered = data || [];
+  const notFound = !dataFiltered.length;
 
   return (
     <>
@@ -103,54 +105,82 @@ const EditarCatalogoModal = ({ open, onClose, idCatalogo, nombrecatalogo }) => {
             <Typography id="modal-title" variant="h6" component="h2">
               Editar opciones de catálogo ({nombrecatalogo})
             </Typography>
-           
           </Box>
-          {isLoading && <Typography>Cargando datos...</Typography>}
-          {isError && !isLoading && <Typography>Sin datos</Typography>}
-          {!isLoading && !isError && (
+  
+          {notFound ? (
             <Box
-              sx={{
-                flex: 1,
-                overflow: 'auto', 
-              }}
-            >
-              <SimpleBar style={{ maxHeight: '100%' }}>
-                <TableContainer component={Paper} sx={{ mt: 2 }}>
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>ID</TableCell>
-                        <TableCell>Opción de Catálogo</TableCell>
-                        <TableCell>Estatus</TableCell>
-                        <TableCell>Acciones</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {data.map((row) => (
-                        <TableRow key={row.idOpcion}>
-                          <TableCell>{row.idOpcion}</TableCell>
-                          <TableCell>{row.nombre}</TableCell>
-                          <TableCell>{row.estatus}</TableCell>
-                          <TableCell>
-                            <IconButton
-                              onClick={() => toggleEstatus(row.idOpcion, row.estatus)} 
-                              color="primary"
-                              sx={{ ml: 2 }}
-                            >
-                              <Iconify 
-                                icon={row.estatus === 'Activo' ? 'mdi:toggle-switch-off' : 'mdi:toggle-switch'} 
-                                sx={{ color: row.estatus === 'Activo' ? 'green' : 'red' }}
-                              />
-                            </IconButton>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </SimpleBar>
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100%', 
+              minHeight: 200,
+            }}
+          >
+         <CircularProgress size={45} />
+            <Typography variant="h6" color="textSecondary">
+              Aún no hay datos para mostrar
+            </Typography>
             </Box>
+          ) : (
+            !isLoading &&
+            !isError && (
+              <Box
+                sx={{
+                  flex: 1,
+                  overflow: 'auto', 
+                }}
+              >
+                <SimpleBar style={{ maxHeight: '100%' }}>
+                  <TableContainer component={Paper} sx={{ mt: 2 }}>
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>ID</TableCell>
+                          <TableCell>Opción de Catálogo</TableCell>
+                          <TableCell>Estatus</TableCell>
+                          <TableCell>Acciones</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {dataFiltered.map((row) => (
+                          <TableRow key={row.idOpcion}>
+                            <TableCell>{row.idOpcion}</TableCell>
+                            <TableCell>{row.nombre.toUpperCase()}</TableCell>
+                            <TableCell>
+                              <Label
+                                variant="soft"
+                                color={row.estatus === 'Activo' ? 'success' : 'error'}
+                              >
+                                {row.estatus === 'Activo' ? 'ACTIVO' : 'INACTIVO'}
+                              </Label>
+                            </TableCell>
+                            <TableCell>
+                              <IconButton
+                                onClick={() => toggleEstatus(row.idOpcion, row.estatus)} 
+                                color="primary"
+                                sx={{ ml: 2, transform: 'scale(1.5)' }}  // aumentar boton
+                              >
+                                <Iconify 
+                                  icon={row.estatus === 'Activo' ? 'mdi:toggle-switch-off' : 'mdi:toggle-switch'} 
+                                  sx={{ 
+                                    color: row.estatus === 'Activo' ? '#BAA36B' : '#a9a9a9',
+                                    fontSize: '2rem'
+                                  }}
+                                />
+                              </IconButton>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </SimpleBar>
+              </Box>
+            )
           )}
+  
           <Box sx={{ mt: 2 }}>
             <DialogActions>
               <Button variant="contained" color="error" onClick={onClose}>
@@ -168,6 +198,7 @@ const EditarCatalogoModal = ({ open, onClose, idCatalogo, nombrecatalogo }) => {
           </Box>
         </Box>
       </Modal>
+  
       <AgregarCatalogoOpModal
         open={isAgregarCatalogoOpen}
         onClose={handleCloseAgregarCatalogo}

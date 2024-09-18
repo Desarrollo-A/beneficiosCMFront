@@ -364,6 +364,8 @@ export const endpoints = {
     addCatalogos:'catalogos/CatalogosController/addCatalogos',
     addCatalogossOp:'catalogos/CatalogosController/addCatalogosOp',
 
+  },
+  asistenciaEv:{
+     GetAsistenciaEv:'asistenciaEv/AsistenciaEvController/getasistenciaEv',
   }
-  
 };

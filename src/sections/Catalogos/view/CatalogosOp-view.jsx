@@ -10,7 +10,7 @@ import { useGetCatalogos } from 'src/api/catalogos/catalogos';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
-import { useSettingsContext } from 'src/components/settings';
+import { useSettingsContext } from 'src/components/settings'; 
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
   useTable,
@@ -31,12 +31,13 @@ const TABLE_HEAD = [
   { id: 'idCatalogo', label: 'ID', width: 88 },
   { id: 'nombre', label: 'Nombre de catálogo', width: 300 },
   { id: 'estatus', label: 'Estatus', width: 200 },
-  { id: 'acciones', label: 'Acciones', width: 88 },
+  { id: 'acciones', label: 'Acciones', width: 95 },
 ];
 const defaultFilters = {
   name: '',
   estatus: 'all',
 };
+
 
 function handleDownloadExcel(dataFiltered) {
   const data = [
@@ -94,7 +95,16 @@ export default function CatalogosOpView() {
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
-
+  useEffect(() => {
+    if (catalogosData) {
+      const transformedData = catalogosData.map((item) => ({
+        ...item,
+        nombre: item.nombre.toUpperCase(),
+      }));
+      setTableData(transformedData);
+    }
+  }, [catalogosData]);
+  
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
     table.page * table.rowsPerPage + table.rowsPerPage
@@ -152,34 +162,36 @@ export default function CatalogosOpView() {
 
   return (
     <>
-      <Container maxWidth={settings.themeStretch ? false : 'xl'}>
-        <CustomBreadcrumbs
-          heading="Catálogos"
-          links={[{ name: 'Catálogos' }, { name: 'Editar' }]}
-          sx={{ mb: { xs: 3, md: 5 } }}
-        />
-        <Stack
+        <Container maxWidth={settings.themeStretch ? false : 'xl'}>
+          <CustomBreadcrumbs
+            heading="Catálogos"
+            links={[{ name: 'Catálogos' }, { name: 'Editar' }]}
+            sx={{ mb: { xs: 3, md: 5 } }}
+          /><Stack
           direction="row"
           alignItems="center"
-          justifyContent="space-between"
+          justifyContent="flex-end"
           sx={{ mb: { xs: 3, md: 5 } }}
         >
-          <Button
-            variant="contained"
-            onClick={() => setOpenAgregarDialog(true)}
-            color="success"
-            >
-            <span>Agregar </span>
-            <Iconify icon="line-md:plus-circle-filled" />
-          </Button>
-        </Stack>
+        <Button
+          variant="outlined"
+          onClick={() => setOpenAgregarDialog(true)}
+          sx={{
+            borderRadius: '10px',
+            borderWidth: '1px',
+            boxShadow: '0px 4px 0px rgba(0, 0, 0, 0.1)', 
+          }}
+        >
+        <span>Agregar catálogo</span>
+        <Iconify icon="streamline:add-layer-2" color="#717172" style={{ marginLeft: '8px' }} />
+      </Button>
+      </Stack>
         <Card>
           <UserTableToolbar
             filters={filters}
             onFilters={handleFilters}
             handleChangeEstatus={(estatus) => handleFilters('estatus', estatus)}
           />
-
           <Stack
             spacing={1}
             alignItems={{ xs: 'flex-start', md: 'flex-start' }}
@@ -210,7 +222,6 @@ export default function CatalogosOpView() {
                   numSelected={table.selected.length}
                   onSort={table.onSort}
                 />
-
                 <TableBody>
                   {dataInPage.map((row) => (
                     <CatalogoRow

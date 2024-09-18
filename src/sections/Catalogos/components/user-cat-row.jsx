@@ -2,16 +2,18 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
-import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
+import MenuItem from '@mui/material/MenuItem';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 
+import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 import EditarEstatus from './modal-editar-catalogo';
 import EditarCatalogoModal from './catalogosOp/cat-edit-catalogo';
+
 
 export default function CatalogoRow({ row, onDeleteRow, onEditRow }) {
   const { idCatalogo, nombre, estatus } = row;
@@ -43,14 +45,24 @@ export default function CatalogoRow({ row, onDeleteRow, onEditRow }) {
       <TableRow>
         <TableCell>{idCatalogo}</TableCell>
         <TableCell>{nombre}</TableCell>
-        <TableCell>{estatus}</TableCell>
-        <TableCell align="right">
+        <TableCell>
+          <Label
+            variant="soft"
+            color={
+              (estatus === 'Activo' && 'success') ||
+              (estatus === 'Inactivo' && 'error')
+            }
+          >
+            {estatus === 'Activo' ? 'ACTIVO' : 'INACTIVO'}
+          </Label>
+          </TableCell>
+        <TableCell align="center">
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
         </TableCell>
       </TableRow>
-
+  
       <CustomPopover
         open={popover.open}
         onClose={popover.onClose}
@@ -66,7 +78,7 @@ export default function CatalogoRow({ row, onDeleteRow, onEditRow }) {
           Editar Catálogo
         </MenuItem>
       </CustomPopover>
-
+  
       {openEditStatus && (
         <EditarEstatus
           open={openEditStatus}
@@ -75,7 +87,7 @@ export default function CatalogoRow({ row, onDeleteRow, onEditRow }) {
           estatusVal={estatus}
         />
       )}
-
+  
       {openEditCatalogo && (
         <EditarCatalogoModal
           open={openEditCatalogo}
@@ -87,7 +99,6 @@ export default function CatalogoRow({ row, onDeleteRow, onEditRow }) {
     </>
   );
 }
-
 CatalogoRow.propTypes = {
   row: PropTypes.object.isRequired,
   onDeleteRow: PropTypes.func.isRequired,

@@ -34,7 +34,7 @@ export default function AgregarCatalogoOpModal({ open, onClose, numOpcion, idCat
 
   const guardarCatalogoOp = async () => {
     if (!nombreCatalogOp.trim()) {
-      enqueueSnackbar('Ingresa un nombre de catálogo.', { variant: 'warning' });
+      enqueueSnackbar('Ingrese el nombre de su opción de catálogo.', { variant: 'warning' });
       return;
     }
     
@@ -58,11 +58,11 @@ export default function AgregarCatalogoOpModal({ open, onClose, numOpcion, idCat
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Agregar opcion de catálogo</DialogTitle>
+      <DialogTitle>Agregar opción de catálogo</DialogTitle>
       <DialogContent>
         <TextField
           margin="dense"
-          label="Nombre del Catálogo"
+          label="Ingrese el nombre"
           type="text"
           fullWidth
           value={nombreCatalogOp}
