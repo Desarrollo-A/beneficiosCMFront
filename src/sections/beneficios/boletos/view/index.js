@@ -1,0 +1,1 @@
+export { default as BoletosView } from './boletos-view';

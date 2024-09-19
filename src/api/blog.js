@@ -80,7 +80,7 @@ export function useSearchPosts(query) {
       searchLoading: isLoading,
       searchError: error,
       searchValidating: isValidating,
-      searchEmpty: !isLoading && !data?.results.length,
+      /* searchEmpty: !isLoading && !data?.results.length, */
     }),
     [data?.results, error, isLoading, isValidating]
   );
