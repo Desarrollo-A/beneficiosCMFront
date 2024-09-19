@@ -6,11 +6,12 @@ import { useState, useEffect, useCallback } from 'react';
 import TableContainer from '@mui/material/TableContainer';
 import { Card, Stack, Table, Tooltip, MenuItem, Container, TableBody } from '@mui/material';
 
-import { useGetAsistenciaEv } from 'src/api/asistenciaEv/asistenciaEv';
+import { useAuthContext } from 'src/auth/hooks';
+import { useGetAsistenciaEv,useGetAsistenciaEvUser} from 'src/api/asistenciaEv/asistenciaEv';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
-import { useSettingsContext } from 'src/components/settings'; 
+import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
   useTable,
@@ -98,17 +99,23 @@ function handleDownloadPDF(dataFiltered) {
 export default function AsistenciaEvView() {
   const table = useTable();
   const settings = useSettingsContext();
+  const { user: datosUser } = useAuthContext();
+  
   const { data: AsistenciaEvData } = useGetAsistenciaEv();
+  const { data: AsistenciaEvUserData } = useGetAsistenciaEvUser(datosUser?.idUsuario);
+
   const [tableData, setTableData] = useState([]);
   const [filters, setFilters] = useState(defaultFilters);
 
   useEffect(() => {
-    if (AsistenciaEvData) {
-      setTableData(AsistenciaEvData);
+    if (datosUser?.permisos === 6) {
+      setTableData(AsistenciaEvData || []);
+    } else {
+      setTableData(AsistenciaEvUserData || []);
     }
-  }, [AsistenciaEvData]);
+  }, [AsistenciaEvData, AsistenciaEvUserData, datosUser]);
 
-  const titulos = [...new Set(AsistenciaEvData?.map((item) => item.titulo))];
+  const titulos = [...new Set(tableData?.map((item) => item.titulo))];
 
   const handleFilters = useCallback((name, value) => {
     setFilters((prevState) => ({
@@ -208,7 +215,6 @@ export default function AsistenciaEvView() {
     </Container>
   );
 }
-
 
 function applyFilter({ inputData, comparator, filters }) {
   const { name, titulo } = filters;

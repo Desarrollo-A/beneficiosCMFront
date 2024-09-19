@@ -366,6 +366,7 @@ export const endpoints = {
 
   },
   asistenciaEv:{
-     GetAsistenciaEv:'asistenciaEv/AsistenciaEvController/getasistenciaEv',
+     GetAsistenciaEv:'asistenciaEv/AsistenciaEvController/getasistenciaEvento',
+     GetAsistenciaEvUser:'asistenciaEv/AsistenciaEvController/getasistenciaEventoUser',
   }
 };
