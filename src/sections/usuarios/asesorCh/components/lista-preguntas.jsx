@@ -75,8 +75,6 @@ export default function ListaPreguntas({ faqsData, found, ...other }) {
     };
   }, []);
 
-  console.log(faqsData);
-
   return (
     <Box
       ref={containerRef}
