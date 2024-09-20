@@ -8,9 +8,11 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useMemo, useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
@@ -19,16 +21,26 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { MobileTimePicker, MobileDateTimePicker } from '@mui/x-date-pickers';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
+import { useGetSedes } from 'src/api/sedes';
 import { useAuthContext } from 'src/auth/hooks';
-import { newEvent } from 'src/api/perfil/eventos';
+import { useGetDepartamentos } from 'src/api/deptos';
+import { newEvent, updateEvent } from 'src/api/perfil/eventos';
 
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, { /* RHFSelect, */ RHFUpload, RHFTextField } from 'src/components/hook-form';
+import FormProvider, {
+  /* RHFSelect, */ RHFUpload,
+  RHFTextField,
+  RHFAutocomplete,
+} from 'src/components/hook-form';
 
-export default function NewEventDialog({ open, onClose, mutate }) {
+export default function NewEventDialog({ open, event, onClose, mutate }) {
   const { user } = useAuthContext();
   const { enqueueSnackbar } = useSnackbar();
 
+  const { sedes, sedesLoading } = useGetSedes();
+  const { deptos, deptosLoading } = useGetDepartamentos();
+
+  // const [fechaEvento, setFechaEvento] = useState(event ? new Date(event?.fechaEvento) : null);
   const [fechaEvento, setFechaEvento] = useState(null);
   const [errorFechaEvento, setErrorFechaEvento] = useState(false);
 
@@ -38,18 +50,23 @@ export default function NewEventDialog({ open, onClose, mutate }) {
   const [finPublicacion, setFinPublicacion] = useState(null);
   const [errorFinPublicacion, setErrorFinPublicacion] = useState(false);
 
-  const [limiteRecepcion, setLimiteRecepcion] = useState(null);
+  const [limiteRecepcion, setLimiteRecepcion] = useState(
+    event ? new Date(`1970-01-01T${event?.limiteRecepcion}`) : null
+  );
   const [errorLimiteRecepcion, setErrorLimiteRecepcion] = useState(false);
 
   const NewEventSchema = Yup.object().shape({
     titulo: Yup.string().required('Ingresa un titulo válido'),
     descripcion: Yup.string().required('Ingresa una descripción válida'),
     ubicacion: Yup.string().required('Ingresa una ubicación válida'),
-    imagen: Yup.mixed().required('Ingresa una imagen válida'),
+    imagen: event
+      ? Yup.mixed().nullable().notRequired()
+      : Yup.mixed().required('Ingresa una imagen válida'),
+    sedes: Yup.mixed().required('Ingresa una o más sedes'),
+    departamentos: Yup.mixed().required('Ingresa uno o más departamentos'),
   });
 
   const localizationLabels = {
-    // idioma de los botones
     okButtonLabel: 'Seleccionar',
     cancelButtonLabel: 'Cancelar',
     datePickerToolbarTitle: 'Selecciona una fecha',
@@ -59,12 +76,14 @@ export default function NewEventDialog({ open, onClose, mutate }) {
 
   const defaultValues = useMemo(
     () => ({
-      titulo: '',
-      descripcion: '',
-      ubicacion: '',
+      titulo: event ? event?.titulo : '',
+      descripcion: event ? event?.descripcion : '',
+      ubicacion: event ? event?.ubicacion : '',
       imagen: null,
+      sedes: event ? JSON.parse(event?.sedes) : '',
+      departamentos: event ? JSON.parse(event?.departamentos) : '',
     }),
-    []
+    [event]
   );
 
   const methods = useForm({
@@ -110,22 +129,44 @@ export default function NewEventDialog({ open, onClose, mutate }) {
   };
 
   const onSubmit = handleSubmit(async (data) => {
-    const res = await newEvent(
-      data.titulo,
-      data.descripcion,
-      dayjs(fechaEvento).format('YYYY-MM-DD HH:mm:ss'),
-      dayjs(inicioPublicacion).format('YYYY-MM-DD HH:mm:ss'),
-      dayjs(finPublicacion).format('YYYY-MM-DD HH:mm:ss'),
-      dayjs(limiteRecepcion).format('HH:mm:ss'),
-      data.ubicacion,
-      data.imagen,
-      user.idUsuario
-    );
+    let res = { msg: 'Surgió un error inesperado', result: false };
+    if (event) {
+      res = await updateEvent(
+        event?.idEvento,
+        data?.titulo,
+        data?.descripcion,
+        dayjs(fechaEvento).format('YYYY-MM-DD HH:mm:ss'),
+        dayjs(inicioPublicacion).format('YYYY-MM-DD HH:mm:ss'),
+        dayjs(finPublicacion).format('YYYY-MM-DD HH:mm:ss'),
+        dayjs(limiteRecepcion).format('HH:mm:ss'),
+        data?.ubicacion,
+        data?.sedes,
+        data?.departamentos,
+        data?.imagen,
+        user?.idUsuario
+      );
+    }
+    if (!event) {
+      res = await newEvent(
+        data?.titulo,
+        data?.descripcion,
+        dayjs(fechaEvento).format('YYYY-MM-DD HH:mm:ss'),
+        dayjs(inicioPublicacion).format('YYYY-MM-DD HH:mm:ss'),
+        dayjs(finPublicacion).format('YYYY-MM-DD HH:mm:ss'),
+        dayjs(limiteRecepcion).format('HH:mm:ss'),
+        data?.ubicacion,
+        data?.sedes,
+        data?.departamentos,
+        data?.imagen,
+        user?.idUsuario
+      );
+    }
 
     console.log(res);
     enqueueSnackbar(res.msg, { variant: res.result === true ? 'success' : 'error' });
 
     onClose();
+    reset();
     mutate();
   });
 
@@ -163,8 +204,18 @@ export default function NewEventDialog({ open, onClose, mutate }) {
   };
 
   useEffect(() => {
-    reset(defaultValues); // defaultValues debería ser actualizado cuando cambia el usuario
+    reset(defaultValues);
+    resetStates();
   }, [defaultValues, reset]);
+
+  useEffect(() => {
+    if (event) {
+      setFechaEvento(new Date(event?.fechaEvento));
+      setInicioPublicacion(new Date(event?.inicioPublicacion));
+      setFinPublicacion(new Date(event?.finPublicacion));
+      setLimiteRecepcion(new Date(`1970-01-01 ${event?.limiteRecepcion}`));
+    }
+  }, [open, event]);
 
   const handleDrop = useCallback(
     (acceptedFiles) => {
@@ -188,7 +239,7 @@ export default function NewEventDialog({ open, onClose, mutate }) {
   return (
     <Dialog open={open} fullWidth maxWidth="sm" disableEscapeKeyDown backdrop="static">
       <FormProvider methods={methods} onSubmit={onSubmit}>
-        <DialogTitle sx={{ pb: 2 }}>Nuevo evento</DialogTitle>
+        <DialogTitle sx={{ pb: 2 }}>{event ? 'Modificar' : 'Nuevo'} evento</DialogTitle>
         <DialogContent dividers sx={{ maxHeight: '65vh', overflowY: 'auto' }}>
           <Box
             rowGap={3}
@@ -200,15 +251,15 @@ export default function NewEventDialog({ open, onClose, mutate }) {
             }}
             sx={{ mt: 2 }}
           >
-            <RHFTextField label="Título" name="titulo" />
-            <RHFTextField label="Descripción" name="descripcion" />
+            <RHFTextField label="Título (*)" name="titulo" />
+            <RHFTextField label="Descripción (*)" name="descripcion" />
             <LocalizationProvider
               adapterLocale={es}
               dateAdapter={AdapterDateFns}
               localeText={localizationLabels}
             >
               <MobileDateTimePicker
-                label="Fecha e inicio de evento"
+                label="Fecha e inicio de evento (*)"
                 sx={{ width: '100%' }}
                 value={fechaEvento}
                 minDate={new Date()}
@@ -229,7 +280,7 @@ export default function NewEventDialog({ open, onClose, mutate }) {
               localeText={localizationLabels}
             >
               <MobileDateTimePicker
-                label="Inicio de publicación del evento"
+                label="Inicio de publicación del evento (*)"
                 sx={{ width: '100%' }}
                 value={inicioPublicacion}
                 minDate={new Date()}
@@ -251,7 +302,7 @@ export default function NewEventDialog({ open, onClose, mutate }) {
               localeText={localizationLabels}
             >
               <MobileDateTimePicker
-                label="Fin de publicación del evento"
+                label="Fin de publicación del evento (*)"
                 sx={{ width: '100%' }}
                 value={finPublicacion}
                 minDate={finPublicacion === null ? new Date() : new Date(inicioPublicacion)}
@@ -273,7 +324,7 @@ export default function NewEventDialog({ open, onClose, mutate }) {
               localeText={localizationLabels}
             >
               <MobileTimePicker
-                label="Límite recepción"
+                label="Límite recepción (*)"
                 sx={{ width: '100%' }}
                 value={limiteRecepcion}
                 onChange={(val) => {
@@ -288,10 +339,66 @@ export default function NewEventDialog({ open, onClose, mutate }) {
                 }}
               />
             </LocalizationProvider>
-            <RHFTextField label="Ubicación" name="ubicacion" />
+            <RHFTextField label="Ubicación (*)" name="ubicacion" />
+            <Stack spacing={1.5}>
+              <Typography variant="subtitle2">Sedes (*)</Typography>
+              <RHFAutocomplete
+                name="sedes"
+                placeholder="Sedes"
+                multiple
+                freeSolo
+                options={sedes.map((i) => i)}
+                getOptionLabel={(i) => i.nsede || ''}
+                renderOption={(props, i) => (
+                  <li {...props} key={i.idsede}>
+                    {i.nsede}
+                  </li>
+                )}
+                renderTags={(selected, getTagProps) =>
+                  selected.map((i, index) => (
+                    <Chip
+                      {...getTagProps({ index })}
+                      key={i.idsede}
+                      label={i.nsede}
+                      size="small"
+                      color="info"
+                      variant="soft"
+                    />
+                  ))
+                }
+              />
+            </Stack>
+            <Stack spacing={1.5}>
+              <Typography variant="subtitle2">Departamentos (*)</Typography>
+              <RHFAutocomplete
+                name="departamentos"
+                placeholder="Departamentos..."
+                multiple
+                freeSolo
+                options={deptos.map((i) => i)}
+                getOptionLabel={(i) => i.ndepto || ''}
+                renderOption={(props, i) => (
+                  <li {...props} key={i.iddepto}>
+                    {i.ndepto}
+                  </li>
+                )}
+                renderTags={(selected, getTagProps) =>
+                  selected.map((i, index) => (
+                    <Chip
+                      {...getTagProps({ index })}
+                      key={i.iddepto}
+                      label={i.ndepto}
+                      size="small"
+                      color="info"
+                      variant="soft"
+                    />
+                  ))
+                }
+              />
+            </Stack>
             <Box>
               <Typography variant="body2" sx={{ mb: 1, color: 'gray' }}>
-                Imagen del evento
+                Imagen del evento ({event ? 'Subir en caso de querer remplazar' : '*'})
               </Typography>
               <RHFUpload
                 name="imagen"
@@ -310,7 +417,6 @@ export default function NewEventDialog({ open, onClose, mutate }) {
             onClick={() => {
               onClose();
               reset();
-              resetStates();
             }}
           >
             Cancelar
@@ -325,7 +431,7 @@ export default function NewEventDialog({ open, onClose, mutate }) {
               validateStates();
             }}
           >
-            Crear
+            {event ? 'Actualizar' : 'Crear'}
           </LoadingButton>
         </DialogActions>
       </FormProvider>
@@ -335,6 +441,7 @@ export default function NewEventDialog({ open, onClose, mutate }) {
 
 NewEventDialog.propTypes = {
   open: PropTypes.bool,
+  event: PropTypes.object,
   onClose: PropTypes.func,
   mutate: PropTypes.func,
 };

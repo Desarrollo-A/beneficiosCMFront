@@ -43,9 +43,13 @@ export default function EventsList() {
             color="inherit"
             onClick={() => handleNewEvent()}
             // loading={1 = "as"}
-            sx={{ width: 'auto' }}
+            sx={{
+              width: 'auto',
+              backgroundColor: '#FFF',
+              boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.3)', // Sombra con un difuminado suave
+            }}
           >
-            Nuevo evento <Iconify icon="f7:plus-square-on-square" ml={1} />
+            Añadir evento <Iconify icon="f7:plus-square-on-square" ml={1} />
           </LoadingButton>
         </Stack>
         <Box
@@ -58,13 +62,7 @@ export default function EventsList() {
           }}
         >
           {events.map((event) => (
-            <EventItem
-              key={event.idEvento}
-              event={event}
-              //   onView={() => handleView(tour.id)}
-              //   onEdit={() => handleEdit(tour.id)}
-              //   onDelete={() => handleDelete(tour.id)}
-            />
+            <EventItem key={event.idEvento} event={event} mutate={eventsMutate} />
           ))}
         </Box>
       </Stack>

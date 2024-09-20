@@ -1,6 +1,6 @@
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
-// import { useEffect } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import Box from '@mui/material/Box';
@@ -9,48 +9,87 @@ import Stack from '@mui/material/Stack';
 import { LoadingButton } from '@mui/lab';
 import Dialog from '@mui/material/Dialog';
 import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
 import DialogContent from '@mui/material/DialogContent';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import { capitalizeFirstLetter } from 'src/utils/general';
 
+import { HOST } from 'src/config-global';
+import { useAuthContext } from 'src/auth/hooks';
+import { hideShowEvent, actualizarAsistenciaEvento } from 'src/api/perfil/eventos';
+
 import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
-import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import { fDateTime } from 'src/utils/format-time';
-import { HOST } from 'src/config-global';
+import { useSnackbar } from 'src/components/snackbar';
+
+import NewEventDialog from './new-event-dialog';
 
 // ----------------------------------------------------------------------
 
-export default function EventItem({ event, onView, onEdit, onDelete }) {
-  const popover = usePopover();
+export default function EventItem({ event, mutate }) {
+  const { user } = useAuthContext();
+  const { enqueueSnackbar } = useSnackbar();
   const showImage = useBoolean();
+  const eventDialog = useBoolean();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting2, setIsSubmitting2] = useState(false);
 
   const {
     idEvento,
     titulo,
-    descripcion,
+    // descripcion,
     fechaEvento,
-    inicioPublicacion,
-    finPublicacion,
+    // inicioPublicacion,
+    // finPublicacion,
     imagen,
-    horaEvento,
-    limiteRecepcion,
+    // horaEvento,
+    // limiteRecepcion,
     ubicacion,
-    idAsistenciaEv,
-    idContrato,
-    confirmacion,
-    asistencia,
+    // idAsistenciaEv,
+    // idContrato,
+    // confirmacion,
+    // asistencia,
     confirmados,
-    asistidos,
-    estatus,
-    creadoPor,
+    // asistidos,
+    estatusAsistencia,
+    estatusEvento,
+    // estatus,
+    // creadoPor,
     fechaCreacion,
-    modificadoPor,
-    fechaModificacion,
+    // modificadoPor,
+    // fechaModificacion,
   } = event;
+
+  const handleConfirmacion = async () => {
+    setIsSubmitting(true);
+    const res = await actualizarAsistenciaEvento(
+      user?.idContrato,
+      idEvento,
+      estatusAsistencia === 1 ? 2 : 1,
+      user?.idUsuario
+    );
+
+    console.log(res);
+    enqueueSnackbar(res.msg, { variant: res.result === true ? 'success' : 'error' });
+
+    await mutate();
+    setIsSubmitting(false);
+  };
+
+  const handleEdit = () => {
+    // alert('Still editing');
+    eventDialog.onTrue();
+  };
+
+  const handleHideEvent = async () => {
+    setIsSubmitting2(true);
+    const res = await hideShowEvent(idEvento, estatusEvento === 1 ? 2 : 1, user?.idUsuario);
+
+    await mutate();
+    setIsSubmitting2(false);
+    enqueueSnackbar(res.msg, { variant: res.result === true ? 'success' : 'error' });
+  };
 
   const renderOptions = (
     <Stack
@@ -79,8 +118,16 @@ export default function EventItem({ event, onView, onEdit, onDelete }) {
           bgcolor: 'rgba(0, 0, 0, 0.7)',
           cursor: 'pointer',
         }}
+        loading={isSubmitting2}
+        onClick={() => handleHideEvent()}
       >
-        <Iconify icon="mdi:eye" sx={{ color: 'white' }} />
+        {isSubmitting2 && <Iconify icon="line-md:loading-twotone-loop" sx={{ color: 'white' }} />}
+        {isSubmitting2 === false && estatusEvento === 1 && (
+          <Iconify icon="mdi:eye" sx={{ color: 'white' }} />
+        )}
+        {isSubmitting2 === false && estatusEvento === 2 && (
+          <Iconify icon="mdi:eye-off" sx={{ color: 'white' }} />
+        )}
       </Box>
       <Box
         sx={{
@@ -94,6 +141,7 @@ export default function EventItem({ event, onView, onEdit, onDelete }) {
           bgcolor: 'rgba(0, 0, 0, 0.7)',
           cursor: 'pointer',
         }}
+        onClick={() => handleEdit()}
       >
         <Iconify icon="mdi:edit" sx={{ color: 'white' }} />
       </Box>
@@ -178,18 +226,28 @@ export default function EventItem({ event, onView, onEdit, onDelete }) {
         typography: 'caption',
         fontWeight: 'light',
         color: 'common.white',
-        // Padding
 
-        // rotar texto
-        // writingMode: 'vertical-rl',
-        // transform: 'rotate(180deg)', // rotate(180deg),
-        // Efecto blur
-        // bgcolor: 'rgba(200, 200, 200, 0.7)', // Fondo semi-transparente
-        backdropFilter: 'blur(5px)', // Desenfoque
-        WebkitBackdropFilter: 'blur(5px)', // Para Safari
         cursor: 'pointer', // Cambia el cursor a una mano
       }}
     >
+      <Stack
+        component="span"
+        sx={{
+          cursor: 'pointer',
+          color: 'white',
+          typography: 'subtitle1',
+          fontWeight: 'light',
+          mr: 0.25,
+          bgcolor: 'rgba(200, 200, 200, 0.4)',
+          borderRadius: '5000px',
+          padding: '6px',
+        }}
+        onClick={() => window.open(`https://www.google.com.mx/maps/search/${ubicacion}/`)}
+      >
+        <Tooltip title="Consulta la ubicación">
+          <Iconify width={24} icon="bxs:map" />
+        </Tooltip>
+      </Stack>
       <LoadingButton
         component="span"
         sx={{
@@ -198,24 +256,12 @@ export default function EventItem({ event, onView, onEdit, onDelete }) {
           fontWeight: 'light',
           mr: 0.25,
           bgcolor: 'rgba(200, 200, 200, 0.4)',
+          borderRadius: '15px',
         }}
-        onClick={() => alert('Consultando ubicación...')}
+        loading={isSubmitting}
+        onClick={() => handleConfirmacion()}
       >
-        <Iconify width={17} icon="bxs:map" />
-        Consulta la ubicación
-      </LoadingButton>
-      <LoadingButton
-        component="span"
-        sx={{
-          color: 'white',
-          typography: 'subtitle1',
-          fontWeight: 'light',
-          mr: 0.25,
-          bgcolor: 'rgba(200, 200, 200, 0.4)',
-        }}
-        onClick={() => alert('Confirmando evento...')}
-      >
-        Confirmar asistencia
+        {estatusAsistencia === 1 ? 'Cancelar asistencia' : 'Confirmar asistencia'}
       </LoadingButton>
     </Stack>
   );
@@ -256,7 +302,7 @@ export default function EventItem({ event, onView, onEdit, onDelete }) {
         <Box
           sx={{
             flex: 1,
-            typography: 'subtitle1',
+            typography: 'subtitle2',
             fontWeight: 'bold',
             fontSize: 16,
             color: '#00263A',
@@ -274,6 +320,7 @@ export default function EventItem({ event, onView, onEdit, onDelete }) {
           <Box
             sx={{
               typography: 'caption',
+              color: '#00263A',
               fontWeight: 'light',
               fontSize: 10,
               whiteSpace: 'nowrap', // Evita que el texto se divida en varias líneas
@@ -316,44 +363,6 @@ export default function EventItem({ event, onView, onEdit, onDelete }) {
         {renderInfoEvent}
       </Card>
 
-      <CustomPopover
-        open={popover.open}
-        onClose={popover.onClose}
-        arrow="right-top"
-        sx={{ width: 140 }}
-      >
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-            onView();
-          }}
-        >
-          <Iconify icon="solar:eye-bold" />
-          View
-        </MenuItem>
-
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-            onEdit();
-          }}
-        >
-          <Iconify icon="solar:pen-bold" />
-          Edit
-        </MenuItem>
-
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-            onDelete();
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
-        </MenuItem>
-      </CustomPopover>
-
       <Dialog open={showImage.value} onClose={showImage.onFalse} sx={{ borderRadius: '0px' }}>
         <DialogContent
           sx={{
@@ -368,19 +377,11 @@ export default function EventItem({ event, onView, onEdit, onDelete }) {
             backgroundPosition: 'center', // Centra la imagen dentro del contenedor
             width: '600px', // Ancho relativo al 60% del ancho de la ventana
             height: '900px', // Alto relativo al 80% del alto de la ventana
-            // maxWidth: '100vw', // Limita el ancho máximo al 100% del viewport
-            // maxHeight: '100vh', // Limita la altura máxima al 100% del viewport
             backdropFilter: 'blur(800px)',
             overflow: 'hidden', // Evita que cualquier contenido adicional cree scroll
           }}
         >
           {renderImageButtons}
-          {/* <Image
-            alt={imagen}
-            src={imagen}
-            sx={{ margin: '0px', borderRadius: 1, height: '100%', width: 1 }}
-          /> */}
-          {/* Pseudo-elemento para aplicar el blur en el 20% inferior */}
           <Box
             sx={{
               position: 'absolute',
@@ -390,18 +391,24 @@ export default function EventItem({ event, onView, onEdit, onDelete }) {
               height: '25%', // Aplica el blur al 20% inferior
               background:
                 'linear-gradient(to top, rgba(0, 0, 0, 1) 10%, rgba(0, 0, 0, 0.9) 20%, rgba(0, 0, 0, 0.8) 30%, rgba(0, 0, 0, 0.7) 40%, rgba(0, 0, 0, 0.6) 50%, rgba(0, 0, 0, 0.5) 60%, rgba(0, 0, 0, 0.4) 70%, rgba(0, 0, 0, 0.3) 80%, rgba(0, 0, 0, 0.15) 90%, rgba(0, 0, 0, 0.0) 100%)', // Gradiente de blanco a transparente
-              // backdropFilter: 'blur(8px)', // Efecto de blur
             }}
           />
         </DialogContent>
       </Dialog>
+
+      {eventDialog && (
+        <NewEventDialog
+          open={eventDialog.value}
+          event={event}
+          onClose={eventDialog.onFalse}
+          mutate={mutate}
+        />
+      )}
     </>
   );
 }
 
 EventItem.propTypes = {
   event: PropTypes.object,
-  onDelete: PropTypes.func,
-  onEdit: PropTypes.func,
-  onView: PropTypes.func,
+  mutate: PropTypes.func,
 };

@@ -345,6 +345,9 @@ export const endpoints = {
     save: '/sedes/save',
     oficina: '/sedes/oficina',
   },
+  deptos: {
+    getDepartamentos: '/Departamentos/getDepartamentos',
+  },
   oficinas: {
     list: '/oficinas/list',
   },
@@ -359,5 +362,8 @@ export const endpoints = {
   eventos: {
     getEventos: 'perfil/EventosController/getEventos',
     newEvent: 'perfil/EventosController/nuevoEvento',
+    updateAsistencia: 'perfil/EventosController/actualizarAsistencia',
+    updateEvento: 'perfil/EventosController/actualizarEvento',
+    hideShowEvent: 'perfil/EventosController/ocultarMostrarEvento',
   },
 };
