@@ -176,15 +176,18 @@ export default function CatalogosOpView() {
         <Button
           variant="outlined"
           onClick={() => setOpenAgregarDialog(true)}
-          sx={{
-            borderRadius: '10px',
-            borderWidth: '1px',
-            boxShadow: '0px 4px 0px rgba(0, 0, 0, 0.1)', 
-          }}
         >
         <span>Agregar catálogo</span>
-        <Iconify icon="streamline:add-layer-2" color="#717172" style={{ marginLeft: '8px' }} />
-      </Button>
+        <Iconify
+          icon="ic:round-library-add"
+          style={{ 
+            marginLeft: '5px', 
+            transform: 'rotate(360deg)', 
+            width: '15px', 
+            height: '15px' 
+          }}
+        />
+        </Button>
       </Stack>
         <Card>
           <UserTableToolbar
