@@ -6,7 +6,7 @@ import Container from '@mui/material/Container';
 import Tabs, { tabsClasses } from '@mui/material/Tabs';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { _userAbout, _userFeeds } from 'src/_mock'; // _ecommerceSalesOverview
+import { _userAbout, _userFeeds } from 'src/_mock';
 
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
@@ -16,7 +16,7 @@ import GafeteDigital from '../gafete-digital';
 import AsesorView from '../asesorCh/asesor-view';
 // import AsesorView from '../asesorCh/asesor-view';
 import DatosPersonales from '../datos-personales';
-// import CalculadoraNomina from '../calculadora-nomina';
+import CalculadoraNomina from '../calculadora-nomina';
 import RelojChecador from '../checador/reloj-checador';
 
 // ----------------------------------------------------------------------
@@ -27,7 +27,7 @@ const TABS = [
     label: 'Datos personales',
     icon: <Iconify icon="iconamoon:profile-circle-fill" width={24} />,
   },
-  {
+/*   {
     value: 'gafete',
     label: 'Gafete digital',
     icon: <Iconify icon="clarity:id-badge-solid" width={24} />,
@@ -48,9 +48,9 @@ const TABS = [
     icon: <Iconify icon="streamline:champagne-party-alcohol-solid" width={24} />,
   },
   {
-    value: 'asesor',
-    label: 'Ejecutivo CH',
-    icon: <Iconify icon="wpf:administrator" width={24} />,
+    value: 'capital',
+    label: 'Tu ejecutivo de CH',
+    icon: <Iconify icon="fluent:people-team-24-filled" width={24} />,
   }
 ];
 // ----------------------------------------------------------------------
@@ -111,9 +111,11 @@ export default function PerfilUsuarioView() {
 
       {currentTab === 'checador' && <RelojChecador info={_userAbout} posts={_userFeeds} />}
 
+      {currentTab === 'calculadora' && <CalculadoraNomina />}
+
       {currentTab === 'gafete' && <GafeteDigital/>}
 
-      {currentTab === 'asesor' && <AsesorView info={_userAbout} posts={_userFeeds} />}
+      {currentTab === 'capital' && <AsesorView info={_userAbout} posts={_userFeeds} />}
 
 
       {/* {currentTab === 'friends' && (

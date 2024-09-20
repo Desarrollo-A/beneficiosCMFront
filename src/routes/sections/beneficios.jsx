@@ -64,8 +64,9 @@ const UserListPage = lazy(() => import('src/pages/beneficios/user/list'));
 const UserAccountPage = lazy(() => import('src/pages/beneficios/user/account'));
 const UserCreatePage = lazy(() => import('src/pages/beneficios/user/new'));
 const UserEditPage = lazy(() => import('src/pages/beneficios/user/edit'));
-
 const PerfilPage = lazy(() => import('src/pages/beneficios/usuarios/perfil'));
+// BOLETOS
+const BoletosPage = lazy(() => import('src/pages/beneficios/boletos/boletos-view'));
 
 // BLOG
 const BlogPostsPage = lazy(() => import('src/pages/beneficios/post/list'));
@@ -159,6 +160,12 @@ export const beneficiosRoutes = [
         children: [
           { path: 'ayuda', element: <AyudaPage /> },
           { path: 'gestor', element: <GestorAyudaPage /> },
+        ],
+      },
+      {
+        path: 'boletos', element: <BoletosPage />,
+        children: [
+          /* { path: 'boletos', element: <BoletosPage /> }, */
         ],
       },
       { path: 'dash', element: <DashPage /> },

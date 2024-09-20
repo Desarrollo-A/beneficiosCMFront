@@ -103,7 +103,7 @@ export default function JwtRegisterView() {
       <Box
         component="img"
         alt="auth"
-        src={`${import.meta.env.BASE_URL}assets/img/logo.svg`}
+        src={`${import.meta.env.BASE_URL}assets/img/brand.svg`}
         sx={{
           maxWidth: '100%',
           position: 'center',

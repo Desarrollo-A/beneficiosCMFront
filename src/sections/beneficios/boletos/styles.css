@@ -1,0 +1,44 @@
+
+.btn-ticket{
+    background-color: black;
+    color:white;
+}
+
+.btn-ticket:hover{
+    background-color: white;
+    color:black;
+}
+
+.border-animated-ticket {
+    outline-width: 0.2px;
+    outline-offset: 0;
+    outline-color: #BAA36B;
+    outline-style: solid;
+    animation: animateOutline 2s ease infinite;
+    border-radius: 5px;
+}
+
+@keyframes animateOutline {
+    0% {
+      outline-width: 0.2px;
+      outline-offset: 0;
+      outline-color: rgba(0, 130, 206, 0);
+    }
+  
+    10% {
+      outline-color: #BAA36B;
+    }
+  
+    50% {
+      outline-width: 7px;
+      outline-offset: 4px;
+      outline-color: rgba(0, 130, 206, 0);
+    }
+  
+    100% {
+      outline-width: 7px;
+      outline-offset: 4px;
+      outline-color: rgba(102, 102, 102, 0);
+    }
+    
+  }

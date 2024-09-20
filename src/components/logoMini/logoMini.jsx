@@ -23,7 +23,7 @@ const LogoMini = forwardRef(({ disabledLink = false, sx, ...other }, ref) => {
    const logo = (
      <Box
        component="img"
-       src= {`${import.meta.env.BASE_URL}assets/img/logoBeneficios.svg`}
+       src= {`${import.meta.env.BASE_URL}assets/img/4.svg`}
        sx={{ width: 40, height: 40, cursor: 'pointer', ...sx, filter: "invert(66%) sepia(100%) saturate(100%) hue-rotate(172deg) brightness(50%) contrast(94%)" }}
      />
    );

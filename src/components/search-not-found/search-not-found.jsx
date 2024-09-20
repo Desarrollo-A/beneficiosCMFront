@@ -16,18 +16,19 @@ export default function SearchNotFound({ query, sx, ...other }) {
       {...other}
     >
       <Typography variant="h6" gutterBottom>
-        Not Found
+        Sin resultados
       </Typography>
 
       <Typography variant="body2">
-        No results found for &nbsp;
+        Sin resultados para &nbsp;
         <strong>&quot;{query}&quot;</strong>.
-        <br /> Try checking for typos or using complete words.
+        <br />
+        Intente comprobar si hay errores tipográficos o utilizar palabras completas.
       </Typography>
     </Paper>
   ) : (
     <Typography variant="body2" sx={sx}>
-      Please enter keywords
+      Por favor ingrese palabras clave
     </Typography>
   );
 }
