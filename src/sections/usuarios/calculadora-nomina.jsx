@@ -1,5 +1,10 @@
+import * as Yup from 'yup';
 import PropTypes from 'prop-types';
+import { useForm } from 'react-hook-form';
+import { useMemo, useState } from 'react';
+import { yupResolver } from '@hookform/resolvers/yup';
 
+import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import { Button } from '@mui/material';
 import Stack from '@mui/material/Stack';
@@ -7,14 +12,16 @@ import MenuItem from '@mui/material/MenuItem';
 import { useTheme } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Unstable_Grid2';
-import InputLabel from '@mui/material/InputLabel';
 import Typography from '@mui/material/Typography';
 import FormControl from '@mui/material/FormControl';
-import OutlinedInput from '@mui/material/OutlinedInput';
 import LinearProgress from '@mui/material/LinearProgress';
 import InputAdornment from '@mui/material/InputAdornment';
 
 import { fCurrency } from 'src/utils/format-number';
+
+import FormProvider, {
+    RHFTextField,
+} from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 
@@ -37,135 +44,180 @@ const currencies = [
     },
 ];
 
-export default function CalculadoraNomina({ title, subheader, data, ...other }) {
+export default function CalculadoraNomina() {
 
     const theme = useTheme();
 
+    const [periodo, setPeriodo] = useState('diario');
+
+    const handleChange = (event) => {
+        setPeriodo(event.target.value);
+    };
+
+    const [salarioDiario, setSalarioDiario] = useState(0);
+
+    const [salarioSemanal, setSalarioSemanal] = useState(0);
+
+    const [salarioMensual, setSalarioMensual] = useState(0);
+
+    const [salarioAnual, setSalarioAnual] = useState(0);
+
+    const NewProductSchema = Yup.object().shape({
+        salario: Yup.number()
+            .typeError('Debe ser un número')
+            .required('Ingresa un monto')
+            .positive('Debe ser un número positivo'),
+    });
+
+    const defaultValues = useMemo(
+        () => ({
+            salario: null,
+        }),
+        []
+    );
+
+    const methods = useForm({
+        resolver: yupResolver(NewProductSchema),
+        defaultValues,
+    });
+
+    const {
+        handleSubmit,
+    } = methods;
+
+    const onSubmit = handleSubmit(async (data) => {
+        try {
+            await new Promise((resolve) => setTimeout(resolve, 500));
+
+            if(periodo === 'diario'){
+                setSalarioDiario((data.salario));
+                setSalarioSemanal((data.salario * 7));
+                setSalarioMensual((data.salario * 30.4));
+                setSalarioAnual((data.salario * 364.8));
+            }
+            
+            if(periodo === 'semanal'){
+                setSalarioDiario((data.salario / 7));
+                setSalarioSemanal((data.salario));
+                setSalarioMensual(((data.salario) * (30.4/7)));
+                setSalarioAnual((data.salario * ((30.4 / 7) * 12) ));
+            }
+
+            if(periodo === 'mensual'){
+                setSalarioDiario((data.salario / 30.4));
+                setSalarioSemanal((data.salario / (30.4/7)));
+                setSalarioMensual((data.salario));
+                setSalarioAnual((data.salario * 12));
+            }
+
+            if(periodo === 'anual'){
+                setSalarioDiario((data.salario / 364.8));
+                setSalarioSemanal((data.salario / 12)/(30.4/7));
+                setSalarioMensual(data.salario / 12);
+                setSalarioAnual((data.salario));
+            }
+
+        } catch (error) {
+            console.error(error);
+        }
+    });
+
     return (
-        <Card {...other}>
-            {/*  <CardHeader title={title} subheader={subheader} /> */}
+        <Card>
 
-            <Grid container
-                className="fade-in"
-                spacing={2}
-                sx={{
-                    p: 1,
-                    backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f7f7f7',
-                    borderRadius: '10px',
-                    margin: '20px',
-                }}>
-                <Grid item xs={12} md={5}>
-                    <FormControl
-                        sx={{
-                            width: '100%',
-                            pr: { xs: 1, md: 1 },
-                        }}
-                    >
-                        <InputLabel htmlFor="outlined-adornment-amount">Salario</InputLabel>
-                        <OutlinedInput
-                            id="outlined-adornment-amount"
-                            startAdornment={<InputAdornment position="start">$</InputAdornment>}
-                            label="Amount"
-                        />
-                    </FormControl>
-                </Grid>
-
-                <Grid item xs={12} md={5}>
-                    <FormControl
-                        sx={{
-                            width: '100%',
-                            pr: { xs: 1, md: 1 },
-                        }}
-                    >
-                        <TextField
-                            id="outlined-select-currency"
-                            select
-                            defaultValue="diario"
-                        >
-                            {currencies.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
-                                    {option.label}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    </FormControl>
-                </Grid>
-
-                <Grid item xs={12} md={2} >
-                    <FormControl
-                        sx={{
-                            width: '100%',
-                            pr: { xs: 1, md: 1 },
-                        }}
-                    >
-                        <Button
-                            /* onClick={handleSubmit(onSubmit)} */
-                            variant="contained"
-                            fullWidth
+            <FormProvider methods={methods} onSubmit={onSubmit}>
+                <Grid container
+                    className="fade-in"
+                    spacing={2}
+                    sx={{
+                        p: 1,
+                        backgroundColor: theme.palette.mode === 'dark' ? '#25303d' : '#f7f7f7',
+                        borderRadius: '10px',
+                        margin: '20px',
+                    }}>
+                    <Grid item xs={12} md={5}>
+                        <FormControl
                             sx={{
-                                height: '55px',
-                                backgroundColor: '#00263A',
-                                color: '#ffffff',
-                                '&:hover': {
-                                    backgroundColor: '#002244',
-                                },
+                                width: '100%',
+                                pr: { xs: 1, md: 1 },
                             }}
                         >
-                            Calcular
-                        </Button>
-                    </FormControl>
-                </Grid>
+                            <RHFTextField
+                                name="salario"
+                                label="Salario"
+                                placeholder={0.00}
+                                type="number"
+                                InputLabelProps={{ shrink: true }}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <Box component="span" sx={{ color: 'text.disabled' }}>
+                                                $
+                                            </Box>
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                        </FormControl>
+                    </Grid>
 
-            </Grid>
+                    <Grid item xs={12} md={5}>
+                        <FormControl
+                            sx={{
+                                width: '100%',
+                                pr: { xs: 1, md: 1 },
+                            }}
+                        >
+                            <TextField
+                                id="periodo"
+                                name='periodo'
+                                onChange={handleChange}
+                                select
+                                defaultValue="diario"
+                            >
+                                {currencies.map((option) => (
+                                    <MenuItem key={option.value} value={option.value}>
+                                        {option.label}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                        </FormControl>
+                    </Grid>
+
+                    <Grid item xs={12} md={2} >
+                            <Button
+                                onClick={handleSubmit(onSubmit)}
+                                variant="contained"
+                                fullWidth
+                                sx={{
+                                    height: '55px',
+                                    backgroundColor: '#00263A',
+                                    color: '#ffffff',
+                                    '&:hover': {
+                                        backgroundColor: '#002244',
+                                    },
+                                }}
+                            >
+                                Calcular
+                            </Button>
+                    </Grid>
+
+                </Grid>
+            </FormProvider>
 
             <Stack spacing={4} sx={{ px: 3, pt: 3, pb: 5 }}>
-                <Diario />
-                <Semanal />
-                <Mensual />
-                <Anual />
+                <Diario salarioDiario={salarioDiario} />
+                <Semanal salarioSemanal={salarioSemanal} />
+                <Mensual salarioMensual={salarioMensual} />
+                <Anual salarioAnual={salarioAnual} />
             </Stack>
         </Card>
     );
 }
 
-CalculadoraNomina.propTypes = {
-    data: PropTypes.array,
-    subheader: PropTypes.string,
-    title: PropTypes.string,
-};
-
 // ----------------------------------------------------------------------
 
-function ProgressItem({ progress }) {
-    return (
-        <Stack spacing={1}>
-            <Stack direction="row" alignItems="center">
-                <Typography sx={{ flexGrow: 1, fontSize: '18px' }}>
-                    {progress.label}
-                </Typography>
-
-                <Typography sx={{ fontSize: '18px', fontWeight: 'bold' }}>{fCurrency(progress.totalAmount)}</Typography>
-
-            </Stack>
-
-            <LinearProgress
-                variant="determinate"
-                value={progress.value}
-                color={
-                    (progress.label === 'Total Income' && 'info') ||
-                    (progress.label === 'Total Expenses' && 'warning') ||
-                    'primary'
-                }
-                sx={{
-                    height: 25,
-                    borderRadius: 5,
-                }}
-            />
-        </Stack>
-    );
-}
-
-function Diario() {
+function Diario({ salarioDiario }) {
     return (
         <Stack spacing={1}>
             <Stack direction="row" alignItems="center">
@@ -173,28 +225,31 @@ function Diario() {
                     Diario
                 </Typography>
 
-                <Typography sx={{ fontSize: '18px', fontWeight: 'bold' }}>{fCurrency(50)}</Typography>
+                <Typography sx={{ fontSize: '18px', fontWeight: 'bold' }}>{fCurrency(salarioDiario)}</Typography>
 
             </Stack>
 
             <LinearProgress
                 variant="determinate"
-                value={0.27}
+                value={salarioDiario !== 0 ? 10 : 0}
                 color='primary'
                 sx={{
                     height: 25,
                     borderRadius: 5,
                     backgroundColor: '#e0e0e0',
                     '& .MuiLinearProgress-bar': {
-                      backgroundColor: '#00263A',
+                        backgroundColor: '#00A0F4',
                     },
                 }}
             />
         </Stack>
     );
 }
+Diario.propTypes = {
+    salarioDiario: PropTypes.number,
+};
 
-function Semanal() {
+function Semanal({ salarioSemanal }) {
     return (
         <Stack spacing={1}>
             <Stack direction="row" alignItems="center">
@@ -202,27 +257,30 @@ function Semanal() {
                     Semanal
                 </Typography>
 
-                <Typography sx={{ fontSize: '18px', fontWeight: 'bold' }}>{fCurrency(350)}</Typography>
+                <Typography sx={{ fontSize: '18px', fontWeight: 'bold' }}>{fCurrency(salarioSemanal)}</Typography>
 
             </Stack>
 
             <LinearProgress
                 variant="determinate"
-                value={1.92}
+                value={salarioSemanal !== 0 ? 25 : 0}
                 sx={{
                     height: 25,
                     borderRadius: 5,
                     backgroundColor: '#e0e0e0',
                     '& .MuiLinearProgress-bar': {
-                      backgroundColor: '#FDDC83',
+                        backgroundColor: '#FDDC83',
                     },
                 }}
             />
         </Stack>
     );
 }
+Semanal.propTypes = {
+    salarioSemanal: PropTypes.number,
+};
 
-function Mensual() {
+function Mensual({ salarioMensual }) {
     return (
         <Stack spacing={1}>
             <Stack direction="row" alignItems="center">
@@ -230,27 +288,30 @@ function Mensual() {
                     Mensual
                 </Typography>
 
-                <Typography sx={{ fontSize: '18px', fontWeight: 'bold' }}>{fCurrency(1520)}</Typography>
+                <Typography sx={{ fontSize: '18px', fontWeight: 'bold' }}>{fCurrency(salarioMensual)}</Typography>
 
             </Stack>
 
             <LinearProgress
                 variant="determinate"
-                value={8.33}
+                value={salarioMensual !== 0 ? 55 : 0}
                 sx={{
                     height: 25,
                     borderRadius: 5,
                     backgroundColor: '#e0e0e0',
                     '& .MuiLinearProgress-bar': {
-                      backgroundColor: '#5BE49B',
+                        backgroundColor: '#5BE49B',
                     },
                 }}
             />
         </Stack>
     );
 }
+Mensual.propTypes = {
+    salarioMensual: PropTypes.number,
+};
 
-function Anual() {
+function Anual({ salarioAnual }) {
     return (
         <Stack spacing={1}>
             <Stack direction="row" alignItems="center">
@@ -258,26 +319,25 @@ function Anual() {
                     Anual
                 </Typography>
 
-                <Typography sx={{ fontSize: '18px', fontWeight: 'bold' }}>{fCurrency(18250)}</Typography>
+                <Typography sx={{ fontSize: '18px', fontWeight: 'bold' }}>{fCurrency(salarioAnual)}</Typography>
 
             </Stack>
 
             <LinearProgress
                 variant="determinate"
-                value={100}
+                value={salarioAnual !== 0 ? 100 : 0}
                 sx={{
                     height: 25,
                     borderRadius: 5,
                     backgroundColor: '#e0e0e0',
                     '& .MuiLinearProgress-bar': {
-                      backgroundColor: '#C481FF',
+                        backgroundColor: '#C481FF',
                     },
                 }}
             />
         </Stack>
     );
 }
-
-ProgressItem.propTypes = {
-    progress: PropTypes.object,
+Anual.propTypes = {
+    salarioAnual: PropTypes.number,
 };
