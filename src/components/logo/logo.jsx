@@ -15,7 +15,7 @@ const Logo = forwardRef(({ disabledLink = false, sx, ...other }, ref) => {
     <div style={{margin:"30px"}}>
      <Box
        component="img"
-       src= {`${import.meta.env.BASE_URL}assets/img/beneficiosBrand.svg`}
+       src= {`${import.meta.env.BASE_URL}assets/img/brand.svg`}
        style={{marginTop:"0", marginLeft:"0", marginRight:"0", filter: 'invert(100%) sepia(0%) saturate(0%) hue-rotate(93deg) brightness(103%) contrast(100%)'}}
        sx={{ width: "100%", cursor: 'pointer', ...sx }}
      />

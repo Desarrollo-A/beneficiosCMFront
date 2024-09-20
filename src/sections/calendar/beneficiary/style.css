@@ -59,14 +59,14 @@
 }
 
 
-.card .inner {
+.card-citas .inner {
   padding: 0px;
   background: #222;
   color: #fff;
   border-radius: 8px;
 }
 
-.example-4 {
+.border-animated {
   outline-width: 1px;
   outline-offset: 0;
   outline-color: rgba(0, 160, 252, 0.75);

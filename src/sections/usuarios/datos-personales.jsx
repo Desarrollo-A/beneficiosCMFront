@@ -29,11 +29,11 @@ import FormProvider, { RHFTextField } from 'src/components/hook-form';
 // ----------------------------------------------------------------------
 
 export default function DatosPersonales() {
-  const datosUser = JSON.parse(Base64.decode(localStorage.getItem('accessToken').split('.')[2]));
+  const datosUser = JSON.parse(Base64.decode(localStorage?.getItem('accessToken').split('.')[2]));
 
-  const { puestoData } = usePostGeneral(datosUser.idUsuario, endpoints.user.puesto, 'puestoData');
+  const { puestoData } = usePostGeneral(datosUser?.idUsuario, endpoints.user.puesto, 'puestoData');
 
-  const { sedeData } = usePostGeneral(datosUser.idSede, endpoints.user.sede, 'sedeData');
+  const { sedeData } = usePostGeneral(datosUser?.idSede, endpoints.user.sede, 'sedeData');
 
   const { enqueueSnackbar } = useSnackbar();
 

@@ -10,18 +10,19 @@ import { bgGradient } from 'src/theme/css';
 
 // ----------------------------------------------------------------------
 
-export default function ProfileCover({ name, avatarUrl, role, coverUrl }) {
+export default function ProfileCover({ name, avatarUrl, role, coverUrl, sex }) {
   const theme = useTheme();
 
   return (
     <Box
       sx={{
         ...bgGradient({
-          color: alpha(theme.palette.primary.darker, 0.8),
-          imgUrl: coverUrl,
+          color: alpha(theme.palette.primary.darker, 0.5),
+          imgUrl: `${import.meta.env.BASE_URL}assets/images/perfil/cover.jpg`,
         }),
         height: 1,
         color: 'common.white',
+        borderRadius: '18px'
       }}
     >
       <Stack
@@ -35,7 +36,7 @@ export default function ProfileCover({ name, avatarUrl, role, coverUrl }) {
         }}
       >
         <Avatar
-          src={avatarUrl}
+          src={`${import.meta.env.BASE_URL}assets/images/perfil/user.png`}
           alt={name}
           sx={{
             mx: 'auto',
@@ -51,7 +52,13 @@ export default function ProfileCover({ name, avatarUrl, role, coverUrl }) {
             ml: { md: 3 },
             textAlign: { xs: 'center', md: 'unset' },
           }}
-          primary={name}
+          primary={
+            <>
+              {sex === 'M' ? 'Bienvenida' : 'Bienvenido'}
+              <br />
+              {name}
+            </>
+          }
           secondary={role}
           primaryTypographyProps={{
             typography: 'h4',
@@ -73,5 +80,6 @@ ProfileCover.propTypes = {
   avatarUrl: PropTypes.string,
   coverUrl: PropTypes.string,
   name: PropTypes.string,
+  sex: PropTypes.string,
   role: PropTypes.string,
 };

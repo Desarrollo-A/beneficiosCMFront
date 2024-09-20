@@ -23,7 +23,7 @@ import BookingCustomerReviews from '../booking-customer-reviews';
 
 // ----------------------------------------------------------------------
 
-const SPACING = 3;
+const SPACING = 0;
 
 export default function OverviewBookingView() {
   const theme = useTheme();
