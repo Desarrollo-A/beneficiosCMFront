@@ -27,7 +27,7 @@ const TABS = [
     label: 'Datos personales',
     icon: <Iconify icon="iconamoon:profile-circle-fill" width={24} />,
   },
-/*   {
+  {
     value: 'gafete',
     label: 'Gafete digital',
     icon: <Iconify icon="clarity:id-badge-solid" width={24} />,
@@ -118,15 +118,14 @@ export default function PerfilUsuarioView() {
       {currentTab === 'capital' && <AsesorView info={_userAbout} posts={_userFeeds} />}
 
 
-      {/* {currentTab === 'friends' && (
+       {/* {currentTab === 'friends' && (
         <ProfileFriends
           friends={_userFriends}
           searchFriends={searchFriends}
           onSearchFriends={handleSearchFriends}
         />
-      )} */}
-
-      {/* {currentTab === 'gallery' && <ProfileGallery gallery={_userGallery} />} */}
+      )}
+   {currentTab === 'gallery' && <ProfileGallery gallery={_userGallery} />}  */}
     </Container>
   );
 }
