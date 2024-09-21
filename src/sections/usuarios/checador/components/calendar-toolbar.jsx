@@ -140,13 +140,13 @@ export default function CalendarToolbar({
         >
           <Box sx={{ flexGrow: 1 }}>
             <Grid container spacing={2}>
-              <Grid item xs={4} alignContent="center" />
-              <Grid item xs={4} alignContent="center">
+              <Grid xs={4} alignContent="center" />
+              <Grid xs={4} alignContent="center">
                 <Item>
                   <Typography variant="h6">{fechaTitulo}</Typography>
                 </Item>
               </Grid>
-              <Grid item xs={4}>
+              <Grid xs={4}>
                 <Item>
                   <Button
                     target="_blank"

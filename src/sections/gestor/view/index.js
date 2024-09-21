@@ -6,3 +6,5 @@ export { default as AtencionXsedeView } from './atencionXsede-view';
 
 export { default as EstatusPuestosView } from './estatusPuestos-view';
 
+export { default as GestionPreguntasFrecuentes } from './preguntasFrecuentes-view';
+

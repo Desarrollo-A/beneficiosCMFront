@@ -18,7 +18,7 @@ import { useAuthContext } from 'src/auth/hooks';
 
 import Iconify from 'src/components/iconify/iconify';
 
-import './styles.css'
+import './styles.css';
 
 const drawerBleeding = 56;
 
@@ -148,7 +148,7 @@ export default function GafeteDigital(props) {
                             }}
                         >
                             <Grid container key={animationKey} spacing={2} sx={{ height: '100%' }}>
-                                <Grid item xs={12} >
+                                <Grid xs={12} >
                                     <Box className='card'>
                                         <Stack
                                             alignItems="center"
@@ -248,7 +248,7 @@ export default function GafeteDigital(props) {
                             }}
                         >
                             <Grid container key={animationKey} spacing={2} sx={{ height: '100%' }}>
-                                <Grid item xs={12}>
+                                <Grid xs={12}>
                                     <Box
                                         className='card zoom-shake'
                                         sx={{
@@ -328,7 +328,7 @@ export default function GafeteDigital(props) {
             </Root>
         ) : (
             <Grid container sx={{ height: '100%' }}>
-                <Grid item xs={6} className={`grid-item1 ${loaded ? 'loaded' : ''}`}>
+                <Grid xs={6} className={`grid-item1 ${loaded ? 'loaded' : ''}`}>
                     <Stack
                         className='correaDdesktop'
                         alignItems="center"
@@ -439,7 +439,7 @@ export default function GafeteDigital(props) {
                         </Typography>
                     </Box>
                 </Grid>
-                <Grid item xs={6} className='grid-item2'>
+                <Grid xs={6} className='grid-item2'>
                     <Stack
                         className='correaDdesktop'
                         alignItems="center"
