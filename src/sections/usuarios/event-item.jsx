@@ -8,6 +8,7 @@ import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import { LoadingButton } from '@mui/lab';
 import Dialog from '@mui/material/Dialog';
+import { Typography } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import DialogContent from '@mui/material/DialogContent';
 
@@ -70,7 +71,6 @@ export default function EventItem({ event, mutate }) {
       user?.idUsuario
     );
 
-    console.log(res);
     enqueueSnackbar(res.msg, { variant: res.result === true ? 'success' : 'error' });
 
     await mutate();
@@ -78,7 +78,6 @@ export default function EventItem({ event, mutate }) {
   };
 
   const handleEdit = () => {
-    // alert('Still editing');
     eventDialog.onTrue();
   };
 
@@ -118,7 +117,7 @@ export default function EventItem({ event, mutate }) {
           bgcolor: 'rgba(0, 0, 0, 0.7)',
           cursor: 'pointer',
         }}
-        loading={isSubmitting2}
+        // disable={isSubmitting2}
         onClick={() => handleHideEvent()}
       >
         {isSubmitting2 && <Iconify icon="line-md:loading-twotone-loop" sx={{ color: 'white' }} />}
@@ -296,7 +295,9 @@ export default function EventItem({ event, mutate }) {
           }}
         >
           <Tooltip title={`Creado el ${dayjs(fechaCreacion).format('DD MMMM YYYY[,] HH:mm A')}`}>
-            Creado el {dayjs(fechaCreacion).format('DD MMMM YYYY[,] HH:mm A')}
+            <Typography variant="caption">
+              Creado el {dayjs(fechaCreacion).format('DD MMMM YYYY[,] HH:mm A')}
+            </Typography>
           </Tooltip>
         </Box>
         <Box
@@ -311,7 +312,9 @@ export default function EventItem({ event, mutate }) {
             textOverflow: 'ellipsis',
           }}
         >
-          <Tooltip title={titulo}>{titulo}</Tooltip>
+          <Tooltip title={titulo}>
+            <Typography variant="">{titulo}</Typography>
+          </Tooltip>
         </Box>
         <Stack direction="row" sx={{ flex: 1 }}>
           <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mr: '2px' }}>
@@ -330,7 +333,9 @@ export default function EventItem({ event, mutate }) {
               alignItems: 'center',
             }}
           >
-            <Tooltip title={ubicacion}>{ubicacion}</Tooltip>
+            <Tooltip title={ubicacion}>
+              <Typography variant='caption'>{ubicacion}</Typography>
+            </Tooltip>
           </Box>
         </Stack>
       </Box>

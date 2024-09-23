@@ -28,7 +28,7 @@ const TABS = [
     label: 'Datos personales',
     icon: <Iconify icon="iconamoon:profile-circle-fill" width={24} />,
   },
-/*   {
+  {
     value: 'gafete',
     label: 'Gafete digital',
     icon: <Iconify icon="clarity:id-badge-solid" width={24} />,
@@ -52,7 +52,7 @@ const TABS = [
     value: 'capital',
     label: 'Tu ejecutivo de CH',
     icon: <Iconify icon="fluent:people-team-24-filled" width={24} />,
-  }, */
+  }
 
 ];
 // ----------------------------------------------------------------------

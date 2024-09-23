@@ -346,6 +346,7 @@ export default function NewEventDialog({ open, event, onClose, mutate }) {
                 name="sedes"
                 placeholder="Sedes"
                 multiple
+                value={undefined}
                 freeSolo
                 options={sedes.map((i) => i)}
                 getOptionLabel={(i) => i.nsede || ''}
@@ -373,6 +374,7 @@ export default function NewEventDialog({ open, event, onClose, mutate }) {
               <RHFAutocomplete
                 name="departamentos"
                 placeholder="Departamentos..."
+                value={undefined}
                 multiple
                 freeSolo
                 options={deptos.map((i) => i)}
@@ -426,7 +428,7 @@ export default function NewEventDialog({ open, event, onClose, mutate }) {
             variant="contained"
             color="success"
             type="submit"
-            loading={isSubmitting}
+            
             onClick={() => {
               validateStates();
             }}

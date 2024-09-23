@@ -49,7 +49,6 @@ export default function BoxBoletos({ subheader, list, sx, ...other }) {
 
   return (
     <Grid container disableEqualOverflow spacing={3}>
-
       <Grid item xs={12} md={12} >
         <TextField
           fullWidth
