@@ -64,8 +64,9 @@ const UserListPage = lazy(() => import('src/pages/beneficios/user/list'));
 const UserAccountPage = lazy(() => import('src/pages/beneficios/user/account'));
 const UserCreatePage = lazy(() => import('src/pages/beneficios/user/new'));
 const UserEditPage = lazy(() => import('src/pages/beneficios/user/edit'));
-
 const PerfilPage = lazy(() => import('src/pages/beneficios/usuarios/perfil'));
+// BOLETOS
+const BoletosPage = lazy(() => import('src/pages/beneficios/boletos/boletos-view'));
 
 // BLOG
 const BlogPostsPage = lazy(() => import('src/pages/beneficios/post/list'));
@@ -98,6 +99,7 @@ const PermissionDeniedPage = lazy(() => import('src/pages/beneficios/permission'
 const BlankPage = lazy(() => import('src/sections/_examples/extra/upload-view'));
 
 // const AgendaPage = lazy(() => import('src/pages/beneficios/agenda'))
+
 
 // ----------------------------------------------------------------------
 
@@ -155,6 +157,12 @@ export const beneficiosRoutes = [
         children: [
           { path: 'ayuda', element: <AyudaPage /> },
           { path: 'gestor', element: <GestorAyudaPage /> },
+        ],
+      },
+      {
+        path: 'boletos', element: <BoletosPage />,
+        children: [
+          /* { path: 'boletos', element: <BoletosPage /> }, */
         ],
       },
       { path: 'dash', element: <DashPage /> },
@@ -248,7 +256,7 @@ export const beneficiosRoutes = [
       { path: 'kanban', element: <KanbanPage /> },
       { path: 'permission', element: <PermissionDeniedPage /> },
       { path: 'blank', element: <BlankPage /> },
-      { path: 'citas', element: <CitasPage /> },
+      { path: 'citas', element: <CitasPage /> }
     ],
   },
 ];

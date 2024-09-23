@@ -6,21 +6,19 @@ import Stack from '@mui/system/Stack';
 import Container from '@mui/material/Container';
 import Tabs, { tabsClasses } from '@mui/material/Tabs';
 
-import { paths } from 'src/routes/paths';
-
-import { useMockedUser } from 'src/hooks/use-mocked-user';
-
 import { useAuthContext } from 'src/auth/hooks';
-import { _userAbout, _userFeeds, _userFriends, _userGallery, _userFollowers } from 'src/_mock';
+import { _userAbout, _userFeeds } from 'src/_mock';
 
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
-import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
 import EventsList from '../events-list';
 import ProfileCover from '../profile-cover';
 import GafeteDigital from '../gafete-digital';
+// import AsesorView from '../asesorCh/asesor-view';
 import DatosPersonales from '../datos-personales';
+import CalculadoraNomina from '../calculadora-nomina';
+import RelojChecador from '../checador/reloj-checador';
 
 // ----------------------------------------------------------------------
 
@@ -30,7 +28,7 @@ const TABS = [
     label: 'Datos personales',
     icon: <Iconify icon="iconamoon:profile-circle-fill" width={24} />,
   },
-  {
+/*   {
     value: 'gafete',
     label: 'Gafete digital',
     icon: <Iconify icon="clarity:id-badge-solid" width={24} />,
@@ -50,24 +48,24 @@ const TABS = [
     label: 'Eventos corporativos',
     icon: <Iconify icon="streamline:champagne-party-alcohol-solid" width={24} />,
   },
+  {
+    value: 'capital',
+    label: 'Tu ejecutivo de CH',
+    icon: <Iconify icon="fluent:people-team-24-filled" width={24} />,
+  }, */
+
 ];
 // ----------------------------------------------------------------------
 
 export default function PerfilUsuarioView() {
   const settings = useSettingsContext();
-  const { user } = useMockedUser();
-  const { user: userdata } = useAuthContext();
 
-  const [searchFriends, setSearchFriends] = useState('');
+  const { user } = useAuthContext();
 
   const [currentTab, setCurrentTab] = useState('datos');
 
   const handleChangeTab = useCallback((event, newValue) => {
     setCurrentTab(newValue);
-  }, []);
-
-  const handleSearchFriends = useCallback((event) => {
-    setSearchFriends(event.target.value);
   }, []);
 
   return (
@@ -79,8 +77,9 @@ export default function PerfilUsuarioView() {
         }}
       >
         <ProfileCover
-          role={userdata?.puesto}
-          name={userdata?.nombre}
+          sex={user?.sexo}
+          role={user?.puesto}
+          name={user?.nombre}
           avatarUrl={user?.photoURL}
           coverUrl={_userAbout.coverUrl}
         />
@@ -111,7 +110,11 @@ export default function PerfilUsuarioView() {
 
       {currentTab === 'datos' && <DatosPersonales info={_userAbout} posts={_userFeeds} />}
 
-      {currentTab === 'gafete' && <GafeteDigital />}
+      {currentTab === 'checador' && <RelojChecador info={_userAbout} posts={_userFeeds} />}
+
+      {currentTab === 'calculadora' && <CalculadoraNomina />}
+
+      {currentTab === 'gafete' && <GafeteDigital/>}
 
       {/* {currentTab === 'friends' && (
         <ProfileFriends

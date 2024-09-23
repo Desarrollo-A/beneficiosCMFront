@@ -53,7 +53,7 @@ const NavItem = forwardRef(
         )}
 
         {subItem && icon ? (
-          <Box component="span" className="icon">
+          <Box component="span" className="icon" sx={{ mx: 1.5, p:.2 }}>
             {icon}
           </Box>
         ) : (

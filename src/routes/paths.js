@@ -150,6 +150,10 @@ export const paths = {
     ayuda: {
       root: `${ROOTS.DASHBOARD}/ayuda/ayuda`,
     },
+    boletos: {
+      root: `${ROOTS.DASHBOARD}/boletos/`,
+      boletos: `${ROOTS.DASHBOARD}/boletos/`,
+    },
     user: {
       root: `${ROOTS.DASHBOARD}/user`,
       new: `${ROOTS.DASHBOARD}/user/new`,

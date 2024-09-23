@@ -46,7 +46,7 @@ const NavItem = forwardRef(
         disabled={disabled}
         {...other}
       >
-        {icon && (
+        {icon && !subItem && (
           <Box component="span" className="icon">
             {icon}
           </Box>
