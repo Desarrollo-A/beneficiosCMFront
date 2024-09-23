@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { HOST } from 'src/config-global';
+import { HOST, LEGALARIO_HOST } from 'src/config-global';
 
 // ----------------------------------------------------------------------
 
@@ -18,6 +18,13 @@ instance.interceptors.response.use(
   (error) => Promise.reject((error.response && error.response.data) || 'Something went wrong')
 );
 export { instance };
+
+const legalarioInstance = axios.create({ baseURL: LEGALARIO_HOST });
+instance.interceptors.response.use(
+  (res) => res,
+  (error) => Promise.reject((error.response && error.response.data) || 'Something went wrong')
+);
+export { legalarioInstance };
 
 // ----------------------------------------------------------------------
 
@@ -86,9 +93,48 @@ export const fetcherPost = async (args, dataValue) => {
   return res.data;
 };
 
+export const fetcherGetLegalario = async (args) => {
+  const [url, config] = Array.isArray(args) ? args : [args];
+
+  const res = await legalarioInstance.get(url, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    ...config,
+  });
+
+  return res.data;
+};
+
+export const fetcherPostLegalario = async (args, dataValue) => {
+  const [url, config] = Array.isArray(args) ? args : [args];
+
+  // Convierte el objeto dataValue a URLSearchParams
+  const urlencoded = new URLSearchParams();
+
+  // Usa Object.entries para iterar sobre las claves y valores de dataValue
+  Object.entries(dataValue).forEach(([key, value]) => {
+    urlencoded.append(key, value);
+  });
+
+  const res = await legalarioInstance.post(url, urlencoded, {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    ...config,
+  });
+
+  return res.data;
+};
+
 // ----------------------------------------------------------------------
 
 export const endpoints = {
+  legalario: {
+    login: 'auth/login',
+    token: 'auth/token',
+    docs: 'v2/documents',
+  },
   chat: '/api/chat',
   kanban: '/api/kanban',
   calendar: '/api/calendar',
