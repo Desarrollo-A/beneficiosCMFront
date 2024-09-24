@@ -5,16 +5,17 @@ import axios, { endpoints, fetcherPost } from 'src/utils/axios';
 
 export function useGetEventos(idContrato, idSede, idDepartamento) {
   const URL = endpoints.eventos.getEventos;
-  const { data, mutate: revalidate } = useSWR(URL, (url) =>
+  const { data, isLoading, mutate: revalidate } = useSWR(URL, (url) =>
     fetcherPost(url, { idContrato, idSede, idDepartamento })
   );
 
   const memoizedValue = useMemo(
     () => ({
       data: data?.data || [],
+      eventosLoading: isLoading,
       mutate: revalidate,
     }),
-    [data, revalidate]
+    [data, isLoading, revalidate]
   );
 
   return memoizedValue;

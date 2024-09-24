@@ -11,7 +11,7 @@ import { paths } from 'src/routes/paths';
 import { useMockedUser } from 'src/hooks/use-mocked-user';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { _userAbout, _userFeeds, _userFriends, _userGallery, _userFollowers } from 'src/_mock';
+import { _userAbout, _userFeeds } from 'src/_mock';
 
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
@@ -32,7 +32,7 @@ const TABS = [
     label: 'Datos personales',
     icon: <Iconify icon="iconamoon:profile-circle-fill" width={24} />,
   },
-  /*   {
+  {
     value: 'gafete',
     label: 'Gafete digital',
     icon: <Iconify icon="clarity:id-badge-solid" width={24} />,
@@ -56,7 +56,7 @@ const TABS = [
     value: 'capital',
     label: 'Tu ejecutivo de CH',
     icon: <Iconify icon="fluent:people-team-24-filled" width={24} />,
-  }, */
+  },
 ];
 // ----------------------------------------------------------------------
 
@@ -64,8 +64,6 @@ export default function PerfilUsuarioView() {
   const settings = useSettingsContext();
   const { user } = useMockedUser();
   const { user: userdata } = useAuthContext();
-
-  const [searchFriends, setSearchFriends] = useState('');
 
   const [currentTab, setCurrentTab] = useState('datos');
 

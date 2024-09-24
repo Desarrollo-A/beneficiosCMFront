@@ -8,6 +8,7 @@ import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import { LoadingButton } from '@mui/lab';
 import Dialog from '@mui/material/Dialog';
+import { Typography } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import DialogContent from '@mui/material/DialogContent';
 
@@ -70,7 +71,6 @@ export default function EventItem({ event, mutate }) {
       user?.idUsuario
     );
 
-    console.log(res);
     enqueueSnackbar(res.msg, { variant: res.result === true ? 'success' : 'error' });
 
     await mutate();
@@ -78,7 +78,6 @@ export default function EventItem({ event, mutate }) {
   };
 
   const handleEdit = () => {
-    // alert('Still editing');
     eventDialog.onTrue();
   };
 
@@ -106,45 +105,51 @@ export default function EventItem({ event, mutate }) {
         fontWeight: 'light',
       }}
     >
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: 100,
-          padding: '7px',
-          mr: '1px',
-          color: 'white',
-          bgcolor: 'rgba(0, 0, 0, 0.7)',
-          cursor: 'pointer',
-        }}
-        loading={isSubmitting2}
-        onClick={() => handleHideEvent()}
-      >
-        {isSubmitting2 && <Iconify icon="line-md:loading-twotone-loop" sx={{ color: 'white' }} />}
-        {isSubmitting2 === false && estatusEvento === 1 && (
-          <Iconify icon="mdi:eye" sx={{ color: 'white' }} />
-        )}
-        {isSubmitting2 === false && estatusEvento === 2 && (
-          <Iconify icon="mdi:eye-off" sx={{ color: 'white' }} />
-        )}
-      </Box>
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: 1000,
-          padding: '7px',
-          mr: '1px',
-          color: 'white',
-          bgcolor: 'rgba(0, 0, 0, 0.7)',
-          cursor: 'pointer',
-        }}
-        onClick={() => handleEdit()}
-      >
-        <Iconify icon="mdi:edit" sx={{ color: 'white' }} />
-      </Box>
+      {user.permisos === 6 && ( // se asigna solo al rol de permiso 6
+        <Stack direction="row">
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 100,
+              padding: '7px',
+              mr: '1px',
+              color: 'white',
+              bgcolor: 'rgba(0, 0, 0, 0.7)',
+              cursor: 'pointer',
+            }}
+            // disable={isSubmitting2}
+            onClick={() => handleHideEvent()}
+          >
+            {isSubmitting2 && (
+              <Iconify icon="line-md:loading-twotone-loop" sx={{ color: 'white' }} />
+            )}
+            {isSubmitting2 === false && estatusEvento === 1 && (
+              <Iconify icon="mdi:eye" sx={{ color: 'white' }} />
+            )}
+            {isSubmitting2 === false && estatusEvento === 2 && (
+              <Iconify icon="mdi:eye-off" sx={{ color: 'white' }} />
+            )}
+          </Box>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 1000,
+              padding: '7px',
+              mr: '1px',
+              color: 'white',
+              bgcolor: 'rgba(0, 0, 0, 0.7)',
+              cursor: 'pointer',
+            }}
+            onClick={() => handleEdit()}
+          >
+            <Iconify icon="mdi:edit" sx={{ color: 'white' }} />
+          </Box>
+        </Stack>
+      )}
       <Box
         sx={{
           display: 'flex',
@@ -157,7 +162,10 @@ export default function EventItem({ event, mutate }) {
           cursor: 'pointer',
         }}
       >
-        <Iconify icon="mdi:user" sx={{ color: 'white', mr: 0.25 }} /> {confirmados} Confirmados
+        <Iconify icon="mdi:user" sx={{ color: 'white', mr: 0.25 }} />{' '}
+        {dayjs() > dayjs(event.fechaEvento)
+          ? `${confirmados} Asistidos`
+          : `${confirmados} Confirmados`}
       </Box>
     </Stack>
   );
@@ -226,7 +234,8 @@ export default function EventItem({ event, mutate }) {
         typography: 'caption',
         fontWeight: 'light',
         color: 'common.white',
-
+        mb: 2,
+        mr: 2,
         cursor: 'pointer', // Cambia el cursor a una mano
       }}
     >
@@ -248,21 +257,23 @@ export default function EventItem({ event, mutate }) {
           <Iconify width={24} icon="bxs:map" />
         </Tooltip>
       </Stack>
-      <LoadingButton
-        component="span"
-        sx={{
-          color: 'white',
-          typography: 'subtitle1',
-          fontWeight: 'light',
-          mr: 0.25,
-          bgcolor: 'rgba(200, 200, 200, 0.4)',
-          borderRadius: '15px',
-        }}
-        loading={isSubmitting}
-        onClick={() => handleConfirmacion()}
-      >
-        {estatusAsistencia === 1 ? 'Cancelar asistencia' : 'Confirmar asistencia'}
-      </LoadingButton>
+      {event.estatusEvento === 1 && (
+        <LoadingButton
+          component="span"
+          sx={{
+            color: 'white',
+            typography: 'subtitle1',
+            fontWeight: 'light',
+            mr: 0.25,
+            bgcolor: 'rgba(200, 200, 200, 0.4)',
+            borderRadius: '15px',
+          }}
+          loading={isSubmitting}
+          onClick={() => handleConfirmacion()}
+        >
+          {estatusAsistencia === 1 ? 'Cancelar asistencia' : 'Confirmar asistencia'}
+        </LoadingButton>
+      )}
     </Stack>
   );
 
@@ -296,7 +307,9 @@ export default function EventItem({ event, mutate }) {
           }}
         >
           <Tooltip title={`Creado el ${dayjs(fechaCreacion).format('DD MMMM YYYY[,] HH:mm A')}`}>
-            Creado el {dayjs(fechaCreacion).format('DD MMMM YYYY[,] HH:mm A')}
+            <Typography variant="caption">
+              Creado el {dayjs(fechaCreacion).format('DD MMMM YYYY[,] HH:mm A')}
+            </Typography>
           </Tooltip>
         </Box>
         <Box
@@ -311,7 +324,9 @@ export default function EventItem({ event, mutate }) {
             textOverflow: 'ellipsis',
           }}
         >
-          <Tooltip title={titulo}>{titulo}</Tooltip>
+          <Tooltip title={titulo}>
+            <Typography variant="">{titulo}</Typography>
+          </Tooltip>
         </Box>
         <Stack direction="row" sx={{ flex: 1 }}>
           <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mr: '2px' }}>
@@ -330,7 +345,9 @@ export default function EventItem({ event, mutate }) {
               alignItems: 'center',
             }}
           >
-            <Tooltip title={ubicacion}>{ubicacion}</Tooltip>
+            <Tooltip title={ubicacion}>
+              <Typography variant="caption">{ubicacion}</Typography>
+            </Tooltip>
           </Box>
         </Stack>
       </Box>
