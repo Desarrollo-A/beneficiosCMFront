@@ -1,10 +1,10 @@
-import { useState } from 'react';
-import styled from '@emotion/styled';
+import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/system/Stack';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { Grid, InputAdornment, Paper, TextField } from '@mui/material';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { Grid, TextField, Typography, Pagination, InputAdornment } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
@@ -15,17 +15,33 @@ import Iconify from 'src/components/iconify';
 
 import EventItem from './event-item';
 import NewEventDialog from './new-event-dialog';
+// import WidgetConteo from '../overview/dash/widget-conteo';
 
 // ----------------------------------------------------------------------
 
-export default function EventsList() {
+export default function EventsList({ ...other }) {
+  // const theme = useTheme();
+  // const color = 'primary';
+
   const { user } = useAuthContext();
   const { data: events, mutate: eventsMutate } = useGetEventos(
     user?.idContrato,
     user?.idSede,
     user?.idDepto
   );
-  const [searchTerm, setSearchTerm] = useState('');
+  // const cantidadTarjetasCarga = [0, 1, 2];
+  const isMobile = useMediaQuery('(max-width: 960px)');
+
+  const [eventos, setEventos] = useState([]);
+  const [found, setFound] = useState(true);
+  const [page, setPage] = useState(1);
+  const [filteredData, setFiltered] = useState([]);
+  const [currentItems, setCurrentItems] = useState([]);
+  const itemsPerPage = 6;
+
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
 
   const eventDialog = useBoolean();
 
@@ -33,9 +49,34 @@ export default function EventsList() {
     eventDialog.onTrue();
   };
 
+  useEffect(() => {
+    setEventos(events);
+    setFiltered(events);
+  }, [events]);
+
   const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
+    setPage(1);
+
+    setFiltered(
+      events.filter((item) => item.titulo.toLowerCase().includes(event.target.value.toLowerCase()))
+    );
+
+    if (filteredData.length) {
+      setFound(true);
+    } else {
+      setFound(false);
+    }
+
+    if (event.target.value.length === 0) {
+      setEventos(events);
+    } else {
+      setEventos(filteredData);
+    }
   };
+
+  useEffect(() => {
+    setCurrentItems(filteredData.slice((page - 1) * itemsPerPage, page * itemsPerPage));
+  }, [filteredData, page]);
 
   return (
     <>
@@ -47,14 +88,14 @@ export default function EventsList() {
             alignItems: 'flex-end' /* Alinea al lado izquierdo */,
             paddingBottom: '10px',
           }}
+          direction={isMobile ? 'column' : 'row'}
         >
-          <Grid item xs={10} sx={{ p:1 }}>
+          <Grid item xs={10} sx={{ p: 1, width: isMobile ? '100%' : '' }}>
             <TextField
               fullWidth
               label="Buscar partido"
               variant="outlined"
               size="small"
-              value={searchTerm}
               onChange={handleSearchChange}
               InputProps={{
                 endAdornment: (
@@ -68,7 +109,7 @@ export default function EventsList() {
               }}
             />
           </Grid>
-          <Grid item xs={2} sx={{ p:1 }}>
+          <Grid item xs={2} sx={{ p: 1 }}>
             <LoadingButton
               variant="outlined"
               color="inherit"
@@ -93,10 +134,69 @@ export default function EventsList() {
             md: 'repeat(3, 1fr)',
           }}
         >
-          {events.map((event) => (
-            <EventItem key={event.idEvento} event={event} mutate={eventsMutate} />
-          ))}
+          {eventos.length ? (
+            currentItems.map((event) =>
+              user.permisos !== 6 && event.estatusEvento === 2 ? (
+                ''
+              ) : (
+                <EventItem key={event.idEvento} event={event} mutate={eventsMutate} />
+              )
+            )
+          ) : (
+            <>
+              {found ? (
+                <>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Grid
+                      sx={{
+                        backgroundColor: '#ECECEC',
+                        animation: 'pulse 1.5s infinite',
+                        borderRadius: 1,
+                      }}
+                    >
+                      ‎
+                    </Grid>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Stack
+                      sx={{
+                        backgroundColor: '#ECECEC',
+                        animation: 'pulse 1.5s infinite',
+                        borderRadius: 1,
+                      }}
+                    >
+                      ‎
+                    </Stack>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Stack
+                      sx={{
+                        backgroundColor: '#ECECEC',
+                        animation: 'pulse 1.5s infinite',
+                        borderRadius: 1,
+                      }}
+                    >
+                      ‎
+                    </Stack>
+                  </Grid>
+                </>
+              ) : (
+                <Stack>
+                  <Grid>
+                    <Typography variant="h5">Sin eventos disponibles</Typography>
+                  </Grid>
+                </Stack>
+              )}
+            </>
+          )}
         </Box>
+      </Stack>
+      <Stack sx={{ mt: 4, alignItems: 'center' }}>
+        <Pagination
+          count={Math.ceil(filteredData.length / itemsPerPage)}
+          page={page}
+          onChange={handlePageChange}
+        />
       </Stack>
       {eventDialog && (
         <NewEventDialog
