@@ -162,7 +162,6 @@ export default function NewEventDialog({ open, event, onClose, mutate }) {
       );
     }
 
-    console.log(res);
     enqueueSnackbar(res.msg, { variant: res.result === true ? 'success' : 'error' });
 
     onClose();
