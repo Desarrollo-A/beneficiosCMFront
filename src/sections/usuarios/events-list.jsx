@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/system/Stack';
 import LoadingButton from '@mui/lab/LoadingButton';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { Grid, TextField, Typography, Pagination, InputAdornment } from '@mui/material';
+import { Grid, TextField, Typography, Pagination, InputAdornment, useTheme } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
@@ -38,6 +38,8 @@ export default function EventsList({ ...other }) {
   const [filteredData, setFiltered] = useState([]);
   const [currentItems, setCurrentItems] = useState([]);
   const itemsPerPage = 6;
+
+  const theme = useTheme();
 
   const handlePageChange = (event, value) => {
     setPage(value);
@@ -97,12 +99,15 @@ export default function EventsList({ ...other }) {
               variant="outlined"
               size="small"
               onChange={handleSearchChange}
+              InputLabelProps={{
+                style: { color: theme.palette.mode === 'dark' ? '#ffffff' : '' },
+              }}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
                     <Iconify
                       icon="icon-park-outline:search"
-                      sx={{ ml: 1, color: 'text.disabled' }}
+                      sx={{ ml: 1, color: theme.palette.mode === 'dark' ? '#ffffff' : 'text.disabled' }}
                     />
                   </InputAdornment>
                 ),
@@ -115,10 +120,7 @@ export default function EventsList({ ...other }) {
               color="inherit"
               onClick={() => handleNewEvent()}
               // loading={1 = "as"}
-              sx={{
-                width: 'auto',
-                backgroundColor: '#FFF'
-              }}
+              
             >
               Añadir evento <Iconify icon="f7:plus-square-on-square" ml={1} />
             </LoadingButton>

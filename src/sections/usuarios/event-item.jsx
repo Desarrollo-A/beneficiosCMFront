@@ -11,7 +11,7 @@ import Tooltip from '@mui/material/Tooltip';
 import DialogContent from '@mui/material/DialogContent';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import TimelineItem, { timelineItemClasses } from '@mui/lab/TimelineItem';
-import { Button, Typography, DialogTitle, DialogActions } from '@mui/material';
+import { Button, useTheme, Typography, DialogTitle, DialogActions } from '@mui/material';
 import {
   Timeline,
   TimelineDot,
@@ -48,6 +48,7 @@ export default function EventItem({ event, mutate }) {
   const [openCancel, setOpenCancel] = useState(false);
 
   const isMobile = useMediaQuery('(max-width: 960px)');
+  const theme = useTheme();
 
   const {
     idEvento,
@@ -380,7 +381,7 @@ export default function EventItem({ event, mutate }) {
           </Tooltip>
         </Box>
         <Stack direction="row" sx={{ flex: 1 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mr: '2px' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mr: '2px', color: theme.palette.mode === 'dark' ? '#000000' : '' }}>
             <Iconify width={17} icon="bxs:map" />
           </Box>
           <Box
@@ -450,7 +451,7 @@ export default function EventItem({ event, mutate }) {
             <TimelineItem>
               <TimelineSeparator>
                 <TimelineDot className="icons">
-                  <Iconify icon="mdi:account-circle" width={25} sx={{ color: '' }} />
+                  <Iconify icon="mdi:account-circle" width={25} sx={{ color: theme.palette.mode === 'dark' ? '#000000' : '' }} />
                 </TimelineDot>
                 <TimelineConnector />
               </TimelineSeparator>
@@ -459,7 +460,7 @@ export default function EventItem({ event, mutate }) {
 
                 <Typography
                   variant="body2"
-                  sx={{ color: 'text.disabled', wordBreak: 'break-word' }}
+                  sx={{ color: theme.palette.mode === 'dark' ? '#ffffff' : 'text.disabled', wordBreak: 'break-word' }}
                   mb={3}
                 >
                   {user.nombre}
@@ -470,7 +471,7 @@ export default function EventItem({ event, mutate }) {
             <TimelineItem>
               <TimelineSeparator>
                 <TimelineDot className="icons">
-                  <Iconify icon="mdi:building" width={25} sx={{ color: '' }} />
+                  <Iconify icon="mdi:building" width={25} sx={{ color: theme.palette.mode === 'dark' ? '#000000' : '' }} />
                 </TimelineDot>
                 <TimelineConnector />
               </TimelineSeparator>
@@ -479,7 +480,7 @@ export default function EventItem({ event, mutate }) {
 
                 <Typography
                   variant="body2"
-                  sx={{ color: 'text.disabled', wordBreak: 'break-word' }}
+                  sx={{ color: theme.palette.mode === 'dark' ? '#ffffff' : 'text.disabled', wordBreak: 'break-word' }}
                   mb={3}
                 >
                   {user.area}
@@ -490,7 +491,7 @@ export default function EventItem({ event, mutate }) {
             <TimelineItem>
               <TimelineSeparator>
                 <TimelineDot className="icons">
-                  <Iconify icon="mdi:earth" width={25} sx={{ color: '' }} />
+                  <Iconify icon="mdi:earth" width={25} sx={{ color: theme.palette.mode === 'dark' ? '#000000' : '' }} />
                 </TimelineDot>
                 <TimelineConnector />
               </TimelineSeparator>
@@ -499,7 +500,7 @@ export default function EventItem({ event, mutate }) {
 
                 <Typography
                   variant="body2"
-                  sx={{ color: 'text.disabled', wordBreak: 'break-word' }}
+                  sx={{ color: theme.palette.mode === 'dark' ? '#ffffff' : 'text.disabled', wordBreak: 'break-word' }}
                   mb={3}
                 >
                   {user.sede}
@@ -510,7 +511,7 @@ export default function EventItem({ event, mutate }) {
             <TimelineItem>
               <TimelineSeparator>
                 <TimelineDot className="icons">
-                  <Iconify icon="mdi:worker" width={25} sx={{ color: '' }} />
+                  <Iconify icon="mdi:worker" width={25} sx={{ color: theme.palette.mode === 'dark' ? '#000000' : '' }} />
                 </TimelineDot>
                 <TimelineConnector />
               </TimelineSeparator>
@@ -519,7 +520,7 @@ export default function EventItem({ event, mutate }) {
 
                 <Typography
                   variant="body2"
-                  sx={{ color: 'text.disabled', wordBreak: 'break-word' }}
+                  sx={{ color: theme.palette.mode === 'dark' ? '#ffffff' : 'text.disabled', wordBreak: 'break-word' }}
                   mb={3}
                 >
                   {user.puesto}
@@ -530,7 +531,7 @@ export default function EventItem({ event, mutate }) {
             <TimelineItem>
               <TimelineSeparator>
                 <TimelineDot className="icons">
-                  <Iconify icon="mdi:gmail" width={25} sx={{ color: '' }} />
+                  <Iconify icon="mdi:gmail" width={25} sx={{ color: theme.palette.mode === 'dark' ? '#000000' : '' }} />
                 </TimelineDot>
                 <TimelineConnector />
               </TimelineSeparator>
@@ -539,7 +540,7 @@ export default function EventItem({ event, mutate }) {
 
                 <Typography
                   variant="body2"
-                  sx={{ color: 'text.disabled', wordBreak: 'break-word' }}
+                  sx={{ color: theme.palette.mode === 'dark' ? '#ffffff' : 'text.disabled', wordBreak: 'break-word' }}
                   mb={3}
                 >
                   {user.correo}
@@ -550,14 +551,14 @@ export default function EventItem({ event, mutate }) {
             <TimelineItem>
               <TimelineSeparator>
                 <TimelineDot className="icons">
-                  <Iconify icon="mdi:clipboard-text-date" width={25} sx={{ color: '' }} />
+                  <Iconify icon="mdi:clipboard-text-date" width={25} sx={{ color: theme.palette.mode === 'dark' ? '#000000' : '' }} />
                 </TimelineDot>
                 <TimelineConnector />
               </TimelineSeparator>
               <TimelineContent>
                 <Typography variant="subtitle1">Fecha de ingreso</Typography>
 
-                <Typography variant="body2" sx={{ color: 'text.disabled' }} mb={3}>
+                <Typography variant="body2" sx={{ color: theme.palette.mode === 'dark' ? '#ffffff' : 'text.disabled' }} mb={3}>
                   {user.fechaIngreso}
                 </Typography>
               </TimelineContent>
@@ -566,13 +567,13 @@ export default function EventItem({ event, mutate }) {
             <TimelineItem>
               <TimelineSeparator>
                 <TimelineDot className="icons">
-                  <Iconify icon="mdi:whatsapp" width={25} sx={{ color: '' }} />
+                  <Iconify icon="mdi:whatsapp" width={25} sx={{ color: theme.palette.mode === 'dark' ? '#000000' : '' }} />
                 </TimelineDot>
               </TimelineSeparator>
               <TimelineContent>
                 <Typography variant="subtitle1">Contacto</Typography>
 
-                <Typography variant="body2" sx={{ color: 'text.disabled' }} mb={3}>
+                <Typography variant="body2" sx={{ color: theme.palette.mode === 'dark' ? '#ffffff' : 'text.disabled' }} mb={3}>
                   {user.telPersonal}
                 </Typography>
               </TimelineContent>
@@ -581,12 +582,12 @@ export default function EventItem({ event, mutate }) {
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button variant="contained" sx={{ backgroundColor: '#003764' }} disabled={isSubmitting} onClick={abrirConfirmar}>
+        <Button variant="contained" sx={{ backgroundColor: '#003764', color: theme.palette.mode === 'dark' ? '#ffffff' : '' }} disabled={isSubmitting} onClick={abrirConfirmar}>
           Cerrar
         </Button>
         <LoadingButton
           variant="contained"
-          sx={{ backgroundColor: '#b5a36a' }}
+          sx={{ backgroundColor: '#b5a36a', color: theme.palette.mode === 'dark' ? '#ffffff' : '' }}
           loading={isSubmitting}
           onClick={handleConfirmacion}
         >
@@ -613,12 +614,12 @@ export default function EventItem({ event, mutate }) {
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button variant="contained" sx={{ backgroundColor: '#003764' }} disabled={isSubmitting} onClick={abrirConfirmar}>
+        <Button variant="contained" sx={{ backgroundColor: '#003764', color: theme.palette.mode === 'dark' ? '#ffffff' : '' }} disabled={isSubmitting} onClick={abrirConfirmar}>
           Cerrar
         </Button>
         <LoadingButton
           variant="contained"
-          sx={{ backgroundColor: '#b5a36a' }}
+          sx={{ backgroundColor: '#b5a36a', color: theme.palette.mode === 'dark' ? '#ffffff' : '' }}
           loading={isSubmitting}
           onClick={handleConfirmacion}
         >
