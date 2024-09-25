@@ -7,7 +7,8 @@ import TableContainer from '@mui/material/TableContainer';
 import { Card, Stack, Table, Tooltip, MenuItem, Container, TableBody } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { useGetAsistenciaEv,useGetAsistenciaEvUser} from 'src/api/asistenciaEv/asistenciaEv';
+import { useGetAsistenciaEv, useGetAsistenciaEvUser } from 'src/api/asistenciaEv/asistenciaEv';
+import { useBoolean } from 'src/hooks/use-boolean';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -23,9 +24,9 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-import AsistenciaEvRow from '../components/asistencias-row'; 
+import AsistenciaEvRow from '../components/asistencias-row';
+import EventScannerDialog from '../components/event-scanner-dialog';
 import ToolbarAsistenciaEv from '../components/asistencia-table-toolbar';
-
 
 const TABLE_HEAD = [
   { id: 'idEvento', label: 'ID Evento' },
@@ -77,20 +78,33 @@ function handleDownloadExcel(dataFiltered) {
 function handleDownloadPDF(dataFiltered) {
   const doc = new JsPDF();
   const data = dataFiltered.map((item) => [
-    item.idEvento, 
-    item.estatusAsistentes, 
-    item.titulo, 
-    item.fechaEvento, 
-    item.horaEvento, 
-    item.limiteRecepcion, 
-    item.num_empleado, 
-    item.nombreCompleto, 
-    item.nsede, 
-    item.ndepto
+    item.idEvento,
+    item.estatusAsistentes,
+    item.titulo,
+    item.fechaEvento,
+    item.horaEvento,
+    item.limiteRecepcion,
+    item.num_empleado,
+    item.nombreCompleto,
+    item.nsede,
+    item.ndepto,
   ]);
 
   autoTable(doc, {
-    head: [['ID', 'Estatus Asistentes', 'Nombre del Evento', 'Fecha del Evento', 'Hora del evento', 'Limite de recepcion', 'Número empleado', 'Nombre del colaborador', 'Sede', 'Departamento']],
+    head: [
+      [
+        'ID',
+        'Estatus Asistentes',
+        'Nombre del Evento',
+        'Fecha del Evento',
+        'Hora del evento',
+        'Limite de recepcion',
+        'Número empleado',
+        'Nombre del colaborador',
+        'Sede',
+        'Departamento',
+      ],
+    ],
     body: data,
   });
   doc.save('Eventos.pdf');
@@ -100,7 +114,8 @@ export default function AsistenciaEvView() {
   const table = useTable();
   const settings = useSettingsContext();
   const { user: datosUser } = useAuthContext();
-  
+  const eventDialog = useBoolean();
+
   const { data: AsistenciaEvData } = useGetAsistenciaEv();
   const { data: AsistenciaEvUserData } = useGetAsistenciaEvUser(datosUser?.idUsuario);
 
@@ -129,7 +144,7 @@ export default function AsistenciaEvView() {
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
-  
+
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
     table.page * table.rowsPerPage + table.rowsPerPage
@@ -148,6 +163,10 @@ export default function AsistenciaEvView() {
     handleDownloadExcel(dataFiltered);
   };
 
+  const handleEventTicket = async () => {
+    eventDialog.onTrue();
+  };
+
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>
       <CustomBreadcrumbs
@@ -160,7 +179,7 @@ export default function AsistenciaEvView() {
           filters={filters}
           onFilters={handleFilters}
           handleChangeTitulo={(titulo) => handleFilters('titulo', titulo)}
-          titulos={titulos} 
+          titulos={titulos}
         />
         <Stack
           spacing={1}
@@ -178,6 +197,11 @@ export default function AsistenciaEvView() {
               <Iconify icon="teenyicons:pdf-outline" />
             </MenuItem>
           </Tooltip>
+          <Tooltip title="Escanear entrada de evento" placement="top" arrow>
+            <MenuItem sx={{ width: 50, p: 1 }} onClick={handleEventTicket}>
+              <Iconify icon="uil:qrcode-scan" />
+            </MenuItem>
+          </Tooltip>
         </Stack>
 
         <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
@@ -193,7 +217,7 @@ export default function AsistenciaEvView() {
               />
               <TableBody>
                 {dataInPage.map((row) => (
-                  <AsistenciaEvRow key={row.idEvento} row={row} /> 
+                  <AsistenciaEvRow key={row.idEvento} row={row} />
                 ))}
                 <TableEmptyRows
                   height={denseHeight}
@@ -212,7 +236,17 @@ export default function AsistenciaEvView() {
           onRowsPerPageChange={table.onChangeRowsPerPage}
         />
       </Card>
+      <EventScannerDialog
+        open={eventDialog.value}
+        onClose={eventDialog.onFalse}
+        mutate={() => console.log('s')}
+      />
     </Container>
+    // <NewEventDialog
+    //     open={eventDialog.value}
+    //     onClose={eventDialog.onFalse}
+    //     mutate={eventsMutate}
+    //   />
   );
 }
 
@@ -249,7 +283,3 @@ function applyFilter({ inputData, comparator, filters }) {
 
   return stabilizedThis.map((el) => el[0]);
 }
-
-
-
-

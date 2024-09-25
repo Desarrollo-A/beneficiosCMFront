@@ -358,15 +358,15 @@ export const endpoints = {
   },
   catalogos: {
     getCatalogos: 'catalogos/CatalogosController/getCatalogos',
-    getCatalogosOp:'catalogos/CatalogosController/getCatalogosOp',
-    updateStatusCatalogosd:'catalogos/CatalogosController/updateCatalogoEstatus',
-    updateStatusCatalogosOp:'catalogos/CatalogosController/updateCatalogOpEstatus',
-    addCatalogos:'catalogos/CatalogosController/addCatalogos',
-    addCatalogossOp:'catalogos/CatalogosController/addCatalogosOp',
-
+    getCatalogosOp: 'catalogos/CatalogosController/getCatalogosOp',
+    updateStatusCatalogosd: 'catalogos/CatalogosController/updateCatalogoEstatus',
+    updateStatusCatalogosOp: 'catalogos/CatalogosController/updateCatalogOpEstatus',
+    addCatalogos: 'catalogos/CatalogosController/addCatalogos',
+    addCatalogossOp: 'catalogos/CatalogosController/addCatalogosOp',
   },
-  asistenciaEv:{
-     GetAsistenciaEv:'asistenciaEv/AsistenciaEvController/getasistenciaEvento',
-     GetAsistenciaEvUser:'asistenciaEv/AsistenciaEvController/getasistenciaEventoUser',
-  }
+  asistenciaEv: {
+    GetAsistenciaEv: 'asistenciaEv/AsistenciaEvController/getasistenciaEvento',
+    GetAsistenciaEvUser: 'asistenciaEv/AsistenciaEvController/getasistenciaEventoUser',
+    datosEvento: 'asistenciaEv/AsistenciaEvController/decodeDatosEvento',
+  },
 };

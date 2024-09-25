@@ -1,7 +1,7 @@
 import useSWR from 'swr';
 import { useMemo } from 'react';
 
-import { endpoints, fetcherGet } from 'src/utils/axios';
+import { endpoints, fetcherGet, fetcherPost } from 'src/utils/axios';
 
 export function useGetAsistenciaEv() {
   const URL = endpoints.asistenciaEv.GetAsistenciaEv;
@@ -17,18 +17,28 @@ export function useGetAsistenciaEv() {
 
   return memoizedValue;
 }
+
 export function useGetAsistenciaEvUser(idUsuario) {
   const URL = idUsuario ? `${endpoints.asistenciaEv.GetAsistenciaEvUser}/${idUsuario}` : null;
-   
+
   const { data, error, mutate: revalidate } = useSWR(URL, fetcherGet);
   const isError = !!error;
 
-  const memoizedValue = useMemo(() => ({
-    data: data?.data || [],
-    mutate: revalidate,
-    isError
-  }), [data, revalidate, isError]);
+  const memoizedValue = useMemo(
+    () => ({
+      data: data?.data || [],
+      mutate: revalidate,
+      isError,
+    }),
+    [data, revalidate, isError]
+  );
 
   return memoizedValue;
 }
 
+export function getDatosEvento(base64) {
+  const URL = [endpoints.asistenciaEv.datosEvento];
+  const idSede = fetcherPost(URL, { base64 });
+
+  return idSede;
+}
