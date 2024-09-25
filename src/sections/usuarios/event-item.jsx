@@ -6,11 +6,20 @@ import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import { LoadingButton } from '@mui/lab';
 import Dialog from '@mui/material/Dialog';
-import { Typography } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import DialogContent from '@mui/material/DialogContent';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import TimelineItem, { timelineItemClasses } from '@mui/lab/TimelineItem';
+import { Button, Typography, DialogTitle, DialogActions } from '@mui/material';
+import {
+  Timeline,
+  TimelineDot,
+  LoadingButton,
+  TimelineContent,
+  TimelineSeparator,
+  TimelineConnector,
+} from '@mui/lab';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
@@ -35,6 +44,10 @@ export default function EventItem({ event, mutate }) {
   const eventDialog = useBoolean();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitting2, setIsSubmitting2] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [openCancel, setOpenCancel] = useState(false);
+
+  const isMobile = useMediaQuery('(max-width: 960px)');
 
   const {
     idEvento,
@@ -62,19 +75,43 @@ export default function EventItem({ event, mutate }) {
     // fechaModificacion,
   } = event;
 
+  const abrirConfirmar = () => {
+    if (estatusAsistencia === 1) {
+      if (openCancel) setOpenCancel(false);
+      else setOpenCancel(true);
+    } else if (estatusAsistencia !== 1) {
+      if (open) setOpen(false);
+      else setOpen(true);
+    }
+  };
+
   const handleConfirmacion = async () => {
-    setIsSubmitting(true);
-    const res = await actualizarAsistenciaEvento(
-      user?.idContrato,
-      idEvento,
-      estatusAsistencia === 1 ? 2 : 1,
-      user?.idUsuario
-    );
+    const today = dayjs()
+    const eventDate = dayjs(fechaEvento)  
 
-    enqueueSnackbar(res.msg, { variant: res.result === true ? 'success' : 'error' });
+    if (today < eventDate) {
+      setIsSubmitting(true);
+      const res = await actualizarAsistenciaEvento(
+        user?.idContrato,
+        idEvento,
+        estatusAsistencia === 1 ? 2 : 1,
+        user?.idUsuario,
+        today.$d,
+        eventDate.$d
+      );
+      enqueueSnackbar(res.msg, { variant: res.result === true ? 'success' : 'error' });
 
-    await mutate();
-    setIsSubmitting(false);
+      await mutate();
+      setIsSubmitting(false);
+
+      setOpenCancel(false);
+      setOpen(false);
+    } else {
+      enqueueSnackbar('Error, el evento ya ha pasado de su fecha', { variant: 'error' });
+
+      await mutate();
+      setIsSubmitting(false);
+    }
   };
 
   const handleEdit = () => {
@@ -250,6 +287,13 @@ export default function EventItem({ event, mutate }) {
           bgcolor: 'rgba(200, 200, 200, 0.4)',
           borderRadius: '5000px',
           padding: '6px',
+          '&:hover': {
+            // backgroundColor: '#1e7e34', // Cambia el color de fondo del Fab al hacer hover
+            backgroundColor: '#003764',
+            '& .button:hover .button-slide': {
+              gridTemplateColumns: '1fr',
+            },
+          },
         }}
         onClick={() => window.open(`https://www.google.com.mx/maps/search/${ubicacion}/`)}
       >
@@ -257,7 +301,7 @@ export default function EventItem({ event, mutate }) {
           <Iconify width={24} icon="bxs:map" />
         </Tooltip>
       </Stack>
-      {event.estatusEvento === 1 && (
+      {event.estatusEvento === 1 && dayjs() < dayjs(event.fechaEvento) && (
         <LoadingButton
           component="span"
           sx={{
@@ -267,9 +311,16 @@ export default function EventItem({ event, mutate }) {
             mr: 0.25,
             bgcolor: 'rgba(200, 200, 200, 0.4)',
             borderRadius: '15px',
+            '&:hover': {
+              // backgroundColor: '#1e7e34', // Cambia el color de fondo del Fab al hacer hover
+              backgroundColor: estatusAsistencia === 1 ? '#b5a36a' : '#b5a36a',
+              '& .button:hover .button-slide': {
+                gridTemplateColumns: '1fr',
+              },
+            },
           }}
           loading={isSubmitting}
-          onClick={() => handleConfirmacion()}
+          onClick={() => abrirConfirmar()}
         >
           {estatusAsistencia === 1 ? 'Cancelar asistencia' : 'Confirmar asistencia'}
         </LoadingButton>
@@ -373,6 +424,210 @@ export default function EventItem({ event, mutate }) {
     </Stack>
   );
 
+  const dialogConfirmar = (
+    <Dialog open={open} sx={{ borderRadius: '0px' }}>
+      <DialogTitle>Confirmar asistencia al evento</DialogTitle>
+      <DialogContent
+        sx={{
+          position: 'relative',
+          margin: '0px',
+          padding: '0px',
+          width: '100%', // Ancho relativo al 60% del ancho de la ventana
+          height: '650px', // Alto relativo al 80% del alto de la ventana
+        }}
+      >
+        <Stack sx={{ ml: 3.5 }}>
+          <Timeline
+            sx={{
+              m: 0,
+              [`& .${timelineItemClasses.root}:before`]: {
+                flex: 0,
+                padding: 0,
+              },
+            }}
+          >
+            <Typography mb={2}>Datos del colaborador</Typography>
+            <TimelineItem>
+              <TimelineSeparator>
+                <TimelineDot className="icons">
+                  <Iconify icon="mdi:account-circle" width={25} sx={{ color: '' }} />
+                </TimelineDot>
+                <TimelineConnector />
+              </TimelineSeparator>
+              <TimelineContent>
+                <Typography variant="subtitle1">Nombre</Typography>
+
+                <Typography
+                  variant="body2"
+                  sx={{ color: 'text.disabled', wordBreak: 'break-word' }}
+                  mb={3}
+                >
+                  {user.nombre}
+                </Typography>
+              </TimelineContent>
+            </TimelineItem>
+
+            <TimelineItem>
+              <TimelineSeparator>
+                <TimelineDot className="icons">
+                  <Iconify icon="mdi:building" width={25} sx={{ color: '' }} />
+                </TimelineDot>
+                <TimelineConnector />
+              </TimelineSeparator>
+              <TimelineContent>
+                <Typography variant="subtitle1">Area</Typography>
+
+                <Typography
+                  variant="body2"
+                  sx={{ color: 'text.disabled', wordBreak: 'break-word' }}
+                  mb={3}
+                >
+                  {user.area}
+                </Typography>
+              </TimelineContent>
+            </TimelineItem>
+
+            <TimelineItem>
+              <TimelineSeparator>
+                <TimelineDot className="icons">
+                  <Iconify icon="mdi:earth" width={25} sx={{ color: '' }} />
+                </TimelineDot>
+                <TimelineConnector />
+              </TimelineSeparator>
+              <TimelineContent>
+                <Typography variant="subtitle1">Sede</Typography>
+
+                <Typography
+                  variant="body2"
+                  sx={{ color: 'text.disabled', wordBreak: 'break-word' }}
+                  mb={3}
+                >
+                  {user.sede}
+                </Typography>
+              </TimelineContent>
+            </TimelineItem>
+
+            <TimelineItem>
+              <TimelineSeparator>
+                <TimelineDot className="icons">
+                  <Iconify icon="mdi:worker" width={25} sx={{ color: '' }} />
+                </TimelineDot>
+                <TimelineConnector />
+              </TimelineSeparator>
+              <TimelineContent>
+                <Typography variant="subtitle1">Puesto</Typography>
+
+                <Typography
+                  variant="body2"
+                  sx={{ color: 'text.disabled', wordBreak: 'break-word' }}
+                  mb={3}
+                >
+                  {user.puesto}
+                </Typography>
+              </TimelineContent>
+            </TimelineItem>
+
+            <TimelineItem>
+              <TimelineSeparator>
+                <TimelineDot className="icons">
+                  <Iconify icon="mdi:gmail" width={25} sx={{ color: '' }} />
+                </TimelineDot>
+                <TimelineConnector />
+              </TimelineSeparator>
+              <TimelineContent>
+                <Typography variant="subtitle1">Correo</Typography>
+
+                <Typography
+                  variant="body2"
+                  sx={{ color: 'text.disabled', wordBreak: 'break-word' }}
+                  mb={3}
+                >
+                  {user.correo}
+                </Typography>
+              </TimelineContent>
+            </TimelineItem>
+
+            <TimelineItem>
+              <TimelineSeparator>
+                <TimelineDot className="icons">
+                  <Iconify icon="mdi:clipboard-text-date" width={25} sx={{ color: '' }} />
+                </TimelineDot>
+                <TimelineConnector />
+              </TimelineSeparator>
+              <TimelineContent>
+                <Typography variant="subtitle1">Fecha de ingreso</Typography>
+
+                <Typography variant="body2" sx={{ color: 'text.disabled' }} mb={3}>
+                  {user.fechaIngreso}
+                </Typography>
+              </TimelineContent>
+            </TimelineItem>
+
+            <TimelineItem>
+              <TimelineSeparator>
+                <TimelineDot className="icons">
+                  <Iconify icon="mdi:whatsapp" width={25} sx={{ color: '' }} />
+                </TimelineDot>
+              </TimelineSeparator>
+              <TimelineContent>
+                <Typography variant="subtitle1">Contacto</Typography>
+
+                <Typography variant="body2" sx={{ color: 'text.disabled' }} mb={3}>
+                  {user.telPersonal}
+                </Typography>
+              </TimelineContent>
+            </TimelineItem>
+          </Timeline>
+        </Stack>
+      </DialogContent>
+      <DialogActions>
+        <Button variant="contained" sx={{ backgroundColor: '#003764' }} disabled={isSubmitting} onClick={abrirConfirmar}>
+          Cerrar
+        </Button>
+        <LoadingButton
+          variant="contained"
+          sx={{ backgroundColor: '#b5a36a' }}
+          loading={isSubmitting}
+          onClick={handleConfirmacion}
+        >
+          Confirmar asistencia
+        </LoadingButton>
+      </DialogActions>
+    </Dialog>
+  );
+
+  const dialogCancelar = (
+    <Dialog open={openCancel} sx={{ borderRadius: '0px' }}>
+      <DialogTitle>Cancelar asistencia al evento</DialogTitle>
+      <DialogContent
+        sx={{
+          position: 'relative',
+          margin: '0px',
+          padding: '0px',
+          width: '100%', // Ancho relativo al 60% del ancho de la ventana
+          height: '100%s', // Alto relativo al 80% del alto de la ventana
+        }}
+      >
+        <Stack sx={{ ml: 3.5, mr: 3.5 }}>
+          <Typography>¿Está seguro de que desea cancelar la asistencia al evento? </Typography>
+        </Stack>
+      </DialogContent>
+      <DialogActions>
+        <Button variant="contained" sx={{ backgroundColor: '#003764' }} disabled={isSubmitting} onClick={abrirConfirmar}>
+          Cerrar
+        </Button>
+        <LoadingButton
+          variant="contained"
+          sx={{ backgroundColor: '#b5a36a' }}
+          loading={isSubmitting}
+          onClick={handleConfirmacion}
+        >
+          Cancelar asistencia
+        </LoadingButton>
+      </DialogActions>
+    </Dialog>
+  );
+
   return (
     <>
       <Card sx={{ backgroundColor: '#F0ECE0', padding: '0px' }}>
@@ -386,16 +641,16 @@ export default function EventItem({ event, mutate }) {
             position: 'relative',
             margin: '0px',
             padding: '0px',
-            // backgroundImage: `url(${imagen})`,
             backgroundImage: `url(${HOST}/documentos/archivo/${imagen})`,
             borderRadius: '0px',
             backgroundSize: 'contain', // La imagen se ajusta dentro del contenedor manteniendo sus proporciones
             backgroundRepeat: 'no-repeat', // Evita que la imagen se repita
             backgroundPosition: 'center', // Centra la imagen dentro del contenedor
-            width: '600px', // Ancho relativo al 60% del ancho de la ventana
-            height: '900px', // Alto relativo al 80% del alto de la ventana
+            width: isMobile ? '300px' : '600px', // Ancho relativo al 60% del ancho de la ventana
+            height: isMobile ? '450px' : '900px', // Alto relativo al 80% del alto de la ventana
             backdropFilter: 'blur(800px)',
-            overflow: 'hidden', // Evita que cualquier contenido adicional cree scroll
+            overflowX: 'hidden', // Evita que cualquier contenido adicional cree scroll,
+            overflowY: 'hidden',
           }}
         >
           {renderImageButtons}
@@ -412,6 +667,9 @@ export default function EventItem({ event, mutate }) {
           />
         </DialogContent>
       </Dialog>
+
+      {dialogConfirmar}
+      {dialogCancelar}
 
       {eventDialog && (
         <NewEventDialog

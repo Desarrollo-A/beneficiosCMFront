@@ -93,7 +93,7 @@ export default function EventsList({ ...other }) {
           <Grid item xs={10} sx={{ p: 1, width: isMobile ? '100%' : '' }}>
             <TextField
               fullWidth
-              label="Buscar partido"
+              label="Buscar evento"
               variant="outlined"
               size="small"
               onChange={handleSearchChange}
@@ -117,8 +117,7 @@ export default function EventsList({ ...other }) {
               // loading={1 = "as"}
               sx={{
                 width: 'auto',
-                backgroundColor: '#FFF',
-                border: 1,
+                backgroundColor: '#FFF'
               }}
             >
               Añadir evento <Iconify icon="f7:plus-square-on-square" ml={1} />
@@ -191,13 +190,17 @@ export default function EventsList({ ...other }) {
           )}
         </Box>
       </Stack>
-      <Stack sx={{ mt: 4, alignItems: 'center' }}>
-        <Pagination
-          count={Math.ceil(filteredData.length / itemsPerPage)}
-          page={page}
-          onChange={handlePageChange}
-        />
-      </Stack>
+      {found ?
+        (<Stack sx={{ mt: 4, alignItems: 'center' }}>
+          <Pagination
+            count={Math.ceil(filteredData.length / itemsPerPage)}
+            page={page}
+            onChange={handlePageChange}
+          />
+        </Stack>) : 
+        ('')
+      }
+      
       {eventDialog && (
         <NewEventDialog
           open={eventDialog.value}

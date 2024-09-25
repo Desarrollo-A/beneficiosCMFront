@@ -37,8 +37,8 @@ export default function NewEventDialog({ open, event, onClose, mutate }) {
   const { user } = useAuthContext();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { sedes, sedesLoading } = useGetSedes();
-  const { deptos, deptosLoading } = useGetDepartamentos();
+  const { sedes } = useGetSedes();
+  const { deptos } = useGetDepartamentos();
 
   // const [fechaEvento, setFechaEvento] = useState(event ? new Date(event?.fechaEvento) : null);
   const [fechaEvento, setFechaEvento] = useState(null);
@@ -94,8 +94,8 @@ export default function NewEventDialog({ open, event, onClose, mutate }) {
   const {
     reset,
     handleSubmit,
-    setValue,
-    formState: { isSubmitting },
+    setValue
+    // formState: { isSubmitting },
   } = methods;
 
   const handleFechaEvento = (val) => {
