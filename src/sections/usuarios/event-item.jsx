@@ -11,7 +11,7 @@ import Tooltip from '@mui/material/Tooltip';
 import DialogContent from '@mui/material/DialogContent';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import TimelineItem, { timelineItemClasses } from '@mui/lab/TimelineItem';
-import { Button, useTheme, Typography, DialogTitle, DialogActions } from '@mui/material';
+import { Button, useTheme, Typography, DialogTitle, DialogActions, THEME_ID } from '@mui/material';
 import {
   Timeline,
   TimelineDot,
@@ -404,7 +404,7 @@ export default function EventItem({ event, mutate }) {
       <Box
         sx={{
           display: 'flex',
-          backgroundColor: '#00263A',
+          backgroundColor: theme.palette.mode === 'dark' ? '#36454F' : '#00263A',
           width: '30%',
           color: 'white',
           justifyContent: 'center',
