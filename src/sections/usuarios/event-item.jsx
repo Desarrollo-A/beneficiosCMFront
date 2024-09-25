@@ -140,7 +140,7 @@ export default function EventItem({ event, mutate }) {
         position: 'absolute',
         p: '2px 6px 2px 4px',
         typography: 'caption',
-        fontWeight: 'light',
+        fontWeight: 'light'
       }}
     >
       {user.permisos === 6 && ( // se asigna solo al rol de permiso 6
@@ -212,9 +212,7 @@ export default function EventItem({ event, mutate }) {
     <Stack
       direction="column"
       alignItems="center"
-      sx={{
-        top: 1,
-        left: 1,
+      sx={{     
         zIndex: 9,
         borderRadius: '10px 0px 10px 0px',
         position: 'absolute',
@@ -352,7 +350,7 @@ export default function EventItem({ event, mutate }) {
             typography: 'caption',
             fontWeight: 'light',
             fontSize: 10,
-            color: '#757575',
+            // color: '#757575',
             whiteSpace: 'nowrap', // Evita que el texto se divida en varias líneas
             overflow: 'hidden', // Oculta el texto que excede el ancho del contenedor
             textOverflow: 'ellipsis',
@@ -370,7 +368,7 @@ export default function EventItem({ event, mutate }) {
             typography: 'subtitle2',
             fontWeight: 'bold',
             fontSize: 16,
-            color: '#00263A',
+            // color: '#00263A',
             whiteSpace: 'nowrap', // Evita que el texto se divida en varias líneas
             overflow: 'hidden', // Oculta el texto que excede el ancho del contenedor
             textOverflow: 'ellipsis',
@@ -387,7 +385,7 @@ export default function EventItem({ event, mutate }) {
           <Box
             sx={{
               typography: 'caption',
-              color: '#00263A',
+              // color: '#00263A',
               fontWeight: 'light',
               fontSize: 10,
               whiteSpace: 'nowrap', // Evita que el texto se divida en varias líneas
@@ -631,7 +629,7 @@ export default function EventItem({ event, mutate }) {
 
   return (
     <>
-      <Card sx={{ backgroundColor: '#F0ECE0', padding: '0px' }}>
+      <Card sx={{ backgroundColor: theme.palette.mode === 'dark' ? '#b5a36a' : '#F0ECE0', padding: '0px' }}>
         {renderCover}
         {renderInfoEvent}
       </Card>
