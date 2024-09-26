@@ -6,12 +6,21 @@ import DashboardLayout from 'src/layouts/dashboard';
 
 import { LoadingScreen } from 'src/components/loading-screen';
 
+
 // ----------------------------------------------------------------------
 // CITAS
 const CitasPage = lazy(() => import('src/pages/beneficios/citas'));
 // REPORTES
 const HistorialReportesPage = lazy(
   () => import('src/pages/beneficios/reportes/historial-reportes')
+);
+// CATALOGOS
+const CatalogosOpPage = lazy(
+  () => import('src/pages/beneficios/catalogos/catalogosOp')
+);
+// ASISTENCIA-EV COLABORADORES
+const AsistenciaEvPage = lazy(
+  () => import('src/pages/beneficios/asistenciaEv/asistenciaEv')
 );
 const ReportePacientesPage = lazy(() => import('src/pages/beneficios/reportes/reporte-pacientes'));
 const DemandaBeneficiosPage = lazy(
@@ -125,6 +134,12 @@ export const beneficiosRoutes = [
           { path: 'demandaBeneficios', element: <DemandaBeneficiosPage /> },
         ],
       },
+      // {
+      //   path: 'Catalogos',
+      //   children: [
+      //     { path: 'Catalogos', element: <CatalogosOpPage /> },
+      //   ],
+      // },
       {
         path: 'encuestas',
         children: [
@@ -173,6 +188,9 @@ export const beneficiosRoutes = [
       { path: 'booking', element: <OverviewBookingPage /> },
       { path: 'file', element: <OverviewFilePage /> },
       { path: 'calendario', element: <CalendarioPage /> },
+      { path: 'catalogos', element: <CatalogosOpPage /> },
+      { path: 'asistenciaEv', element: <AsistenciaEvPage /> },
+
       {
         path: 'user',
         children: [

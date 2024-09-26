@@ -1,13 +1,47 @@
 import useSWR from 'swr';
 import { useMemo } from 'react';
 
-import axios, { endpoints, fetcherPost } from 'src/utils/axios';
+import axios, { endpoints, fetcherGet, fetcherPost } from 'src/utils/axios';
+
+export function useGetAsistenciaEv() {
+  const URL = endpoints.eventos.GetAsistenciaEv;
+  const { data, mutate: revalidate } = useSWR(URL, (url) => fetcherGet(url, {}));
+
+  const memoizedValue = useMemo(
+    () => ({
+      data: data?.data || [],
+      mutate: revalidate,
+    }),
+    [data, revalidate]
+  );
+
+  return memoizedValue;
+}
+export function useGetAsistenciaEvUser(idUsuario) {
+  const URL = idUsuario ? `${endpoints.eventos.GetAsistenciaEvUser}/${idUsuario}` : null;
+
+  const { data, error, mutate: revalidate } = useSWR(URL, fetcherGet);
+  const isError = !!error;
+
+  const memoizedValue = useMemo(
+    () => ({
+      data: data?.data || [],
+      mutate: revalidate,
+      isError,
+    }),
+    [data, revalidate, isError]
+  );
+
+  return memoizedValue;
+}
 
 export function useGetEventos(idContrato, idSede, idDepartamento) {
   const URL = endpoints.eventos.getEventos;
-  const { data, isLoading, mutate: revalidate } = useSWR(URL, (url) =>
-    fetcherPost(url, { idContrato, idSede, idDepartamento })
-  );
+  const {
+    data,
+    isLoading,
+    mutate: revalidate,
+  } = useSWR(URL, (url) => fetcherPost(url, { idContrato, idSede, idDepartamento }));
 
   const memoizedValue = useMemo(
     () => ({
