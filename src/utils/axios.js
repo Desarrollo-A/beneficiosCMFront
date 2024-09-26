@@ -365,8 +365,13 @@ export const endpoints = {
     addCatalogossOp:'catalogos/CatalogosController/addCatalogosOp',
 
   },
-  asistenciaEv:{
-     GetAsistenciaEv:'asistenciaEv/AsistenciaEvController/getasistenciaEvento',
-     GetAsistenciaEvUser:'asistenciaEv/AsistenciaEvController/getasistenciaEventoUser',
+  eventos:{
+     getEventos: 'perfil/EventosController/getEventos',
+     newEvent: 'perfil/EventosController/nuevoEvento',
+     GetAsistenciaEv:'perfil/EventosController/getasistenciaEventoUsers',
+     GetAsistenciaEvUser:'perfil/EventosController/getasistenciaEventoUser',
+     updateAsistencia: 'perfil/EventosController/actualizarAsistencia',
+     updateEvento: 'perfil/EventosController/actualizarEvento',
+     hideShowEvent: 'perfil/EventosController/ocultarMostrarEvento',
   }
 };
