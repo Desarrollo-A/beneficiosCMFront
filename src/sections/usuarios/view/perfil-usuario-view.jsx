@@ -2,8 +2,13 @@ import { useState, useCallback } from 'react';
 
 import Tab from '@mui/material/Tab';
 import Card from '@mui/material/Card';
+import Stack from '@mui/system/Stack';
 import Container from '@mui/material/Container';
 import Tabs, { tabsClasses } from '@mui/material/Tabs';
+
+import { paths } from 'src/routes/paths';
+
+import { useMockedUser } from 'src/hooks/use-mocked-user';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { _userAbout, _userFeeds } from 'src/_mock';
@@ -11,9 +16,13 @@ import { _userAbout, _userFeeds } from 'src/_mock';
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
 
+import EventsList from '../events-list';
 import ProfileCover from '../profile-cover';
 import GafeteDigital from '../gafete-digital';
+// import AsesorView from '../asesorCh/asesor-view';
 import DatosPersonales from '../datos-personales';
+ // import CalculadoraNomina from '../calculadora-nomina';
+ // import RelojChecador from '../checador/reloj-checador';
 
 // ----------------------------------------------------------------------
 
@@ -23,7 +32,7 @@ const TABS = [
     label: 'Datos personales',
     icon: <Iconify icon="iconamoon:profile-circle-fill" width={24} />,
   },
-  /* {
+  {
     value: 'gafete',
     label: 'Gafete digital',
     icon: <Iconify icon="clarity:id-badge-solid" width={24} />,
@@ -42,14 +51,19 @@ const TABS = [
     value: 'eventos',
     label: 'Eventos corporativos',
     icon: <Iconify icon="streamline:champagne-party-alcohol-solid" width={24} />,
-  }, */
+  },
+  {
+    value: 'capital',
+    label: 'Tu ejecutivo de CH',
+    icon: <Iconify icon="fluent:people-team-24-filled" width={24} />,
+  },
 ];
 // ----------------------------------------------------------------------
 
 export default function PerfilUsuarioView() {
   const settings = useSettingsContext();
-
-  const { user } = useAuthContext();
+  const { user } = useMockedUser();
+  const { user: userdata } = useAuthContext();
 
   const [currentTab, setCurrentTab] = useState('datos');
 
@@ -59,7 +73,6 @@ export default function PerfilUsuarioView() {
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-
       <Card
         sx={{
           mb: 3,
@@ -100,7 +113,11 @@ export default function PerfilUsuarioView() {
 
       {currentTab === 'datos' && <DatosPersonales info={_userAbout} posts={_userFeeds} />}
 
-      {currentTab === 'gafete' && <GafeteDigital/>}
+       {/* {currentTab === 'checador' && <RelojChecador info={_userAbout} posts={_userFeeds} />} */}
+
+      {/* {currentTab === 'calculadora' && <CalculadoraNomina />} */}
+
+      {currentTab === 'gafete' && <GafeteDigital />}
 
       {/* {currentTab === 'friends' && (
         <ProfileFriends
@@ -111,6 +128,9 @@ export default function PerfilUsuarioView() {
       )} */}
 
       {/* {currentTab === 'gallery' && <ProfileGallery gallery={_userGallery} />} */}
+
+      {/* {currentTab === 'eventos' && <Stack>{JSON.stringify(userdata)}</Stack>} */}
+      {currentTab === 'eventos' && <EventsList info={_userAbout} posts={_userFeeds} />}
     </Container>
   );
 }

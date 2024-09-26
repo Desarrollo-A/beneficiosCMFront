@@ -345,6 +345,10 @@ export const endpoints = {
     save: '/sedes/save',
     oficina: '/sedes/oficina',
   },
+deptos: {
+    getDepartamentos: '/Departamentos/getDepartamentos',
+  },
+
   oficinas: {
     list: '/oficinas/list',
   },

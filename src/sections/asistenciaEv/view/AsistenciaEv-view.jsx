@@ -7,7 +7,7 @@ import TableContainer from '@mui/material/TableContainer';
 import { Card, Stack, Table, Tooltip, MenuItem, Container, TableBody } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { useGetAsistenciaEv,useGetAsistenciaEvUser} from 'src/api/asistenciaEv/asistenciaEv';
+import { useGetAsistenciaEv,useGetAsistenciaEvUser} from 'src/api/perfil/eventos';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
