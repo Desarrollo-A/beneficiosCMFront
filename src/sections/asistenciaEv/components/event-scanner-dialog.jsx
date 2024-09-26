@@ -45,7 +45,7 @@ export default function EventScannerDialog({ open, onClose, mutate }) {
     if (data?.result) {
       alert(`Confirmando asistencia de ${data?.nombre_persona}`);
     } else {
-      open.onFalse();
+      confirm.onFalse();
       onClose();
       setData(null);
     }
