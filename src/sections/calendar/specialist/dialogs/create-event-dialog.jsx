@@ -77,8 +77,8 @@ export default function CreateEventDialog({
           setHrInicio(horario?.data[0]?.horaInicioSabado);
           setHrFinal(horario?.data[0]?.horaFinSabado);
         } else {
-          setHrInicio(horario?.data[0]?.horaInicio);
-          setHrFinal(horario?.data[0]?.horaFin);
+          setHrInicio(horario?.data[0]?.inicioComparacion);
+          setHrFinal(horario?.data[0]?.finComparacion);
         }
       } catch (error) {
         console.error('Error al obtener el horario:', error);
@@ -97,8 +97,8 @@ export default function CreateEventDialog({
   };
 
   const defaultHourCancel = {
-    horaInicio: dayjs('0000/00/00 08:00:00').format('HH:mm:ss'),
-    horaFinal: dayjs('0000/00/00 18:00:00').format('HH:mm:ss'),
+    inicioComparacion: dayjs('0000/00/00 08:00:00').format('HH:mm:ss'),
+    finComparacion: dayjs('0000/00/00 18:00:00').format('HH:mm:ss'),
   };
 
   const [defaultEnd, setDefaultEnd] = useState(null);
@@ -189,8 +189,8 @@ export default function CreateEventDialog({
       // se da el formato juntando la fecha elegida y la hora que se elige con los minutos
       id: uuidv4().substring(0, 20),
       title: type === 'cancel' ? data?.title : `Cita con ${patient?.nombreCompleto}`,
-      hora_inicio: !allDay ? dayjs(data?.start).format('HH:mm:ss') : defaultHour.horaInicio,
-      hora_final: !allDay ? dayjs(defaultEnd).format('HH:mm:ss') : defaultHour.horaFinal,
+      hora_inicio: !allDay ? dayjs(data?.start).format('HH:mm:ss') : defaultHour.inicioComparacion,
+      hora_final: !allDay ? dayjs(defaultEnd).format('HH:mm:ss') : defaultHour.finComparacion,
       fechaInicio: fDate(defaultInicio),
       fechaFinal: type === 'date' ? fDate(defaultInicio) : fDate(defaultFecha),
       paciente: patient,
@@ -200,8 +200,8 @@ export default function CreateEventDialog({
       // se da el formato juntando la fecha elegida y la hora que se elige con los minutos
       id: uuidv4().substring(0, 20),
       title: type === 'cancel' ? data?.title : `Cita con ${patient?.nombreCompleto}`,
-      hora_inicio: !allDay ? dayjs(data?.start).format('HH:mm:ss') : defaultHourCancel.horaInicio,
-      hora_final: !allDay ? dayjs(defaultEnd).format('HH:mm:ss') : defaultHourCancel.horaFinal,
+      hora_inicio: !allDay ? dayjs(data?.start).format('HH:mm:ss') : defaultHourCancel.inicioComparacion,
+      hora_final: !allDay ? dayjs(defaultEnd).format('HH:mm:ss') : defaultHourCancel.finComparacion,
       fechaInicio: fDate(defaultInicioCl),
       fechaFinal: type === 'date' ? fDate(defaultInicioCl) : fDate(defaultFecha),
       paciente: patient,
