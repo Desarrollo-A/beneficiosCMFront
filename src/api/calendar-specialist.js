@@ -504,14 +504,11 @@ export async function createAppointment(eventData, modalitie, datosUser, default
     oficina = 'Confirmado por especialista';
   }
 
+  const getInicio = dayjs(defaultHour.horaInicio).format('HH:mm:ss');
+  const getFinal = dayjs(defaultHour.horaFinal).format('HH:mm:ss');
+
   // Compara las horas de la cita con el horario del especialista, ambas estan en formato tijuana.
-  if (
-    !(
-      eventData.hora_inicio >= defaultHour.horaInicio &&
-      eventData.hora_final <= defaultHour.horaFinal &&
-      eventData.hora_final > eventData.hora_inicio
-    )
-  ) {
+  if (!( eventData.hora_inicio >= getInicio && eventData.hora_final <= getFinal && eventData.hora_final > eventData.hora_inicio)) {
     bussinessHours = false;
   }
 
