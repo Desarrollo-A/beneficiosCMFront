@@ -74,8 +74,8 @@ export default function CreateEventDialog({
         setSabado(horario?.data[0]?.sabados);
 
         if (dayOfWeek === 6) {
-          setHrInicio(horario?.data[0]?.horaInicio);
-          setHrFinal(horario?.data[0]?.horaFinal);
+          setHrInicio(horario?.data[0]?.horaInicioSabado);
+          setHrFinal(horario?.data[0]?.horaFinSabado);
         } else {
           setHrInicio(horario?.data[0]?.inicioComparacion);
           setHrFinal(horario?.data[0]?.finComparacion);
