@@ -374,6 +374,8 @@ export const endpoints = {
     GetAsistenciaEvUser: 'perfil/EventosController/getasistenciaEventoUser',
     updateAsistencia: 'perfil/EventosController/actualizarAsistencia',
     updateEvento: 'perfil/EventosController/actualizarEvento',
+    datosEvento: 'perfil/EventosController/decodeDatosEvento',
+    updatePasarAsistencia:'perfil/EventosController/updateAsistenciaEvento',
     hideShowEvent: 'perfil/EventosController/ocultarMostrarEvento',
   },
 };
