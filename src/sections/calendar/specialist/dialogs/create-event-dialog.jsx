@@ -189,8 +189,8 @@ export default function CreateEventDialog({
       // se da el formato juntando la fecha elegida y la hora que se elige con los minutos
       id: uuidv4().substring(0, 20),
       title: type === 'cancel' ? data?.title : `Cita con ${patient?.nombreCompleto}`,
-      hora_inicio: !allDay ? dayjs(data?.start).format('HH:mm:ss') : defaultHour.inicioComparacion,
-      hora_final: !allDay ? dayjs(defaultEnd).format('HH:mm:ss') : defaultHour.finComparacion,
+      hora_inicio: !allDay ? dayjs(data?.start).format('HH:mm:ss') : defaultHour.horaInicio,
+      hora_final: !allDay ? dayjs(defaultEnd).format('HH:mm:ss') : defaultHour.horaFinal,
       fechaInicio: fDate(defaultInicio),
       fechaFinal: type === 'date' ? fDate(defaultInicio) : fDate(defaultFecha),
       paciente: patient,
