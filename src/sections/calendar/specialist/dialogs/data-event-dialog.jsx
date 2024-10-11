@@ -282,11 +282,15 @@ export default function DataEventDialog({
                   {(currentEvent?.estatus === 1 || currentEvent?.estatus === 6) &&
                     type === 'date' && (
                       <Stack direction="row">
+                        {(currentEvent?.estatus === 1 && currentEvent?.estatus === 1) ?
                         <Tooltip title="Reagendar cita">
                           <IconButton className="buttonActions" onClick={openReschedule}>
                             <Iconify icon="fluent-mdl2:date-time-12" className="bell" />
                           </IconButton>
                         </Tooltip>
+                        :
+                        ''
+                        }
 
                         <Tooltip title="Finalizar cita">
                           <IconButton className="buttonActions" onClick={handleOpen}>
