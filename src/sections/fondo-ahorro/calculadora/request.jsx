@@ -22,6 +22,8 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { endpoints } from 'src/utils/axios';
 
 import { useUpdate } from 'src/api/reportes';
+import { postLogin,postDocumentos,postGenerarToken,enviarCorreoFirma } from 'src/api/fondoAhorro/legalario';
+
 import { useAuthContext } from 'src/auth/hooks';
 
 import Iconify from 'src/components/iconify/iconify';
@@ -179,35 +181,69 @@ export default function Request({ onClose, FirstDay, dateNext }) {
   const isButtonDisabled = !isValid || !dirtyFields.ahorroFinal;
 
   const onSubmit = handleSubmit(async (data) => {
-
+    const ahorroFinal = data?.ahorroFinal || 0;
     const dataValue = {
       idUsuario: user?.idUsuario,
       nombre: user?.nombre,
       numEmpleado: user?.numEmpleado,
       idContrato: user?.idContrato,
+      rfc: user?.rfc,
+      nss: user?.nss,
+      direccion: user?.direccion,
+      razonSocial: user?.razonSocial,
+      telPersonal: user?.telPersonal,
+      sueldoNeto: user?.sueldoNeto,
       FirstDay,
       dateNext,
+      ahorroFinal,
       ...data,
     };
-
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
-
-       const update = await updateEstatus(dataValue);
-
-       if (update.estatus === true) {
-      enqueueSnackbar(update.msj, { variant: 'success' });
-
-      mutate(endpoints.fondoAhorro.getFondo);
-
-    } else {
-      enqueueSnackbar(update.msj, { variant: 'error' });
-    }
-
+      
+      const update = await updateEstatus(dataValue);
+       console.log(dataValue);
+      if (update.estatus === true) {
+        enqueueSnackbar(update.msj, { variant: 'success' });
+  
+        const loginResponse = await postLogin();
+        if (loginResponse && loginResponse.success) {
+          const { client_id, client_secret, scopes } = loginResponse.data;
+  
+          // 2. Llama a postGenerarToken
+          const tokenResponse = await postGenerarToken(client_id, client_secret, 'client_credentials', scopes);
+          if (tokenResponse && tokenResponse.success) {
+            const { token_type, access_token } = tokenResponse.data;
+  
+            const documentResponse = await postDocumentos(token_type, access_token, dataValue.nombre,dataValue.FirstDay,dataValue.ahorroFinal,dataValue.nss,dataValue.rfc,dataValue.razonSocial,dataValue.direccion,dataValue.sueldoNeto);
+            if (documentResponse && documentResponse.success) {
+              const document_id = documentResponse.data.id;
+              const emailResponse = await enviarCorreoFirma(token_type, access_token, document_id, dataValue.nombre,dataValue.telPersonal);
+              if (emailResponse && emailResponse.success) {
+                enqueueSnackbar('Correo de firma enviado exitosamente', { variant: 'success' });
+              } else {
+                enqueueSnackbar('Ocurrio un error al enviar correo de firma.', { variant: 'error' });
+              }
+            } else {
+              enqueueSnackbar('Error al generar solicitud de firma electrónica.', { variant: 'error' });
+            }
+          } else {
+            enqueueSnackbar('Error al generar token', { variant: 'error' });
+          } 
+        } else {
+          enqueueSnackbar('Error interno(Login)', { variant: 'error' });
+        }
+  
+        mutate(endpoints.fondoAhorro.getFondo);
+      
+      } else {
+        enqueueSnackbar(update.msj, { variant: 'error' });
+      }
     } catch (error) {
       console.error(error);
+      enqueueSnackbar('Ocurrió un error inesperado', { variant: 'error' });
     }
-
+  
     onClose();
   });
 
