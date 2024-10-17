@@ -377,5 +377,7 @@ export const endpoints = {
     datosEvento: 'perfil/EventosController/decodeDatosEvento',
     updatePasarAsistencia:'perfil/EventosController/updateAsistenciaEvento',
     hideShowEvent: 'perfil/EventosController/ocultarMostrarEvento',
+    verificacionCorreo:'perfil/EventosController/tokenConfirmacionCorreo',
+    verificacioncodigo:'perfil/EventosController/verificacioncodigo'
   },
 };

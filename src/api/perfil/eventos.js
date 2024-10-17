@@ -100,6 +100,7 @@ export function actualizarAsistenciaEvento(idContrato, idEvento, estatusAsistenc
   const URL = [endpoints.eventos.updateAsistencia];
   const update = fetcherPost(URL, { idContrato, idEvento, estatusAsistencia, idUsuario });
 
+
   return update;
 }
 
@@ -160,3 +161,29 @@ export function hideShowEvent(idEvento, estatusEvento, idUsuario) {
 
   return update;
 }
+export function verificacionCorreo(correo) {
+  const data = {correo};
+  const VerificarCorreo = fetcherPost(endpoints.eventos.verificacionCorreo, data);
+  // console.log(data);
+  return VerificarCorreo;
+}
+/*
+export function verificacionCodigoCorreo(correo,codigo) {
+  const data = {correo,codigo};
+  const VerificarCodigoCorreo = fetcherPost(endpoints.eventos.verificacioncodigo, data);
+  console.log(data);
+  return VerificarCodigoCorreo;
+}
+  */
+export function verificacionCodigoCorreo(correo, codigo) {
+  const data = { correo, codigo };
+  
+  const VerificarCodigoCorreo = fetcherPost(endpoints.eventos.verificacioncodigo, data)
+    .then(response => 
+       response)
+    .catch(error => {
+      throw error; 
+    });  
+  return VerificarCodigoCorreo;
+}
+

@@ -93,7 +93,7 @@ export default function EventsList({ ...other }) {
           <Grid item xs={10} sx={{ p: 1, width: isMobile ? '100%' : '' }}>
             <TextField
               fullWidth
-              label="Buscar partido"
+              label="Busca el evento corporativo..."
               variant="outlined"
               size="small"
               onChange={handleSearchChange}

@@ -34,7 +34,7 @@ export default function EventScannerDialog({ open, onClose, mutate }) {
 
   const handleScanQR = async (result, error) => {
     if (result) {
-      console.log("QR lectura:", result?.text); // log para lectura
+     // console.log("QR lectura:", result?.text); 
       const res = await getDatosEvento(result?.text);
       if (res) {
         setData(res);
@@ -45,12 +45,15 @@ export default function EventScannerDialog({ open, onClose, mutate }) {
   };
   const handleConfirmAssistance = async (idEvento, idcontrato) => {
     if (data?.result) {
-       await updateAsistenciaEvento(idEvento,idcontrato);
-    } else {
-      enqueueSnackbar('Asistencia actualizada correctamente', { variant: 'success' });
-      confirm.onFalse();
-      onClose();
-      setData(null);
+      try {
+        await updateAsistenciaEvento(idEvento, idcontrato);
+        enqueueSnackbar('Asistencia actualizada correctamente', { variant: 'success' });
+        confirm.onFalse();
+        onClose();
+        setData(null);
+      } catch (error) {
+        enqueueSnackbar('Error al actualizar la asistencia', { variant: 'error' });
+      }
     }
   };
   return (

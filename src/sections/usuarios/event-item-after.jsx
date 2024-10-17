@@ -8,7 +8,7 @@ import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import { LoadingButton } from '@mui/lab';
 import Dialog from '@mui/material/Dialog';
-import { Button,Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import DialogContent from '@mui/material/DialogContent';
 
@@ -25,29 +25,22 @@ import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 
 import NewEventDialog from './new-event-dialog';
-import ConfirmarAsistencia from './event-item-previewdatos';
-
-import VerificarCorreoModal from './event-item-verificar';
-
-
 
 // ----------------------------------------------------------------------
 
-export default function EventItem({ event, mutate, onClose}) {
+export default function EventItem({ event, mutate }) {
   const { user } = useAuthContext();
   const { enqueueSnackbar } = useSnackbar();
   const showImage = useBoolean();
   const eventDialog = useBoolean();
-  const [openConfirmarAsistencia, setOpenConfirmarAsistencia] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitting2, setIsSubmitting2] = useState(false);
-
 
   const {
     idEvento,
     titulo,
     // descripcion,
-    fechaEvento,  
+    fechaEvento,
     // inicioPublicacion,
     // finPublicacion,
     imagen,
@@ -70,32 +63,22 @@ export default function EventItem({ event, mutate, onClose}) {
   } = event;
 
   const handleConfirmacion = async () => {
-    if (estatusAsistencia === 1) {
-      setIsSubmitting(true);
-      const res = await actualizarAsistenciaEvento(
-        user?.idContrato,
-        idEvento,
-        2, 
-        user?.idUsuario
-      );
-      if (res && res.msg) {
-        enqueueSnackbar(res.msg, { variant: res.result === true ? 'success' : 'error' });
-      } else {
-        enqueueSnackbar('Error inesperado, intente nuevamente.', { variant: 'error' });
-      }
-      await mutate(); 
-      setIsSubmitting(false);
+    setIsSubmitting(true);
+    const res = await actualizarAsistenciaEvento(
+      user?.idContrato,
+      idEvento,
+      estatusAsistencia === 1 ? 2 : 1,
+      user?.idUsuario
+    );
+    if (res && res.msg) {
+      enqueueSnackbar(res.msg, { variant: res.result === true ? 'success' : 'error' });
     } else {
-      setOpenConfirmarAsistencia(true);
-      showImage.onFalse(); 
-
+      enqueueSnackbar('Error inesperado, intente nuevamente.', { variant: 'error' });
     }
+    await mutate();
+    setIsSubmitting(false);
   };
-  const handleCloseConfirmacion = () => {
-    setOpenConfirmarAsistencia(false); 
-  };
-  const handleSubmitConfirmacion = async (data) => {
-  }
+
   const handleEdit = () => {
     eventDialog.onTrue();
   };
@@ -103,6 +86,7 @@ export default function EventItem({ event, mutate, onClose}) {
   const handleHideEvent = async () => {
     setIsSubmitting2(true);
     const res = await hideShowEvent(idEvento, estatusEvento === 1 ? 2 : 1, user?.idUsuario);
+
     await mutate();
     setIsSubmitting2(false);
     enqueueSnackbar(res.msg, { variant: res.result === true ? 'success' : 'error' });
@@ -276,7 +260,7 @@ export default function EventItem({ event, mutate, onClose}) {
         </Tooltip>
       </Stack>
       {event.estatusEvento === 1 && (
-        <Button
+        <LoadingButton
           component="span"
           sx={{
             color: 'white',
@@ -288,13 +272,13 @@ export default function EventItem({ event, mutate, onClose}) {
           }}
           loading={isSubmitting}
           onClick={() => handleConfirmacion()}
-          
         >
           {estatusAsistencia === 1 ? 'Cancelar asistencia' : 'Confirmar asistencia'}
-          </Button>
+        </LoadingButton>
       )}
     </Stack>
   );
+
   const renderCover = (
     <Stack spacing={0.5} direction="row">
       <Stack flexGrow={1} sx={{ position: 'relative' }}>
@@ -386,10 +370,9 @@ export default function EventItem({ event, mutate, onClose}) {
         }}
         onClick={() => showImage.onTrue()}
       >
-       VER MÁS
+        VER MÁS
       </Box>
     </Stack>
-    
   );
 
   return (
@@ -440,19 +423,11 @@ export default function EventItem({ event, mutate, onClose}) {
           mutate={mutate}
         />
       )}
-         <ConfirmarAsistencia
-        open={openConfirmarAsistencia}
-        onClose={handleCloseConfirmacion}
-        onSubmit={handleSubmitConfirmacion}
-        isSubmitting={isSubmitting}    
-      />
-      <VerificarCorreoModal idEvento={idEvento} /> 
     </>
   );
 }
 
 EventItem.propTypes = {
-  onClose: PropTypes.func,
   event: PropTypes.object,
   mutate: PropTypes.func,
 };
