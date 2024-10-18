@@ -70,25 +70,25 @@ export default function EventItem({ event, mutate, onClose}) {
   } = event;
 
   const handleConfirmacion = async () => {
-    if (estatusAsistencia === 1) {
-      setIsSubmitting(true);
+    if (estatusAsistencia === 1 ) {
       const res = await actualizarAsistenciaEvento(
+        
         user?.idContrato,
         idEvento,
         2, 
         user?.idUsuario
       );
+      setIsSubmitting(true);
       if (res && res.msg) {
         enqueueSnackbar(res.msg, { variant: res.result === true ? 'success' : 'error' });
       } else {
-        enqueueSnackbar('Error inesperado, intente nuevamente.', { variant: 'error' });
+       // enqueueSnackbar('Error inesperado, intente nuevamente.', { variant: 'error' });
       }
       await mutate(); 
       setIsSubmitting(false);
     } else {
       setOpenConfirmarAsistencia(true);
       showImage.onFalse(); 
-
     }
   };
   const handleCloseConfirmacion = () => {
@@ -276,7 +276,7 @@ export default function EventItem({ event, mutate, onClose}) {
         </Tooltip>
       </Stack>
       {event.estatusEvento === 1 && (
-        <Button
+        <LoadingButton
           component="span"
           sx={{
             color: 'white',
@@ -291,7 +291,7 @@ export default function EventItem({ event, mutate, onClose}) {
           
         >
           {estatusAsistencia === 1 ? 'Cancelar asistencia' : 'Confirmar asistencia'}
-          </Button>
+          </LoadingButton>
       )}
     </Stack>
   );

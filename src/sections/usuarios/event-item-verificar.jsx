@@ -20,30 +20,29 @@ export default function VerificarCorreoModal({ open, onClose, correo,idEvento })
   const handleVerificar = async () => {
     try {
       setBtnLoad(true);
-      
       // Verificación del código de correo
       const response = await verificacionCodigoCorreo(correo, codigo);
-      
       if (response.status === 'success') {
-        enqueueSnackbar('Token verificado', { variant: 'success' });
+        enqueueSnackbar('Token verificado -Registrando asistencia', { variant: 'success' });
         const res = await actualizarAsistenciaEvento(
           user?.idContrato,
           1,
           1,  
           user?.idUsuario
         );
+        onClose();  
         if (res && res.result) {
-          enqueueSnackbar('Asistencia confirmada.', { variant: 'success' });
-          onClose();  
+          // enqueueSnackbar('Asistencia confirmada.', { variant: 'success' });
+         // onClose();  
         } else {
-          enqueueSnackbar('Error al confirmar la asistencia.', { variant: 'error' });
+          // enqueueSnackbar('Error al confirmar la asistencia.', { variant: 'error' });
         }
       } else {
-        enqueueSnackbar(`Error: ${response.message}`, { variant: 'error' });
+      //   enqueueSnackbar(`Error: ${response.message}`, { variant: 'error' });
       }      
     } catch (error) {
       console.error('Error:', error);
-      enqueueSnackbar('Ocurrió un error, por favor intente nuevamente.', { variant: 'error' });
+      // enqueueSnackbar('Ocurrió un error, por favor intente nuevamente.', { variant: 'error' });
     } finally {
       setBtnLoad(false);
     }

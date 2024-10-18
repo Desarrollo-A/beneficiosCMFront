@@ -139,7 +139,6 @@ export default function DatosPersonales() {
               disabled
             />
           </Grid>
-
           <Grid xs={12} md={6}>
             {puestoData.flatMap((u) => (
               <RHFTextField name="puesto" label="Puesto" value={u?.puesto} disabled />
