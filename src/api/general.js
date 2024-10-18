@@ -1,3 +1,4 @@
+
 import useSWR, { mutate } from 'swr';
 import { useMemo, useEffect } from 'react';
 
@@ -67,4 +68,16 @@ export function useUpdateGeneral(endpoints) {
   };
 
   return updateData;
+}
+
+ export function useFormatoMonto() {
+  const formatoMontos = (montos) => `$${montos.toLocaleString('en-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+   return formatoMontos;
+}
+
+export function useFormatoMonto2() {
+  const formatoMonto = (monto) => `${monto.toLocaleString('en-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+   return formatoMonto;
 }

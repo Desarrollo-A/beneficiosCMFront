@@ -1,7 +1,11 @@
-import { fechaDocumento } from 'src/utils/general';
+/* eslint-disable react-hooks/rules-of-hooks */
+/* eslint-disable consistent-return */
+import { fechaDocumento} from 'src/utils/general';
 import { endpoints, fetcherPost } from 'src/utils/axios';
 
+import { useFormatoMonto,useFormatoMonto2 } from 'src/api/general';
 import { TEMPLATEID, LEGALARIO_HOST, LEGALARIO_EMAIL, LEGALARIO_PASSWORD } from 'src/config-global';
+
 
 export const postLogin = async () => {
   const params = new URLSearchParams();
@@ -69,6 +73,8 @@ export const postDocumentos = async (
     Authorization: `${token_type} ${access_token}`,
     'Content-Type': 'application/json',
   };
+  const formatoMontos = useFormatoMonto();
+  const formatoMonto = useFormatoMonto2();
 
   // cuerpo del documento
   const body = {
@@ -79,15 +85,16 @@ export const postDocumentos = async (
       [{ key: 1, name: '$VAR_1$', value: fechaDocumento() }],
       [{ key: 2, name: '$VAR_2$', value: nombre }],
       [{ key: 3, name: '$VAR_3$', value: sueldoNeto }],
-      [{ key: 4, name: '$VAR_4$', value: ahorroFinal }],
+      [{ key: 4, name: '$VAR_4$', value: formatoMontos(ahorroFinal)}],
       [{ key: 5, name: '$VAR_5$', value: FirstDay }],
       [{ key: 6, name: '$VAR_6$', value: razonSocial }],
       [{ key: 7, name: '$VAR_7$', value: razonSocial }],
       [{ key: 8, name: '$VAR_8$', value: nss }],
       [{ key: 9, name: '$VAR_9$', value: rfc }],
       [{ key: 10, name: '$VAR_10$', value: direccion }],
-      [{ key: 11, name: '$VAR_11$', value: ahorroFinal }],
+      [{ key: 11, name: '$VAR_11$', value:formatoMonto(ahorroFinal)}],
     ],
+
   };
   try {
     const response = await fetch(`${LEGALARIO_HOST}v2/documents`, {
@@ -126,7 +133,7 @@ export const enviarCorreoFirma = async (
     signers: [
       {
         fullname: nombre,
-        email: correo,
+        email:  'programador.analista47@ciudadmaderas.com',
         phone: 4424913769,
         type: 'FIRMA',
         role: 'FIRMANTE',
