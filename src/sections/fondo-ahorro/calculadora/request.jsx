@@ -3,7 +3,7 @@ import { mutate } from 'swr';
 import PropTypes from 'prop-types';
 import { useMemo, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm, useFormState, } from 'react-hook-form';
+import { useForm, useFormState } from 'react-hook-form';
 
 import Step from '@mui/material/Step';
 import Stack from '@mui/material/Stack';
@@ -22,16 +22,18 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { endpoints } from 'src/utils/axios';
 
 import { useUpdate } from 'src/api/reportes';
-import { postLogin,postDocumentos,postGenerarToken,enviarCorreoFirma } from 'src/api/fondoAhorro/legalario';
-
 import { useAuthContext } from 'src/auth/hooks';
+import {
+  postLogin,
+  postDocumentos,
+  postGenerarToken,
+  enviarCorreoFirma,
+} from 'src/api/fondoAhorro/legalario';
 
 import Iconify from 'src/components/iconify/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
-import FormProvider, {
-  RHFTextField,
-} from 'src/components/hook-form';
+import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
 // eslint-disable-next-line import/no-cycle
 import Simulator from './simulator';
@@ -94,7 +96,6 @@ QontoStepIcon.propTypes = {
 };
 
 export default function Request({ onClose, FirstDay, dateNext }) {
-
   const updateEstatus = useUpdate(endpoints.fondoAhorro.sendMail);
 
   const { user } = useAuthContext();
@@ -115,8 +116,7 @@ export default function Request({ onClose, FirstDay, dateNext }) {
   const handleNext = () => {
     const newActiveStep =
       isLastStep() && !allStepsCompleted()
-        ?
-        steps.findIndex((step, i) => !(i in completed))
+        ? steps.findIndex((step, i) => !(i in completed))
         : activeStep + 1;
     setActiveStep(newActiveStep);
   };
@@ -155,8 +155,8 @@ export default function Request({ onClose, FirstDay, dateNext }) {
       .typeError('Debe ser un número')
       .required('Ingresa un monto')
       .positive('Debe ser un número positivo')
-      .min(500.00, 'Debe ser mayor o igual a $500')
-      .max(10000.00, 'Debe ser menor o igual a $10,000'),
+      .min(500.0, 'Debe ser mayor o igual a $500')
+      .max(10000.0, 'Debe ser menor o igual a $10,000'),
   });
 
   const defaultValues = useMemo(
@@ -193,6 +193,7 @@ export default function Request({ onClose, FirstDay, dateNext }) {
       razonSocial: user?.razonSocial,
       telPersonal: user?.telPersonal,
       sueldoNeto: user?.sueldoNeto,
+      correo: user?.correo,
       FirstDay,
       dateNext,
       ahorroFinal,
@@ -200,42 +201,73 @@ export default function Request({ onClose, FirstDay, dateNext }) {
     };
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
-      
+
       const update = await updateEstatus(dataValue);
-       console.log(dataValue);
       if (update.estatus === true) {
         enqueueSnackbar(update.msj, { variant: 'success' });
-  
+
         const loginResponse = await postLogin();
         if (loginResponse && loginResponse.success) {
           const { client_id, client_secret, scopes } = loginResponse.data;
-  
+
           // 2. Llama a postGenerarToken
-          const tokenResponse = await postGenerarToken(client_id, client_secret, 'client_credentials', scopes);
+          const tokenResponse = await postGenerarToken(
+            client_id,
+            client_secret,
+            'client_credentials',
+            scopes
+          );
           if (tokenResponse && tokenResponse.success) {
             const { token_type, access_token } = tokenResponse.data;
-  
-            const documentResponse = await postDocumentos(token_type, access_token, dataValue.nombre,dataValue.FirstDay,dataValue.ahorroFinal,dataValue.nss,dataValue.rfc,dataValue.razonSocial,dataValue.direccion,dataValue.sueldoNeto);
+
+            const documentResponse = await postDocumentos(
+              token_type,
+              access_token,
+              dataValue.nombre,
+              dataValue.FirstDay,
+              dataValue.ahorroFinal,
+              dataValue.nss,
+              dataValue.rfc,
+              dataValue.razonSocial,
+              dataValue.direccion,
+              dataValue.sueldoNeto
+            );
             if (documentResponse && documentResponse.success) {
               const document_id = documentResponse.data.id;
-              const emailResponse = await enviarCorreoFirma(token_type, access_token, document_id, dataValue.nombre,dataValue.telPersonal);
+              const emailResponse = await enviarCorreoFirma(
+                token_type,
+                access_token,
+                document_id,
+                dataValue.nombre,
+                dataValue.telPersonal,
+                dataValue.correo
+              );
               if (emailResponse && emailResponse.success) {
-                enqueueSnackbar('Correo de firma enviado exitosamente', { variant: 'success' });
+                enqueueSnackbar('¡Se ha enviado el contrato vía correo electrónico!', {
+                  variant: 'success',
+                });
               } else {
-                enqueueSnackbar('Ocurrio un error al enviar correo de firma.', { variant: 'error' });
+                enqueueSnackbar(
+                  'Ocurrió un error al enviar el contrato de adhesión al fondo de ahorro.',
+                  {
+                    variant: 'error',
+                  }
+                );
               }
             } else {
-              enqueueSnackbar('Error al generar solicitud de firma electrónica.', { variant: 'error' });
+              enqueueSnackbar('Error al generar solicitud de firma electrónica.', {
+                variant: 'error',
+              });
             }
           } else {
             enqueueSnackbar('Error al generar token', { variant: 'error' });
-          } 
+          }
         } else {
-          enqueueSnackbar('Error interno(Login)', { variant: 'error' });
+          enqueueSnackbar('Surgió un error inesperado', { variant: 'error' });
+          console.error('Error al iniciar sesión con legalario.');
         }
-  
+
         mutate(endpoints.fondoAhorro.getFondo);
-      
       } else {
         enqueueSnackbar(update.msj, { variant: 'error' });
       }
@@ -243,7 +275,7 @@ export default function Request({ onClose, FirstDay, dateNext }) {
       console.error(error);
       enqueueSnackbar('Ocurrió un error inesperado', { variant: 'error' });
     }
-  
+
     onClose();
   });
 
@@ -252,21 +284,23 @@ export default function Request({ onClose, FirstDay, dateNext }) {
   return (
     <>
       <Box sx={{ backgroundColor: getBackgroundColor(activeStep) }}>
-        <Grid container alignItems="stretch" spacing={2}
+        <Grid
+          container
+          alignItems="stretch"
+          spacing={2}
           sx={{
             p: 2,
             borderRadius: '20px',
             margin: '20px',
-          }}>
+          }}
+        >
           <Grid item xs={12}>
-            <Grid container justifyContent="center" >
-              <Stepper nonLinear activeStep={activeStep} >
+            <Grid container justifyContent="center">
+              <Stepper nonLinear activeStep={activeStep}>
                 {steps.map((label, index) => (
-                  <Step key={label} completed={completed[index]} >
+                  <Step key={label} completed={completed[index]}>
                     <StepLabel StepIconComponent={QontoStepIcon} /* onClick={handleStep(index)} */>
-                      <Typography fontSize={13}>
-                        {label}
-                      </Typography>
+                      <Typography fontSize={13}>{label}</Typography>
                     </StepLabel>
                   </Step>
                 ))}
@@ -296,10 +330,15 @@ export default function Request({ onClose, FirstDay, dateNext }) {
                     </Box>
                     <Box>
                       <Typography variant="body1" sx={{ fontWeight: 'bold', textAlign: 'justify' }}>
-                        El ahorro que solicitas será de forma mensual y se te descontará proporcionalmente a la semana.
+                        El ahorro que solicitas será de forma mensual y se te descontará
+                        proporcionalmente a la semana.
                       </Typography>
-                      <Typography variant="body1" sx={{ fontStyle: 'italic', textAlign: 'justify' }}>
-                        Ejemplo: Solicitas de $400.00 al mes, se te descontarán $100.00 a la semana (Aprox.).
+                      <Typography
+                        variant="body1"
+                        sx={{ fontStyle: 'italic', textAlign: 'justify' }}
+                      >
+                        Ejemplo: Solicitas de $400.00 al mes, se te descontarán $100.00 a la semana
+                        (Aprox.).
                       </Typography>
                     </Box>
                   </Box>
@@ -342,16 +381,15 @@ export default function Request({ onClose, FirstDay, dateNext }) {
                       />
                     </Box>
                     <Typography variant="body1" sx={{ fontWeight: 'bold', textAlign: 'justify' }}>
-                      La solicitud se procesará para tu firma digital, solo puedes generar tu firma una vez.
+                      La solicitud se procesará para tu firma digital, solo puedes generar tu firma
+                      una vez.
                     </Typography>
                   </Box>
                 </Box>
               </Grid>
             )}
 
-            {activeStep === 1 && (
-              <Simulator conditional={1} />
-            )}
+            {activeStep === 1 && <Simulator conditional={1} />}
 
             {activeStep === 2 && (
               <FormProvider methods={methods} onSubmit={onSubmit}>
@@ -409,7 +447,12 @@ export default function Request({ onClose, FirstDay, dateNext }) {
                   Siguiente <Iconify icon="material-symbols-light:navigate-next" width={24} />
                 </Button>
               ) : (
-                <Button onClick={() => { confirm.onTrue() }} disabled={isButtonDisabled}>
+                <Button
+                  onClick={() => {
+                    confirm.onTrue();
+                  }}
+                  disabled={isButtonDisabled}
+                >
                   Enviar <Iconify icon="lets-icons:send-hor-light" width={24} />
                 </Button>
               )}
@@ -424,10 +467,21 @@ export default function Request({ onClose, FirstDay, dateNext }) {
         content={<Typography>¿Estás seguro de mandar tu solicitud con ese monto?</Typography>}
         action={
           <>
-            <Button variant="contained" color="error" onClick={() => { confirm.onFalse() }}>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => {
+                confirm.onFalse();
+              }}
+            >
               Cancelar
             </Button>
-            <LoadingButton variant="contained" color="success" onClick={handleSubmit(onSubmit)} loading={isSubmitting}>
+            <LoadingButton
+              variant="contained"
+              color="success"
+              onClick={handleSubmit(onSubmit)}
+              loading={isSubmitting}
+            >
               Aceptar
             </LoadingButton>
           </>
@@ -440,5 +494,5 @@ export default function Request({ onClose, FirstDay, dateNext }) {
 Request.propTypes = {
   onClose: PropTypes.any,
   dateNext: PropTypes.any,
-  FirstDay: PropTypes.any
+  FirstDay: PropTypes.any,
 };

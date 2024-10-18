@@ -293,3 +293,11 @@ export const ajustarFechasCita = (item, diferenciaHoras) => {
 export const parseStartDate = (value, originalValue) => originalValue.toISOString();
 
 export const parseEndDate = (value, originalValue) => originalValue.toISOString();
+
+export const fechaDocumento = () => {
+  const fecha = new Date();
+  const completo = { day: 'numeric', month: 'long', year: 'numeric' };
+  const formatoDocumento = new Intl.DateTimeFormat('es-ES', completo).format(fecha);
+
+  return formatoDocumento.replace('de', 'de').replace(',', ' del');
+};
