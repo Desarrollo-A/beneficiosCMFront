@@ -1,3 +1,4 @@
+import { mutate } from 'swr';
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
@@ -8,16 +9,31 @@ import Tooltip from '@mui/material/Tooltip';
 import { useTheme } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';
 import Pagination from '@mui/material/Pagination';
-import { Button, TextField, Typography, IconButton, InputAdornment, Dialog, DialogContent } from '@mui/material';
+import { 
+  Button,
+  Dialog, 
+  TextField, 
+  Typography, 
+  IconButton, 
+  InputAdornment, 
+} from '@mui/material';
+
+import { endpoints } from 'src/utils/axios';
 
 import { useBoolean } from 'src/hooks/use-boolean';
+
+import { HOST } from 'src/config-global';
+
+import { useAuthContext } from 'src/auth/hooks';
+import { useUpdate } from 'src/api/reportes';
+import { useSnackbar } from 'src/components/snackbar';
 
 import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 
 import './styles.css'
-import EditGame from './edit-game';
+import NewGame from './new-game';
 import AddTicket from './add-ticket';
 // ----------------------------------------------------------------------
 
@@ -29,7 +45,7 @@ export default function BoxBoletos({ subheader, list, sx, ...other }) {
 
   // Filtrar la lista por el título basado en el término de búsqueda
   const filteredList = list.filter(item =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+    item.titulo.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Calcular cuántas páginas necesitas para la lista filtrada
@@ -113,7 +129,33 @@ BoxBoletos.propTypes = {
 // ----------------------------------------------------------------------
 
 function BookingItem({ item }) {
-  const { avatarUrl, name, duration, bookedAt, guests, coverUrl, price, isHot } = item;
+  const { 
+    id,
+    titulo, 
+    descripcion, 
+    fechaPartido, 
+    inicioPublicacion, 
+    finPublicacion, 
+    lugarPartido, 
+    imagen, 
+    imagenPreview,
+    limiteBoletos,
+    sede,
+    estatus,
+    fechaCreacion
+  } = item;
+
+  const [date, time] = fechaPartido.split(' ');
+
+  // Convierte la cadena 'date' a un objeto Date
+  const dateObj = new Date(`${date  }T${  time}`);
+
+  const opciones = { year: 'numeric', month: 'long', day: 'numeric' };
+  const opcionesHora = { hour: 'numeric', minute: 'numeric', hour12: false };
+
+  const fechaFormateada = dateObj.toLocaleDateString('es-ES', opciones);
+
+  const horaFormateada = dateObj.toLocaleTimeString('es-ES', opcionesHora);
 
   const Lightbox = useBoolean();
 
@@ -124,6 +166,50 @@ function BookingItem({ item }) {
   const theme = useTheme();
 
   const confirm = useBoolean();
+
+  const active = useBoolean();
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  const coverUrl =  `${HOST}/documentos/archivo/${imagen}`;
+
+  const coverUrlPreview =  `${HOST}/documentos/archivo/${imagenPreview}`;
+
+  const updateEstatus = useUpdate(endpoints.boletos.updateEstatusBoletos);
+
+  const handleEstatus = async (i) => {
+
+    const data = {
+      id,
+      estatus:i
+    };
+
+    try {
+
+      if (data) {
+
+        confirm.onFalse();
+        active.onFalse();
+
+        const update = await updateEstatus(data);
+
+        if (update.result === true) {
+          enqueueSnackbar(update.msg, { variant: 'success' });
+
+          mutate(endpoints.boletos.getBoletos);
+
+        } else {
+          enqueueSnackbar(update.msg, { variant: 'error' });
+        }
+
+      } else {
+        enqueueSnackbar(`¡Error en enviar los datos!`, { variant: 'danger' });
+      }
+
+    } catch (error) {
+      enqueueSnackbar(`¡No se pudieron actualizar los datos!`, { variant: 'danger' });
+    }
+  }
 
   return (
     <>
@@ -166,7 +252,7 @@ function BookingItem({ item }) {
               },
             }}
           >
-            QUERÉTARO vs TOLUCA
+            {titulo}
           </Typography>
 
           <Box
@@ -182,10 +268,10 @@ function BookingItem({ item }) {
               },
             }}
           >
-            <Tooltip title="Ocultar" placement="top">
+            <Tooltip title={estatus === 1 ? "Inhabilitar" : "Habilitar" } placement="top">
               <IconButton variant="contained" sx={{ backgroundColor: '#484744' }} onClick={() => {confirm.onTrue();
             }}>
-                <Iconify width={16} icon="iconamoon:eye-off" sx={{ color: 'white' }} />
+                <Iconify width={16} icon={estatus === 1 ? "mdi:eye-outline" : "iconamoon:eye-off" } sx={{ color: 'white' }} />
               </IconButton>
             </Tooltip>
             <Tooltip title="Editar" placement="top">
@@ -211,7 +297,7 @@ function BookingItem({ item }) {
           >
             <Stack direction="row" alignItems="center">
               <Iconify width={16} icon="lets-icons:calendar-fill" sx={{ mr: 0.5, flexShrink: 0 }} />
-              05 de septiembre del 2024
+              Fecha: {fechaFormateada}
             </Stack>
 
             <Button className='btn-ticket border-animated-ticket' onClick={addTicket.onTrue} variant="contained" sx={{ height: { xs: '40px', lg: '20px' } }}>
@@ -229,7 +315,7 @@ function BookingItem({ item }) {
           >
             <Stack direction="row" alignItems="center">
               <Iconify width={16} icon="lets-icons:clock-fill" sx={{ mr: 0.5, flexShrink: 0 }} />
-              4:00pm
+              Hora: {horaFormateada}
             </Stack>
           </Stack>
           <Stack
@@ -242,19 +328,32 @@ function BookingItem({ item }) {
           >
             <Stack direction="row" alignItems="center">
               <Iconify width={16} icon="ic:round-stadium" sx={{ mr: 0.5, flexShrink: 0 }} />
-              Estadio corregidora
+              Lugar: {lugarPartido}
             </Stack>
           </Stack>
+          {/* <Stack
+            rowGap={1.5}
+            columnGap={3}
+            flexWrap="wrap"
+            direction="row"
+            alignItems="center"
+            sx={{ color: 'text.secondary', typography: 'caption', p: 0.2 }}
+          >
+            <Stack direction="row" alignItems="center">
+              <Iconify width={16} icon="tabler:point-filled" sx={{ mr: 0.5, flexShrink: 0 }} />
+              {descripcion}
+            </Stack>
+          </Stack> */}
         </Box>
 
         <Box sx={{ p: 1, position: 'relative' }}>
-          <Image alt={coverUrl} src={coverUrl} ratio="1/1" sx={{ borderRadius: 2, height: '200px' }} onClick={Lightbox.onTrue} />
+          <Image alt={coverUrlPreview} src={coverUrlPreview} ratio="1/1" sx={{ borderRadius: 2, height: '250px', }} onClick={Lightbox.onTrue} />
         </Box>
       </Paper>
 
       <Dialog open={Lightbox.value}
         onClose={Lightbox.onFalse}>
-        <Image alt={coverUrl} src={coverUrl} sx={{ borderRadius: 2, width: '100%' }} />
+        <Image alt={coverUrl} src={coverUrl} sx={{ borderRadius: 2, width: '100%', height: '600px' }} />
       </Dialog>
 
       <Dialog
@@ -276,25 +375,31 @@ function BookingItem({ item }) {
         disableEnforceFocus
         maxWidth="md"
       >
-      <EditGame
+      {/* <EditGame
           onClose={editGame.onFalse}
+      /> */}
+      <NewGame
+          onClose={editGame.onFalse}
+          item={item}
       />
       </Dialog>
 
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Inhabilitar"
-        content="¿Estás seguro de inhabilitar la publicación de el partido?"
+        title={estatus === 1 ? "Inhabilitar" : "Habilitar"}
+        content={estatus === 1 ? "¿Estás seguro de inhabilitar la publicación de el partido?" :
+          "¿Estás seguro de habilitar la publicación de el partido?"
+        }
         action={
           <>
             <Button variant="contained" color="error" onClick={() => {confirm.onFalse()}}>
               Cancelar
             </Button>
-            <Button variant="contained" color="success" /* onClick={() => {
-              handleEstatus(row);
+            <Button variant="contained" color="success" onClick={() => {
+              handleEstatus(estatus === 1 ? 0 : 1);
               confirm.onFalse();
-            }} */>
+            }}>
               Aceptar
             </Button>
           </>

@@ -1,13 +1,14 @@
 import Box from '@mui/material/Box';
 import { Button, Dialog, } from '@mui/material';
-import { alpha } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';
 import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
+import { endpoints } from 'src/utils/axios';
+
 import { _bookingNew } from 'src/_mock';
+import { useGetGeneral } from 'src/api/general';
 
 import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
@@ -23,6 +24,11 @@ export default function BoletosView() {
   const settings = useSettingsContext();
 
   const newGame = useBoolean();
+
+  const { boletosData } = useGetGeneral(
+    endpoints.boletos.getBoletos,
+    'boletosData'
+  );
 
   return (
     <>
@@ -43,7 +49,7 @@ export default function BoletosView() {
           </Grid>
 
           <Grid item xs={12}>
-            <BoxBoletos title="Newest Booking" subheader="12 Booking" list={_bookingNew} />
+            <BoxBoletos title="Newest Booking" subheader="12 Booking" list={boletosData} />
           </Grid>
         </Grid>
       </Container>

@@ -378,4 +378,10 @@ export const endpoints = {
     updatePasarAsistencia:'perfil/EventosController/updateAsistenciaEvento',
     hideShowEvent: 'perfil/EventosController/ocultarMostrarEvento',
   },
+  boletos: {
+    getBoletos: 'beneficios/BoletosController/getBoletos',
+    newEvent: 'beneficios/BoletosController/nuevoEvento',
+    updateEvento: 'beneficios/BoletosController/updateEvento',
+    updateEstatusBoletos: 'beneficios/BoletosController/updateEstatusBoletos',
+  },
 };
