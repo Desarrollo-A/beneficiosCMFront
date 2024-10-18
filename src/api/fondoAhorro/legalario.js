@@ -133,7 +133,7 @@ export const enviarCorreoFirma = async (
     signers: [
       {
         fullname: nombre,
-        email:  'programador.analista47@ciudadmaderas.com',
+        email:  correo, 
         phone: 4424913769,
         type: 'FIRMA',
         role: 'FIRMANTE',
