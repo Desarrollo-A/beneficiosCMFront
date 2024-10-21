@@ -40,6 +40,7 @@ const AtencionXsedePage = lazy(() => import('src/pages/beneficios/gestor/atencio
 /* const AtencionPorSedePage = lazy(() => import('src/pages/beneficios/gestor/atencion-por-sede')); */
 const HorariosEspePage = lazy(() => import('src/pages/beneficios/gestor/horariosEspe-view'));
 const EstatusPuestosPage = lazy(() => import('src/pages/beneficios/gestor/estausPuestos-view'));
+const SolicitudBoletosPage = lazy(() => import('src/pages/beneficios/gestor/solicitudBoletos-view'));
 const SedesPage = lazy(() => import('src/pages/beneficios/gestor/sedes-view'));
 const UsuariosPage = lazy(() => import('src/pages/beneficios/gestor/usuarios-view'));
 // ----------------------------------------------------------------------
@@ -156,6 +157,7 @@ export const beneficiosRoutes = [
           /* { path: 'atencionporsede', element: <AtencionPorSedePage /> }, */
           { path: 'horariosEspecificos', element: <HorariosEspePage /> },
           { path: 'estatusPuestos', element: <EstatusPuestosPage /> },
+          { path: 'solicitudBoletos', element: <SolicitudBoletosPage /> },
           { path: 'sedes', element: <SedesPage /> },
           { path: 'usuarios', element: <UsuariosPage /> },
         ],

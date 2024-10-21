@@ -9,7 +9,7 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function DepartamentosTableToolbar({
+export default function SolicitudBoletosTableToolbar({
   filters,
   onFilters,
   //
@@ -69,7 +69,7 @@ export default function DepartamentosTableToolbar({
   );
 }
 
-DepartamentosTableToolbar.propTypes = {
+SolicitudBoletosTableToolbar.propTypes = {
   canReset: PropTypes.bool,
   filters: PropTypes.object,
   onFilters: PropTypes.func,

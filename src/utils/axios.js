@@ -380,8 +380,12 @@ export const endpoints = {
   },
   boletos: {
     getBoletos: 'beneficios/BoletosController/getBoletos',
+    getSolicitud: 'beneficios/BoletosController/getSolicitud',
     newEvent: 'beneficios/BoletosController/nuevoEvento',
     updateEvento: 'beneficios/BoletosController/updateEvento',
     updateEstatusBoletos: 'beneficios/BoletosController/updateEstatusBoletos',
+    solicitudBoletos: 'beneficios/BoletosController/solicitudBoletos',
+    getSolicitudBoletos: 'beneficios/BoletosController/getSolicitudBoletos',
+    updateSolicitudBoletos: 'beneficios/BoletosController/updateSolicitudBoletos',
   },
 };

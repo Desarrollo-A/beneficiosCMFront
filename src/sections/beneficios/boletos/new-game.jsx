@@ -10,12 +10,12 @@ import { useMemo, useState, useEffect, useCallback } from 'react';
 import { Box } from '@mui/system';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
-import { Stack, Typography } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import { MobileDateTimePicker } from '@mui/x-date-pickers';
+import { Stack, TextField, Typography } from '@mui/material';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
@@ -54,12 +54,18 @@ export default function NewGame({ open, item, onClose }) {
     const [finPublicacion, setFinPublicacion] = useState(null);
     const [errorFinPublicacion, setErrorFinPublicacion] = useState(false);
 
+    const [errorSedes, setErrorSedes] = useState(false);
+
     const localizationLabels = {
         okButtonLabel: 'Seleccionar',
         cancelButtonLabel: 'Cancelar',
         datePickerToolbarTitle: 'Selecciona una fecha',
         timePickerToolbarTitle: 'Selecciona un horario',
         dateTimePickerToolbarTitle: 'Selecciona un horario',
+    };
+
+    const handleSedes = (val) => {
+        setErrorSedes(false);
     };
 
     const handleFechaPartido = (val) => {
@@ -90,9 +96,6 @@ export default function NewGame({ open, item, onClose }) {
         titulo: Yup.string().required('El campo es requerido'),
         estadio: Yup.string().required('El campo es requerido'),
         boletos: Yup.string().required('El campo es requerido'),
-        sedes: Yup.mixed()
-            .required('Debes seleccionar una sede')
-            .test('is-not-zero', 'Debes seleccionar una sede', value => value !== 0 && value !== '0'),
         imagenPreview: Yup.mixed().required('Ingresa una imagen válida'),
         imagen: Yup.mixed().required('Ingresa una imagen válida'),
     });
@@ -173,6 +176,12 @@ export default function NewGame({ open, item, onClose }) {
     const validateStates = () => {
         const ahora = Date();
 
+        if (
+            selectedSede === null ||
+            selectedSede === undefined ||
+            selectedSede === ''
+        )
+            setErrorSedes(true);
         if (
             fechaPartido === null ||
             fechaPartido === undefined ||
@@ -265,7 +274,7 @@ export default function NewGame({ open, item, onClose }) {
         setValue('imagenPreview', null);
     }, [setValue]);
 
-    const defaultSede = sedesArray.find((i) => i.idsede === defaultValues?.sedes) || null;
+    const defaultSede = sedesArray.find((i) => i.idsede === defaultValues?.sedes) || null;;
 
     const [selectedSede, setSelectedSede] = useState(defaultSede);
 
@@ -369,15 +378,15 @@ export default function NewGame({ open, item, onClose }) {
                             placeholder="Sedes (*)"
                             multiple={false}
                             freeSolo
-                            value={selectedSede} 
-                            options={sedesArray}
-                            getOptionLabel={(i) => i.nsede || ''}
-                            onChange={(event, newValue) => {
+                            value={selectedSede}  
+                            options={sedesArray}   
+                            getOptionLabel={(i) => i.nsede || ''}  
+                            onChange={(event, newValue) => {  
+                                handleSedes(newValue);  
+
                                 if (typeof newValue === 'string') {
-                                    // Manejar el caso cuando se ingresa texto libre
                                     setSelectedSede({ nsede: newValue });
                                 } else {
-                                    // Cuando se selecciona una opción válida
                                     setSelectedSede(newValue);
                                 }
                             }}
@@ -386,7 +395,16 @@ export default function NewGame({ open, item, onClose }) {
                                     {i.nsede}
                                 </li>
                             )}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    error={errorSedes}  
+                                    helperText={errorSedes && 'Selecciona una sede'}  
+                                    placeholder="Sedes (*)"
+                                />
+                            )}
                         />
+
                     </Grid>
 
                     <Grid xs={6}>

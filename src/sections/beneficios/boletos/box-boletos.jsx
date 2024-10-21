@@ -9,27 +9,27 @@ import Tooltip from '@mui/material/Tooltip';
 import { useTheme } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';
 import Pagination from '@mui/material/Pagination';
-import { 
+import {
   Button,
-  Dialog, 
-  TextField, 
-  Typography, 
-  IconButton, 
-  InputAdornment, 
+  Dialog,
+  TextField,
+  Typography,
+  IconButton,
+  InputAdornment,
 } from '@mui/material';
-
-import { endpoints } from 'src/utils/axios';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import { HOST } from 'src/config-global';
+import { endpoints } from 'src/utils/axios';
 
-import { useAuthContext } from 'src/auth/hooks';
+import { HOST } from 'src/config-global';
 import { useUpdate } from 'src/api/reportes';
-import { useSnackbar } from 'src/components/snackbar';
+import { useAuthContext } from 'src/auth/hooks';
+import { usePostGeneral } from 'src/api/general';
 
 import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
+import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 
 import './styles.css'
@@ -37,7 +37,7 @@ import NewGame from './new-game';
 import AddTicket from './add-ticket';
 // ----------------------------------------------------------------------
 
-export default function BoxBoletos({ subheader, list, sx, ...other }) {
+export default function BoxBoletos({ subheader, list, sx, idRol, ...other }) {
 
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
@@ -84,27 +84,27 @@ export default function BoxBoletos({ subheader, list, sx, ...other }) {
       </Grid>
 
       {filteredList.length === 0 ? (
-        <Grid 
-        item 
-        xs={12} 
-        container 
-        direction="column" 
-        alignItems="center" 
-        justifyContent="center"
-      >
-        <Image 
-          src={`${import.meta.env.BASE_URL}assets/img/notFound.png`} 
-          ratio="1/1" 
-          sx={{ width: '25%' }} 
-        />
-        <Typography variant="h6" align="center">
-          Sin resultados
-        </Typography>
-      </Grid>
+        <Grid
+          item
+          xs={12}
+          container
+          direction="column"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <Image
+            src={`${import.meta.env.BASE_URL}assets/img/notFound.png`}
+            ratio="1/1"
+            sx={{ width: '25%' }}
+          />
+          <Typography variant="h6" align="center">
+            Sin resultados
+          </Typography>
+        </Grid>
       ) : (
         currentItems.map((item) => (
           <Grid item xs={12} md={4} key={item.id}>
-            <BookingItem item={item} />
+            <BookingItem item={item} idRol={idRol} />
           </Grid>
         ))
       )}
@@ -124,31 +124,39 @@ BoxBoletos.propTypes = {
   subheader: PropTypes.string,
   sx: PropTypes.object,
   title: PropTypes.string,
+  idRol: PropTypes.number,
 };
 
 // ----------------------------------------------------------------------
 
-function BookingItem({ item }) {
-  const { 
+function BookingItem({ item, idRol }) {
+  const {
     id,
-    titulo, 
-    descripcion, 
-    fechaPartido, 
-    inicioPublicacion, 
-    finPublicacion, 
-    lugarPartido, 
-    imagen, 
-    imagenPreview,
+    titulo,
+    // descripcion,
+    fechaPartido,
+    lugarPartido,
     limiteBoletos,
-    sede,
+    imagen,
+    imagenPreview,
     estatus,
-    fechaCreacion
   } = item;
+
+  const { user } = useAuthContext();
+
+  const idUsuario = user?.idRol;
+
+  const [dt] = useState({
+    idBoleto:id,
+    idUsuario
+  });
+
+  const { solicitudData } = usePostGeneral(dt, endpoints.boletos.getSolicitud, 'solicitudData');
 
   const [date, time] = fechaPartido.split(' ');
 
   // Convierte la cadena 'date' a un objeto Date
-  const dateObj = new Date(`${date  }T${  time}`);
+  const dateObj = new Date(`${date}T${time}`);
 
   const opciones = { year: 'numeric', month: 'long', day: 'numeric' };
   const opcionesHora = { hour: 'numeric', minute: 'numeric', hour12: false };
@@ -167,21 +175,59 @@ function BookingItem({ item }) {
 
   const confirm = useBoolean();
 
+  const confirmBoletos = useBoolean();
+
   const active = useBoolean();
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const coverUrl =  `${HOST}/documentos/archivo/${imagen}`;
+  const coverUrl = `${HOST}/documentos/archivo/${imagen}`;
 
-  const coverUrlPreview =  `${HOST}/documentos/archivo/${imagenPreview}`;
+  const coverUrlPreview = `${HOST}/documentos/archivo/${imagenPreview}`;
 
   const updateEstatus = useUpdate(endpoints.boletos.updateEstatusBoletos);
+
+  const solicitudBoletos = useUpdate(endpoints.boletos.solicitudBoletos);
 
   const handleEstatus = async (i) => {
 
     const data = {
       id,
-      estatus:i
+      estatus: i
+    };
+
+    try {
+
+      if (data) {
+
+        confirmBoletos.onFalse();
+        active.onFalse();
+
+        const update = await updateEstatus(data);
+
+        if (update.result === true) {
+          enqueueSnackbar(update.msg, { variant: 'success' });
+
+          mutate(endpoints.boletos.getBoletos);
+
+        } else {
+          enqueueSnackbar(update.msg, { variant: 'error' });
+        }
+
+      } else {
+        enqueueSnackbar(`¡Error en enviar los datos!`, { variant: 'danger' });
+      }
+
+    } catch (error) {
+      enqueueSnackbar(`¡No se pudieron actualizar los datos!`, { variant: 'danger' });
+    }
+  }
+
+  const handleBoletos = async () => {
+
+    const data = {
+      id,
+      idUsuario
     };
 
     try {
@@ -191,12 +237,12 @@ function BookingItem({ item }) {
         confirm.onFalse();
         active.onFalse();
 
-        const update = await updateEstatus(data);
+        const update = await solicitudBoletos(data);
 
         if (update.result === true) {
           enqueueSnackbar(update.msg, { variant: 'success' });
 
-          mutate(endpoints.boletos.getBoletos);
+          mutate(endpoints.boletos.getSolicitud);
 
         } else {
           enqueueSnackbar(update.msg, { variant: 'error' });
@@ -268,17 +314,24 @@ function BookingItem({ item }) {
               },
             }}
           >
-            <Tooltip title={estatus === 1 ? "Inhabilitar" : "Habilitar" } placement="top">
-              <IconButton variant="contained" sx={{ backgroundColor: '#484744' }} onClick={() => {confirm.onTrue();
-            }}>
-                <Iconify width={16} icon={estatus === 1 ? "mdi:eye-outline" : "iconamoon:eye-off" } sx={{ color: 'white' }} />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Editar" placement="top">
-              <IconButton variant="contained" sx={{ backgroundColor: '#484744' }} onClick={editGame.onTrue}>
-                <Iconify width={16} icon="fluent:edit-24-filled" sx={{ color: 'white' }} />
-              </IconButton>
-            </Tooltip>
+            {idRol === 4 ? (
+              <>
+                <Tooltip title={estatus === 1 ? "Inhabilitar" : "Habilitar"} placement="top">
+                  <IconButton variant="contained" sx={{ backgroundColor: '#484744' }} onClick={() => {
+                    confirm.onTrue();
+                  }}>
+                    <Iconify width={16} icon={estatus === 1 ? "mdi:eye-outline" : "iconamoon:eye-off"} sx={{ color: 'white' }} />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Editar" placement="top">
+                  <IconButton variant="contained" sx={{ backgroundColor: '#484744' }} onClick={editGame.onTrue}>
+                    <Iconify width={16} icon="fluent:edit-24-filled" sx={{ color: 'white' }} />
+                  </IconButton>
+                </Tooltip>
+              </>
+            ) : (
+              null
+            )}
           </Box>
         </Box>
 
@@ -300,9 +353,15 @@ function BookingItem({ item }) {
               Fecha: {fechaFormateada}
             </Stack>
 
-            <Button className='btn-ticket border-animated-ticket' onClick={addTicket.onTrue} variant="contained" sx={{ height: { xs: '40px', lg: '20px' } }}>
-              ¡Quiero boletos!
-            </Button>
+            {limiteBoletos > 0 && solicitudData.length < 1 ? (
+              <Button className='btn-ticket border-animated-ticket' 
+              onClick={() => {confirmBoletos.onTrue();}} 
+              variant="contained" sx={{ height: { xs: '40px', lg: '20px' } }}>
+                ¡Quiero boletos!
+              </Button>
+            ) : (
+              null
+            )}
           </Stack>
 
           <Stack
@@ -363,9 +422,9 @@ function BookingItem({ item }) {
         disableEnforceFocus
         maxWidth="md"
       >
-      <AddTicket
+        <AddTicket
           onClose={addTicket.onFalse}
-      />
+        />
       </Dialog>
 
       <Dialog
@@ -375,14 +434,34 @@ function BookingItem({ item }) {
         disableEnforceFocus
         maxWidth="md"
       >
-      {/* <EditGame
+        {/* <EditGame
           onClose={editGame.onFalse}
       /> */}
-      <NewGame
+        <NewGame
           onClose={editGame.onFalse}
           item={item}
-      />
+        />
       </Dialog>
+
+      <ConfirmDialog
+        open={confirmBoletos.value}
+        onClose={confirmBoletos.onFalse}
+        title="Solicitud de boletos"
+        content={`¿Estás seguro de solicitar boletos para el partido ${titulo}?`}
+        action={
+          <>
+            <Button variant="contained" color="error" onClick={() => { confirmBoletos.onFalse() }}>
+              Cancelar
+            </Button>
+            <Button variant="contained" color="success" onClick={() => {
+              handleBoletos();
+              confirmBoletos.onFalse();
+            }}>
+              Aceptar
+            </Button>
+          </>
+        }
+      />
 
       <ConfirmDialog
         open={confirm.value}
@@ -393,7 +472,7 @@ function BookingItem({ item }) {
         }
         action={
           <>
-            <Button variant="contained" color="error" onClick={() => {confirm.onFalse()}}>
+            <Button variant="contained" color="error" onClick={() => { confirm.onFalse() }}>
               Cancelar
             </Button>
             <Button variant="contained" color="success" onClick={() => {
@@ -412,4 +491,5 @@ function BookingItem({ item }) {
 
 BookingItem.propTypes = {
   item: PropTypes.object,
+  idRol: PropTypes.number,
 };

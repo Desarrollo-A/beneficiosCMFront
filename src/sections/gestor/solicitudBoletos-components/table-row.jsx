@@ -7,7 +7,6 @@ import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
-import ListItemText from '@mui/material/ListItemText';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
@@ -25,7 +24,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 // ----------------------------------------------------------------------
 
 export default function TableSolicitudBoletos({ row, selected, onViewRow }) {
-  const { id, departamento, estatus } = row;
+  const { id, nombre, num_empleado, beneficiario, ndepto, nsede, fechaCreacion, telefono_personal, solicitud } = row;
 
   const confirm = useBoolean();
 
@@ -35,17 +34,18 @@ export default function TableSolicitudBoletos({ row, selected, onViewRow }) {
 
   const idUser = {idUser : user?.idUsuario};
 
-  const updateEstatus = useUpdate(endpoints.gestor.updateEstatusDepartamentos);
+  const updateEstatus = useUpdate(endpoints.boletos.updateSolicitudBoletos);
 
   const { enqueueSnackbar } = useSnackbar();
 
   const popover = usePopover();
 
-  const handleEstatus = async (i) => {
+  const handleEstatus = async (dt) => {
 
     const data = {
-      ...i,
+      ...dt,
       ...idUser,
+      estatus:1
     };
 
     try {
@@ -60,9 +60,8 @@ export default function TableSolicitudBoletos({ row, selected, onViewRow }) {
         if (update.result === true) {
           enqueueSnackbar(update.msg, { variant: 'success' });
 
-          mutate(endpoints.gestor.getDepartamentos);
-          mutate(endpoints.gestor.getAreasPs);
-          mutate(endpoints.gestor.getPuestos);
+          mutate(endpoints.boletos.getSolicitudBoletos);
+          mutate(endpoints.boletos.getBoletos);
 
         } else {
           enqueueSnackbar(update.msg, { variant: 'error' });
@@ -87,37 +86,42 @@ export default function TableSolicitudBoletos({ row, selected, onViewRow }) {
           </Box>
         </TableCell>
 
-        <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{nombre}</TableCell>
 
-          <ListItemText
-            primary={departamento}
-            /* secondary={customer.email} */
-            primaryTypographyProps={{ typography: 'body2' }}
-            secondaryTypographyProps={{
-              component: 'span',
-              color: 'text.disabled',
-            }}
-          />
-        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{num_empleado}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{beneficiario}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{ndepto}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{nsede}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fechaCreacion}</TableCell>
+
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{telefono_personal}</TableCell>
 
         <TableCell>
           <Label
             variant="soft"
             color={
-              (estatus === 1 && 'success') ||
-              (estatus === 0 && 'error')
+              (solicitud === 1 && 'success') ||
+              (solicitud === 0 && 'error')
             }
           >
-            {estatus === 1 ? 'ACTIVA' : 'INACTIVA'}
+            {solicitud === 1 ? 'APROBADA' : 'SIN APROBAR'}
           </Label>
         </TableCell>
 
+        {solicitud === 0 ? (
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
 
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
         </TableCell>
+        ):(
+          null
+        )}
       </TableRow>
   );
 
@@ -131,18 +135,6 @@ export default function TableSolicitudBoletos({ row, selected, onViewRow }) {
         arrow="right-top"
         sx={{ width: 140 }}
       >
-        {estatus === 1 ? (
-          <MenuItem
-            onClick={() => {
-              confirm.onTrue();
-              popover.onClose();
-            }}
-            sx={{ color: 'error.main' }}
-          >
-            <Iconify icon="material-symbols:disabled-by-default" />
-            Inhabilitar
-          </MenuItem>
-        ) : (
           <MenuItem
             onClick={() => {
               active.onTrue();
@@ -151,37 +143,16 @@ export default function TableSolicitudBoletos({ row, selected, onViewRow }) {
             sx={{ color: 'success.main' }}
           >
             <Iconify icon="material-symbols:check-box" />
-            Habilitar
+            APROBAR
           </MenuItem>
-        )}
 
       </CustomPopover>
 
       <ConfirmDialog
-        open={confirm.value}
-        onClose={confirm.onFalse}
-        title="Inhabilitar"
-        content="¿Estás seguro de inhabilitar el departamento? Esto implica que todas sus áreas quedarán inhabilitadas y por ende sus puestos."
-        action={
-          <>
-            <Button variant="contained" color="error" onClick={() => { confirm.onFalse() }}>
-              Cancelar
-            </Button>
-            <Button variant="contained" color="success" onClick={() => {
-              handleEstatus(row);
-              confirm.onFalse();
-            }}>
-              Aceptar
-            </Button>
-          </>
-        }
-      />
-
-      <ConfirmDialog
         open={active.value}
         onClose={active.onFalse}
-        title="Habilitar"
-        content="¿Estás seguro de habilitar el puesto? Esto implica que todas sus áreas quedarán habilitadas y por ende sus puestos."
+        title="APROBAR SOLICITUD DE BOLETOS"
+        content='¿Estás seguro de aprobar la solicitud de boletos para esté colaborador?'
         action={
           <>
             <Button variant="contained" color="success" onClick={() => {
