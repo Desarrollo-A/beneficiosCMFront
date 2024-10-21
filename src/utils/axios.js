@@ -401,6 +401,6 @@ export const endpoints = {
     getFondo: 'fondoAhorro/FondoAhorroController/getFondo',
     sendMail: 'fondoAhorro/FondoAhorroController/sendMail',
     getSolicitudes: 'fondoAhorro/FondoAhorroController/getSolicitudes',
-    cancelarFondo: 'fondoAhorro/FondoAhorroController/cancelarFondoAhorro',
+    actualizarFondo: 'fondoAhorro/FondoAhorroController/actualizarFondoAhorro',
   },
 };

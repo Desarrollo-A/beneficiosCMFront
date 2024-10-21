@@ -15,15 +15,15 @@ import ModalUsuarios from './modal-usuarios';
 // ----------------------------------------------------------------------
 
 export default function TableRowUsuarios({ row, idRol, close, onEditRow }) {
-  const { 
-    id, 
+  const {
+    id,
     numEmpleado,
-    nombre, 
+    nombre,
     sede,
     departamento,
     area,
-    puesto, 
-    correo, 
+    puesto,
+    correo,
     fechaCreacion,
     servicios,
     rol,
@@ -32,7 +32,6 @@ export default function TableRowUsuarios({ row, idRol, close, onEditRow }) {
     permisos_name,
     contrato,
     password,
-    
   } = row;
 
   const quickEditar = useBoolean();
@@ -43,14 +42,13 @@ export default function TableRowUsuarios({ row, idRol, close, onEditRow }) {
 
   const handleClose = () => {
     // onEditRow()
-    
-    quickEditar.onFalse()
-  }
+
+    quickEditar.onFalse();
+  };
 
   return (
     <>
       <TableRow>
-
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{id}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{numEmpleado}</TableCell>
@@ -66,7 +64,7 @@ export default function TableRowUsuarios({ row, idRol, close, onEditRow }) {
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{puesto}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{correo}</TableCell>
-        
+
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fechaCreacion}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{servicios}</TableCell>
@@ -76,23 +74,16 @@ export default function TableRowUsuarios({ row, idRol, close, onEditRow }) {
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{permisos_name}</TableCell>
 
         <TableCell>
-          <Label
-            variant="soft"
-            color={
-              (estatus === 1 && 'success') ||
-              (estatus === 0 && 'error')
-            }
-          >
+          <Label variant="soft" color={(estatus === 1 && 'success') || (estatus === 0 && 'error')}>
             {estatus === 1 ? 'ACTIVO' : 'INACTIVO'}
           </Label>
         </TableCell>
 
-          <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-              <Iconify icon="eva:more-vertical-fill" />
-            </IconButton>
-          </TableCell>
-
+        <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
+          <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+            <Iconify icon="eva:more-vertical-fill" />
+          </IconButton>
+        </TableCell>
       </TableRow>
 
       <ModalUsuarios
@@ -119,14 +110,13 @@ export default function TableRowUsuarios({ row, idRol, close, onEditRow }) {
         arrow="right-top"
         sx={{ width: 170 }}
       >
-
         <MenuItem
           onClick={() => {
             quickEditar.onTrue();
             popover.onClose();
           }}
         >
-          <Iconify icon={idRol === 4 ?"solar:clapperboard-edit-outline" : "solar:eye-bold"} />
+          <Iconify icon={idRol === 4 ? 'solar:clapperboard-edit-outline' : 'solar:eye-bold'} />
           {idRol === 4 ? 'Editar' : 'Ver'}
         </MenuItem>
       </CustomPopover>

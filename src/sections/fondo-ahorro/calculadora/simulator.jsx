@@ -29,7 +29,7 @@ import { endpoints } from 'src/utils/axios';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { usePostGeneral } from 'src/api/general';
-import { cancelarFondoAhorro } from 'src/api/fondoAhorro/legalario';
+import { actualizarFondoAhorro } from 'src/api/fondoAhorro/legalario';
 
 import Iconify from 'src/components/iconify/iconify';
 import { useSnackbar } from 'src/components/snackbar';
@@ -39,6 +39,15 @@ import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
 import Request from './request';
 // ----------------------------------------------------------------------
+
+const ESTATUS_FA = Object.freeze({
+  SOLICITADO: 1,
+  EN_PROCESO_FIRMA: 2,
+  CON_FIRMA: 3,
+  EN_EJECUCION: 4,
+  FINALIZADO: 5,
+  CANCELADO: 6,
+});
 
 export default function Simulator({ conditional }) {
   const { user } = useAuthContext();
@@ -168,7 +177,7 @@ export default function Simulator({ conditional }) {
 
   const handleCancelarFondoAhorro = async () => {
     setIsLoading(true);
-    const cancelRes = await cancelarFondoAhorro(fondoData[0]?.idFondo);
+    const cancelRes = await actualizarFondoAhorro(fondoData[0]?.idFondo, ESTATUS_FA.CANCELADO);
     enqueueSnackbar(cancelRes?.msg, {
       variant: cancelRes.result ? 'success' : 'error',
     });

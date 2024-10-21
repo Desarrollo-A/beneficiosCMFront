@@ -152,9 +152,9 @@ export const enviarCorreoFirma = async (
   }
 };
 
-export function cancelarFondoAhorro(idFondo) {
-  const URL = [endpoints.fondoAhorro.cancelarFondo];
-  const idSede = fetcherPost(URL, { idFondo });
+export function actualizarFondoAhorro(idFondo, idEstatusFA) {
+  const URL = [endpoints.fondoAhorro.actualizarFondo];
+  const idSede = fetcherPost(URL, { idFondo, idEstatusFA });
 
   return idSede;
 }

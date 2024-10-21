@@ -1,13 +1,44 @@
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 
+import Button from '@mui/material/Button';
+import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
+import IconButton from '@mui/material/IconButton';
+
+import { useBoolean } from 'src/hooks/use-boolean';
 
 import { fCurrency } from 'src/utils/format-number';
 
+// import { useAuthContext } from 'src/auth/hooks';
+import { actualizarFondoAhorro } from 'src/api/fondoAhorro/legalario';
+
+import Iconify from 'src/components/iconify';
+import { useSnackbar } from 'src/components/snackbar';
+import { ConfirmDialog } from 'src/components/custom-dialog';
+import CustomPopover, { usePopover } from 'src/components/custom-popover';
+
 // ----------------------------------------------------------------------
 
-export default function SolicitudesTableRow({ row, selected }) {
+const ESTATUS_FA = Object.freeze({
+  SOLICITADO: 1,
+  EN_PROCESO_FIRMA: 2,
+  CON_FIRMA: 3,
+  EN_EJECUCION: 4,
+  FINALIZADO: 5,
+  CANCELADO: 6,
+});
+
+export default function SolicitudesTableRow({ row, selected, mutate }) {
+  const { enqueueSnackbar } = useSnackbar();
+  // const { user } = useAuthContext();
+  const confirm = useBoolean();
+  const popover = usePopover();
+
+  const [dialogData, setDialogData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
   const {
     idFondo,
     idContrato,
@@ -18,33 +49,146 @@ export default function SolicitudesTableRow({ row, selected }) {
     fechaFin,
     monto,
     esReinversion,
+    estatusFondo,
     nombreEstatusFondo,
   } = row;
 
+  console.log(row);
+
+  const showConfirmDialog = (data) => {
+    popover.onClose();
+    setDialogData(data);
+    confirm.onTrue();
+  };
+
+  const handleConfirmDialog = async () => {
+    setIsLoading(true);
+    if (dialogData?.type === 'cancel') {
+      console.log(1);
+      const cancelRes = await actualizarFondoAhorro(idFondo, ESTATUS_FA.CANCELADO);
+      enqueueSnackbar(cancelRes?.msg, {
+        variant: cancelRes.result ? 'success' : 'error',
+      });
+      setIsLoading(false);
+      confirm.onFalse();
+      mutate();
+    } else if (dialogData?.type === 'confirm') {
+      console.log(2);
+      const cancelRes = await actualizarFondoAhorro(idFondo, ESTATUS_FA.CANCELADO);
+      enqueueSnackbar(cancelRes?.msg, {
+        variant: cancelRes.result ? 'success' : 'error',
+      });
+      setIsLoading(false);
+      confirm.onFalse();
+      mutate();
+    } else {
+      console.log(3);
+    }
+    setIsLoading(false);
+  };
+
+  const cancelDialog = () => {
+    confirm.onFalse();
+    setDialogData(null);
+  };
+
   return (
-    <TableRow hover selected={selected}>
-      <TableCell sx={{ whiteSpace: 'nowrap' }}>{idFondo}</TableCell>
+    <>
+      <TableRow hover selected={selected}>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{idFondo}</TableCell>
 
-      <TableCell sx={{ whiteSpace: 'nowrap' }}>{idContrato}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{idContrato}</TableCell>
 
-      <TableCell sx={{ whiteSpace: 'nowrap' }}>
-        {nombre_persona} {pri_apellido} {sec_apellido}
-      </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {nombre_persona} {pri_apellido} {sec_apellido}
+        </TableCell>
 
-      <TableCell sx={{ whiteSpace: 'nowrap' }}>{fechaInicio}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fechaInicio}</TableCell>
 
-      <TableCell sx={{ whiteSpace: 'nowrap' }}>{fechaFin}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fechaFin}</TableCell>
 
-      <TableCell sx={{ whiteSpace: 'nowrap' }}>{fCurrency(monto)}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fCurrency(monto)}</TableCell>
 
-      <TableCell sx={{ whiteSpace: 'nowrap' }}>{esReinversion === 1 ? 'SÍ' : 'NO'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{esReinversion === 1 ? 'SÍ' : 'NO'}</TableCell>
 
-      <TableCell sx={{ whiteSpace: 'nowrap' }}>{nombreEstatusFondo.toUpperCase()}</TableCell>
-    </TableRow>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{nombreEstatusFondo.toUpperCase()}</TableCell>
+
+        <TableCell
+          align="right"
+          sx={{
+            px: 1,
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {estatusFondo !== 6 && (
+            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+              <Iconify icon="eva:more-vertical-fill" />
+            </IconButton>
+          )}
+        </TableCell>
+      </TableRow>
+
+      <CustomPopover
+        open={popover.open}
+        onClose={popover.onClose}
+        arrow="right-top"
+        sx={{ width: 170 }}
+      >
+        {estatusFondo === 3 && (
+          <MenuItem
+            onClick={() => {
+              showConfirmDialog({
+                type: 'confirm',
+                msg: '¿Estás seguro de confirmar el contrato firmado?',
+              });
+            }}
+          >
+            <Iconify icon="mdi:check-circle-outline" />
+            Confirmar firmado
+          </MenuItem>
+        )}
+        {estatusFondo !== 6 && (
+          <MenuItem
+            onClick={() => {
+              showConfirmDialog({
+                type: 'cancel',
+                msg: '¿Estás seguro de cancelar la solicitud?',
+              });
+            }}
+          >
+            <Iconify icon="mdi:cancel" />
+            Cancelar
+          </MenuItem>
+        )}
+      </CustomPopover>
+
+      <ConfirmDialog
+        open={confirm.value}
+        onClose={confirm.onFalse}
+        title={dialogData?.type === 'confirm' ? 'Confirmar contrato' : 'Cancelar solicitud'} // Título condicional basado en el tipo
+        content={dialogData?.msg || ''} // Mostrar el mensaje del dialogData
+        action={
+          <>
+            <Button variant="contained" color="error" onClick={cancelDialog}>
+              Cancelar
+            </Button>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={handleConfirmDialog}
+              isLoading={isLoading}
+            >
+              Aceptar
+            </Button>
+          </>
+        }
+      />
+    </>
   );
 }
 
 SolicitudesTableRow.propTypes = {
   row: PropTypes.object,
   selected: PropTypes.bool,
+  mutate: PropTypes.func,
 };
