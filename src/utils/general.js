@@ -301,3 +301,10 @@ export const fechaDocumento = () => {
 
   return formatoDocumento.replace('de', 'de').replace(',', ' del');
 };
+
+export const fechaAll = (fecha) => {
+  const opciones = { day: '2-digit', month: '2-digit', year: 'numeric' };
+  const fechall = new Intl.DateTimeFormat('es-ES', opciones).format(new Date(fecha));
+
+  return fechall;
+};

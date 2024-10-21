@@ -21,11 +21,12 @@ export default function Illustration({ list, ...other }) {
   const carruselData = [
     {"imagen": 1,},
     {"imagen": 2},
-    {"imagen": 3}
+    {"imagen": 3},
+    {"imagen": 4}
   ];
 
   const carousel = useCarousel({
-    speed: 1500,
+    speed: 1800,
     autoplay: true,
     ...CarouselDots({
       sx: {

@@ -272,42 +272,55 @@ export default function Simulator({ conditional }) {
           Calculadora de ahorro
         </Typography>
       )}
-
-      <Stack spacing={3} sx={{ p: 3 }}>
-        <RHFTextField
-         name="ahorro"
-         size="small"
-         label="Monto mensual a ahorrar"
-         placeholder="0.00"
-         value={montoAhorro} 
-         onChange={(e) => handleMontoChange(e.target.value)} 
-         InputLabelProps={{ shrink: true }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Box component="span" sx={{ color: 'text.disabled' }}>
-                  $
-                </Box>
-              </InputAdornment>
-            ),
-          }}
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              '& fieldset': {
-                borderWidth: '.15em',
-                borderColor: '#BAA36B',
+        <Stack spacing={3} sx={{ p: 3 }}>
+          <RHFTextField
+            name="ahorro"
+            size="small"
+            label="Monto mensual a ahorrar"
+            placeholder="0.00"
+            value={montoAhorro}
+            onChange={(e) => handleMontoChange(e.target.value)}
+            InputLabelProps={{
+              shrink: true,
+              sx: {
+                color: '#000000 !important', 
               },
-              '&:hover fieldset': {
-                borderWidth: '.15em',
-                borderColor: '#BAA36B',
+            }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Box component="span" sx={{ color: '#000000' }}>
+                    $
+                  </Box>
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderWidth: '.15em',
+                  borderColor: '#BAA36B',
+                },
+                '&:hover fieldset': {
+                  borderWidth: '.15em',
+                  borderColor: '#BAA36B',
+                },
+                '&.Mui-focused fieldset': {
+                  borderWidth: '.15em',
+                  borderColor: '#BAA36B',
+                },
               },
-              '&.Mui-focused fieldset': {
-                borderWidth: '.15em',
-                borderColor: '#BAA36B',
+              '& .MuiInputBase-input': {
+                color: '#000000',
               },
-            },
-          }}
-        />
+              '& .MuiInputLabel-root': {
+                color: '#000000', 
+              },
+              '& .Mui-focused .MuiInputLabel-root': {
+                color: '#000000 !important',
+              },
+            }}
+          />
 
         <Grid container alignItems="stretch" spacing={2}>
           <Grid item xs={12} md={5}>

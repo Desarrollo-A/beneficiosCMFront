@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
@@ -9,15 +10,18 @@ import IconButton from '@mui/material/IconButton';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
+import {fechaAll} from 'src/utils/general'
 import { fCurrency } from 'src/utils/format-number';
 
-// import { useAuthContext } from 'src/auth/hooks';
 import { actualizarFondoAhorro } from 'src/api/fondoAhorro/legalario';
 
+// import { useAuthContext } from 'src/auth/hooks';
+import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+
 
 // ----------------------------------------------------------------------
 
@@ -103,15 +107,33 @@ export default function SolicitudesTableRow({ row, selected, mutate }) {
           {nombre_persona} {pri_apellido} {sec_apellido}
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fechaInicio}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {fechaAll(fechaInicio)}
+        </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{fechaFin}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {fechaAll(fechaFin)}
+        </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{fCurrency(monto)}</TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{esReinversion === 1 ? 'SÍ' : 'NO'}</TableCell>
-
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{nombreEstatusFondo.toUpperCase()}</TableCell>
+        <TableCell>
+          <Label
+            variant="soft"
+            color={
+                nombreEstatusFondo === 'Solicitado' ? 'primary' :
+                nombreEstatusFondo === 'En proceso de firma' ? 'info' :
+                nombreEstatusFondo === 'Con firma' ? 'secondary' :
+                nombreEstatusFondo === 'En ejecución' ? 'success' :
+                nombreEstatusFondo === 'Finalizado' ? 'default' :
+                nombreEstatusFondo === 'Cancelado' ? 'error' :
+                'default'
+            }
+          >
+            {nombreEstatusFondo.toUpperCase()} 
+          </Label>
+        </TableCell>
 
         <TableCell
           align="right"
@@ -143,7 +165,7 @@ export default function SolicitudesTableRow({ row, selected, mutate }) {
               });
             }}
           >
-            <Iconify icon="mdi:check-circle-outline" />
+            <Iconify icon="line-md:clipboard-check" />
             Confirmar firmado
           </MenuItem>
         )}
@@ -156,7 +178,7 @@ export default function SolicitudesTableRow({ row, selected, mutate }) {
               });
             }}
           >
-            <Iconify icon="mdi:cancel" />
+            <Iconify icon="line-md:cancel" />
             Cancelar
           </MenuItem>
         )}
