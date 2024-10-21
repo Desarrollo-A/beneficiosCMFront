@@ -26,6 +26,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import { endpoints } from 'src/utils/axios';
+import { fCurrencyII } from 'src/utils/format-number';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { usePostGeneral } from 'src/api/general';
@@ -67,7 +68,7 @@ export default function Simulator({ conditional }) {
   const [dateNext, setdateNext] = useState('');
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [montoAhorro, setMontoAhorro] = useState('');
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -75,6 +76,12 @@ export default function Simulator({ conditional }) {
   const handleClose = () => {
     setOpen(false);
   };
+  const handleMontoChange = (precio) => {
+    const numericValue = precio.replace(/[^0-9.]/g, '');
+    const formattedValue = fCurrencyII(numericValue);
+    setMontoAhorro(formattedValue);
+    methods.setValue("ahorro", numericValue);
+  };;
 
   useEffect(() => {
     const today = new Date();
@@ -131,11 +138,11 @@ export default function Simulator({ conditional }) {
 
   const NewProductSchema = Yup.object().shape({
     ahorro: Yup.number()
-      .typeError('Debe ser un número')
-      .required('Ingresa un monto')
-      .positive('Debe ser un número positivo')
-      .min(500.0, 'Debe ser mayor o igual a $500')
-      .max(10000.0, 'Debe ser menor o igual a $10,000'),
+      .typeError('Debe ser un número') 
+      .required('Ingresa un monto')     
+      .positive('Debe ser un número positivo') 
+      .min(500.0, 'Debe ser mayor o igual a $500') 
+      .max(10000.0, 'Debe ser menor o igual a $10,000'), 
   });
 
   const defaultValues = useMemo(
@@ -155,26 +162,27 @@ export default function Simulator({ conditional }) {
   const onSubmit = handleSubmit(async (data) => {
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
-
+  
+      const ahorroFormateado = fCurrencyII(data.ahorro);
+      
       // Retención semanal
       setRtSemanal(((data.ahorro / 30.4) * 7).toFixed(2));
-
+  
       // Inversión mensual
-      setInvMensual(data.ahorro.toFixed(2));
-
+      setInvMensual(ahorroFormateado);
+  
       // Inversión anual
-      setInvAnual((data.ahorro * 12).toFixed(2));
-
-      // Rendimiento de invesión
-      setRenInv(data.ahorro.toFixed(2));
-
-      // Invesión + rendimiento
-      setInvRen((data.ahorro * 12 + data.ahorro).toFixed(2));
+      setInvAnual(fCurrencyII(data.ahorro * 12));
+  
+      // Rendimiento de inversión
+      setRenInv(ahorroFormateado);
+  
+      // Inversión + rendimiento
+      setInvRen(fCurrencyII(data.ahorro * 12 + data.ahorro));
     } catch (error) {
       console.error(error);
     }
   });
-
   const handleCancelarFondoAhorro = async () => {
     setIsLoading(true);
     const cancelRes = await actualizarFondoAhorro(fondoData[0]?.idFondo, ESTATUS_FA.CANCELADO);
@@ -267,12 +275,13 @@ export default function Simulator({ conditional }) {
 
       <Stack spacing={3} sx={{ p: 3 }}>
         <RHFTextField
-          name="ahorro"
-          size="small"
-          label="Monto mensual a ahorrar"
-          placeholder="0.00"
-          type="number"
-          InputLabelProps={{ shrink: true }}
+         name="ahorro"
+         size="small"
+         label="Monto mensual a ahorrar"
+         placeholder="0.00"
+         value={montoAhorro} 
+         onChange={(e) => handleMontoChange(e.target.value)} 
+         InputLabelProps={{ shrink: true }}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
