@@ -8,7 +8,7 @@ import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import { LoadingButton } from '@mui/lab';
 import Dialog from '@mui/material/Dialog';
-import { Button,Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import DialogContent from '@mui/material/DialogContent';
 
@@ -25,11 +25,8 @@ import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 
 import NewEventDialog from './new-event-dialog';
-import ConfirmarAsistencia from './event-item-previewdatos';
-
 import VerificarCorreoModal from './event-item-verificar';
-
-
+import ConfirmarAsistencia from './event-item-previewdatos';
 
 // ----------------------------------------------------------------------
 
@@ -41,7 +38,6 @@ export default function EventItem({ event, mutate, onClose}) {
   const [openConfirmarAsistencia, setOpenConfirmarAsistencia] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitting2, setIsSubmitting2] = useState(false);
-
 
   const {
     idEvento,
@@ -71,21 +67,21 @@ export default function EventItem({ event, mutate, onClose}) {
 
   const handleConfirmacion = async () => {
     if (estatusAsistencia === 1 ) {
+      enqueueSnackbar('Cancelando tu asistencia. Por favor, espera...', { variant: 'warning' });
+      setIsSubmitting(true);
       const res = await actualizarAsistenciaEvento(
-        
         user?.idContrato,
         idEvento,
         2, 
         user?.idUsuario
       );
-      setIsSubmitting(true);
       if (res && res.msg) {
         enqueueSnackbar(res.msg, { variant: res.result === true ? 'success' : 'error' });
-      } else {
-       // enqueueSnackbar('Error inesperado, intente nuevamente.', { variant: 'error' });
-      }
+      } 
       await mutate(); 
       setIsSubmitting(false);
+      enqueueSnackbar('Asistencia cancelada', { variant: 'success' });
+
     } else {
       setOpenConfirmarAsistencia(true);
       showImage.onFalse(); 
@@ -107,6 +103,7 @@ export default function EventItem({ event, mutate, onClose}) {
     setIsSubmitting2(false);
     enqueueSnackbar(res.msg, { variant: res.result === true ? 'success' : 'error' });
   };
+
 
   const renderOptions = (
     <Stack
@@ -446,7 +443,9 @@ export default function EventItem({ event, mutate, onClose}) {
         onSubmit={handleSubmitConfirmacion}
         isSubmitting={isSubmitting}    
       />
-      <VerificarCorreoModal idEvento={idEvento} /> 
+      <VerificarCorreoModal
+        event={event}
+       />
     </>
   );
 }
@@ -455,4 +454,5 @@ EventItem.propTypes = {
   onClose: PropTypes.func,
   event: PropTypes.object,
   mutate: PropTypes.func,
+  
 };

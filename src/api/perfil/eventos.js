@@ -96,9 +96,9 @@ export const newEvent = async (
 };
 
 // Actualizar la fecha de intento de pago en las citas para que se les inhabilite.
-export function actualizarAsistenciaEvento(idContrato, idEvento, estatusAsistencia, idUsuario) {
+export function actualizarAsistenciaEvento(idContrato, idEvento, estatusAsistencia, idUsuario,correo) {
   const URL = [endpoints.eventos.updateAsistencia];
-  const update = fetcherPost(URL, { idContrato, idEvento, estatusAsistencia, idUsuario });
+  const update = fetcherPost(URL, { idContrato, idEvento, estatusAsistencia, idUsuario, correo });
 
 
   return update;

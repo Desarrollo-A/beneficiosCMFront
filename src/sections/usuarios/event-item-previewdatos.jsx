@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Grid, Box, TextField, Typography, Button } from '@mui/material';
 import PropTypes from 'prop-types';
-import { LoadingButton } from '@mui/lab';
+import React, { useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
-import { useSnackbar } from 'src/components/snackbar';
 
+import { LoadingButton } from '@mui/lab';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Grid, Box, TextField, Typography, Button } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { verificacionCorreo } from 'src/api/perfil/eventos'; 
+
+import { useSnackbar } from 'src/components/snackbar';
 
 import VerificarCorreoModal from './event-item-verificar';
 
@@ -25,23 +26,22 @@ export default function ConfirmarAsistencia({ open, onClose, onSubmit, isSubmitt
   const [userEmail, setUserEmail] = useState(''); // Almacenar el correo del usuario
   const handleVerifyClick = async () => {
     const correo = methods.getValues('correo'); 
-    setUserEmail(correo); // Establecer el correo para pasarlo al modal
+    setUserEmail(correo);
 
     try {
       setIsLoading(true);  
       await verificacionCorreo(correo); 
       setVerificationOpen(true);
       onClose();
-      enqueueSnackbar('Se ha enviado un codigo a tu correo.', { variant: 'success' });
+      enqueueSnackbar('Se ha enviado un código a tu correo.', { variant: 'success' });
 
       
     } catch (error) {
-      enqueueSnackbar('Error enviando verificación de correo.', { variant: 'error' });
+      enqueueSnackbar('Error al enviar la verificación del correo.', { variant: 'error' });
     } finally {
       setIsLoading(false); 
     }
   };
-
   return (
     <>
       <Dialog open={open} fullWidth maxWidth="sm" disableEscapeKeyDown backdrop="static">
