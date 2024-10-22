@@ -49,6 +49,7 @@ const TABLE_HEAD = [
   { id: '', label: 'MONTO' },
   { id: '', label: 'ES REINVERSIÓN' },
   { id: '', label: 'ESTATUS' },
+  { id: '', label: '' },
 ];
 
 const HEADER = [
@@ -308,6 +309,7 @@ export default function SolicitudesTable({ solicitudes, solicitudesMutate }) {
                       key={item.idFondo}
                       row={item}
                       selected={table.selected.includes(item.idFondo)}
+                      mutate={solicitudesMutate}
                     />
                   ))}
 

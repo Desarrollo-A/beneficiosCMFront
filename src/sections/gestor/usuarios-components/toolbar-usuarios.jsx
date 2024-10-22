@@ -24,9 +24,8 @@ export default function ToolbarUsuarios({
   onFilters,
   //
   handleChangeId,
-  rol
+  rol,
 }) {
-
   const handleFilterName = useCallback(
     (event) => {
       onFilters('name', event.target.value);
@@ -34,7 +33,10 @@ export default function ToolbarUsuarios({
     [onFilters]
   );
 
-  const { especialistasData } = useGetGeneral(endpoints.reportes.especialistas, "especialistasData");
+  const { especialistasData } = useGetGeneral(
+    endpoints.reportes.especialistas,
+    'especialistasData'
+  );
 
   const [, setEspecialistas] = useState([]); // especialistas
 
@@ -56,7 +58,6 @@ export default function ToolbarUsuarios({
   // );
 
   return (
-
     <Stack
       spacing={2}
       alignItems={{ xs: 'flex-end', md: 'center' }}
@@ -69,7 +70,6 @@ export default function ToolbarUsuarios({
         pr: { xs: 2.5, md: 1 },
       }}
     >
-
       <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
         <TextField
           fullWidth
@@ -84,12 +84,8 @@ export default function ToolbarUsuarios({
             ),
           }}
         />
-
       </Stack>
-      
     </Stack>
-
-
   );
 }
 

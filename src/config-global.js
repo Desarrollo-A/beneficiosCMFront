@@ -1,11 +1,20 @@
+
 import { paths } from 'src/routes/paths';
 
 // API
-// ----------------------------------------------------------------------  
+// ----------------------------------------------------------------------
 
 export const HOST = import.meta.env.VITE_HOST;
-export const HOST_API =  import.meta.env.VITE_HOST_API;
+export const HOST_API = import.meta.env.VITE_HOST_API;
 export const ASSETS_API = import.meta.env.VITE_ASSETS_API;
+
+// content legalario
+export const LEGALARIO_HOST = import.meta.env.VITE_LEGALARIO_HOST;
+export const LEGALARIO_EMAIL = import.meta.env.VITE_LEGALARIO_EMAIL;
+export const LEGALARIO_PASSWORD = import.meta.env.VITE_LEGALARIO_PASSWORD;
+export const TEMPLATEID = import.meta.env.VITE_LEGALARIO_TEMPLATE;
+
+
 
 export const FIREBASE_API = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -34,5 +43,4 @@ export const MAPBOX_API = import.meta.env.VITE_MAPBOX_API;
 // ROOT PATH AFTER LOGIN SUCCESSFUL
 export const PATH_AFTER_LOGIN = paths.dashboard.general.dash; // as '/dashboard'
 export const PATH_AFTER_VERIFICACION = paths.auth.jwt.verificacion;
-export const PATH_AFTER_REGISTRO = paths.auth.jwt.preRegister; // 
-
+export const PATH_AFTER_REGISTRO = paths.auth.jwt.preRegister; //
