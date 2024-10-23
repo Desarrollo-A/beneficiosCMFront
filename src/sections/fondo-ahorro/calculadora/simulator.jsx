@@ -85,16 +85,16 @@ export default function Simulator({ conditional }) {
 
   useEffect(() => {
     const today = new Date();
-
+  
     const getFirstFriday = (date) => {
       let firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
       let firstFriday = new Date(firstDay);
-
+  
       // Buscar el primer viernes del mes
       while (firstFriday.getDay() !== 5) {
         firstFriday.setDate(firstFriday.getDate() + 1);
       }
-
+  
       // Si ya pasó el primer viernes, calcular el primer viernes del siguiente mes
       if (firstFriday < date) {
         firstDay = new Date(date.getFullYear(), date.getMonth() + 1, 1);
@@ -103,28 +103,38 @@ export default function Simulator({ conditional }) {
           firstFriday.setDate(firstFriday.getDate() + 1);
         }
       }
-
-      return formatDate(firstFriday);
+  
+      return firstFriday; 
     };
-
+  
     const formatDate = (date) => {
       const day = String(date.getDate()).padStart(2, '0');
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const year = date.getFullYear();
-
+  
       return `${day}-${month}-${year}`;
     };
-
+  
     // Calcular fechas
-    const firstFriday = getFirstFriday(today);
-
-    // 12 meses despues
-    const ftNext = dayjs(firstFriday).add(365, 'day').format('MM-DD-YYYY');
-
+    const firstFridayDate = getFirstFriday(today);
+  
+    let ftNext = dayjs(firstFridayDate).add(11, 'month');
+  
+    let firstDayOfNextMonth = dayjs(ftNext).startOf('month');
+  
+    while (firstDayOfNextMonth.day() !== 5) {
+      firstDayOfNextMonth = firstDayOfNextMonth.add(1, 'day');
+    }
+  
+    ftNext = firstDayOfNextMonth.format('DD-MM-YYYY');
+  
+    console.log(ftNext); 
+  
     // Actualizar estado
-    setFirstDay(firstFriday);
+    setFirstDay(formatDate(firstFridayDate)); 
     setdateNext(ftNext);
   }, []);
+  
 
   const [rtSemanal, setRtSemanal] = useState('0.00');
 

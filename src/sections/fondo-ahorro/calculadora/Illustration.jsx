@@ -40,23 +40,23 @@ export default function Illustration({ list, ...other }) {
   });
 
   return (
-    <Card {...other}>
-      {!isEmpty(carruselData) ? (
-          <Carousel ref={carousel.carouselRef} {...carousel.carouselSettings}>
-            {carruselData.map((app, index) => (
-              <CarouselItem key={index} item={app} active={index === carousel.currentIndex} />
-            ))}
-          </Carousel>
-      ) : (
-        <Grid container spacing={1} sx={{
-          p: 5, backgroundColor: "#ECECEC", animation: 'pulse 1.5s infinite', height: {
-            xl: 500,
-          }
-        }} justifyContent="center" alignItems="center">
-          <Card />
-        </Grid>
-      )}
-    </Card>
+<Card {...other} sx={{ height: 'auto', position: 'relative', maxHeight: '600px'  }}>
+  {!isEmpty(carruselData) ? (
+    <Carousel ref={carousel.carouselRef} {...carousel.carouselSettings}>
+      {carruselData.map((app, index) => (
+        <CarouselItem key={index} item={app} active={index === carousel.currentIndex} />
+      ))}
+    </Carousel>
+  ) : (
+    <Grid container spacing={1} sx={{
+      p: 5, backgroundColor: "#ECECEC", animation: 'pulse 1.5s infinite', height: {
+        xl: 600,
+      }
+    }} justifyContent="center" alignItems="center">
+      <Card />
+    </Grid>
+  )}
+</Card>    
   );
 }
 
@@ -67,27 +67,26 @@ Illustration.propTypes = {
 // ----------------------------------------------------------------------
 
 function CarouselItem({ item, active }) {
-
   const { imagen } = item;
 
   const renderImg = (
     <Image
       src={`${import.meta.env.BASE_URL}assets/images/fondoAhorro/${imagen}.png`}
       sx={{
-        width: 1,
-        height: {
-          xs: 440,
-          xl: 500,
-        },
+        width: '100%',              
+        height: 'auto',             
+        maxWidth: '100%',          
+        maxHeight: '100%',        
+        objectFit: 'contain',    
       }}
     />
   );
 
   return (
-    <MotionContainer action animate={active} sx={{ position: 'relative' }} className="fade-in">
+    <MotionContainer action animate={active} sx={{ position: 'relative', height: '100%' }} className="fade-in">
       {renderImg}
     </MotionContainer>
-  )
+  );
 }
 
 CarouselItem.propTypes = {
