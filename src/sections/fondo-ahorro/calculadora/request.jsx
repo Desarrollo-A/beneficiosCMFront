@@ -255,7 +255,7 @@ export default function Request({ onClose, FirstDay, dateNext }) {
                 );
               }
             } else {
-              enqueueSnackbar('Error al generar solicitud de firma electrónica.', {
+              enqueueSnackbar('Error al generar el documento de firma electrónica.', {
                 variant: 'error',
               });
             }

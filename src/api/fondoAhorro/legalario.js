@@ -75,6 +75,24 @@ export const postDocumentos = async (
   };
   const formatoMontos = useFormatoMonto();
   const formatoMonto = useFormatoMonto2();
+  
+  const datosCompletosColaborador = (datos)=> Object.values(datos).every(value=> value !==undefined && value !== null);
+  const userdatos = {
+    nombre,
+    FirstDay,
+    ahorroFinal,
+    nss,
+    rfc,
+    razonSocial,
+    direccion,
+    sueldoNeto
+  };
+
+  if (!datosCompletosColaborador(userdatos)) {
+  console.error('Los datos del colaborador estan incompletos, se detuvo el proceso de generacion de documento');
+
+    return null; 
+  }
 
   // cuerpo del documento
   const body = {
