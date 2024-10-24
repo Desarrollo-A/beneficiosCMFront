@@ -275,6 +275,11 @@ export const endpoints = {
     demandaAreas: '/ReportesController/demandaAreas',
     demandaPuestos: '/ReportesController/demandaPuestos',
     aceptarJustificacion: '/ReportesController/aceptarJustificacion',
+    getEncuestasContestadas: '/EncuestasController/getEncuestasContestadas',
+    getSedes: '/GeneralController/getSedes',
+    getDepartamentos: '/GeneralController/getDepartamentos',
+    getAreas: '/GeneralController/getAreas',
+    getPreguntas: '/EncuestasController/getPreguntas',
   },
   dashboard: {
     citasAnual: '/DashboardController/citasAnual',
