@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
 import { mutate } from 'swr';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { useMemo, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm, useFormState } from 'react-hook-form';
 
@@ -152,6 +152,12 @@ export default function Request({ onClose, FirstDay, dateNext }) {
 
   const NewProductSchema = Yup.object().shape({
     ahorroFinal: Yup.number()
+      .transform((value, originalValue) => {
+        if (typeof originalValue === 'string') {
+          return parseFloat(originalValue.replace(/,/g, '')) || 0;
+        }
+        return value;
+      })
       .typeError('Debe ser un número')
       .required('Ingresa un monto')
       .positive('Debe ser un número positivo')
@@ -159,17 +165,28 @@ export default function Request({ onClose, FirstDay, dateNext }) {
       .max(10000.0, 'Debe ser menor o igual a $10,000'),
   });
 
-  const defaultValues = useMemo(
-    () => ({
-      ahorroFinal: '',
-    }),
-    []
-  );
-
   const methods = useForm({
     resolver: yupResolver(NewProductSchema),
-    defaultValues,
+    defaultValues: {
+      ahorroFinal: '',
+    },
   });
+  const [valorFormato, setvalorFormato] = useState('');
+
+  const formatNumberWithCommas = (value) => {
+    if (!value) return '';
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  };
+
+  const formatoInputChange = (e) => {
+    const unvalorFormato = e.target.value.replace(/,/g, '');
+    const numericValue = unvalorFormato.replace(/[^\d.]/g, '');
+    setvalorFormato(formatNumberWithCommas(numericValue));
+    methods.setValue('ahorroFinal', parseFloat(numericValue) || 0, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
+  };
 
   const {
     handleSubmit,
@@ -210,7 +227,6 @@ export default function Request({ onClose, FirstDay, dateNext }) {
         if (loginResponse && loginResponse.success) {
           const { client_id, client_secret, scopes } = loginResponse.data;
 
-          // 2. Llama a postGenerarToken
           const tokenResponse = await postGenerarToken(
             client_id,
             client_secret,
@@ -274,7 +290,6 @@ export default function Request({ onClose, FirstDay, dateNext }) {
     } catch (error) {
       enqueueSnackbar('Ocurrió un error inesperado', { variant: 'error' });
     }
-
     onClose();
   });
 
@@ -294,7 +309,7 @@ export default function Request({ onClose, FirstDay, dateNext }) {
           }}
         >
           <Grid item xs={12}>
-          <Grid container justifyContent="center">
+            <Grid container justifyContent="center">
               <Stepper nonLinear activeStep={activeStep}>
                 {steps.map((label, index) => (
                   <Step key={label} completed={completed[index]}>
@@ -302,13 +317,13 @@ export default function Request({ onClose, FirstDay, dateNext }) {
                       StepIconComponent={QontoStepIcon}
                       sx={{
                         '& .MuiStepLabel-label': {
-                          color: '#000000 !important', 
+                          color: '#000000 !important',
                         },
                         '& .MuiStepLabel-label.Mui-active': {
-                          color: '#000000 !important', 
+                          color: '#000000 !important',
                         },
                         '& .MuiStepLabel-label.Mui-completed': {
-                          color: '#000000 !important', 
+                          color: '#000000 !important',
                         },
                       }}
                     >
@@ -330,7 +345,6 @@ export default function Request({ onClose, FirstDay, dateNext }) {
                       display: 'flex',
                       alignItems: 'flex-start',
                       marginBottom: 2,
-
                     }}
                   >
                     <Box sx={{ width: 24, height: 24, flexShrink: 0, marginRight: 1 }}>
@@ -342,13 +356,16 @@ export default function Request({ onClose, FirstDay, dateNext }) {
                       />
                     </Box>
                     <Box>
-                      <Typography variant="body1" sx={{ fontWeight: 'bold', textAlign: 'justify',color: '#000000'}}>
+                      <Typography
+                        variant="body1"
+                        sx={{ fontWeight: 'bold', textAlign: 'justify', color: '#000000' }}
+                      >
                         El ahorro que solicitas será de forma mensual y se te descontará
                         proporcionalmente a la semana.
                       </Typography>
                       <Typography
                         variant="body1"
-                        sx={{ fontStyle: 'italic', textAlign: 'justify', color: '#000000'}}
+                        sx={{ fontStyle: 'italic', textAlign: 'justify', color: '#000000' }}
                       >
                         Ejemplo: Solicitas de $400.00 al mes, se te descontarán $100.00 a la semana
                         (Aprox.).
@@ -372,9 +389,11 @@ export default function Request({ onClose, FirstDay, dateNext }) {
                         sx={{ color: '#00d526' }}
                       />
                     </Box>
-                    <Typography variant="body1" sx={{ fontWeight: 'bold', textAlign: 'justify',color: '#000000' }}>
+                    <Typography
+                      variant="body1"
+                      sx={{ fontWeight: 'bold', textAlign: 'justify', color: '#000000' }}
+                    >
                       El ahorro se puede cancelar en cualquier momento.
-                      
                     </Typography>
                   </Box>
 
@@ -394,7 +413,10 @@ export default function Request({ onClose, FirstDay, dateNext }) {
                         sx={{ color: '#00d526' }}
                       />
                     </Box>
-                    <Typography variant="body1" sx={{ fontWeight: 'bold', textAlign: 'justify',color: '#000000' }}>
+                    <Typography
+                      variant="body1"
+                      sx={{ fontWeight: 'bold', textAlign: 'justify', color: '#000000' }}
+                    >
                       La solicitud se procesará para tu firma digital, solo puedes generar tu firma
                       una vez.
                     </Typography>
@@ -413,11 +435,13 @@ export default function Request({ onClose, FirstDay, dateNext }) {
                     size="small"
                     label="Confirma tu monto mensual a ahorrar"
                     placeholder="0.00"
-                    type="number"
+                    value={valorFormato}
+                    onChange={formatoInputChange}
+                    inputMode="numeric"
                     InputLabelProps={{
                       shrink: true,
                       sx: {
-                        color: '#000000 !important', 
+                        color: '#000000 !important',
                       },
                     }}
                     InputProps={{
@@ -445,13 +469,13 @@ export default function Request({ onClose, FirstDay, dateNext }) {
                         },
                       },
                       '& .MuiInputBase-input': {
-                        color: '#000000', 
+                        color: '#000000',
                       },
                       '& .MuiInputLabel-root': {
-                        color: '#000000', 
+                        color: '#000000',
                       },
                       '& .Mui-focused .MuiInputLabel-root': {
-                        color: '#000000 !important', 
+                        color: '#000000 !important',
                       },
                     }}
                   />
@@ -466,10 +490,10 @@ export default function Request({ onClose, FirstDay, dateNext }) {
                 onClick={handleBack}
                 sx={{
                   mr: 1,
-                  color: '#000000',  
+                  color: '#000000',
                   '& .MuiSvgIcon-root': {
-                    color: '#000000',  
-                  }
+                    color: '#000000',
+                  },
                 }}
               >
                 <Iconify icon="material-symbols-light:chevron-backward" width={24} /> Regresar
@@ -477,14 +501,15 @@ export default function Request({ onClose, FirstDay, dateNext }) {
               <Box sx={{ flex: '1 1 auto' }} />
 
               {activeStep !== 2 ? (
-                <Button onClick={handleComplete} 
-                sx={{
-                  mr: 1,
-                  color: '#000000', 
-                  '& .MuiSvgIcon-root': {  
-                    color: '#000000',  
-                  }
-                }}
+                <Button
+                  onClick={handleComplete}
+                  sx={{
+                    mr: 1,
+                    color: '#000000',
+                    '& .MuiSvgIcon-root': {
+                      color: '#000000',
+                    },
+                  }}
                 >
                   Siguiente <Iconify icon="material-symbols-light:navigate-next" width={24} />
                 </Button>
@@ -494,13 +519,13 @@ export default function Request({ onClose, FirstDay, dateNext }) {
                     confirm.onTrue();
                   }}
                   disabled={isButtonDisabled}
-                    sx={{
-                      mr: 1,
-                      color: '#000000', 
-                      '& .MuiSvgIcon-root': {  
-                        color: '#000000',  
-                      }
-                    }}
+                  sx={{
+                    mr: 1,
+                    color: '#000000',
+                    '& .MuiSvgIcon-root': {
+                      color: '#000000',
+                    },
+                  }}
                 >
                   Enviar <Iconify icon="lets-icons:send-hor-light" width={24} />
                 </Button>

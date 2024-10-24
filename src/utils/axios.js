@@ -109,10 +109,8 @@ export const fetcherGetLegalario = async (args) => {
 export const fetcherPostLegalario = async (args, dataValue) => {
   const [url, config] = Array.isArray(args) ? args : [args];
 
-  // Convierte el objeto dataValue a URLSearchParams
   const urlencoded = new URLSearchParams();
 
-  // Usa Object.entries para iterar sobre las claves y valores de dataValue
   Object.entries(dataValue).forEach(([key, value]) => {
     urlencoded.append(key, value);
   });
@@ -132,8 +130,9 @@ export const fetcherPostLegalario = async (args, dataValue) => {
 export const endpoints = {
   legalario: {
     login: 'auth/login',
-    token: 'auth/token',
+    token: 'auth/token?',
     docs: 'v2/documents',
+    signers:'v2/signers',
   },
   chat: '/api/chat',
   kanban: '/api/kanban',
