@@ -64,6 +64,7 @@ export default function EventItem({ event, mutate, onClose}) {
     // modificadoPor,
     // fechaModificacion,
   } = event;
+  localStorage.setItem('idEvento', idEvento);
 
   const handleConfirmacion = async () => {
     if (estatusAsistencia === 1 ) {

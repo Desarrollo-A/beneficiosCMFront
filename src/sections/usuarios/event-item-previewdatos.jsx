@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 
 import { LoadingButton } from '@mui/lab';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Grid, Box, TextField, Typography, Button } from '@mui/material';
+import { Box,Grid,Dialog,Button,TextField,Typography,DialogTitle,DialogContent, DialogActions } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { verificacionCorreo } from 'src/api/perfil/eventos'; 
@@ -27,6 +27,7 @@ export default function ConfirmarAsistencia({ open, onClose, onSubmit, isSubmitt
   const handleVerifyClick = async () => {
     const correo = methods.getValues('correo'); 
     setUserEmail(correo);
+    localStorage.setItem('userEmail', correo);
 
     try {
       setIsLoading(true);  
@@ -47,17 +48,17 @@ export default function ConfirmarAsistencia({ open, onClose, onSubmit, isSubmitt
       <Dialog open={open} fullWidth maxWidth="sm" disableEscapeKeyDown backdrop="static">
         <FormProvider {...methods}>
           <form>
-            <DialogTitle>Confirma tu asistencia</DialogTitle>
+            <DialogTitle>Confirmación de asistencia</DialogTitle>
             <DialogContent sx={{ maxHeight: '400px', overflowY: 'auto' }}>
               <Box mb={2}>
                 <Typography variant="subtitle1" sx={{ marginBottom: 1 }}>
-                  Verifica que tu correo electrónico sea correcto.
+                Asegúrate de que tu correo electrónico sea correcto.
                 </Typography>
               </Box>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
-                  <Typography variant="subtitle1">Nombre Completo</Typography>
-                  <Typography variant="body1">{user?.nombre}</Typography>
+                  <Typography variant="subtitle1">Nombre completo</Typography>
+                  <Typography variant="body1">{user?.nombre.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase())}</Typography> 
                 </Grid>
                 <Grid item xs={12}>
                   <Typography variant="subtitle1">Departamento</Typography>
@@ -69,11 +70,11 @@ export default function ConfirmarAsistencia({ open, onClose, onSubmit, isSubmitt
                 </Grid>
                 <Grid item xs={12}>
                   <Typography variant="subtitle1">Tipo de puesto</Typography>
-                  <Typography variant="body1">{user?.puesto}</Typography>
+                  <Typography variant="body1">{user?.puesto.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase())}</Typography>
                 </Grid>
                 <Grid item xs={12}>
                   <Typography variant="subtitle1">Fecha de ingreso</Typography>
-                  <Typography variant="body1">{user?.fechaIngreso}</Typography>
+                  <Typography variant="body1">{new Date(user?.fechaIngreso).toLocaleDateString('es-ES', {day: '2-digit',month: '2-digit',year: 'numeric',})}</Typography>  
                 </Grid>
                 <Grid item xs={12}>
                   <TextField
@@ -104,13 +105,13 @@ export default function ConfirmarAsistencia({ open, onClose, onSubmit, isSubmitt
       <VerificarCorreoModal
         open={isVerificationOpen}
         onClose={() => setVerificationOpen(false)}
-        correo={userEmail} 
+        correo={userEmail}
+         
         
       />
     </>
   );
 }
-
 ConfirmarAsistencia.propTypes = {
   open: PropTypes.bool,
   onClose: PropTypes.func,

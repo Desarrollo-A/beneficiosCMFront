@@ -6,9 +6,10 @@ import { useState, useEffect, useCallback } from 'react';
 import TableContainer from '@mui/material/TableContainer';
 import { Card, Stack, Table, Tooltip, MenuItem, Container, TableBody } from '@mui/material';
 
+import { useBoolean } from 'src/hooks/use-boolean';
+
 import { useAuthContext } from 'src/auth/hooks';
 import { useGetAsistenciaEv, useGetAsistenciaEvUser } from 'src/api/asistenciaEv/asistenciaEv';
-import { useBoolean } from 'src/hooks/use-boolean';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -30,7 +31,7 @@ import ToolbarAsistenciaEv from '../components/asistencia-table-toolbar';
 
 const TABLE_HEAD = [
   { id: 'idEvento', label: 'ID Evento' },
-  { id: 'estatusAsistentes', label: 'Estatus de Asistentes' },
+  { id: 'estatusAsistentes', label:'Estatus de asistentes' },
   { id: 'titulo', label: 'Nombre del evento' },
   { id: 'fechaEvento', label: 'Fecha del Evento' },
   { id: 'horaEvento', label: 'Hora del Evento' },
@@ -94,11 +95,11 @@ function handleDownloadPDF(dataFiltered) {
     head: [
       [
         'ID',
-        'Estatus Asistentes',
+        'Estatus de asistentes',
         'Nombre del Evento',
-        'Fecha del Evento',
+        'Nombre del evento',
         'Hora del evento',
-        'Limite de recepcion',
+        'Límite de recepción',
         'Número empleado',
         'Nombre del colaborador',
         'Sede',

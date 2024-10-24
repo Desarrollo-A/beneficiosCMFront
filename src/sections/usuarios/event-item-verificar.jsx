@@ -1,21 +1,25 @@
 import PropTypes from 'prop-types';
-import React, { useState,useEffect } from 'react';
+import React, { useState } from 'react';
 
 import { LoadingButton } from '@mui/lab';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Box,Button,Dialog,TextField,Typography, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { Box,Button,Dialog,TextField, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { hideShowEvent,verificacionCodigoCorreo, actualizarAsistenciaEvento } from 'src/api/perfil/eventos'; 
+import { verificacionCodigoCorreo, actualizarAsistenciaEvento } from 'src/api/perfil/eventos'; 
 
 import { useSnackbar } from 'src/components/snackbar';
 
 
-export default function VerificarCorreoModal({ open, onClose, correo,idEvento }) {
+export default function VerificarCorreoModal({ open, onClose }) {
   const { user } = useAuthContext();
   const [codigo, setCodigo] = useState('');
   const [btnLoad, setBtnLoad] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
+  const correo = localStorage.getItem('userEmail'); 
+  const idEvento = localStorage.getItem('idEvento');
+  //  console.log(idEvento);
+ // console.log(userEmail);
   const handleVerificar = async () => {
     try {
       setBtnLoad(true);
@@ -24,7 +28,7 @@ export default function VerificarCorreoModal({ open, onClose, correo,idEvento })
         enqueueSnackbar('Token válido.', { variant: 'success' });
         const res = await actualizarAsistenciaEvento(
           user?.idContrato,
-          1,
+          idEvento,
           1,  
           user?.idUsuario,
           correo,
@@ -62,42 +66,54 @@ export default function VerificarCorreoModal({ open, onClose, correo,idEvento })
       },
     },
   });
-
   return (
     <Dialog open={open} fullWidth maxWidth="sm" disableEscapeKeyDown>
-      <DialogTitle>Hemos enviado un código de verificación a tu correo electrónico.</DialogTitle>
-    
-        <DialogContent sx={{ maxHeight: '500px', overflowY: 'auto' }}>
-          <Box mb={2}>
-            <ThemeProvider theme={lightTheme}>
-              <TextField
-                id="codigo"
-                value={codigo}
-                onChange={(e) => setCodigo(e.target.value)}
-                name="codigo"
-                label="Introduce tu código de verificación"
-                autoComplete="off"
-                fullWidth
-                InputLabelProps={{ shrink: true }}
-                sx={{
-                  marginTop: '16px',
-                  marginBottom: '8px',
-                }} 
-              />
-            </ThemeProvider>
-          </Box>
-        </DialogContent>
-      <DialogActions>
-        <Button variant="contained" color="error" onClick={onClose}>
-          Cancelar
-        </Button>
-        <LoadingButton
-          variant="contained"
-          loading={btnLoad}
-          onClick={handleVerificar}
-        >Verificar y confirmar asistencia.
-        </LoadingButton>
-      </DialogActions>
+      <DialogTitle>Hemos enviado un código de verificación a tu correo electrónico</DialogTitle>
+       <DialogContent sx={{ maxHeight: '500px', overflowY: 'auto' }}>
+       <Box mb={2}>
+          <ThemeProvider theme={lightTheme}>
+            <TextField
+              id="codigo"
+              value={codigo}
+              onChange={(e) => setCodigo(e.target.value)}
+              name="codigo"
+              label="Introduce tu código de verificación"
+              autoComplete="off"
+              fullWidth
+              InputLabelProps={{
+              sx: {
+                  color: (theme) => theme.palette.mode === 'dark' ? 'white' : 'inherit',
+                },
+              }}
+              InputProps={{
+              sx: {
+                  color: (theme) => theme.palette.mode === 'dark' ? 'white' : 'inherit',
+                },
+              }}
+              sx={{
+                marginTop: '16px',
+                marginBottom: '8px',
+                '& .MuiInputLabel-root': {
+                  color: (theme) => (theme.palette.mode === 'dark' ? 'white' : 'inherit'),
+                },
+              }}
+            />
+          </ThemeProvider>
+      </Box>
+    </DialogContent>
+    <DialogActions>
+      <Button variant="contained" color="error" onClick={onClose}>
+        Cancelar
+      </Button>
+      <LoadingButton
+        variant="contained"
+        color='success'
+        disabled={codigo.length !==6 || btnLoad}
+        loading={btnLoad}
+        onClick={handleVerificar}
+      > Verificar y confirmar asistencia.
+      </LoadingButton>
+    </DialogActions>
     </Dialog>
   ); 
 }
@@ -105,6 +121,4 @@ export default function VerificarCorreoModal({ open, onClose, correo,idEvento })
 VerificarCorreoModal.propTypes = {
   open: PropTypes.bool,
   onClose: PropTypes.func,
-  correo: PropTypes.string.isRequired,
-  idEvento: PropTypes.number.isRequired,
 };

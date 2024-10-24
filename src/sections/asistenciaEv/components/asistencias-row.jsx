@@ -26,7 +26,7 @@ export default function AsistenciaEvRow({ row }) {
       <TableCell>{idEvento}</TableCell>
       <TableCell>
         <Label variant="soft" color={color}>
-          {estatusAsistentes}
+          {estatusAsistentes.toUpperCase()}
         </Label>
       </TableCell>
       <TableCell>{titulo.toUpperCase()}</TableCell>

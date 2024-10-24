@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/system/Stack';
+import { useTheme } from '@mui/material/styles';
 import LoadingButton from '@mui/lab/LoadingButton';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { Grid, TextField, Typography, Pagination, InputAdornment } from '@mui/material';
@@ -20,7 +21,7 @@ import NewEventDialog from './new-event-dialog';
 // ----------------------------------------------------------------------
 
 export default function EventsList({ ...other }) {
-  // const theme = useTheme();
+ const theme = useTheme();
   // const color = 'primary';
 
   const { user } = useAuthContext();
@@ -117,7 +118,8 @@ export default function EventsList({ ...other }) {
               // loading={1 = "as"}
               sx={{
                 width: 'auto',
-                backgroundColor: '#FFF',
+                backgroundColor: theme.palette.mode === 'dark' ? '#333' : '#FFF',
+                color: theme.palette.mode === 'dark' ? '#FFF' : '#000', 
                 border: 1,
               }}
             >
