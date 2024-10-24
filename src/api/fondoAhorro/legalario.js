@@ -1,31 +1,21 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable consistent-return */
 import { fechaDocumento} from 'src/utils/general';
-import { endpoints, fetcherPost } from 'src/utils/axios';
+import { endpoints, fetcherPost,fetcherPostLegalario } from 'src/utils/axios';
 
 import { useFormatoMonto,useFormatoMonto2 } from 'src/api/general';
 import { TEMPLATEID, LEGALARIO_HOST, LEGALARIO_EMAIL, LEGALARIO_PASSWORD } from 'src/config-global';
 
 
 export const postLogin = async () => {
-  const params = new URLSearchParams();
-  // params.append('email', 'coordinador1.desarrollo@ciudadmaderas.com');
-  //  params.append('password', 'pipBoy30');
-  params.append('email', LEGALARIO_EMAIL);
-  params.append('password', LEGALARIO_PASSWORD);
-  try {
-    const response = await fetch(`${LEGALARIO_HOST}auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: params.toString(),
-    });
+  const dataValue = {
+    email: LEGALARIO_EMAIL,
+    password: LEGALARIO_PASSWORD,
+  };
 
-    if (response.ok) {
-      const data = await response.json();
-      return data;
-    }
+  try {
+    const response = await fetcherPostLegalario(`${LEGALARIO_HOST}${endpoints.legalario.login}`, dataValue);
+    return response;
   } catch (error) {
     console.error('Error:', error);
     return null;
@@ -33,24 +23,16 @@ export const postLogin = async () => {
 };
 
 export const postGenerarToken = async (client_id, client_secret, grant_type, scope) => {
-  const params = new URLSearchParams({
+  const dataValue = {
     client_id,
     client_secret,
     grant_type,
     scope,
-  });
+  };
+   
   try {
-    const response = await fetch(`${LEGALARIO_HOST}auth/token?${params.toString()}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      return data;
-    }
+    const response =await fetcherPostLegalario(`${LEGALARIO_HOST}${endpoints.legalario.token}`,dataValue);
+    return response;
   } catch (error) {
     console.error('Error:', error);
     return null;
@@ -75,6 +57,24 @@ export const postDocumentos = async (
   };
   const formatoMontos = useFormatoMonto();
   const formatoMonto = useFormatoMonto2();
+  
+  const datosCompletosColaborador = (datos)=> Object.values(datos).every(value=> value !==undefined && value !== null);
+  const userdatos = {
+    nombre,
+    FirstDay,
+    ahorroFinal,
+    nss,
+    rfc,
+    razonSocial,
+    direccion,
+    sueldoNeto
+  };
+
+  if (!datosCompletosColaborador(userdatos)) {
+  console.error('Los datos del colaborador estan incompletos, se detuvo el proceso de generacion de documento');
+
+    return null; 
+  }
 
   // cuerpo del documento
   const body = {
@@ -97,7 +97,7 @@ export const postDocumentos = async (
 
   };
   try {
-    const response = await fetch(`${LEGALARIO_HOST}v2/documents`, {
+    const response = await fetch(`${LEGALARIO_HOST}${endpoints.legalario.docs}`, {
       method: 'POST',
       headers,
       body: JSON.stringify(body),
@@ -143,7 +143,7 @@ export const enviarCorreoFirma = async (
     ],
   };
   try {
-    const response = await fetch(`${LEGALARIO_HOST}v2/signers`, {
+    const response = await fetch(`${LEGALARIO_HOST}${endpoints.legalario.signers}`, {
       method: 'POST',
       headers,
       body: JSON.stringify(body),
