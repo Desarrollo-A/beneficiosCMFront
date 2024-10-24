@@ -17,6 +17,7 @@ const ReportePacientesPage = lazy(() => import('src/pages/beneficios/reportes/re
 const DemandaBeneficiosPage = lazy(
   () => import('src/pages/beneficios/reportes/demanda-beneficios')
 );
+const ReporteEncuestasPage = lazy(() => import('src/pages/beneficios/reportes/reporte-encuestas'));
 // OVERVIEW
 const DashPage = lazy(() => import('src/pages/beneficios/dash'));
 // ENCUESTAS
@@ -123,6 +124,7 @@ export const beneficiosRoutes = [
           { path: 'historial', element: <HistorialReportesPage /> },
           { path: 'pacientes', element: <ReportePacientesPage /> },
           { path: 'demandaBeneficios', element: <DemandaBeneficiosPage /> },
+          { path: 'reporteEncuestas', element: <ReporteEncuestasPage /> },
         ],
       },
       {
